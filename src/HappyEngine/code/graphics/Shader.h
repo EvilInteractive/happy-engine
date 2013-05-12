@@ -142,6 +142,8 @@ public:
     uint32 getBufferVarId(uint32 bufferId, const he::String& name) const;
     uint32 getShaderSamplerId(const he::String& name);
 
+    const ShaderLayout& getShaderLayout() const { return m_Layout; }
+
     UniformBuffer* setBuffer(uint32 id); //create new buffer
     void setBuffer(uint32 id, UniformBuffer* pBuffer); //used to share buffer
 
@@ -163,6 +165,8 @@ private:
 
     std::map<he::String, uint32> m_SamplerLocationMap;
     std::map<uint32, UniformBuffer*> m_UniformBufferMap;
+
+    ShaderLayout m_Layout;
 
     he::String m_FragShaderName;
     he::String m_VertShaderName;

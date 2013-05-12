@@ -24,7 +24,7 @@
 
 #include "SlotPContainer.h"
 
-#include "IDrawable.h"
+#include "Drawable.h"
 #include "BufferLayout.h"
 #include "InstancingBuffer.h"
 #include "Bound.h"
@@ -55,7 +55,7 @@ public:
     void removeManualFiller(const IInstanceFiller* pFiller);
     
     //////////////////////////////////////////////////////////////////////////
-    /// IDrawable
+    /// Drawable
     //////////////////////////////////////////////////////////////////////////
     virtual const Material* getMaterial() const;
     virtual void applyMaterial(const ICamera* pCamera) const;

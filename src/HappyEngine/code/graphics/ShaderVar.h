@@ -49,30 +49,30 @@ enum ShaderVarType
 class ShaderVar
 {
 public:
-    ShaderVar(uint32 id, const he::String& name, ShaderVarType type): m_Id(id), m_Type(type), m_Name(name) {}
+    ShaderVar(uint32 id, const he::FixedString& name, ShaderVarType type): m_Id(id), m_Type(type), m_Name(name) {}
     virtual ~ShaderVar() {}
 
-    virtual void assignData(Shader* pShader) = 0;
+    virtual void assignData(Shader* shader) = 0;
     virtual ShaderVar* copy() = 0;
 
     virtual ShaderVarType getType() { return m_Type; }
     uint32 getId() const { return m_Id; }
-    const he::String& getName() const { return m_Name; }
+    const he::FixedString& getName() const { return m_Name; }
 
 protected:
     uint32 m_Id;
-    he::String m_Name;
+    he::FixedString m_Name;
     ShaderVarType m_Type;
 };
 class ShaderGlobalVar : public ShaderVar
 {
 public:
-    ShaderGlobalVar(uint32 id, const he::String& name, ShaderVarType type): ShaderVar(id ,name, type)
+    ShaderGlobalVar(uint32 id, const he::FixedString& name, ShaderVarType type): ShaderVar(id ,name, type)
     {
     }
     virtual ~ShaderGlobalVar() {}
 
-    virtual void assignData(Shader* /*pShader*/)
+    virtual void assignData(Shader* /*shader*/)
     {
     }
 
@@ -85,7 +85,7 @@ template<typename T>
 class ShaderUserVar : public ShaderVar
 {
 public:
-    ShaderUserVar(uint32 id, const he::String& name, const T& data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    ShaderUserVar(uint32 id, const he::FixedString& name, const T& data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
     }
     virtual ~ShaderUserVar() {}
@@ -110,7 +110,7 @@ template<>
 class ShaderUserVar<const Texture2D*> : public ShaderVar
 {
 public:
-    ShaderUserVar(uint32 id, const he::String& name, const Texture2D* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    ShaderUserVar(uint32 id, const he::FixedString& name, const Texture2D* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
         m_Data->instantiate();
     }
@@ -144,7 +144,7 @@ template<>
 class ShaderUserVar<const TextureCube*> : public ShaderVar
 {
 public:
-    ShaderUserVar(uint32 id, const he::String& name, const TextureCube* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    ShaderUserVar(uint32 id, const he::FixedString& name, const TextureCube* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
         m_Data->instantiate();
     }

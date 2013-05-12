@@ -2,8 +2,7 @@
 addFilter(CODE_SRCS src/graphics code/graphics/
             BufferLayout.cpp                    BufferLayout.h
             Color.cpp                           Color.h
-            DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
-            DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
+            Drawable.cpp                        Drawable.h
             Hitregion.cpp                       Hitregion.h
             GLContext.h
             IDrawable2D.h
@@ -45,6 +44,7 @@ addFilter(CODE_SRCS src/graphics/light code/graphics/
             
 addFilter(CODE_SRCS src/graphics/material code/graphics/
             Material.cpp                        Material.h
+            MaterialInstance.cpp                MaterialInstance.h
             Shader.cpp                          Shader.h
             ShaderLayout.cpp                    ShaderLayout.h
             ShaderVar.h                         
@@ -58,6 +58,7 @@ addFilter(CODE_SRCS src/graphics/model code/graphics/
         )
                         
 addFilter(CODE_SRCS src/graphics/rendering code/graphics/
+            DrawContext.h
             CameraOrtho.cpp                     CameraOrtho.h
             CameraPerspective.cpp               CameraPerspective.h
             CameraBound.cpp                     CameraBound.h

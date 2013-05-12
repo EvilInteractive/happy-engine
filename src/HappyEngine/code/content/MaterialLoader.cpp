@@ -487,6 +487,7 @@ ObjectHandle MaterialLoader::load(const he::String& path)
                 pShader->release();
             }
         }
+        material->setLoaded();
         return material->getHandle();
     }
 }

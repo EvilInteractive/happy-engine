@@ -165,7 +165,7 @@ float SpotLight::getFov() const
 
 void SpotLight::calculateWorldMatrix()
 {
-    DefaultSingleDrawable::calculateWorldMatrix();
+    Drawable::calculateWorldMatrix();
     vec4 direction(m_LocalDirection, 0);
     m_WorldDirection = normalize((m_WorldMatrix * direction).xyz());
     float scale(length(vec4(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0), m_WorldMatrix(3, 0)))); // takes x as uniform scale
@@ -173,9 +173,9 @@ void SpotLight::calculateWorldMatrix()
     m_ScaledAttenuation.x = std::max(m_Attenuation.x, MIN_BEGIN_ATTENUATION);
 }
 
-void SpotLight::setWorldMatrixDirty( uint8 cause )
+void SpotLight::setWorldMatrixDirty( const uint8 cause )
 {
-    DefaultSingleDrawable::setWorldMatrixDirty(cause);
+    Drawable::setWorldMatrixDirty(cause);
     if ((cause & DirtyFlag_Scale) != 0)
         m_ShadowLensDirty = true;
     if ((cause & (~DirtyFlag_Scale)) != 0)

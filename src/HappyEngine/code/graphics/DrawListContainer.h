@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
 
-class IDrawable;
+class Drawable;
 class ICamera;
 class CullOctree;
 
@@ -47,26 +47,26 @@ public:
     };
 
     void prepareForRendering();
-    void draw(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc) const;
-    void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc,
+    void draw(BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc) const;
+    void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc,
         he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
 
-    void insert(IDrawable* drawable);
-    void remove(IDrawable* drawable);
-    void forceReevalute(IDrawable* drawable);
-    void doReevalute(IDrawable* drawable);
+    void insert(Drawable* drawable);
+    void remove(Drawable* drawable);
+    void forceReevalute(Drawable* drawable);
+    void doReevalute(Drawable* drawable);
 
-    const PrimitiveList<IDrawable*>* getList() const;
+    const PrimitiveList<Drawable*>* getList() const;
     
 private:
 
-    void getContainerIndex(const IDrawable* drawable, BlendFilter& main);
+    void getContainerIndex(const Drawable* drawable, BlendFilter& main);
 
-    he::PrimitiveList<IDrawable*> m_Dynamics;
+    he::PrimitiveList<Drawable*> m_Dynamics;
 #ifdef USE_OCTREE
     CullOctree* m_DrawList[BlendFilter_MAX];
 #else
-    he::PrimitiveList<IDrawable*> m_DrawList[BlendFilter_MAX];
+    he::PrimitiveList<Drawable*> m_DrawList[BlendFilter_MAX];
 #endif
 
     //Disable default copy constructor and default assignment operator

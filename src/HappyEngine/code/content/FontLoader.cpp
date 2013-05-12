@@ -19,7 +19,6 @@
 //Created: 07/05/2012
 
 #include "HappyPCH.h" 
-
 #include "FontLoader.h"
 
 #include "ResourceFactory.h"
@@ -45,18 +44,22 @@ FontLoader::~FontLoader()
 /* GENERAL */
 gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
 {
-    std::stringstream stream;
-    stream << path << size;
+    m_TempStream.clear();
+    m_TempStream.str("");
+    m_TempStream << path << size;
+    he::String assetName(m_TempStream.str());
 
-    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY->isAlive(m_AssetContainer.getAsset(stream.str())))
+    ResourceFactory<gui::Font>* const fontFactory(FACTORY);
+
+    if (m_AssetContainer.isAssetPresent(assetName) && fontFactory->isAlive(m_AssetContainer.getAsset(assetName)))
     {
-        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
-        FACTORY->instantiate(handle);       
-        return FACTORY->get(handle);
+        const ObjectHandle handle(m_AssetContainer.getAsset(assetName));
+        fontFactory->instantiate(handle);       
+        return fontFactory->get(handle);
     }
     else
     {
-        ObjectHandle handle(FACTORY->create());
+        const ObjectHandle handle(fontFactory->create());
 
         FT_Face face;
         FT_Error error(FT_New_Face(m_FTLibrary, path.c_str(), 0, &face));
@@ -85,13 +88,14 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
             return nullptr;
         }
 
-        gui::Font* pFont = FACTORY->get(handle);
-        pFont->setName(stream.str());
-        pFont->init(m_FTLibrary, face, size, options);
+        gui::Font* const font(fontFactory->get(handle));
+        font->setName(assetName);
+        font->init(m_FTLibrary, face, size, options);
+        font->setLoaded();
 
-        m_AssetContainer.addAsset(stream.str(), handle);
+        m_AssetContainer.addAsset(assetName, handle);
 
-        return pFont;
+        return font;
     }
 }
 

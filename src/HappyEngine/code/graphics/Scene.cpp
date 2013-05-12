@@ -22,7 +22,7 @@
 #include "Scene.h"
 
 #include "DrawListContainer.h"
-#include "IDrawable.h"
+#include "Drawable.h"
 
 #include "CameraManager.h"
 #include "InstancingManager.h"
@@ -75,24 +75,24 @@ void Scene::loadSkybox( const he::String& asset )
     }
 }
 
-void Scene::forceReevalute( IDrawable* drawable )
+void Scene::forceReevalute( Drawable* drawable )
 {
     m_DrawList.forceReevalute(drawable);
 }
 
-void Scene::doReevalute( IDrawable* drawable )
+void Scene::doReevalute( Drawable* drawable )
 {
     m_DrawList.doReevalute(drawable);
 }
 
-void Scene::attachToScene( IDrawable* drawable )
+void Scene::attachToScene( Drawable* drawable )
 {
     drawable->calculateBound();
     m_DrawList.insert(drawable);
     drawable->setScene(this);
 }
 
-void Scene::detachFromScene( IDrawable* drawable )
+void Scene::detachFromScene( Drawable* drawable )
 {
     m_DrawList.remove(drawable);
     drawable->setScene(nullptr);

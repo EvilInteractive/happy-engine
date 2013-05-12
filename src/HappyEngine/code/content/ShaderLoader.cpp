@@ -65,6 +65,7 @@ ObjectHandle ShaderLoader::load(const he::String& vsPath, const he::String& fsPa
 
         shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
         m_AssetContainer.addAsset(key, shader->getHandle());
+        shader->setLoaded();
         return shader->getHandle();
     }
 }

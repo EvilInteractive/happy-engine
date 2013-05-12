@@ -62,8 +62,8 @@ ShapeRenderer::~ShapeRenderer()
 void ShapeRenderer::createBillboardQuad()
 {
     BufferLayout vertexLayoutBillboard;
-    vertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    vertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
+    vertexLayoutBillboard.addElement(BufferElement(BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    vertexLayoutBillboard.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
 
     m_BillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_BillboardQuad->init(vertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
@@ -91,13 +91,14 @@ void ShapeRenderer::createBillboardQuad()
 
     m_BillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, true);
     m_BillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_BillboardQuad->setName("ShapeRenderer-BillboardQuad");
     m_BillboardQuad->setLoaded();
 }
 
 void ShapeRenderer::createAABB()
 {
     BufferLayout vertexLayoutBillboard;
-    vertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    vertexLayoutBillboard.addElement(BufferElement(BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     m_AABB = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_AABB->init(vertexLayoutBillboard, gfx::MeshDrawMode_Lines);
@@ -131,6 +132,7 @@ void ShapeRenderer::createAABB()
 
     m_AABB->setVertices(vertices, 8, gfx::MeshUsage_Static, true);
     m_AABB->setIndices(indices, 24, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_AABB->setName("ShapeRenderer-AABB");
     m_AABB->setLoaded();
 }
 

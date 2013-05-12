@@ -95,7 +95,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
         m_SingleDrawables.clear();
         m_InstancedDrawables.clear();
         m_SkinnedDrawables.clear();
-        scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, cam, [&](IDrawable* drawable)
+        scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, cam, [&](Drawable* drawable)
         {
             if (drawable->getCastsShadow() == true)
             {
@@ -125,7 +125,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
 
         if (m_InstancedDrawables.empty() == false)
         {
-            m_InstancedDrawables.forEach([&](IDrawable* drawable)
+            m_InstancedDrawables.forEach([&](Drawable* drawable)
             {
                 m_MatInstanced->apply(static_cast<InstancedDrawable*>(drawable), cam);
                 drawable->drawShadow();
@@ -133,7 +133,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
         }
         if (m_SingleDrawables.empty() == false)
         {
-            m_SingleDrawables.forEach([&](IDrawable* drawable)
+            m_SingleDrawables.forEach([&](Drawable* drawable)
             {
                 m_MatSingle->apply(static_cast<SingleDrawable*>(drawable), cam);
                 drawable->drawShadow();
@@ -141,7 +141,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
         }
         if (m_SkinnedDrawables.empty() == false)
         {
-            m_SkinnedDrawables.forEach([&](IDrawable* drawable)
+            m_SkinnedDrawables.forEach([&](Drawable* drawable)
             {
                 m_MatSkinned->apply(static_cast<SkinnedDrawable*>(drawable), cam);
                 drawable->drawShadow();

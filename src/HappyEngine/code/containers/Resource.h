@@ -31,7 +31,7 @@ class Resource
 {
 DECLARE_OBJECT(Resource<T>)
 public:
-    Resource()
+    Resource(): m_IsLoaded(false), m_Name()
     {
     }
     virtual ~Resource()
@@ -61,9 +61,42 @@ public:
         return true;
     }
 
-private:
+    void setLoaded()
+    {
+        HE_ASSERT(m_Loaded == false, "Resource %s already loaded!", m_Name.c_str());
+        HE_ASSERT(m_Name.empty() == false, "Resource is loaded but does not have a name!");
 
+        m_IsLoaded = true;
+        m_LoadMutex.lock(FILE_AND_LINE);
+        onLoaded(this);
+        onLoaded.clear();
+        m_LoadMutex.unlock();
+    }
+    inline bool isLoaded() const { return m_IsLoaded; }
+
+    // Events
+    void callbackOnceIfLoaded(const boost::function1<void, Resource<T>* const>& callback)
+    {
+        m_LoadMutex.lock(FILE_AND_LINE);
+        if (m_IsLoaded)
+        {
+            m_LoadMutex.unlock(); //we don't know how long callback will take, and it is not necessary to keep the lock
+            callback();
+        }
+        else
+        {
+            eventCallback1<void, Resource<T>* const> handler(callback);
+            onLoaded += handler;
+            m_LoadMutex.unlock();
+        }
+    }
+
+private:
+    bool m_IsLoaded;
     he::String m_Name;
+
+    event1<void, Resource<T>* const> onLoaded;
+    he::Mutex m_LoadMutex;
 
     // disabled assignment operator
     Resource& operator=(const Resource&);

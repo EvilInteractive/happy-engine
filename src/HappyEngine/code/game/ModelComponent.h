@@ -23,15 +23,15 @@
 #pragma once
 
 #include "EntityComponent.h"
-#include "DefaultSingleDrawable.h"
+#include "Drawable.h"
 
 namespace he {
 namespace ge {
  
 struct EntityComponentDesc;   
-class HAPPY_ENTRY ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
+class HAPPY_ENTRY ModelComponent : public gfx::Drawable, public EntityComponent
 {
-    IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
+    IMPLEMENT_IOBJECT3D_FROM(gfx::Drawable)
 public:
     ModelComponent();
     virtual ~ModelComponent();
@@ -58,7 +58,7 @@ public:
     
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IDrawable                                  ///
+    ///                         Drawable                                  ///
     //////////////////////////////////////////////////////////////////////////
     virtual const gfx::Material* getMaterial() const;
     virtual const gfx::ModelMesh* getModelMesh() const;

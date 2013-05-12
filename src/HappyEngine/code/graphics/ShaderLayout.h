@@ -22,25 +22,26 @@
 #define _HE_ShaderLayout_H_
 #pragma once
 
-#include <vector>
-#include "HappyTypes.h"
-
 namespace he {
 namespace gfx {
 
 class ShaderLayoutElement
 {
 public:
-    ShaderLayoutElement(): m_ElementIndex(UINT32_MAX), m_NameInShader("ERROR") {}
-    ShaderLayoutElement(uint32 elementIndex, const he::String& nameInShader);
-    virtual ~ShaderLayoutElement() {}
+    ShaderLayoutElement(): m_ElementIndex(UINT32_MAX), m_Usage(BufferElement::Usage_Other), m_NameInShader("ERROR") {}
+    ShaderLayoutElement(const he::String& nameInShader, const BufferElement::Usage usage);
+    ~ShaderLayoutElement() {}
     //default copy constructor and assignment operator are fine
 
-    uint32 getElementIndex() const;
-    const he::String& getShaderVariableName() const;
+    uint32 getElementIndex() const { return m_ElementIndex; }
+    void setElementIndex(const uint32 index) { m_ElementIndex = index; }
+
+    const he::String& getShaderVariableName() const { return m_NameInShader; }
+    const BufferElement::Usage getUsage() const { return m_Usage; }
 
 private:
     uint32 m_ElementIndex;
+    BufferElement::Usage m_Usage;
     he::String m_NameInShader;
 };
 
@@ -48,8 +49,7 @@ class ShaderLayout
 {
 public:
     ShaderLayout();
-    virtual ~ShaderLayout();
-    //default copy constructor and default assignment operator are OK
+    ~ShaderLayout();
     
     typedef he::ObjectList<ShaderLayoutElement> layout;
 
@@ -59,6 +59,9 @@ public:
 
 private:
     layout m_Layout;
+
+    ShaderLayout(ShaderLayout&);
+    ShaderLayout& operator=(const ShaderLayout&);
 };
 
 } } //end namespace

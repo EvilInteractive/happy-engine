@@ -22,7 +22,7 @@
 #define _HE_DIRECTIONAL_LIGHT_H_
 #pragma once
 
-#include "IDrawable.h"
+#include "Drawable.h"
 
 namespace he {
 namespace gfx {

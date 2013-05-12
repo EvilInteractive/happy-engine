@@ -40,6 +40,8 @@
 #define HAPPY_ENTRY __declspec(dllimport)
 #endif
 
+#define HE_FORCEINLINE __forceinline
+
 /*
 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
 To minimize the possibility of data corruption when exporting a class with __declspec(dllexport), ensure that:

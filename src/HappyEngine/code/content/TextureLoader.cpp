@@ -107,18 +107,19 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 
 const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
 {
+    ResourceFactory<gfx::Texture2D>* const tex2DFactory(FACTORY_2D);
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY_2D->isAlive(m_AssetContainer.getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && tex2DFactory->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
-        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
-        FACTORY_2D->instantiate(handle);       
-        return FACTORY_2D->get(handle);
+        const ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
+        tex2DFactory->instantiate(handle);       
+        return tex2DFactory->get(handle);
     }
     else
     {
-        ObjectHandle handle(FACTORY_2D->create());
-        FACTORY_2D->get(handle)->setName(stream.str());
+        const ObjectHandle handle(tex2DFactory->create());
+        tex2DFactory->get(handle)->setName(stream.str());
 
         TextureLoadData data;
         data.m_Path = stream.str();
@@ -131,22 +132,23 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
 
         m_AssetContainer.addAsset(stream.str(), handle);
 
-        return FACTORY_2D->get(handle);
+        return tex2DFactory->get(handle);
     }
 }
 const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
 {
+    ResourceFactory<gfx::Texture2D>* const tex2DFactory(FACTORY_2D);
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY_2D->isAlive(m_AssetContainer.getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && tex2DFactory->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
-        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
-        FACTORY_2D->instantiate(handle); 
-        return FACTORY_2D->get(handle);
+        const ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
+        tex2DFactory->instantiate(handle); 
+        return tex2DFactory->get(handle);
     }
     else
     {
-        ObjectHandle handle(FACTORY_2D->create());
+        const ObjectHandle handle(tex2DFactory->create());
         m_AssetContainer.addAsset(stream.str(), handle);
 
         TextureLoadData data;
@@ -158,7 +160,7 @@ const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
 
         createTexture(data);
 
-        return FACTORY_2D->get(handle);
+        return tex2DFactory->get(handle);
     }
 }
 const gfx::Texture2D* TextureLoader::asyncLoadTexture2D(const he::String& path)
@@ -284,7 +286,7 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
         ilDeleteImage(data.m_IlImageId);
     }
 
-    tex2D->setLoadFinished();
+    tex2D->setLoaded();
     HE_INFO("Texture2D create completed: %s", data.m_Path.c_str());
     return succes;
 }
@@ -332,7 +334,7 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
         ilDeleteImage(data.m_IlImageId);
     }
 
-    texCube->setLoadFinished();
+    texCube->setLoaded();
     HE_INFO("TextureCube create completed: %s", data.m_Path.c_str());
     return succes;
 }

@@ -22,7 +22,7 @@
 #define _HE_PointLight_H_
 #pragma once
 
-#include "DefaultSingleDrawable.h"
+#include "Drawable.h"
 #include "Light.h"
 
 namespace he {
@@ -31,7 +31,7 @@ namespace gfx {
 class ModelMesh;
 class Material;
 
-class PointLight : public DefaultSingleDrawable, public Light
+class PointLight : public Drawable, public Light
 {
 private:
     float m_Multiplier;

@@ -22,7 +22,7 @@
 #define _HE_SpotLight_H_
 #pragma once
 
-#include "DefaultSingleDrawable.h"
+#include "Drawable.h"
 #include "Light.h"
 #include "CameraPerspective.h"
 #include "IDrawable2D.h"
@@ -31,7 +31,7 @@ namespace he {
 namespace gfx {
 class Texture2D;
 
-class SpotLight : public DefaultSingleDrawable, public Light
+class SpotLight : public Drawable, public Light
 {
 private:
     float m_Multiplier;
@@ -57,7 +57,7 @@ private:
 
 protected:
     virtual void calculateWorldMatrix(); // override Object3D
-    virtual void setWorldMatrixDirty(uint8 cause); // override Object3D
+    virtual void setWorldMatrixDirty(const uint8 cause); // override Object3D
 
 public:
     SpotLight();

@@ -34,7 +34,7 @@ namespace gfx {
 class LightManager;
 class InstancingManager;
 class Picker;
-class IDrawable;
+class Drawable;
 class Scene;
 class ShadowCaster;
 class SkyBox;
@@ -54,10 +54,10 @@ public:
     virtual ~Scene();
 
     // Drawlist
-    void attachToScene(IDrawable* drawable);
-    void detachFromScene(IDrawable* drawable);
-    void forceReevalute(IDrawable* drawable);
-    void doReevalute(IDrawable* drawable);
+    void attachToScene(Drawable* drawable);
+    void detachFromScene(Drawable* drawable);
+    void forceReevalute(Drawable* drawable);
+    void doReevalute(Drawable* drawable);
     void prepareForRendering();
     
     // Getters
@@ -69,7 +69,7 @@ public:
     // Visual Picking
     //void initPicking(); // only init picking when needed, because it requires extra FBO & shader
     //uint pick(const vec2& screenPoint);
-    //uint pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
+    //uint pick(const vec2& screenPoint, const he::PrimitiveList<Drawable*>& drawList);
     
     // Active
     void setActive(bool active) { m_Active =  active; }

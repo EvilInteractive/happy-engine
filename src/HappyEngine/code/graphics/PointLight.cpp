@@ -155,7 +155,7 @@ const ModelMesh* PointLight::getModelMesh() const
 
 void PointLight::calculateWorldMatrix()
 {
-    DefaultSingleDrawable::calculateWorldMatrix();
+    Drawable::calculateWorldMatrix();
     float scale(length(vec3(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0)))); // takes x as uniform scale
     m_ScaledAttenuation = m_Attenuation * (scale / m_Attenuation.y);
 }

@@ -16,59 +16,77 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 18/12/2011
+//Created: 2011/12/18
+//major change: 2013/04/28
 
-#ifndef _HE_DEFAULT_SINGLE_DRAWABLE_H_
-#define _HE_DEFAULT_SINGLE_DRAWABLE_H_
+#ifndef _HE_DRAWABLE_H_
+#define _HE_DRAWABLE_H_
 #pragma once
 
-#include "IDrawable.h"
+#include "Object3D.h"
 #include "Bound.h"
 
 namespace he {
 namespace gfx {
+class ModelMesh;
+class Material;
+class Scene;
 
-class HAPPY_ENTRY DefaultSingleDrawable : public SingleDrawable
+class HAPPY_ENTRY Drawable: public he::Object3D
 {
+    enum EDrawableFlags //: he::uint8
+    {
+        eDrawableFlags_None = 0,
+        eDrawableFlags_CastShadow = 1 << 0,
+        eDrawableFlags_NeedsSceneReevaluate = 1 << 1,
+        eDrawableFlags_NeedsBoundUpdate = 1 << 2
+    };
 public:
-    DefaultSingleDrawable();
-    virtual ~DefaultSingleDrawable();
+    Drawable();
+    ~Drawable();
 
-    virtual const Material* getMaterial() const = 0;
-    virtual void applyMaterial(const ICamera* pCamera) const; 
-    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
+    void setModelMesh(ModelMesh* const mesh);
+    void setMaterial(Material* const material);
 
-    virtual const ModelMesh* getModelMesh() const = 0;
+    HE_FORCEINLINE ModelMesh* const getModelMesh() const { return m_ModelMesh; }
+    HE_FORCEINLINE Material* const getMaterial() const { return m_Material; }
+    HE_FORCEINLINE const MaterialLayout& getMaterialLayout() const { return m_MaterialLayout; }
 
-    virtual bool getCastsShadow() const;
-    virtual void setCastsShadow(bool castShadow);
+    bool getCastsShadow() const { return checkFlag(eDrawableFlags_CastShadow); }
+    void setCastsShadow(const bool castShadow) { castShadow? raiseFlag(eDrawableFlags_CastShadow) : clearFlag(eDrawableFlags_CastShadow); }
 
-    virtual void calculateBound();
-    virtual const Bound& getBound() const;
-
-    virtual void draw();
-    virtual void drawShadow();
-
-    virtual void detachFromScene();
-    virtual void attachToScene(Scene* scene);
-    virtual void setScene(Scene* scene);
-    virtual Scene* getScene() const;
-    virtual bool isAttachedToScene() const;
-
-    virtual void nodeReevaluated() { m_NeedsReevalute = false; }
+    void calculateBound();
+    HE_FORCEINLINE const Bound& getBound() const { return m_Bound; }
     
-protected:
-    virtual void setWorldMatrixDirty(uint8 cause);
-    Bound m_Bound;
+    void detachFromScene();
+    void attachToScene(Scene* const scene);
+    void setScene(Scene* const scene) { m_Scene = scene; }
+    HE_FORCEINLINE Scene* getScene() const { return m_Scene; }
+    HE_FORCEINLINE bool isAttachedToScene() const { return m_Scene != nullptr; }
+
+    void nodeReevaluated() { clearFlag(eDrawableFlags_NeedsSceneReevaluate); }
     
 private:
-    bool m_CastsShadow;
+    void setWorldMatrixDirty(const uint8 cause);
+    HE_FORCEINLINE bool checkFlag(const EDrawableFlags flag) const { return (m_Flags & flag) != 0; }
+    HE_FORCEINLINE void raiseFlag(const EDrawableFlags flag) { m_Flags |= flag; }
+    HE_FORCEINLINE void clearFlag(const EDrawableFlags flag) { m_Flags &= ~flag; }
+
+    void updateMaterialLayout();
+    void invoke(ModelMesh* const mesh, Material* const material, const boost::function0<void> func);
+
+    Bound m_Bound;
+    
+    ModelMesh* m_ModelMesh;
+    Material* m_Material;
+    MaterialLayout m_MaterialLayout;
+
     Scene* m_Scene;
-    bool m_NeedsReevalute;
+    uint8 m_Flags;
 
     //Disable default copy constructor and default assignment operator
-    DefaultSingleDrawable(const DefaultSingleDrawable&);
-    DefaultSingleDrawable& operator=(const DefaultSingleDrawable&);
+    Drawable(const Drawable&);
+    Drawable& operator=(const Drawable&);
 };
 
 } } //end namespace

@@ -22,25 +22,21 @@
 namespace he {
 namespace gfx {
 
-#pragma region VertexElement
-BufferElement::BufferElement(uint32 elementIndex, Type type, Usage usage, uint32 size, uint32 byteOffset):
-        m_ElementIndex(elementIndex), m_Type(type), m_Usage(usage),
+#pragma region BufferElement
+BufferElement::BufferElement(const Type type, const Usage usage, const uint32 size, const uint32 byteOffset):
+        m_Type(type), m_Usage(usage),
         m_Size(size), m_ByteOffset(byteOffset)
 {
     HE_ASSERT(m_Size != 0, "element size == 0");
 }
 
 BufferElement::BufferElement():
-    m_ElementIndex(0), m_Type(Type_Int), m_Usage(Usage_Other),
+    m_Type(Type_Int), m_Usage(Usage_Other),
     m_Size(0), m_ByteOffset(0)
 {
 
 }
 
-uint32 BufferElement::getElementIndex() const
-{
-    return m_ElementIndex;
-}
 uint32 BufferElement::getSize() const
 {
     return m_Size;
@@ -59,7 +55,7 @@ BufferElement::Usage BufferElement::getUsage() const
 }
 #pragma endregion
 
-#pragma region VertexLayout
+#pragma region BufferElement
 BufferLayout::BufferLayout(): m_Size(0)
 {
 }

@@ -24,8 +24,6 @@
 
 namespace he {
 namespace gfx {
-
-#define BUFFER_OFFSET(i) ((char*)nullptr + (i))
    
 #pragma warning(disable:4355) // use of this in initializer list
 ModelMesh::ModelMesh(): 
@@ -34,28 +32,16 @@ ModelMesh::ModelMesh():
     m_IsLoaded(false), 
     m_isVisible(true),
     m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
-    m_ContextCreatedHandler(boost::bind(&ModelMesh::initVAO, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&ModelMesh::destroyVAO, this, _1)),
     m_DrawMode(MeshDrawMode_Triangles),
     m_IndexVboID(UINT32_MAX),
     m_VertexVboID(UINT32_MAX)
 {
-    he_memset(m_VaoID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
-    he_memset(m_VaoShadowID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
 }
 #pragma warning(default:4355) // use of this in initializer list
 
 
 ModelMesh::~ModelMesh()
 {
-    GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
-    GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
-    const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
-    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
-    {
-        if (m_VaoID[context->id] != UINT32_MAX)
-            destroyVAO(context);
-    });
     if (m_VertexVboID != UINT32_MAX)
         glDeleteBuffers(1, &m_VertexVboID);
     if (m_IndexVboID != UINT32_MAX)
@@ -71,19 +57,11 @@ void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
         m_DrawMode = mode;
         glGenBuffers(1, &m_IndexVboID);
         glGenBuffers(1, &m_VertexVboID);
-        const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
-        std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
-        {
-            initVAO(context);
-        });
-        GRAPHICS->ContextCreated += m_ContextCreatedHandler;
-        GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
     }
 }
 
-void ModelMesh::initVAO( GLContext* context )
+/*void ModelMesh::initVAO()
 {
-    GRAPHICS->setActiveContext(context);
     const BufferLayout::layout& elements(m_VertexLayout.getElements());
     //////////////////////////////////////////////////////////////////////////
     ///                             Normal                                 ///
@@ -148,22 +126,7 @@ void ModelMesh::initVAO( GLContext* context )
             glEnableVertexAttribArray(2);
         }
     }
-}
-void ModelMesh::destroyVAO( GLContext* context )
-{
-    GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_VaoID[context->id] != UINT32_MAX, "Vao not initialized or already destroyed")
-    {
-        glDeleteVertexArrays(1, m_VaoID + context->id);
-        m_VaoID[context->id] = UINT32_MAX;
-    }
-    HE_IF_ASSERT(m_VaoShadowID[context->id] != UINT32_MAX, "Shadow Vao not initialized or already destroyed")
-    {
-        glDeleteVertexArrays(1, m_VaoShadowID + context->id);
-        m_VaoShadowID[context->id] = UINT32_MAX;
-    }
-}
-
+}*/
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
 void ModelMesh::setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound)
@@ -183,7 +146,6 @@ void ModelMesh::setVertices(const void* const vertices, const uint32 num, const 
         m_Bound.fromAABB(AABB::calculateBoundingAABB(vertices, num, m_VertexLayout.getSize(), posOffset));
     }
 
-    GL::heBindVao(getVertexArraysID());
     glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
     glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, nullptr, usage);
     glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, vertices, usage);
@@ -192,7 +154,6 @@ void ModelMesh::setIndices(const void* const indices, const uint32 num, const In
 {
     m_NumIndices = num;
 
-    GL::heBindVao(getVertexArraysID());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, nullptr, usage);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, indices, usage);
@@ -210,31 +171,6 @@ void ModelMesh::setBones( const he::ObjectList<Bone>& boneList )
 {
     m_BoneList.clear();
     m_BoneList.append(boneList);
-}
-
-void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
-{
-    m_LoadMutex.lock(FILE_AND_LINE);
-    if (m_IsLoaded)
-    {
-        m_LoadMutex.unlock(); //we don't know how long callback will take, and it is not necessary to keep the lock
-        callback();
-    }
-    else
-    {
-        eventCallback0<void> handler(callback);
-        Loaded += handler;
-        m_LoadMutex.unlock();
-    }
-}
-
-void ModelMesh::setLoaded()
-{
-    m_IsLoaded = true;
-    m_LoadMutex.lock(FILE_AND_LINE);
-    Loaded();
-    Loaded.clear();
-    m_LoadMutex.unlock();
 }
 
 void ModelMesh::createPickingData(const void* const vertices, const size_t vertexCount, const BufferLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride)

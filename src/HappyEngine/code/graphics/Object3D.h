@@ -57,8 +57,8 @@ protected:
     virtual IObject3D* getParent() const = 0;
     virtual void setParent(IObject3D* parent) = 0;
 
-    virtual void setWorldMatrixDirty(uint8 cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
-    virtual void setLocalMatrixDirty(uint8 cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setWorldMatrixDirty(const uint8 cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setLocalMatrixDirty(const uint8 cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
 
     virtual void calculateWorldMatrix() = 0;
 };
@@ -83,8 +83,8 @@ protected:\
 virtual he::IObject3D* getParent() const { return X::getParent(); } \
 virtual void setParent(he::IObject3D* parent) { X::setParent(parent); } \
 \
-virtual void setWorldMatrixDirty(he::uint8 cause) { X::setWorldMatrixDirty(cause); } \
-virtual void setLocalMatrixDirty(he::uint8 cause) { X::setLocalMatrixDirty(cause); } \
+virtual void setWorldMatrixDirty(const he::uint8 cause) { X::setWorldMatrixDirty(cause); } \
+virtual void setLocalMatrixDirty(const he::uint8 cause) { X::setLocalMatrixDirty(cause); } \
 \
 virtual void calculateWorldMatrix() { X::calculateWorldMatrix(); }
 
@@ -95,28 +95,28 @@ public:
     Object3D();
     virtual ~Object3D();
     
-    virtual void setLocalTranslate(const vec3& translate);
-    virtual void setLocalRotate(const mat33& rotate);
-    virtual void setLocalScale(const vec3& scale);
+    void setLocalTranslate(const vec3& translate); // override final
+    void setLocalRotate(const mat33& rotate); // override final
+    void setLocalScale(const vec3& scale); // override final
 
-    virtual const vec3&  getLocalTranslate() const;
-    virtual const mat33& getLocalRotate() const;
-    virtual const vec3&  getLocalScale() const;
+    const vec3&  getLocalTranslate() const; // override final
+    const mat33& getLocalRotate() const; // override final
+    const vec3&  getLocalScale() const; // override final
 
-    virtual const mat44& getLocalMatrix() const;
-    virtual const mat44& getWorldMatrix() const;
+    const mat44& getLocalMatrix() const; // override final
+    const mat44& getWorldMatrix() const; // override final
 
-    virtual void attach(IObject3D* child);
-    virtual void detach(IObject3D* child);
+    void attach(IObject3D* child); // override final
+    void detach(IObject3D* child); // override final
 
 protected:
-    virtual void setWorldMatrixDirty(uint8 cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
-    virtual void setLocalMatrixDirty(uint8 cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setWorldMatrixDirty(const uint8 cause); // override // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setLocalMatrixDirty(const uint8 cause); // override // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
 
-    virtual void calculateWorldMatrix();
+    virtual void calculateWorldMatrix(); // override
 
-    virtual IObject3D* getParent() const { return m_Parent; }
-    virtual void setParent(IObject3D* parent) { m_Parent = parent; }
+    IObject3D* getParent() const { return m_Parent; } // override final
+    void setParent(IObject3D* parent) { m_Parent = parent; } // override final
     
     enum DirtyFlag // 4 bit MAX
     {

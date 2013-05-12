@@ -26,16 +26,16 @@
 namespace he {
 namespace gfx {
     
-Model::Model(): m_IsLoaded(false)
+Model::Model()
 {
 }
 
 
 Model::~Model()
 {
-    std::for_each(cbegin(), cend(), [&](ModelMesh* pMesh)
+    m_Meshes.forEach([&](ModelMesh* const mesh)
     {
-        pMesh->release();
+        mesh->release();
     });
 }
 
@@ -46,17 +46,20 @@ void Model::release() const
 bool Model::canBeGarbageCollected() const
 {
     // only GC if all meshes are referenced just by this instance
-    bool block(std::any_of(cbegin(), cend(), [](ModelMesh* mesh)
+    ResourceFactory<ModelMesh>* const modelMeshFactory(ResourceFactory<ModelMesh>::getInstance());
+    bool block(std::any_of(cbegin(), cend(), [modelMeshFactory](const ModelMesh* const mesh)
     {
-        return ResourceFactory<ModelMesh>::getInstance()->getRefCount(mesh->getHandle()) > 1;
+        return modelMeshFactory->getRefCount(mesh->getHandle()) > 1;
     }));
     return !block;
 }
 
 void Model::addMesh(const ObjectHandle& handle)
 {
-    ResourceFactory<ModelMesh>::getInstance()->instantiate(handle);
-    m_Meshes.add(ResourceFactory<ModelMesh>::getInstance()->get(handle));
+    ResourceFactory<ModelMesh>* const modelMeshFactory(ResourceFactory<ModelMesh>::getInstance());
+    ModelMesh* const mesh(modelMeshFactory->get(handle));
+    mesh->instantiate();
+    m_Meshes.add(mesh);
 }
 size_t Model::getNumMeshes() const
 {
@@ -65,22 +68,22 @@ size_t Model::getNumMeshes() const
 ModelMesh* Model::instantiateMesh(uint32 index) const
 {
     HE_ASSERT(index < m_Meshes.size(), "Model::instantiateMesh: index out of range: %d", index);
-    ModelMesh* mesh(m_Meshes[index]);
-    ResourceFactory<ModelMesh>::getInstance()->instantiate(mesh->getHandle());
+    ModelMesh* const mesh(m_Meshes[index]);
+    mesh->instantiate();
     return mesh;
 }
 
 ModelMesh* Model::instantiateMesh( const he::String& name ) const
 {
-    he::PrimitiveList<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* pMesh)
+    he::PrimitiveList<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* const mesh)
     {
-        return pMesh->getName() == name;
+        return mesh->getName() == name;
     }));
 
     if (it != cend())
     {
-        ModelMesh* mesh(*it);
-        ResourceFactory<ModelMesh>::getInstance()->instantiate(mesh->getHandle());
+        ModelMesh* const mesh(*it);
+        mesh->instantiate();
         return mesh;
     }
     HE_ERROR("Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());
@@ -89,8 +92,9 @@ ModelMesh* Model::instantiateMesh( const he::String& name ) const
 
 Model* Model::instantiateMeshesWithPrefix( const he::String& prefix ) const
 {
-    ObjectHandle modelHandle(ResourceFactory<Model>::getInstance()->create());
-    Model* model(ResourceFactory<Model>::getInstance()->get(modelHandle));
+    ResourceFactory<Model>* const modelFactory(ResourceFactory<Model>::getInstance());
+    const ObjectHandle modelHandle(modelFactory->create());
+    Model* const model(modelFactory->get(modelHandle));
 
     std::for_each(cbegin(), cend(), [&](ModelMesh* mesh)
     {
@@ -109,35 +113,6 @@ he::PrimitiveList<ModelMesh*>::const_iterator Model::cbegin() const
 he::PrimitiveList<ModelMesh*>::const_iterator Model::cend() const
 {
     return m_Meshes.cend();
-}
-
-bool Model::isLoaded() const
-{
-    return m_IsLoaded;
-}
-void Model::setLoaded()
-{
-    m_IsLoaded = true;
-    m_LoadedMutex.lock(FILE_AND_LINE);
-    m_LoadedCallback();
-    m_LoadedCallback.clear();
-    m_LoadedMutex.unlock();
-}
-
-void Model::callbackOnceIfLoaded( const boost::function<void()>& callback )
-{
-    m_LoadedMutex.lock(FILE_AND_LINE);
-    if (isLoaded())
-    {
-        m_LoadedMutex.unlock();
-        callback();
-    }
-    else
-    {
-        eventCallback0<void> handler(callback);
-        m_LoadedCallback += handler;
-        m_LoadedMutex.unlock();
-    }
 }
 
 } } //end namespace

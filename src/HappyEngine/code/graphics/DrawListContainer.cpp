@@ -20,7 +20,7 @@
 #include "HappyPCH.h"
 
 #include "DrawListContainer.h"
-#include "IDrawable.h"
+#include "Drawable.h"
 #include "Material.h"
 #ifdef USE_OCTREE
 #include "CullOctree.h"
@@ -51,7 +51,7 @@ DrawListContainer::~DrawListContainer()
 }
 
 
-void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter& blend)
+void DrawListContainer::getContainerIndex(const Drawable* drawable, BlendFilter& blend)
 {
     const gfx::Material* material(drawable->getMaterial());
     HE_IF_ASSERT(material != nullptr, "Material is nullptr!")
@@ -62,7 +62,7 @@ void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter
             blend = BlendFilter_Opac;
     }
 }
-void DrawListContainer::insert( IDrawable* drawable )
+void DrawListContainer::insert( Drawable* drawable )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);
@@ -74,7 +74,7 @@ void DrawListContainer::insert( IDrawable* drawable )
 #endif
 }
 
-void DrawListContainer::remove( IDrawable* drawable )
+void DrawListContainer::remove( Drawable* drawable )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);  
@@ -86,20 +86,20 @@ void DrawListContainer::remove( IDrawable* drawable )
     m_Dynamics.remove(drawable);
 }
 
-void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc ) const
+void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 #ifdef USE_OCTREE
     m_DrawList[blend]->draw(camera, drawFunc);
 #else
-    std::for_each(m_DrawList[blend].cbegin(), m_DrawList[blend].cend(), [camera, drawFunc](IDrawable* drawable)
+    std::for_each(m_DrawList[blend].cbegin(), m_DrawList[blend].cend(), [camera, drawFunc](Drawable* drawable)
     {
         if (camera->intersect(drawable->getBound()) != IntersectResult_Outside)
             drawFunc(drawable);
     });
 #endif
 }
-void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
+void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 #ifdef USE_OCTREE
@@ -116,7 +116,7 @@ void DrawListContainer::prepareForRendering()
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_Dynamics.empty() == false)
     {
-        m_Dynamics.forEach([&](IDrawable* drawable)
+        m_Dynamics.forEach([&](Drawable* drawable)
         {
             BlendFilter blend;
             getContainerIndex(drawable, blend);
@@ -130,7 +130,7 @@ void DrawListContainer::prepareForRendering()
     }
 }
 
-void DrawListContainer::forceReevalute( IDrawable* drawable )
+void DrawListContainer::forceReevalute( Drawable* drawable )
 {
 #ifdef USE_OCTREE
     BlendFilter blend;
@@ -141,12 +141,12 @@ void DrawListContainer::forceReevalute( IDrawable* drawable )
 #endif
 }
 
-void DrawListContainer::doReevalute( IDrawable* drawable )
+void DrawListContainer::doReevalute( Drawable* drawable )
 {
     m_Dynamics.add(drawable);
 }
 
-const PrimitiveList<IDrawable*>* DrawListContainer::getList() const
+const PrimitiveList<Drawable*>* DrawListContainer::getList() const
 {
     return &m_DrawList[0];
 }

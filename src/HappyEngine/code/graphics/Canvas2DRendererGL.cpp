@@ -617,8 +617,8 @@ void Canvas2DRendererGL::init()
         ModelMesh* const mesh(modelMeshFactory->get(s_TextureQuadHandle));
 
         BufferLayout vLayout;
-        vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
-        vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
+        vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
+        vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
 
         he::ObjectList<VertexPosTex2D> vertices(4);
         vertices.add(
@@ -644,6 +644,7 @@ void Canvas2DRendererGL::init()
         mesh->init(vLayout, MeshDrawMode_Triangles);
         mesh->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
         mesh->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+        mesh->setName("Canvas2DRendererGL-TextureQuad");
         mesh->setLoaded();
 
         m_TextureQuad = mesh;
@@ -657,13 +658,14 @@ void Canvas2DRendererGL::init()
     m_DynamicFontMesh = modelMeshFactory->get(modelMeshFactory->create());
 
     BufferLayout vLayout;
-    vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
-    vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
-    vLayout.addElement(BufferElement(2, BufferElement::Type_Vec4, BufferElement::Usage_Other, 16, 16));
+    vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
+    vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
+    vLayout.addElement(BufferElement(BufferElement::Type_Vec4, BufferElement::Usage_Other, 16, 16));
 
     m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
     m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
     m_DynamicFontMesh->setIndices(nullptr, 0, IndexStride_UInt, MeshUsage_Dynamic);
+    m_DynamicFontMesh->setName("Canvas2DRendererGL-FontMesh");
     m_DynamicFontMesh->setLoaded();
 
     m_DynamicShapeMesh = NEW Mesh2D(false);

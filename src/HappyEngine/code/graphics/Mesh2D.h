@@ -31,8 +31,8 @@ class HAPPY_ENTRY Mesh2D
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Mesh2D(bool staticDraw = false);
-    virtual ~Mesh2D();
+    explicit Mesh2D(bool staticDraw = false);
+    ~Mesh2D();
 
     /* GENERAL */
     void addVertex(const vec2& point);

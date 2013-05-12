@@ -178,12 +178,6 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
     glAttachShader(m_Id, m_VsId);
     glAttachShader(m_Id, m_FsId);
 
-    const ShaderLayout::layout& layout(shaderLayout.getElements());
-    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
-    {
-        glBindAttribLocation(m_Id, e.getElementIndex(), e.getShaderVariableName().c_str());
-    });
-
     for (uint32 i = 0; i < outputs.size(); ++i)
     {
         glBindFragDataLocation(m_Id, i, outputs[i].c_str());
@@ -191,15 +185,23 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
 
     glLinkProgram(m_Id);
 
-    #ifdef _DEBUG
+    succes = succes && validateProgram(m_Id);
+
+    const ShaderLayout::layout& layout(shaderLayout.getElements());
     std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
     {
-        HE_ASSERT(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()) == (GLint)e.getElementIndex(), 
-            "Attribute (%s) bind failed! requested:%d - got:%d", e.getShaderVariableName().c_str(), e.getElementIndex(), glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()));
+        const GLint loc(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()));
+        if (loc != -1)
+        {
+            ShaderLayoutElement el(e);
+            el.setElementIndex(checked_numcast<uint32>(loc));
+            m_Layout.addElement(el);
+        }
+        else
+        {
+            LOG(LogType_ProgrammerAssert, "Could not bind shader attribute: %s to shader: %s", e.getShaderVariableName().c_str(), debugVertName.c_str());
+        }
     });
-    #endif
-
-    succes = succes && validateProgram(m_Id);
 
     return succes;
 }

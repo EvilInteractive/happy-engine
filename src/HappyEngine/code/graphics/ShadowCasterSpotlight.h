@@ -33,7 +33,7 @@ class RenderTarget;
 class View;
 class Scene;
 class ModelMesh;
-class IDrawable;
+class Drawable;
 
 class ShadowCasterSpotLight
 {
@@ -53,9 +53,9 @@ private:
     
     ShadowResolution m_Resolution;
 
-    he::PrimitiveList<IDrawable*> m_SingleDrawables;
-    he::PrimitiveList<IDrawable*> m_SkinnedDrawables;
-    he::PrimitiveList<IDrawable*> m_InstancedDrawables;
+    he::PrimitiveList<Drawable*> m_SingleDrawables;
+    he::PrimitiveList<Drawable*> m_SkinnedDrawables;
+    he::PrimitiveList<Drawable*> m_InstancedDrawables;
 
     //Disable default copy constructor and default assignment operator
     ShadowCasterSpotLight(const ShadowCasterSpotLight&);

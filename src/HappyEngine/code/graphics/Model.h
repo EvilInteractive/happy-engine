@@ -32,12 +32,12 @@ class Model : public Resource<Model>
 {
 public:
     Model();
-    virtual ~Model();
+    ~Model();
 
     //////////////////////////////////////////////////////////////////////////
     /// Resource
-    virtual void release() const;
-    virtual bool canBeGarbageCollected() const;
+    void release() const; // override
+    bool canBeGarbageCollected() const; // override
 
     //////////////////////////////////////////////////////////////////////////
     /// Model
@@ -49,19 +49,9 @@ public:
 
     he::PrimitiveList<ModelMesh*>::const_iterator cbegin() const;
     he::PrimitiveList<ModelMesh*>::const_iterator cend() const;
-
-    void callbackOnceIfLoaded(const boost::function<void()>& callback);
-
-    bool isLoaded() const;
-    void setLoaded();
-
-private:
-
-    event0<void> m_LoadedCallback;
-    he::Mutex m_LoadedMutex;
-
+    
+private:   
     he::PrimitiveList<ModelMesh*> m_Meshes;
-    bool m_IsLoaded;
 
     //Disable default copy constructor and default assignment operator
     Model(const Model&);

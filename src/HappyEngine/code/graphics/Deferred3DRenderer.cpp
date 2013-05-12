@@ -288,7 +288,7 @@ void Deferred3DRenderer::render()
         //////////////////////////////////////////////////////////////////////////
         ///                             DRAW                                   ///
         //////////////////////////////////////////////////////////////////////////
-        m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+        m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](Drawable* d)
         {
             d->applyMaterial(camera);
             d->draw();

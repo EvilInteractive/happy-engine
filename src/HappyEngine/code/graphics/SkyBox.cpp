@@ -76,7 +76,7 @@ void SkyBox::load( const he::String& asset )
     /// Load Model
     //////////////////////////////////////////////////////////////////////////
     m_Cube = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
-    m_Cube->setName("skybox");
+    m_Cube->setName(he::String("skybox-") + asset);
     he::PrimitiveList<vec3> vertices(8);
     vertices.add(vec3(-1,  1, -1));
     vertices.add(vec3( 1,  1, -1));
@@ -108,7 +108,7 @@ void SkyBox::load( const he::String& asset )
     indices.add(7); indices.add(6); indices.add(2);
 
     BufferLayout layout;
-    layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, sizeof(vec3), 0));
+    layout.addElement(BufferElement(BufferElement::Type_Vec3, BufferElement::Usage_Position, sizeof(vec3), 0));
     m_Cube->init(layout, MeshDrawMode_Triangles);
     m_Cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
     m_Cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);

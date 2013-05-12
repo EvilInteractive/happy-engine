@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 18/12/2011
 #include "HappyPCH.h" 
+#include "Drawable.h"
 
-#include "DefaultSingleDrawable.h"
 #include "ICamera.h"
 
 #include "ModelMesh.h"
@@ -29,54 +29,79 @@
 namespace he {
 namespace gfx {
 
-DefaultSingleDrawable::DefaultSingleDrawable()
-    : m_CastsShadow(true)
-    , m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
+Drawable::Drawable()
+    : m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
+    , m_ModelMesh(nullptr)
+    , m_Material(nullptr)
     , m_Scene(nullptr)
-    , m_NeedsReevalute(false)
+    , m_Flags(eDrawableFlags_None)
 {
 }
 
 
-DefaultSingleDrawable::~DefaultSingleDrawable()
+Drawable::~Drawable()
 {
 }
 
-void DefaultSingleDrawable::applyMaterial( const ICamera* pCamera ) const
+void Drawable::setModelMesh( ModelMesh* const mesh )
 {
-    getMaterial()->apply(this, pCamera);
+    if (m_ModelMesh != nullptr)
+    {
+        m_ModelMesh->release();
+    }
+    m_ModelMesh = mesh;
+    if (m_ModelMesh != nullptr)
+    {
+        m_ModelMesh->instantiate();
+        updateMaterialLayout(m_ModelMesh, m_Material);
+    }
 }
 
-void DefaultSingleDrawable::applyMaterial( const Material* customMaterial, const ICamera* pCamera ) const
+void Drawable::setMaterial( Material* const material )
 {
-    customMaterial->apply(this, pCamera);
+    if (m_Material != nullptr)
+    {
+        m_Material->release();
+    }
+    m_Material = material;
+    if (m_Material != nullptr)
+    {
+        m_Material->instantiate();
+        updateMaterialLayout(m_ModelMesh, m_Material);
+    }
 }
 
-bool DefaultSingleDrawable::getCastsShadow() const
+void Drawable::updateMaterialLayout(ModelMesh* const mesh, Material* const material)
 {
-    return m_CastsShadow;
+    if (m_ModelMesh == mesh && m_Material == material)
+    {
+        if ( m_ModelMesh != nullptr && m_Material != nullptr)
+        {
+            if (m_ModelMesh->isLoaded())
+            {
+                if (m_Material->isLoaded())
+                {
+                    m_Material->calculateMaterialLayout(m_ModelMesh->getVertexLayout(), m_MaterialLayout);
+                }
+                else
+                {
+                    m_Material->callbackOnceIfLoaded(boost::bind(&Drawable::updateMaterialLayout, this, mesh, material));
+                }
+            }
+            else
+            {
+                m_ModelMesh->callbackOnceIfLoaded(boost::bind(&Drawable::updateMaterialLayout, this, mesh, material));
+            }
+        }
+    }
 }
 
-void DefaultSingleDrawable::setCastsShadow( bool castShadow )
+void Drawable::invoke( ModelMesh* const mesh, Material* const material, const boost::function0<void> func )
 {
-    m_CastsShadow = castShadow;
+
 }
 
-void DefaultSingleDrawable::draw()
-{
-    const ModelMesh* mesh(getModelMesh());
-    GL::heBindVao(mesh->getVertexArraysID());
-    glDrawElements(mesh->getDrawMode(), mesh->getNumIndices(), mesh->getIndexType(), 0);
-}
-
-void DefaultSingleDrawable::drawShadow()
-{
-    const ModelMesh* mesh(getModelMesh());
-    GL::heBindVao(mesh->getVertexShadowArraysID());
-    glDrawElements(mesh->getDrawMode(), mesh->getNumIndices(), mesh->getIndexType(), 0);
-}
-
-void DefaultSingleDrawable::detachFromScene()
+void Drawable::detachFromScene()
 {
     HE_IF_ASSERT(m_Scene != nullptr, "Object not attached to scene")
     {
@@ -85,7 +110,7 @@ void DefaultSingleDrawable::detachFromScene()
     }
 }
 
-void DefaultSingleDrawable::attachToScene( Scene* scene )
+void Drawable::attachToScene( Scene* scene )
 {
     HE_IF_ASSERT(m_Scene == nullptr, "Object already attached to scene")
     {
@@ -94,43 +119,30 @@ void DefaultSingleDrawable::attachToScene( Scene* scene )
     }
 }
 
-void DefaultSingleDrawable::setScene( Scene* scene )
+void Drawable::calculateBound()
 {
-    m_Scene = scene;
-}
-
-Scene* DefaultSingleDrawable::getScene() const
-{
-    return m_Scene;
-}
-
-bool DefaultSingleDrawable::isAttachedToScene() const
-{
-    return m_Scene != nullptr;
-}
-
-const Bound& DefaultSingleDrawable::getBound() const
-{
-    return m_Bound;
-}
-
-void DefaultSingleDrawable::calculateBound()
-{
-    HE_ASSERT(getModelMesh() != nullptr, "ModelMesh is nullptr when getting bound");
-    HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octree insertion will happen!");
-    const AABB& aabb(getModelMesh()->getBound().getAABB());
-    mat44 world(getWorldMatrix());
-    AABB newAABB(world * aabb.getTopFrontLeft(),
-                 world * aabb.getBottomBackRight());
-    m_Bound.fromAABB(newAABB);
-}
-
-void DefaultSingleDrawable::setWorldMatrixDirty( uint8 cause )
-{
-    SingleDrawable::setWorldMatrixDirty(cause);
-    if (m_NeedsReevalute == false && isAttachedToScene())
+    if (checkFlag(eDrawableFlags_NeedsBoundUpdate))
     {
-        m_NeedsReevalute = true;
+        HE_IF_ASSERT(m_ModelMesh != nullptr, "ModelMesh is nullptr when getting bound")
+        HE_IF_ASSERT(m_ModelMesh->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octree insertion will happen!")
+        {
+            const AABB& aabb(m_ModelMesh->getBound().getAABB());
+            mat44 world(getWorldMatrix());
+            AABB newAABB(world * aabb.getTopFrontLeft(),
+                         world * aabb.getBottomBackRight());
+            m_Bound.fromAABB(newAABB);
+            clearFlag(eDrawableFlags_NeedsBoundUpdate);
+        }
+    }
+}
+
+void Drawable::setWorldMatrixDirty( const uint8 cause )
+{
+    Object3D::setWorldMatrixDirty(cause);
+    raiseFlag(eDrawableFlags_NeedsBoundUpdate);
+    if (checkFlag(eDrawableFlags_NeedsSceneReevaluate) == false && isAttachedToScene())
+    {
+        raiseFlag(eDrawableFlags_NeedsSceneReevaluate);
         m_Scene->doReevalute(this);
     }
 }

@@ -22,7 +22,7 @@
 #define _HE_SKYBOX_H_
 #pragma once
 
-#include "DefaultSingleDrawable.h"
+#include "Drawable.h"
 #include "TextureCube.h"
 
 namespace he {
@@ -33,7 +33,7 @@ class TextureCube;
 class ModelMesh;
 class Material;
 
-class SkyBox : public DefaultSingleDrawable
+class SkyBox : public Drawable
 {
 public:
     SkyBox();

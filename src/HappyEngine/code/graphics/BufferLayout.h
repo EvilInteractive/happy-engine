@@ -48,18 +48,16 @@ public:
         Usage_Other
     };
     BufferElement();
-    BufferElement(uint32 elementIndex, Type type, Usage usage, uint32 size, uint32 byteOffset);
+    BufferElement(const Type type, const Usage usage, const uint32 size, const uint32 byteOffset);
     virtual ~BufferElement() {}
     //default copy constructor and assignment operator are fine
 
-    uint32 getElementIndex() const;
     uint32 getSize() const; 
     uint32 getByteOffset() const; 
     Type getType() const;
     Usage getUsage() const;
 
 private:
-    uint32 m_ElementIndex;
     Type m_Type;
     Usage m_Usage;
     uint32 m_Size;

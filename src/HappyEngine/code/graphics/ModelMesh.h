@@ -72,13 +72,10 @@ public:
     void setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound);
     void setIndices(const void* const indices, const uint32 num, const IndexStride type, const MeshUsage usage);
     void setBones(const he::ObjectList<Bone>& boneList);
-    void setLoaded();
 
     // Getters
     inline const he::ObjectList<Bone>& getBones() const { return m_BoneList; }
 
-    inline VaoID getVertexArraysID() const { return m_VaoID[GL::s_CurrentContext->id]; } 
-    inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->id]; }
     inline uint32 getVBOID() const { return m_VertexVboID; }
     inline uint32 getVBOIndexID() const { return m_IndexVboID; }
     inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }
@@ -94,17 +91,10 @@ public:
     inline uint32 getIndexType() const { return m_IndexType; }
     inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
 
-    inline bool isLoaded() const { return m_IsLoaded; }
-
     inline const Bound& getBound() const { return m_Bound; }
 
-    // Events
-    void callbackOnceIfLoaded(const boost::function<void()>& callback);
 
 private:
-    void initVAO(GLContext* context);
-    void destroyVAO(GLContext* context);    
-
     struct ShadowSkinnedVertex
     {
         vec3 pos;
@@ -112,12 +102,6 @@ private:
         vec4 boneWeight;
     };
 
-
-    event0<void> Loaded;
-    he::Mutex m_LoadMutex;
-
-    VaoID m_VaoID[MAX_VERTEX_ARRAY_OBJECTS];
-    VaoID m_VaoShadowID[MAX_VERTEX_ARRAY_OBJECTS];
     uint32 m_VertexVboID;
     uint32 m_IndexVboID;
 
@@ -136,10 +120,7 @@ private:
     he::ObjectList<Bone> m_BoneList;
 
     MeshDrawMode m_DrawMode;
-
-    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
-    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
-
+    
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);
     ModelMesh& operator=(const ModelMesh&);

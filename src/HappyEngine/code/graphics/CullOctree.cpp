@@ -20,7 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "CullOctree.h"
-#include "IDrawable.h"
+#include "Drawable.h"
 #include "Frustum.h"
 #include "ICamera.h"
 #include "Cone.h"
@@ -46,7 +46,7 @@ CullOctree::~CullOctree()
     CullOctreeNodeFactory::getInstance()->releaseNode(m_Root);
 }
 
-void CullOctree::insert( IDrawable* obj )
+void CullOctree::insert( Drawable* obj )
 {
     HE_IF_ASSERT(obj->getNode() == nullptr, "Node already attached to tree")
     {
@@ -54,7 +54,7 @@ void CullOctree::insert( IDrawable* obj )
     }
 }
 
-void CullOctree::reevaluate( IDrawable* obj )
+void CullOctree::reevaluate( Drawable* obj )
 {
     HE_IF_ASSERT(obj->getNode() != nullptr, "Node is not attached to the tree")
     {
@@ -63,7 +63,7 @@ void CullOctree::reevaluate( IDrawable* obj )
     }
 }
 
-void CullOctree::remove( IDrawable* obj )
+void CullOctree::remove( Drawable* obj )
 {
     CullOctreeNode* node(obj->getNode());
     HE_IF_ASSERT(node != nullptr, "Obj is not attached to a tree")
@@ -76,12 +76,12 @@ void CullOctree::remove( IDrawable* obj )
     }
 }
 
-void CullOctree::draw( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction ) const
+void CullOctree::draw( const ICamera* camera, boost::function1<void, Drawable*> drawFunction ) const
 {
     m_Root->draw(camera, drawFunction, true);
 }
 
-void CullOctree::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
+void CullOctree::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, Drawable*> drawFunction, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     m_Root->drawAndCreateDebugMesh(camera, drawFunction, true, vertices, indices);
 }
@@ -155,7 +155,7 @@ void CullOctreeNode::createBounds( const vec3& pos, float strictSize )
     m_LooseBound.fromAABB(aabb);
 }
 
-CullOctreeNode* CullOctreeNode::rootInsert( IDrawable* drawable )
+CullOctreeNode* CullOctreeNode::rootInsert( Drawable* drawable )
 {
     const Bound& drawableBound(drawable->getBound());
     if (drawableBound.getSphere().getRadius() <= m_StrictBound.getSphere().getRadius() &&
@@ -183,7 +183,7 @@ CullOctreeNode* CullOctreeNode::rootInsert( IDrawable* drawable )
         return newRoot->rootInsert(drawable);
     }
 }
-void CullOctreeNode::insert( IDrawable* drawable )
+void CullOctreeNode::insert( Drawable* drawable )
 {
     if (m_ChildNodes[0] == nullptr)
         createChilds();
@@ -222,11 +222,11 @@ void CullOctreeNode::insert( IDrawable* drawable )
     if (m_NumObjectChilds == m_ObjectChildsCapacity)
     {
         m_ObjectChildsCapacity += 5;
-        m_ObjectChilds = static_cast<IDrawable**>(he_realloc(m_ObjectChilds, m_ObjectChildsCapacity));
+        m_ObjectChilds = static_cast<Drawable**>(he_realloc(m_ObjectChilds, m_ObjectChildsCapacity));
     }
     m_ObjectChilds[m_NumObjectChilds++] = drawable;
 }
-void CullOctreeNode::rinsert( IDrawable* drawable )
+void CullOctreeNode::rinsert( Drawable* drawable )
 {
     const Bound& drawableBound(drawable->getBound());
     if (drawableBound.getSphere().getRadius() <= m_StrictBound.getSphere().getRadius() &&
@@ -246,7 +246,7 @@ void CullOctreeNode::rinsert( IDrawable* drawable )
             rootInsert(drawable);
     }
 }
-void CullOctreeNode::reevaluate( IDrawable* drawable )
+void CullOctreeNode::reevaluate( Drawable* drawable )
 {
     const Bound& drawableBound(drawable->getBound());
     if (drawableBound.getSphere().getRadius() <= m_StrictBound.getSphere().getRadius() &&
@@ -271,11 +271,11 @@ void CullOctreeNode::reevaluate( IDrawable* drawable )
     }
 
 }
-void CullOctreeNode::remove( IDrawable* obj )
+void CullOctreeNode::remove( Drawable* obj )
 {
-    IDrawable** begin = m_ObjectChilds;
-    IDrawable** end = m_ObjectChilds + m_NumObjectChilds;
-    IDrawable** it = std::find(begin, end, obj);
+    Drawable** begin = m_ObjectChilds;
+    Drawable** end = m_ObjectChilds + m_NumObjectChilds;
+    Drawable** it = std::find(begin, end, obj);
     HE_IF_ASSERT(it != end, "Obj is not attached to this node")
     {
         *it = m_ObjectChilds[--m_NumObjectChilds];
@@ -316,7 +316,7 @@ void CullOctreeNode::createChilds( CullOctreeNode* child, uint8 xIndex, uint8 yI
     }
 }
 
-void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen ) const
+void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, Drawable*> drawFunction, bool checkChilderen ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const vec3& cameraPosition(camera->getPosition());
@@ -360,13 +360,13 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
     if (m_NumObjectChilds != 0)
     {
         HIERARCHICAL_PROFILE("draw objects");
-        IDrawable** begin = m_ObjectChilds;
-        IDrawable** end = m_ObjectChilds + m_NumObjectChilds;
+        Drawable** begin = m_ObjectChilds;
+        Drawable** end = m_ObjectChilds + m_NumObjectChilds;
         std::for_each(begin, end, drawFunction);
     }
 }
 
-void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
+void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, Drawable*> drawFunction, bool checkChilderen, 
     he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
@@ -412,8 +412,8 @@ void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
     }
     if (m_NumObjectChilds != 0)
     {
-        IDrawable** begin = m_ObjectChilds;
-        IDrawable** end = m_ObjectChilds + m_NumObjectChilds;
+        Drawable** begin = m_ObjectChilds;
+        Drawable** end = m_ObjectChilds + m_NumObjectChilds;
         std::for_each(begin, end, drawFunction);
     }
 }

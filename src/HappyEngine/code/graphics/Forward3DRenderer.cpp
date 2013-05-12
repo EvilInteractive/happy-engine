@@ -24,7 +24,7 @@
 #include "Forward3DRenderer.h"
 #include "RenderTarget.h"
 #include "CameraPerspective.h"
-#include "IDrawable.h"
+#include "Drawable.h"
 #include "View.h"
 #include "Scene.h"
 
@@ -47,7 +47,7 @@ Forward3DRenderer::Forward3DRenderer(const RenderPass pass, bool addSceneRendere
             HE_IF_ASSERT(m_Scene != nullptr, "Assign a scene to the renderer before rendering!")
             {
                 const DrawListContainer& drawList(m_Scene->getDrawList());
-                drawList.draw(blendFilter, camera, [&camera](IDrawable* drawable)
+                drawList.draw(blendFilter, camera, [&camera](Drawable* drawable)
                 {
                     drawable->applyMaterial(camera);
                     drawable->draw();

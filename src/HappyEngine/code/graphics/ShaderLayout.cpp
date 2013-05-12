@@ -24,22 +24,12 @@
 namespace he {
 namespace gfx {
 
-
-
-ShaderLayoutElement::ShaderLayoutElement(uint32 elementIndex, const he::String& nameInShader): m_ElementIndex(elementIndex), m_NameInShader(nameInShader)
+ShaderLayoutElement::ShaderLayoutElement(const he::String& nameInShader, const BufferElement::Usage usage)
+    : m_ElementIndex(UINT32_MAX)
+    , m_Usage(usage)
+    , m_NameInShader(nameInShader)
 {
 }
-
-uint32 ShaderLayoutElement::getElementIndex() const
-{
-    return m_ElementIndex;
-}
-const he::String& ShaderLayoutElement::getShaderVariableName() const
-{
-    return m_NameInShader;
-}
-
-
 
 ShaderLayout::ShaderLayout()
 {

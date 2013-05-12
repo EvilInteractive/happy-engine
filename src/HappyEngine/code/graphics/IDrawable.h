@@ -34,11 +34,11 @@ class Material;
 class CullOctreeNode;
 class Scene;
 
-class HAPPY_ENTRY IDrawable
+class HAPPY_ENTRY Drawable
 {
 public:
-    IDrawable(): m_Node(nullptr) {}
-    virtual ~IDrawable() {}
+    Drawable(): m_Node(nullptr) {}
+    virtual ~Drawable() {}
 
     virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
@@ -73,41 +73,6 @@ public:
 private:
     CullOctreeNode* m_Node;
 }; 
-
-class HAPPY_ENTRY SingleDrawable : public Object3D, public IDrawable
-{
-public:
-    virtual ~SingleDrawable() {}
-
-    virtual bool isSingle() const { return true; }
-    virtual bool isInstanced() const { return false; }
-    virtual bool isSkinned() const { return false; }
-
-}; 
-
-class HAPPY_ENTRY InstancedDrawable : public IDrawable
-{
-public:
-    virtual ~InstancedDrawable() {}
-    
-    virtual bool isSingle() const { return false; }
-    virtual bool isInstanced() const { return true; }
-    virtual bool isSkinned() const { return false; }
-
-};
-
-class HAPPY_ENTRY SkinnedDrawable : public Object3D, public IDrawable
-{
-public:
-    virtual ~SkinnedDrawable() {}
-
-    virtual const he::PrimitiveList<mat44>& getBoneTransforms() const = 0;
-    
-    virtual bool isSingle() const { return true; }
-    virtual bool isInstanced() const { return false; }
-    virtual bool isSkinned() const { return true; }
-
-};
 
 } } //end namespace
 
