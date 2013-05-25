@@ -51,9 +51,7 @@
 
 namespace he {
 namespace gfx {
-
-BufferLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = BufferLayout();
-
+    
 Deferred3DRenderer::Deferred3DRenderer(): 
             m_pQuad(nullptr), 
             m_ShowDebugTextures(false),
@@ -152,9 +150,7 @@ void Deferred3DRenderer::compileShaders()
     m_AmbDirIllShader  =  factory->get(factory->create());
 
     ShaderLayout shaderLayout;
-    shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
-
-    s_VertexLayoutFullscreenQuad.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    shaderLayout.addElement(ShaderLayoutElement("inPosition", BufferElement::Usage_Position));
 
     //////////////////////////////////////////////////////////////////////////
     ///                                 Load                               ///
@@ -288,9 +284,12 @@ void Deferred3DRenderer::render()
         //////////////////////////////////////////////////////////////////////////
         ///                             DRAW                                   ///
         //////////////////////////////////////////////////////////////////////////
-        m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](Drawable* d)
+        DrawContext context;
+        context.m_Camera = camera;
+        m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&context](Drawable* d)
         {
-            d->applyMaterial(camera);
+            context.m_CurrentDrawable = d;
+            d->getMaterial->applyNormal(context);
             d->draw();
         });
 

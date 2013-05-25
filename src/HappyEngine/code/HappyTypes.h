@@ -130,12 +130,13 @@ struct HAPPY_ENTRY Guid
     Guid();
     ~Guid() {}
     explicit Guid(const char* const guid);
-    Guid(const Guid& other);
-    Guid& operator=(const Guid& other); // 921E39A0-F8A8-4131-BB74-31968CF5A9E6
 
     he::String toString() const;
+    void toString(char* const charBuffer) const; // charBuffer must be at least s_CharbufferSize in size
 
     static Guid generateGuid();
+
+    static const int s_CharbufferSize = 37;
 
     bool operator==(const Guid& other) const;
     bool operator!=(const Guid& other) const;

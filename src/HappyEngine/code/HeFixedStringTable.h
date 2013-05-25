@@ -73,4 +73,12 @@ DEF_FS(prevLumMap)
 DEF_FS(hdrMap)
 DEF_FS(cubeMap)
 
+DEF_FS(Name)
+DEF_FS(AttributeType)
+DEF_FS(Attributes)
+DEF_FS(UniformType)
+DEF_FS(VariableType)
+DEF_FS(DefaultValue)
+DEF_FS(Uniforms)
+
 

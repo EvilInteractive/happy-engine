@@ -96,6 +96,7 @@ public:
     bool visit(const he::FixedString& key, vec3& value, const char* comment = NULL);
     bool visit(const he::FixedString& key, vec4& value, const char* comment = NULL);
     bool visit(const he::FixedString& key, Guid& value, const char* comment = NULL);
+    bool visit(const he::FixedString& key, he::FixedString& value, const char* comment = NULL);
 
     template<typename T>
     bool visitList(const he::FixedString& key, he::ObjectList<T>& list, const char* comment = NULL)
@@ -127,7 +128,7 @@ public:
         return internalVisitCustomList<he::PrimitiveList<T>, T>(key, list, callback, comment);
     }
     
-    template<typename EnumType, typename CastType>
+    template<typename CastType, typename EnumType>
     bool visitEnum(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL)
     {
         HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");

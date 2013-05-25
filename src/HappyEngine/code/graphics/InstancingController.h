@@ -32,98 +32,78 @@
 
 namespace he {
 namespace gfx {
-
-class IInstancible;
-class IInstanceFiller;
-class ModelMesh;
-class Material;
-class Scene;
-
-class InstancingController : public InstancedDrawable, public ge::ITickable
-{
-public:
-    InstancingController(const he::String& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
-    InstancingController(const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset);
-    virtual ~InstancingController();
-
-    uint32 addInstance(const IInstancible* pObj); //return id
-    uint32 addInstance(); //return id // only for manual mode
-    void removeInstance(uint32 id);
-    virtual uint32 getCount() const;
-
-    void addManualFiller(const IInstanceFiller* pFiller);
-    void removeManualFiller(const IInstanceFiller* pFiller);
-    
-    //////////////////////////////////////////////////////////////////////////
-    /// Drawable
-    //////////////////////////////////////////////////////////////////////////
-    virtual const Material* getMaterial() const;
-    virtual void applyMaterial(const ICamera* pCamera) const;
-    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
-
-    virtual void detachFromScene();
-    virtual void attachToScene(Scene* scene);
-    virtual void setScene(Scene* scene);
-    virtual Scene* getScene() const;
-    virtual bool isAttachedToScene() const;
-
-    virtual void calculateBound();
-    virtual const Bound& getBound() const { return m_Bound; }
-
-    virtual const ModelMesh* getModelMesh() const;
-
-    virtual bool getCastsShadow() const;
-    virtual void setCastsShadow(bool castShadow);
-
-    virtual void draw();
-    virtual void drawShadow();
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // ITickable
-    //////////////////////////////////////////////////////////////////////////
-    virtual void tick(float dTime);
-
-private:
-    void init();
-    void initVao(GLContext* context);
-    void destroyVao(GLContext* context);
-    void updateBuffer();
-
-    bool m_Dynamic, m_NeedsUpdate, m_ManualMode;
-
-    he::String m_Name;
-
-    details::InstancingBuffer m_CpuBuffer;
-    uint32  m_GpuBuffer;
-    uint32  m_BufferCapacity;
-
-    VaoID m_Vao[MAX_VERTEX_ARRAY_OBJECTS];
-    VaoID m_ShadowVao[MAX_VERTEX_ARRAY_OBJECTS];
-
-    BufferLayout m_InstancingLayout;
-    ModelMesh* m_ModelMesh;
-    Material* m_Material;
-
-    bool m_CastShadows;
-    Bound m_Bound;
-
-    SlotPContainer<const IInstancible*> m_Instances;
-
-    boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
-
-    he::PrimitiveList<const IInstanceFiller*> m_ManualCpuBufferFillers;
-
-    Scene* m_Scene;
-    bool m_AttachedToScene;
-
-    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
-    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
-
-    //Disable default copy constructor and default assignment operator
-    InstancingController(const InstancingController&);
-    InstancingController& operator=(const InstancingController&);
-};
+//
+//class IInstancible;
+//class IInstanceFiller;
+//class ModelMesh;
+//class Material;
+//class Scene;
+//
+//class InstancingController : public Drawable, public ge::ITickable
+//{
+//public:
+//    InstancingController(const he::String& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
+//    InstancingController(const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset);
+//    ~InstancingController();
+//
+//    uint32 addInstance(const IInstancible* obj); //return id
+//    uint32 addInstance(); //return id // only for manual mode
+//    void removeInstance(uint32 id);
+//    uint32 getCount() const;
+//
+//    void addManualFiller(const IInstanceFiller* pFiller);
+//    void removeManualFiller(const IInstanceFiller* pFiller);
+//    
+//    //////////////////////////////////////////////////////////////////////////
+//    /// Drawable
+//    //////////////////////////////////////////////////////////////////////////
+//    void calculateBound();
+//    
+//    //////////////////////////////////////////////////////////////////////////
+//    // ITickable
+//    //////////////////////////////////////////////////////////////////////////
+//    void tick(float dTime);
+//
+//private:
+//    void init();
+//    void initVao(GLContext* context);
+//    void destroyVao(GLContext* context);
+//    void updateBuffer();
+//
+//    bool m_Dynamic, m_NeedsUpdate, m_ManualMode;
+//
+//    he::String m_Name;
+//
+//    details::InstancingBuffer m_CpuBuffer;
+//    uint32  m_GpuBuffer;
+//    uint32  m_BufferCapacity;
+//
+//    VaoID m_Vao[MAX_VERTEX_ARRAY_OBJECTS];
+//    VaoID m_ShadowVao[MAX_VERTEX_ARRAY_OBJECTS];
+//
+//    BufferLayout m_InstancingLayout;
+//    ModelMesh* m_ModelMesh;
+//    Material* m_Material;
+//
+//    bool m_CastShadows;
+//    Bound m_Bound;
+//
+//    SlotPContainer<const IInstancible*> m_Instances;
+//
+//    boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
+//
+//    he::PrimitiveList<const IInstanceFiller*> m_ManualCpuBufferFillers;
+//
+//    Scene* m_Scene;
+//    bool m_AttachedToScene;
+//
+//    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
+//    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
+//
+//    //Disable default copy constructor and default assignment operator
+//    InstancingController(const InstancingController&);
+//    InstancingController& operator=(const InstancingController&);
+//};
 
 } } //end namespace
 

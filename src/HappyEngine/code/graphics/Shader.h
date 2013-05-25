@@ -86,14 +86,14 @@ private:
     ShaderVariable& operator=(const ShaderVariable&);
 };
 
-class UniformBuffer
+class SharedUniformBuffer
 {
 friend class Shader;
 private:
     static uint32 s_UniformBufferCount;
 
 public:
-    UniformBuffer(size_t sizeInBytes): m_BufferId(s_UniformBufferCount++), m_BufferSize(sizeInBytes)
+    explicit SharedUniformBuffer(const size_t sizeInBytes): m_BufferId(s_UniformBufferCount++), m_BufferSize(sizeInBytes)
     {
         void* m_Buffer = he_malloc(sizeInBytes);
         he_memset(m_Buffer, 0, sizeInBytes);
@@ -148,9 +148,9 @@ public:
     UniformBuffer* setBuffer(uint32 id); //create new buffer
     void setBuffer(uint32 id, UniformBuffer* pBuffer); //used to share buffer
 
-    void setShaderVar(uint32 id, int value) const;
-    void setShaderVar(uint32 id, uint32 value) const;
-    void setShaderVar(uint32 id, float value) const;
+    void setShaderVar(uint32 id, const int value) const;
+    void setShaderVar(uint32 id, const uint32 value) const;
+    void setShaderVar(uint32 id, const float value) const;
     void setShaderVar(uint32 id, const vec2& vec) const;
     void setShaderVar(uint32 id, const vec3& vec) const;
     void setShaderVar(uint32 id, const vec4& vec) const;

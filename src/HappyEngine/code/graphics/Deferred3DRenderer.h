@@ -132,8 +132,6 @@ public:
     virtual void draw2D(gui::Canvas2D* canvas);
 
 private:
-    static BufferLayout s_VertexLayoutFullscreenQuad;
-
     void onViewResized();
     void onSettingChanged();
     void compileShaders();

@@ -39,9 +39,8 @@ Guid::Guid( const char* const guid )
     HE_COMPILE_ASSERT(sizeof(uint32) == 4, "uint32 must be 4 byte big");
     HE_COMPILE_ASSERT(sizeof(uint16) == 2, "uint16 must be 2 byte big");
     HE_COMPILE_ASSERT(sizeof(Guid) == 16, "Error guid must be 16 byte");
-    if (strlen(guid) == 36)
+    if (strlen(guid) == s_CharbufferSize - 1) // -1 == \0 terminator
     {
-        // last value will overflow in m_Data6
         sscanf(guid, "%8x-%4x-%4x-%4x-%4x%8x", &m_Data1, &m_Data2, &m_Data3, &m_Data4, &m_Data5, &m_Data6);
     }
     else
@@ -50,22 +49,16 @@ Guid::Guid( const char* const guid )
     }
 }
 
-Guid::Guid( const Guid& other )
-{
-    he_memcpy(this, &other, sizeof(Guid));
-}
-
-Guid& Guid::operator=( const Guid& other )
-{
-    he_memcpy(this, &other, sizeof(Guid));
-    return *this;
-}
-
 he::String Guid::toString() const
 {
-    char buff[37];
-    sprintf(buff, "%08x-%04x-%04x-%04x-%04x%08x", m_Data1, m_Data2, m_Data3, m_Data4, m_Data5, m_Data6);
+    char buff[s_CharbufferSize];
+    toString(buff);
     return buff;
+}
+
+void Guid::toString(char* const charBuffer) const
+{
+    sprintf(charBuffer, "%08x-%04x-%04x-%04x-%04x%08x", m_Data1, m_Data2, m_Data3, m_Data4, m_Data5, m_Data6);
 }
 
 bool Guid::operator==( const Guid& other ) const

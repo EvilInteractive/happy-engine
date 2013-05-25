@@ -254,17 +254,17 @@ uint32 Shader::getShaderSamplerId(const he::FixedString& id)
     }
 }
 
-void Shader::setShaderVar(uint32 id, int value) const
+void Shader::setShaderVar(uint32 id, const int value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1i(id, value);
 }
-void Shader::setShaderVar(uint32 id, uint32 value) const
+void Shader::setShaderVar(uint32 id, const uint32 value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1ui(id, value);
 }
-void Shader::setShaderVar(uint32 id, float value) const
+void Shader::setShaderVar(uint32 id, const float value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1f(id, value);

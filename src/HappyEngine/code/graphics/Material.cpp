@@ -168,7 +168,7 @@ void Material::setSkinnedShader( Shader* const shader )
     m_Shader[eShaderType_Skinned] = shader;
 }
 
-void Material::setInstancedShader( Shader* const shader, const BufferLayout& instancingLayout )
+void Material::setInstancedShader( Shader* const shader, const BufferLayout& /*instancingLayout*/ )
 {
     shader->instantiate();
     HE_ASSERT(m_Shader[eShaderType_Instanced] == nullptr, "Instanced shader already initialized!");

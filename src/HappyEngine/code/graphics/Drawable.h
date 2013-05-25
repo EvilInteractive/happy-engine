@@ -45,7 +45,7 @@ class HAPPY_ENTRY Drawable: public he::Object3D
     };
 public:
     Drawable();
-    ~Drawable();
+    virtual ~Drawable();
 
     void setModelMesh(ModelMesh* const mesh);
     void setMaterial(Material* const material);
@@ -57,7 +57,7 @@ public:
     bool getCastsShadow() const { return checkFlag(eDrawableFlags_CastShadow); }
     void setCastsShadow(const bool castShadow) { castShadow? raiseFlag(eDrawableFlags_CastShadow) : clearFlag(eDrawableFlags_CastShadow); }
 
-    void calculateBound();
+    virtual void calculateBound();
     HE_FORCEINLINE const Bound& getBound() const { return m_Bound; }
     
     void detachFromScene();

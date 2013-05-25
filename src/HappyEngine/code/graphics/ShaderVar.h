@@ -28,59 +28,99 @@
 
 namespace he {
 namespace gfx {
-    
-enum ShaderVarType
+
+enum EShaderVariableType
 {
-    ShaderVarType_WorldViewProjection,
-    ShaderVarType_ViewProjection,
-    ShaderVarType_View,
-    ShaderVarType_World,
-    ShaderVarType_WorldView,
-    ShaderVarType_WorldPosition,
-    ShaderVarType_BoneTransforms,
+    eShaderVariableType_ObjectProperty,
+    eShaderVariableType_GlobalProperty,
+    eShaderVariableType_UserProperty,
 
-    ShaderVarType_AmbientColor,
-    ShaderVarType_DirectionalColor,
-    ShaderVarType_DirectionalDirection,
-    ShaderVarType_NearFar,
-
-    ShaderVarType_User
+    eShaderVariableType_Invalid
 };
+
+enum EShaderAttributePropertyType
+{   // Only add to the back, or you will corrupt save files!
+    eShaderAttributePropertyType_Position,
+    eShaderAttributePropertyType_TextureCoordiante,
+    eShaderAttributePropertyType_Normal,
+    eShaderAttributePropertyType_Tangent,
+    eShaderAttributePropertyType_Color,
+    eShaderAttributePropertyType_BoneIndices,
+    eShaderAttributePropertyType_BoneWeights
+};
+
+enum EShaderObjectPropertyType
+{   // Only add to the back, or you will corrupt save files!
+    eShaderObjectPropertyType_WorldViewProjection,
+    eShaderObjectPropertyType_World,
+    eShaderObjectPropertyType_WorldView,
+    eShaderObjectPropertyType_WorldPosition,
+    eShaderObjectPropertyType_BoneTransforms
+};  
+
+enum EShaderGlobalPropertyType
+{   // Only add to the back, or you will corrupt save files!
+    eShaderGlobalPropertyType_ViewProjection,
+    eShaderGlobalPropertyType_View,
+    eShaderGlobalPropertyType_AmbientColor,
+    eShaderGlobalPropertyType_DirectionalColor,
+    eShaderGlobalPropertyType_DirectionalDirection,
+    eShaderGlobalPropertyType_NearFar
+};
+
+enum EShaderUserPropertyType
+{   // Only add to the back, or you will corrupt save files!
+    eShaderUserPropertyType_UserFloat,
+    eShaderUserPropertyType_UserFloat2,
+    eShaderUserPropertyType_UserFloat3,
+    eShaderUserPropertyType_UserFloat4,
+    eShaderUserPropertyType_Texture1D,
+    eShaderUserPropertyType_Texture2D,
+    eShaderUserPropertyType_TextureCube,
+};
+
 class ShaderVar
 {
 public:
-    ShaderVar(uint32 id, const he::FixedString& name, ShaderVarType type): m_Id(id), m_Type(type), m_Name(name) {}
     virtual ~ShaderVar() {}
 
-    virtual void assignData(Shader* shader) = 0;
     virtual ShaderVar* copy() = 0;
+    virtual void apply(Shader* const shader) = 0;
+    virtual EShaderVariableType getType() = 0;
 
-    virtual ShaderVarType getType() { return m_Type; }
-    uint32 getId() const { return m_Id; }
+    const uint32 getId() const { return m_Id; }
     const he::FixedString& getName() const { return m_Name; }
 
 protected:
-    uint32 m_Id;
+    explicit ShaderVar(const he::FixedString& name): m_Dirty(false), m_Id(UINT8_MAX), m_Name(name) {}
+
+    bool m_Dirty;
+    uint8 m_Id;
     he::FixedString m_Name;
-    ShaderVarType m_Type;
 };
+
 class ShaderGlobalVar : public ShaderVar
 {
 public:
-    ShaderGlobalVar(uint32 id, const he::FixedString& name, ShaderVarType type): ShaderVar(id ,name, type)
+    ShaderGlobalVar(const he::FixedString& name, const EShaderGlobalPropertyType type): ShaderVar(name)
     {
     }
-    virtual ~ShaderGlobalVar() {}
+    ~ShaderGlobalVar() {}
 
-    virtual void assignData(Shader* /*shader*/)
+    void apply(Shader* const shader)
     {
+        if (m_Dirty)
+        {
+
+        }
     }
 
-    virtual ShaderVar* copy()
+    ShaderVar* copy()
     {
         return NEW ShaderGlobalVar(m_Id, m_Name, m_Type);
     }
 };
+
 template<typename T>
 class ShaderUserVar : public ShaderVar
 {
@@ -88,17 +128,17 @@ public:
     ShaderUserVar(uint32 id, const he::FixedString& name, const T& data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
     }
-    virtual ~ShaderUserVar() {}
+    ~ShaderUserVar() {}
 
     const T& getData() const { return m_Data; }
     void setData(const T& data) { m_Data = data; }
 
-    virtual void assignData(Shader* shader)
+    void assignData(Shader* shader)
     {
         shader->setShaderVar(m_Id, m_Data);
     }
 
-    virtual ShaderVar* copy()
+    ShaderVar* copy()
     {
         return NEW ShaderUserVar<T>(m_Id, m_Name, m_Data);
     }
@@ -114,7 +154,7 @@ public:
     {
         m_Data->instantiate();
     }
-    virtual ~ShaderUserVar()
+    ~ShaderUserVar()
     {
         m_Data->release();
     }
@@ -127,12 +167,12 @@ public:
         m_Data->instantiate();
     }
 
-    virtual void assignData(Shader* shader)
+    void assignData(Shader* shader)
     {
         shader->setShaderVar(m_Id, m_Data);
     }
 
-    virtual ShaderVar* copy()
+    ShaderVar* copy()
     {
         return NEW ShaderUserVar<const Texture2D*>(m_Id, m_Name, m_Data);
     }
@@ -148,7 +188,7 @@ public:
     {
         m_Data->instantiate();
     }
-    virtual ~ShaderUserVar()
+    ~ShaderUserVar()
     {
         m_Data->release();
     }
@@ -161,12 +201,12 @@ public:
         m_Data->instantiate();
     }
 
-    virtual void assignData(Shader* shader)
+    void assignData(Shader* shader)
     {
         shader->setShaderVar(m_Id, m_Data);
     }
 
-    virtual ShaderVar* copy()
+    ShaderVar* copy()
     {
         return NEW ShaderUserVar<const TextureCube*>(m_Id, m_Name, m_Data);
     }
