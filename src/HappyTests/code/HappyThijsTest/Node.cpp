@@ -96,7 +96,7 @@ void Node::CalculateHeuristic( const Node& goal )
 
 	int xScore = abs(GetCoords().xPos-goalX);
 	int yScore = abs(GetCoords().yPos-goalY);
-	SetHeuristic(10* (xScore + yScore));
+	SetHeuristic(1* (xScore + yScore));
 }
 
 } //end namespace
