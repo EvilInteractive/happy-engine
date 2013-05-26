@@ -42,11 +42,11 @@ public:
     void store();
 
     /* DATA */
-    ObjectHandle renderTextureHandle;
-    uint32 frameBufferId;
+    ObjectHandle m_RenderTextureHandle;
+    uint32 m_FrameBufferId;
     //uint32 depthRenderBufferId;
-    GLContext* glContext;
-    vec2 size;
+    GLContext* m_GlContext;
+    vec2 m_Size;
 };
 
 }} //end namespace
