@@ -186,7 +186,7 @@ void GraphicsEngine::draw()
                     _this->setActiveView(view);
                     view->draw();
                 });
-
+                window->finishRendering();
                 window->present();
             }
         }

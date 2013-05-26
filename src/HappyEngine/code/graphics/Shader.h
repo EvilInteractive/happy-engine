@@ -121,6 +121,9 @@ private:
     size_t m_BufferSize;
 };
 
+class Shader;
+typedef ResourceFactory<Shader> ShaderFactory;
+
 class Shader : public Resource<Shader>
 {
 public:

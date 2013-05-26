@@ -80,7 +80,7 @@ Canvas2DRendererGL::~Canvas2DRendererGL()
 /* GENERAL */
 void Canvas2DRendererGL::resize()
 {
-    m_Size = m_CanvasBuffer->size;
+    m_Size = m_CanvasBuffer->m_Size;
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_Size.x, 0.0f, m_Size.y, 0.0f, 1.0f);
 }
 
@@ -106,7 +106,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     if (text.getTextSize() > 0)
     {
         HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-        HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+        HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
         HE_ASSERT(text.getFont() != nullptr, "Text has no font set!");
         HE_ASSERT(text.getFont()->isPreCached() == true, "Font needs to be precached!");
@@ -210,7 +210,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         GL::heSetDepthRead(false);
         GL::heSetDepthWrite(false);
     
-        GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+        GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
         GL::heBindVao(m_DynamicFontMesh->getVertexArraysID());
 
         glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
@@ -292,7 +292,7 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
                                     const vec2& newDimensions,
                                     const RectI regionToDraw)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
@@ -336,14 +336,14 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
     
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }
 void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
                                     const vec2& size)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
     if (sprite->getFlags() & gui::Sprite::UNIFORM_SCALE)
     {
@@ -381,7 +381,7 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
         GL::heSetDepthRead(false);
         GL::heSetDepthWrite(false);
     
-        GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+        GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
         GL::heBindVao(m_TextureQuad->getVertexArraysID());
         glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
     }
@@ -392,7 +392,7 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
                                     const vec2& newDimensions,
                                     const RectI regionToDraw)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
@@ -400,11 +400,11 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
 
     if (regionToDraw != RectI(0,0,0,0))
     {
-        tcScale.x = static_cast<float>(regionToDraw.width / tex2D->getWidth());
-        tcScale.y = static_cast<float>(regionToDraw.height / tex2D->getHeight());
+        tcScale.x = static_cast<float>(regionToDraw.width) / tex2D->getWidth();
+        tcScale.y = static_cast<float>(regionToDraw.height) / tex2D->getHeight();
 
-        tcOffset.x = static_cast<float>(regionToDraw.x / tex2D->getWidth());
-        tcOffset.y = static_cast<float>(1 - (regionToDraw.y / tex2D->getHeight()) - tcScale.y);
+        tcOffset.x = static_cast<float>(regionToDraw.x) / tex2D->getWidth();
+        tcOffset.y = 1.0f - (static_cast<float>(regionToDraw.y) / tex2D->getHeight()) - tcScale.y;
     }
 
     if (newDimensions != vec2(0.0f,0.0f))
@@ -441,14 +441,13 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
     
-    GL::heBindFbo(0); // backbuffer
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }
 
 void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
@@ -457,7 +456,7 @@ void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
     s_ColorEffect->begin();
     s_ColorEffect->setColor(m_Color);
@@ -473,7 +472,7 @@ void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)
 
 void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
@@ -482,7 +481,7 @@ void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
     s_ColorEffect->begin();
     s_ColorEffect->setColor(m_Color);
@@ -498,7 +497,7 @@ void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
 
 void Canvas2DRendererGL::strokeRect(const RectI& rect)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
@@ -507,7 +506,7 @@ void Canvas2DRendererGL::strokeRect(const RectI& rect)
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
     s_ColorEffect->begin();
     s_ColorEffect->setColor(m_Color);
@@ -527,7 +526,7 @@ void Canvas2DRendererGL::strokeRect(const RectI& rect)
 
 void Canvas2DRendererGL::fillRect(const RectI& rect)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
@@ -536,7 +535,7 @@ void Canvas2DRendererGL::fillRect(const RectI& rect)
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
     s_ColorEffect->begin();
     s_ColorEffect->setColor(m_Color);
@@ -556,7 +555,7 @@ void Canvas2DRendererGL::fillRect(const RectI& rect)
 
 void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
@@ -565,7 +564,7 @@ void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
     s_ColorEffect->begin();
     s_ColorEffect->setColor(m_Color);
@@ -584,8 +583,8 @@ void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
 /* INTERNAL */
 void Canvas2DRendererGL::init()
 {
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
-    m_Size = m_CanvasBuffer->size;
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    m_Size = m_CanvasBuffer->m_Size;
 
     if (s_ColorEffect == nullptr)
     {

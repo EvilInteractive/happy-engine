@@ -112,7 +112,6 @@ private:
     Texture2D* m_ColorRenderMap;
     Texture2D* m_NormalDepthRenderMap;
     RenderTarget* m_IntermediateRenderTarget;
-    RenderTarget* m_OutputRenderTarget;
     
     // Post
     PostProcesser* m_PostProcesser;

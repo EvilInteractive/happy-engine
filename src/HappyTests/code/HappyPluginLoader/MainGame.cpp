@@ -32,6 +32,8 @@
 #include <RenderSettings.h>
 #include <Renderer2D.h>
 #include <View.h>
+#include <Text.h>
+#include <ContentManager.h>
 
 namespace ht {
 
@@ -53,6 +55,12 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
+    he::gfx::RenderSettings settings;
+    settings.enableDeferred = false;
+    settings.enablePost = false;
+    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1, 1));
+    settings.stereoSetting = he::gfx::StereoSetting_OculusRift;
+
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
     m_Window = graphicsEngine->createWindow();
 
@@ -60,6 +68,8 @@ void MainGame::init()
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 800);
     m_Window->setWindowTitle("HappyPluginTest");
+    m_Window->setFullscreen(true);
+    m_Window->setOculusRiftEnabled(settings.stereoSetting == he::gfx::StereoSetting_OculusRift);
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create();
@@ -76,11 +86,6 @@ void MainGame::init()
         m_Plugin->onLoadLevel(he::Path(""));
     }
 
-    he::gfx::RenderSettings settings;
-    settings.enableDeferred = false;
-    settings.enablePost = false;
-    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1, 1));
-    settings.stereoSetting = he::gfx::StereoSetting_OculusRift;
     m_View = graphicsEngine->createView();
     m_View->setWindow(m_Window);
     m_DebugRenderer = NEW he::gfx::Renderer2D();
@@ -91,9 +96,10 @@ void MainGame::init()
     CONSOLE->attachToRenderer(m_DebugRenderer);
     m_FpsGraph = NEW he::tools::FPSGraph();
     m_FpsGraph->setPos(he::vec2(8, 8));
-    m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);
+    m_FpsGraph->setType(he::tools::FPSGraph::Type_TextOnly);
     addToTickList(m_FpsGraph);
     m_DebugRenderer->attachToRender(m_FpsGraph);
+    m_DebugRenderer->attachToRender(this);
 }
 
 void MainGame::destroy()
@@ -125,6 +131,7 @@ void MainGame::destroy()
     removeFromTickList(m_FpsGraph);
     delete m_FpsGraph;
     m_FpsGraph = nullptr;
+    m_DebugRenderer->detachFromRender(this);
 
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
     graphicsEngine->removeView(m_View);
@@ -133,6 +140,10 @@ void MainGame::destroy()
     m_DebugRenderer = nullptr;
     graphicsEngine->removeWindow(m_Window);
     m_Window = nullptr;
+}
+
+void MainGame::draw2D( he::gui::Canvas2D* /*canvas*/ )
+{
 }
 
 } //end namespace

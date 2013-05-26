@@ -96,7 +96,7 @@ void Renderer2D::removeWebView(gui::WebView* webview)
     }
 }
 
-void Renderer2D::render()
+void Renderer2D::preRender()
 {
     he::PrimitiveList<std::pair<uint32,uint16> > orderList(m_DrawablesDepth.size());
 
@@ -121,7 +121,10 @@ void Renderer2D::render()
     {
         m_Drawables[p.first]->draw2D(m_DefaultCanvas);
     });
+}
 
+void Renderer2D::render()
+{
     m_RenderTarget->prepareForRendering();
     m_DefaultCanvas->draw();
 }

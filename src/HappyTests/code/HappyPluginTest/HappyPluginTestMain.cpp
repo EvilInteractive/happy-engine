@@ -33,14 +33,21 @@
 #include <Entity.h>
 #include <ModelComponent.h>
 #include <LightManager.h>
+#include <Font.h>
+#include <OculusRiftBinding.h>
+#include <ControlsManager.h>
+#include <Canvas2D.h>
+#include <Renderer2D.h>
 
 #include "FlyCamera.h"
+#include "VRCamera.h"
 
 ht::HappyPluginTestMain::HappyPluginTestMain()
     : m_View(nullptr)
     , m_Scene(nullptr)
     , m_RenderPipeline(nullptr)
     , m_Camera(nullptr)
+    , m_DebugText(nullptr)
 {
 
 }
@@ -57,15 +64,17 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_View = graphicsEngine->createView();
     m_Scene = graphicsEngine->createScene();
 
+    he::ct::ContentManager* contentMan(CONTENT);
+
     he::gfx::RenderSettings settings;
-    settings.stereoSetting = he::gfx::StereoSetting_None;
+    settings.stereoSetting = he::gfx::StereoSetting_OculusRift;
     settings.cameraSettings.setRelativeViewport(relViewport);
-    CONTENT->setRenderSettings(settings);
+    contentMan->setRenderSettings(settings);
 
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
-    m_Camera = NEW FlyCamera();
+    m_Camera = NEW VRCamera();
     m_Camera->setNearFarPlane(0.1f, 500.0f);
 
     m_View->setWindow(window, he::gfx::View::eViewInsertMode_First);
@@ -75,10 +84,18 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     he::gfx::LightManager* lightMan(m_Scene->getLightManager());
     lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 2.0f);
     lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.5f);
+
+    he::gui::Font* const debugFont(contentMan->getDefaultFont(16));
+    m_DebugText = NEW he::gui::Text();
+    m_DebugText->setFont(debugFont);
+    debugFont->release();
+    m_RenderPipeline->get2DRenderer()->attachToRender(this);
 }
 
 void ht::HappyPluginTestMain::terminate()
 {
+    m_RenderPipeline->get2DRenderer()->detachFromRender(this);
+
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
     graphicsEngine->removeView(m_View);
     m_View = nullptr;
@@ -86,6 +103,8 @@ void ht::HappyPluginTestMain::terminate()
     m_Scene = nullptr;
     delete m_Camera;
     m_Camera = nullptr;
+    delete m_DebugText;
+    m_DebugText = nullptr;
 
     delete m_RenderPipeline;
     m_RenderPipeline = nullptr;
@@ -151,5 +170,20 @@ he::gfx::ICamera* ht::HappyPluginTestMain::getActiveCamera() const
 void ht::HappyPluginTestMain::setActiveCamera( he::gfx::ICamera* const camera )
 {
     m_View->setCamera(camera);
+}
+
+void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
+{
+    m_DebugText->clear();
+
+    he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
+    if (device)
+    {
+        const he::vec3 pitchYawRoll(device->getPitchYawRoll());
+        m_DebugText->addTextExt("Pitch: %.2f\nYaw: %.2f\nRoll: %.2f\n", he::toDegrees(pitchYawRoll.x), he::toDegrees(pitchYawRoll.y), he::toDegrees(pitchYawRoll.z));
+
+    }
+
+    canvas->fillText(*m_DebugText, he::vec2(200, 200));
 }
 

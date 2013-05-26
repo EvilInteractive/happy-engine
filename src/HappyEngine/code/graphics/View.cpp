@@ -70,7 +70,6 @@ View::View():
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_IntermediateRenderTarget(nullptr),
-    m_OutputRenderTarget(nullptr),
     m_Camera(nullptr)
 {
     if (m_Window != nullptr)
@@ -88,7 +87,6 @@ View::~View()
     GAME->removeFromTickList(this);
 
     delete m_IntermediateRenderTarget;
-    delete m_OutputRenderTarget;
     delete m_PostProcesser;
 
     m_ColorRenderMap->release();
@@ -130,8 +128,6 @@ void View::init( const RenderSettings& settings )
 
         m_IntermediateRenderTarget = NEW RenderTarget(m_Window->getContext());
     }
-    m_OutputRenderTarget = NEW RenderTarget(m_Window->getContext());
-
     uint32 width(m_Viewport.width), 
         height(m_Viewport.height);
 
@@ -155,22 +151,23 @@ void View::init( const RenderSettings& settings )
         m_IntermediateRenderTarget->setDepthTarget();
         m_IntermediateRenderTarget->init();
     }
-    m_OutputRenderTarget->init();
+
+    const RenderTarget* const outputRT(m_Window->getRenderTarget());
 
     m_PrePostRenderPlugins.sort(&rendererSorter);
     m_PostPostRenderPlugins.sort(&rendererSorter);
-    m_PrePostRenderPlugins.forEach([this, &settings](IRenderer* renderer)
+    m_PrePostRenderPlugins.forEach([this, &settings, outputRT](IRenderer* renderer)
     {
-        renderer->init(this, settings.enablePost? m_IntermediateRenderTarget : m_OutputRenderTarget);
+        renderer->init(this, settings.enablePost? m_IntermediateRenderTarget : outputRT);
     });
     if (m_Settings.enablePost)
     {
         m_PostProcesser = NEW PostProcesser();
-        m_PostProcesser->init(this, m_OutputRenderTarget, m_IntermediateRenderTarget);
+        m_PostProcesser->init(this, outputRT, m_IntermediateRenderTarget);
     }
-    m_PostPostRenderPlugins.forEach([this](IRenderer* renderer)
+    m_PostPostRenderPlugins.forEach([this, outputRT](IRenderer* renderer)
     {
-        renderer->init(this, m_OutputRenderTarget);
+        renderer->init(this, outputRT);
     });
 
 }
@@ -327,19 +324,25 @@ void View::draw()
 {
     HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
 
+    m_PrePostRenderPlugins.forEach([](IRenderer* const renderer){ renderer->preRender(); });
+    m_PostPostRenderPlugins.forEach([](IRenderer* const renderer){ renderer->preRender(); });
+
     if (m_Settings.stereoSetting == StereoSetting_OculusRift)
     {
         RectI newViewport(m_Viewport);
 
         io::OculusRiftDevice* const oculus(CONTROLS->getOculusRiftBinding()->getDevice(0));
 
-        const float eyeShift(oculus->getInterpupillaryDistance() * 0.5f);
-        const float projectedEyeShift(1.0f - 4.0f * eyeShift / oculus->getScreenWidth());
+        const float aspectratio(m_Viewport.width / static_cast<float>(m_Viewport.height));
+        oculus->prepareForRendering(aspectratio);
+
+        const float eyeShift(oculus->getEyeShift());
+        const float projectedEyeShift(oculus->getProjectedEyeShift());
 
         if (m_Camera != nullptr)
         {
-            m_Camera->setFov(2.0f * atan(oculus->getScreenHeight() / (2.0f * oculus->getEyeToScreenDistance())));
-            m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
+            m_Camera->setFov(oculus->getFov());
+            m_Camera->setAspectRatio(aspectratio);
             m_Camera->setEyeShift(eyeShift, projectedEyeShift);
         }
         render();
@@ -383,7 +386,7 @@ void View::render()
     if (m_IntermediateRenderTarget != nullptr)
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
-        m_OutputRenderTarget->prepareForRendering();
+        m_Window->getRenderTarget()->prepareForRendering();
         glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     }
 

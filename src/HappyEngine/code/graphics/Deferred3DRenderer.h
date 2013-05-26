@@ -128,6 +128,7 @@ public:
     virtual RenderPass getRenderPass() const { return RenderPass_Opac; }
     virtual uint8 getRenderPriority() const { return 50; }
 
+    virtual void preRender() {}
     virtual void render();
     virtual void draw2D(gui::Canvas2D* canvas);
 

@@ -126,11 +126,8 @@ void Canvas2D::clear()
 
 void Canvas2D::draw()
 {
-    gfx::Texture2D* tex2D(ResourceFactory<gfx::Texture2D>::getInstance()->get(m_BufferData->renderTextureHandle));
-
+    gfx::Texture2D* tex2D(ResourceFactory<gfx::Texture2D>::getInstance()->get(m_BufferData->m_RenderTextureHandle));
     m_RendererGL->blitImage(tex2D, m_Position, true);
-
-    clear();
 }
 
 void Canvas2D::fillText(const Text& text, const vec2& pos)

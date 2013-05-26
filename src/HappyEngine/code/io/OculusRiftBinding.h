@@ -43,9 +43,29 @@ public:
     float getEyeToScreenDistance() const;
     float getLensSeparationDistance() const;
     float getInterpupillaryDistance() const;
+    vec4 getWarpParams() const;
+    float getDistortionScale() const { return m_DistortionScale; }
+    float getDistortionShift() const { return m_DistortionShift; }
+    float getEyeShift() const { return m_EyeShift; }
+    float getProjectedEyeShift() const { return m_ProjectedEyeShift; }
+    float getFov() const { return m_Fov; }
+    vec3 getPitchYawRoll() const;
+
+    float distortionFunction(float r) const;
+
+    void prepareForRendering(const float aspectRatio);
 
 private:
+    void calculateDistortionShift();
+    void calculateDistortionScale();
+
     DeviceContext* m_Context;
+    float m_EyeShift;
+    float m_ProjectedEyeShift;
+    float m_Fov;
+    float m_EyeAspectRatio;
+    float m_DistortionShift;
+    float m_DistortionScale;
     
     //Disable default copy constructor and default assignment operator
     OculusRiftDevice(const OculusRiftDevice&);

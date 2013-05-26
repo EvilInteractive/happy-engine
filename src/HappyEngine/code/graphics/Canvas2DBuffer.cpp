@@ -27,52 +27,52 @@
 namespace he {
 namespace gfx {
 
-Canvas2DBuffer::Canvas2DBuffer() :  frameBufferId(UINT32_MAX),
+Canvas2DBuffer::Canvas2DBuffer() :  m_FrameBufferId(UINT32_MAX),
                                     //depthRenderBufferId(UINT32_MAX),
-                                    glContext(nullptr),
-                                    renderTextureHandle(ObjectHandle::unassigned),
-                                    size(vec2(0,0))
+                                    m_GlContext(nullptr),
+                                    m_RenderTextureHandle(ObjectHandle::unassigned),
+                                    m_Size(vec2(0,0))
 
 {
 }
 
 Canvas2DBuffer::~Canvas2DBuffer()
 {
-    GRAPHICS->setActiveContext(glContext);
+    GRAPHICS->setActiveContext(m_GlContext);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    ResourceFactory<Texture2D>::getInstance()->release(renderTextureHandle);
+    ResourceFactory<Texture2D>::getInstance()->release(m_RenderTextureHandle);
 
     /*if (depthRenderBufferId != UINT32_MAX)
         glDeleteRenderbuffers(1, &depthRenderBufferId);*/
-    if (frameBufferId != UINT32_MAX)
-        glDeleteFramebuffers(1, &frameBufferId);
+    if (m_FrameBufferId != UINT32_MAX)
+        glDeleteFramebuffers(1, &m_FrameBufferId);
 
-    glContext = nullptr;
-    frameBufferId = UINT32_MAX;
+    m_GlContext = nullptr;
+    m_FrameBufferId = UINT32_MAX;
     //depthRenderBufferId = UINT32_MAX;
 }
 
 /* GENERAL */
 void Canvas2DBuffer::init(GLContext* context, const vec2& size)
 {
-    this->size = size;
+    this->m_Size = size;
 
-    glContext = context;
-    GRAPHICS->setActiveContext(glContext);
+    m_GlContext = context;
+    GRAPHICS->setActiveContext(m_GlContext);
 
     // output texture
-    renderTextureHandle = ResourceFactory<Texture2D>::getInstance()->create();
-    Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(renderTextureHandle));
+    m_RenderTextureHandle = ResourceFactory<Texture2D>::getInstance()->create();
+    Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(m_RenderTextureHandle));
 
     texture->init(TextureWrapType_Clamp, TextureFilterType_Linear, TextureFormat_RGBA8, false);
     texture->setData(static_cast<uint32>(size.x), static_cast<uint32>(size.y), nullptr, TextureBufferLayout_RGBA, TextureBufferType_Byte, 0);
     texture->setLoadFinished();
 
     // FBO & RB
-    glGenFramebuffers(1, &frameBufferId);
-    GL::heBindFbo(frameBufferId);
+    glGenFramebuffers(1, &m_FrameBufferId);
+    GL::heBindFbo(m_FrameBufferId);
 
     // color
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->getID(), 0);
@@ -87,18 +87,19 @@ void Canvas2DBuffer::init(GLContext* context, const vec2& size)
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         LOG(LogType_ProgrammerAssert, "Failed to init Canvas2DBuffer!");
-        ResourceFactory<Texture2D>::getInstance()->release(renderTextureHandle);
-        glContext = nullptr;
-        frameBufferId = UINT32_MAX;
+        ResourceFactory<Texture2D>::getInstance()->release(m_RenderTextureHandle);
+        m_GlContext = nullptr;
+        m_FrameBufferId = UINT32_MAX;
         //depthRenderBufferId = UINT32_MAX;
     }
 }
 
 void Canvas2DBuffer::clear()
 {
-    HE_ASSERT(glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
-    GL::heBindFbo(frameBufferId);
+    GL::heSetViewport(RectI(0, 0, static_cast<int>(m_Size.x), static_cast<int>(m_Size.y)));
+    GL::heBindFbo(m_FrameBufferId);
     GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, buffers);
     GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
@@ -108,12 +109,12 @@ void Canvas2DBuffer::clear()
 
 void Canvas2DBuffer::resize(const vec2& size)
 {
-    GRAPHICS->setActiveContext(glContext);
+    GRAPHICS->setActiveContext(m_GlContext);
 
-    Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(renderTextureHandle));
+    Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(m_RenderTextureHandle));
     texture->setData(static_cast<uint32>(size.x), static_cast<uint32>(size.y), nullptr, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);
 
-    this->size = size;
+    this->m_Size = size;
 
     //glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBufferId);
     //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y));
@@ -121,12 +122,12 @@ void Canvas2DBuffer::resize(const vec2& size)
 
 void Canvas2DBuffer::store()
 {
-    GRAPHICS->setActiveContext(glContext);
+    GRAPHICS->setActiveContext(m_GlContext);
 
     //glDeleteRenderbuffers(1, &depthRenderBufferId);
-    glDeleteFramebuffers(1, &frameBufferId);
+    glDeleteFramebuffers(1, &m_FrameBufferId);
 
-    frameBufferId = UINT32_MAX;
+    m_FrameBufferId = UINT32_MAX;
     //depthRenderBufferId = UINT32_MAX;
 }
 
