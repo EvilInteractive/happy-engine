@@ -41,7 +41,7 @@ void AStar::init()
 	SetStart(1,1);
 	SetGoal(9,5);
 
-	calculate();
+	Calculate();
 }
 
 void AStar::draw2D( he::gui::Canvas2D* canvas )
@@ -49,34 +49,22 @@ void AStar::draw2D( he::gui::Canvas2D* canvas )
 	m_Grid->draw2D(canvas);
 }
 
-void AStar::calculate()
+void AStar::Calculate()
 {
-	processNode(m_StartIndex);
+	ProcessNode(m_StartIndex);
 
 	while (!m_OpenNodes.contains(m_GoalIndex))
 	{
-		int totalScore = INT_MAX;
-		int nextNodeIndex;
-		m_OpenNodes.forEach([&](int nodeIndex)
-		{
-			Node& node = m_Grid->getNodeByIndex(nodeIndex);
-			if (node.GetTotalScore() <= totalScore)
-			{
-				nextNodeIndex = node.GetIndex();
-				totalScore = node.GetTotalScore();
-			}
-		});
-
-		Node& nextNode = m_Grid->getNodeByIndex(nextNodeIndex);
-		m_OpenNodes.remove(nextNode.GetIndex());
+		Node& nextNode = m_Grid->getNodeByIndex(m_OpenNodes[0]);
 		nextNode.SetState(Node::NODE_PATH);
+		m_OpenNodes.clear();
 		m_ClosedNodes.add(nextNode.GetIndex());
 
-		processNode(nextNode.GetIndex());
+		ProcessNode(nextNode.GetIndex());
 	}
 }
 
-void AStar::processNode( const int nodeIndex )
+void AStar::ProcessNode( const int nodeIndex )
 {
 	Node& nextNode = m_Grid->getNodeByIndex(nodeIndex);
 	for (int i = 0; i < ht::Grid::NeighBour_Max; ++i)
@@ -103,12 +91,8 @@ void AStar::processNode( const int nodeIndex )
 		}
 	}
 
-	m_OpenNodes.remove(nodeIndex);
 	m_ClosedNodes.add(nodeIndex);
-	if (nextNode.GetState() != Node::NODE_START)
-		nextNode.SetState(Node::NODE_PATH);
-
-	//m_OpenNodes.sort(AStar::nodeSorter);
+	m_OpenNodes.sort(boost::bind(&ht::AStar::nodeSorter, this, _1, _2));
 }
 
 void AStar::SetGoal( const int column, const int row )
@@ -130,10 +114,7 @@ int AStar::nodeSorter( const int a, const int b )
 	Node& nodeA = m_Grid->getNodeByIndex(a);
 	Node& nodeB = m_Grid->getNodeByIndex(b);
 
-	if (nodeA.GetTotalScore() < nodeB.GetTotalScore())
-		return -1;
-	else
-		return 1;
+	return nodeA.GetTotalScore() < nodeB.GetTotalScore();
 }
 
 } //end namespace
