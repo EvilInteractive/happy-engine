@@ -184,6 +184,6 @@ void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
 
     }
 
-    canvas->fillText(*m_DebugText, he::vec2(200, 200));
+    canvas->fillText(*m_DebugText, he::vec2(300, 400));
 }
 

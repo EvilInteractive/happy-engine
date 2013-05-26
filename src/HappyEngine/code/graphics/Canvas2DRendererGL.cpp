@@ -33,6 +33,7 @@
 #include "Font.h"
 #include "Sprite.h"
 #include "Mesh2D.h"
+#include "ICamera.h"
 
 namespace he {
 namespace gfx {
@@ -324,7 +325,7 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     s_TextureEffect->begin();
     s_TextureEffect->setWorldMatrix(m_OrthographicMatrix * world);
     s_TextureEffect->setDiffuseMap(tex2D);
-    s_TextureEffect->setAlpha(1.0f);
+    s_TextureEffect->setAlpha(m_Color.a());
     s_TextureEffect->setTCOffset(tcOffset);
     s_TextureEffect->setTCScale(tcScale);
     s_TextureEffect->setDepth(0.5f);
@@ -443,6 +444,40 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
     
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+}
+
+void Canvas2DRendererGL::blitImage3D( const Texture2D* tex2D, const gfx::ICamera* const camera )
+{
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+
+    vec2 tcOffset(0.0f, 0.0f);
+    vec2 tcScale(1.0f, -1.0f);
+    float aspect(static_cast<float>(tex2D->getWidth() / static_cast<float>(tex2D->getHeight())));
+
+    const vec3 position(camera->getPosition() + camera->getLook() * 6.0f); // 6 meters in front of camera
+    const mat44 world(mat44::createTranslation(position) * mat44::createBillboard(camera));
+
+    s_TextureEffect->begin();
+    s_TextureEffect->setWorldMatrix(camera->getViewProjection() * mat44::createTranslation(position) * mat44::createBillboard(camera) * mat44::createScale(vec3(8.0f, 8.0f / aspect, 1.0f)));
+    s_TextureEffect->setDiffuseMap(tex2D);
+    s_TextureEffect->setAlpha(1.0f);
+    s_TextureEffect->setTCOffset(tcOffset);
+    s_TextureEffect->setTCScale(tcScale);
+    s_TextureEffect->setDepth(0.5f);
+
+    GL::heBlendEnabled(true);
+    GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
+    GL::heBlendEquation(BlendEquation_Add);
+
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
+
+    GL::heSetCullFace(true);
+
+    GL::heBindVao(m_TextureQuad->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+
+    GL::heSetCullFace(false);
 }
 
 void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)

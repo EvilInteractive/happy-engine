@@ -126,7 +126,14 @@ void Renderer2D::preRender()
 void Renderer2D::render()
 {
     m_RenderTarget->prepareForRendering();
-    m_DefaultCanvas->draw();
+    if (m_View->getSettings().stereoSetting == StereoSetting_None)
+    {
+        m_DefaultCanvas->draw();
+    }
+    else if (m_View->getCamera() != nullptr)
+    {
+        m_DefaultCanvas->draw3D(m_View->getCamera());
+    }
 }
 
 void Renderer2D::init( View* view, const RenderTarget* target )

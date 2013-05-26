@@ -175,9 +175,9 @@ public:
     {
         switch (messageType)
         {
+        case OVR::Log_DebugText:
         case OVR::Log_Text: he::tools::Logger::getInstance()->log(LogType_Info, __FILE__, __HE_FUNCTION__, __LINE__, fmt, argList); break;
         case OVR::Log_Error:
-        case OVR::Log_DebugText:
         case OVR::Log_Debug: he::tools::Logger::getInstance()->log(LogType_Error, __FILE__, __HE_FUNCTION__, __LINE__, fmt, argList); break;
 
         case OVR::Log_Assert: he::tools::Logger::getInstance()->log(LogType_ProgrammerAssert, __FILE__, __HE_FUNCTION__, __LINE__, fmt, argList); break;
