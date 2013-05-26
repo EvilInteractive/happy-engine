@@ -1,6 +1,10 @@
 set (HAPPYTHIJSTEST_CODE_FILES_SRC_FILTER    
         main.cpp
-        MainGame.cpp            MainGame.h)
+        MainGame.cpp            MainGame.h
+		AStar.cpp				AStar.h
+		Grid.cpp				Grid.h
+		Level.cpp				Level.h
+		Node.cpp				Node.h)
 
 set (HAPPYTHIJSTEST_CODE_FILES_PCH_FILTER    
         HappyThijsTestPCH.cpp     HappyThijsTestPCH.h)
