@@ -23,7 +23,6 @@
 #pragma once
 
 #include "AssetContainer.h"
-#include "RenderSettings.h"
 
 namespace he {
 namespace ct {
@@ -32,17 +31,13 @@ class MaterialLoader
 {
 public:
     MaterialLoader();
-    virtual ~MaterialLoader();
+    ~MaterialLoader();
     
     ObjectHandle load(const he::String& path);
-
-    void setRenderSettings(const gfx::RenderSettings& settings);
-
+    
 private:
     AssetContainer<ObjectHandle> m_AssetContainer;
-
-    gfx::RenderSettings m_RenderSettings;
-
+    
     //Disable default copy constructor and default assignment operator
     MaterialLoader(const MaterialLoader&);
     MaterialLoader& operator=(const MaterialLoader&);

@@ -38,6 +38,7 @@
 #include <ControlsManager.h>
 #include <Canvas2D.h>
 #include <Renderer2D.h>
+#include <GlobalSettings.h>
 
 #include "FlyCamera.h"
 #include "VRCamera.h"
@@ -48,6 +49,7 @@ ht::HappyPluginTestMain::HappyPluginTestMain()
     , m_RenderPipeline(nullptr)
     , m_Camera(nullptr)
     , m_DebugText(nullptr)
+    , m_VREnabled(false)
 {
 
 }
@@ -66,19 +68,26 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
 
     he::ct::ContentManager* contentMan(CONTENT);
 
-    he::gfx::RenderSettings settings;
-    settings.stereoSetting = he::gfx::StereoSetting_OculusRift;
-    settings.cameraSettings.setRelativeViewport(relViewport);
-    contentMan->setRenderSettings(settings);
+    he::gfx::CameraSettings cameraSettings;
+    cameraSettings.setRelativeViewport(relViewport);
 
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
-    m_RenderPipeline->init(m_View, m_Scene, settings);
+    m_RenderPipeline->init(m_View, m_Scene);
 
-    m_Camera = NEW VRCamera();
+    m_VREnabled = he::GlobalSettings::getInstance()->getRenderSettings().stereoSetting == he::gfx::StereoSetting_OculusRift;
+
+    if (m_VREnabled)
+    {
+        m_Camera = NEW VRCamera();
+    }
+    else
+    {
+        m_Camera = NEW FlyCamera();
+    }
     m_Camera->setNearFarPlane(0.1f, 500.0f);
 
     m_View->setWindow(window, he::gfx::View::eViewInsertMode_First);
-    m_View->init(settings);
+    m_View->init(cameraSettings);
     m_View->setCamera(m_Camera);
 
     he::gfx::LightManager* lightMan(m_Scene->getLightManager());
@@ -174,16 +183,17 @@ void ht::HappyPluginTestMain::setActiveCamera( he::gfx::ICamera* const camera )
 
 void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
 {
-    m_DebugText->clear();
-
-    he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
-    if (device)
+    if (m_VREnabled == true)
     {
-        const he::vec3 pitchYawRoll(device->getPitchYawRoll());
-        m_DebugText->addTextExt("Pitch: %.2f\nYaw: %.2f\nRoll: %.2f\n", he::toDegrees(pitchYawRoll.x), he::toDegrees(pitchYawRoll.y), he::toDegrees(pitchYawRoll.z));
+        m_DebugText->clear();
+        he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
+        if (device)
+        {
+            const he::vec3 pitchYawRoll(device->getPitchYawRoll());
+            m_DebugText->addTextExt("Pitch: %.2f\nYaw: %.2f\nRoll: %.2f\n", he::toDegrees(pitchYawRoll.x), he::toDegrees(pitchYawRoll.y), he::toDegrees(pitchYawRoll.z));
 
+        }
+        canvas->fillText(*m_DebugText, he::vec2(300, 400));
     }
-
-    canvas->fillText(*m_DebugText, he::vec2(300, 400));
 }
 

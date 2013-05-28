@@ -25,6 +25,7 @@
 #include "HappyEngine.h"
 #include "BufferLayout.h"
 #include "Shader.h"
+#include "GlobalSettings.h"
 
 namespace he {
 namespace ct {
@@ -54,24 +55,20 @@ ObjectHandle ShaderLoader::load(const he::String& vsPath, const he::String& fsPa
     }
     else
     {
+        const gfx::RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
         gfx::Shader* shader(factory->get(factory->create()));
         std::set<he::String> defines;
-        if (m_RenderSettings.lightingSettings.enableShadows)
+        if (settings.lightingSettings.enableShadows)
             defines.insert("SHADOWS");
-        if (m_RenderSettings.lightingSettings.enableSpecular)
+        if (settings.lightingSettings.enableSpecular)
             defines.insert("SPECULAR");
-        if (m_RenderSettings.lightingSettings.enableNormalMap)
+        if (settings.lightingSettings.enableNormalMap)
             defines.insert("NORMALMAP");
 
         shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
         m_AssetContainer.addAsset(key, shader->getHandle());
         return shader->getHandle();
     }
-}
-
-void ShaderLoader::setRenderSettings( const gfx::RenderSettings& settings )
-{
-    m_RenderSettings = settings;
 }
 
 } } //end namespace

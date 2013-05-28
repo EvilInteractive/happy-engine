@@ -28,6 +28,7 @@ addFilter(CODE_SRCS src code/
             FixedStringMap.h
             HeFixedStringTable.h
             HeFixedStrings.h        HeFixedStrings.cpp
+            GlobalSettings.h        GlobalSettings.cpp
             GlobalStringTable.h     GlobalStringTable.cpp
             OpenGL.h                OpenGL.cpp
             RTTI.h

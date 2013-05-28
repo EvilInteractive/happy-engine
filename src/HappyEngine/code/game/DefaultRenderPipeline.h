@@ -30,7 +30,6 @@ namespace gfx {
     class ShapeRenderer;
     class Scene;
     class Picker;
-    struct RenderSettings;
 }
 namespace ge {
 
@@ -40,7 +39,7 @@ public:
     DefaultRenderPipeline();
     virtual ~DefaultRenderPipeline();
 
-    void init(gfx::View* const view, gfx::Scene* const scene, const gfx::RenderSettings& settings);
+    void init(gfx::View* const view, gfx::Scene* const scene);
 
     gfx::IRenderer* getOpacRenderer() const { return m_OpacRenderer; }
     gfx::Forward3DRenderer* getTransparentRenderer() const { return m_TransparentRenderer; }

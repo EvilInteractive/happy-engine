@@ -44,6 +44,7 @@
 #include "EntityManager.h"
 #include "SystemStats.h"
 #include "GlobalStringTable.h"
+#include "GlobalSettings.h"
 #include <HappyMessageBox.h>
 
 #pragma warning(disable:4100)
@@ -91,10 +92,12 @@ void StaticDataManager::init()
     tools::MaterialGeneratorNodeFactory::sdmInit();
     ge::PickingManager::sdmInit();
     ge::EntityManager::sdmInit();
+    GlobalSettings::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    GlobalSettings::sdmDestroy();
     ge::EntityManager::sdmDestroy();
     ge::PickingManager::sdmDestroy();
     tools::MaterialGeneratorNodeFactory::sdmDestroy();

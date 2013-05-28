@@ -27,7 +27,6 @@
 #include "IRenderer.h"
 #include "DrawListContainer.h"
 #include "BufferLayout.h"
-#include "RenderSettings.h"
 #include "IDrawable2D.h"
 
 namespace he {
@@ -136,14 +135,12 @@ private:
     static BufferLayout s_VertexLayoutFullscreenQuad;
 
     void onViewResized();
-    void onSettingChanged();
+    void initFromSettings();
     void compileShaders();
 
     void postAmbDirIllLight();
     void postPointLights();
     void postSpotLights();
-
-
 
     //////////////////////////////////////////////////////////////////////////
     ///                              Draw Data                             ///
@@ -186,7 +183,7 @@ private:
     //////////////////////////////////////////////////////////////////////////
     ///                              Settings                              ///
     ////////////////////////////////////////////////////////////////////////// 
-    LightingSettings m_Settings;
+    bool m_SpecularEnabled;
     bool m_ShowDebugTextures;
 
     

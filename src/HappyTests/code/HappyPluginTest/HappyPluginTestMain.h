@@ -78,6 +78,8 @@ private:
     
     he::gui::Text* m_DebugText;
 
+    bool m_VREnabled;
+
     /* DEFAULT COPY & ASSIGNMENT */
     HappyPluginTestMain(const HappyPluginTestMain&);
     HappyPluginTestMain& operator=(const HappyPluginTestMain&);

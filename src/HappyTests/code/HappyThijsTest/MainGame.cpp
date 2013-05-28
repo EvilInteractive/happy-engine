@@ -33,6 +33,7 @@
 
 #include "View.h"
 #include "Window.h"
+#include "GlobalSettings.h"
 
 namespace ht {
 
@@ -63,6 +64,10 @@ void MainGame::destroy()
 }
 void MainGame::init()
 {
+    he::GlobalSettings* const globalSettings(he::GlobalSettings::getInstance());
+    globalSettings->load(he::Path("settings.cfg"));
+    globalSettings->save(he::Path("settings.cfg"));
+
     m_View = GRAPHICS->createView();
     m_Window = GRAPHICS->createWindow();
 
@@ -74,15 +79,14 @@ void MainGame::init()
     m_Window->Closed += quitHandler;
     m_Window->create();
 
-    he::gfx::RenderSettings settings;
-    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
-    CONTENT->setRenderSettings(settings);
+    he::gfx::CameraSettings cameraSettings;
+    cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
 
     m_Renderer = NEW he::gfx::Renderer2D;
     m_View->addRenderPlugin(m_Renderer);
 
     m_View->setWindow(m_Window);
-    m_View->init(settings);
+    m_View->init(cameraSettings);
 
     m_Renderer->attachToRender(this);
 

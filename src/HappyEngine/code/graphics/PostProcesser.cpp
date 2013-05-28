@@ -30,6 +30,7 @@
 #include "Canvas2D.h"
 #include "View.h"
 #include "Window.h"
+#include "GlobalSettings.h"
 
 #include "ModelMesh.h"
 #include "RenderTarget.h"
@@ -50,7 +51,9 @@ PostProcesser::PostProcesser():
     m_DebugRenderer(nullptr),
     m_ToneMapUniformBuffer(nullptr),
     m_WriteRenderTarget(nullptr),
-    m_ReadRenderTarget(nullptr)
+    m_ReadRenderTarget(nullptr),
+    m_AOEnabled(false),
+    m_FogEnabled(false)
 {
 }
 
@@ -68,8 +71,6 @@ PostProcesser::~PostProcesser()
 
     if (m_Quad != nullptr)
         m_Quad->release();
-   
-//    m_View->get2DRenderer()->detachFromRender(this);
 }
 
 
@@ -80,59 +81,42 @@ void PostProcesser::init( View* view, const RenderTarget* writeTarget, const Ren
         m_WriteRenderTarget = writeTarget;
         m_ReadRenderTarget = readTarget;
         m_View = view;
-
-        eventCallback0<void> handler([&](){ onSettingsChanged(m_View->getSettings(), false); });
-        m_View->SettingsChanged += handler;  // this is safe because PostProcessor is a member of View
-                
+                        
         m_Quad = CONTENT->getFullscreenQuad();
         
-        onSettingsChanged(m_View->getSettings(), true);
+        initFromSettings();
     }
 }
 
-void PostProcesser::onSettingsChanged( const RenderSettings& settings, bool force )
-{
-    bool recompileShader(force || settings.postSettings.shaderSettings != m_Settings.postSettings.shaderSettings);
-    
-    delete m_ToneMapUniformBuffer;
+void PostProcesser::initFromSettings()
+{    
+    const RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
+
     if (settings.postSettings.shaderSettings.enableHDR)
     {
         m_ToneMapUniformBuffer = NEW UniformBuffer(sizeof(ToneMapData));
     }
 
-    if (force || settings.postSettings.shaderSettings.enableBloom != m_Settings.postSettings.shaderSettings.enableBloom)
+    if (settings.postSettings.shaderSettings.enableBloom)
     {
-        delete m_Bloom;
-        if (settings.postSettings.shaderSettings.enableBloom)
-        {
-            m_Bloom = NEW Bloom();
-            m_Bloom->init(m_View, settings.postSettings.shaderSettings.enableHDR, m_ToneMapUniformBuffer);
-        }
-        else
-            m_Bloom = nullptr;
+        m_Bloom = NEW Bloom();
+        m_Bloom->init(m_View, settings.postSettings.shaderSettings.enableHDR, m_ToneMapUniformBuffer);
     }
-    if (force || settings.postSettings.shaderSettings.enableHDR != m_Settings.postSettings.shaderSettings.enableHDR)
+    if (settings.postSettings.shaderSettings.enableHDR)
     {
-        delete m_AutoExposure;
-        if (settings.postSettings.shaderSettings.enableHDR)
-        {
-            m_AutoExposure = NEW AutoExposure();
-            GRAPHICS->setActiveContext(m_View->getWindow()->getContext());
-            m_AutoExposure->init(settings.postSettings.hdrSettings);
-        }
-        else 
-            m_AutoExposure = nullptr;
+        m_AutoExposure = NEW AutoExposure();
+        GRAPHICS->setActiveContext(m_View->getWindow()->getContext());
+        m_AutoExposure->init(settings.postSettings.hdrSettings);
     }
-
-    m_Settings = settings;
-
-    if (recompileShader == true)
-        compileShader();
+    m_AOEnabled = settings.postSettings.shaderSettings.enableAO;
+    m_FogEnabled = settings.postSettings.shaderSettings.enableFog;
+    compileShader();
 }
 void PostProcesser::compileShader()
 {
     std::set<he::String> postDefines;
-    const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
+    const RenderSettings& renderSettings(GlobalSettings::getInstance()->getRenderSettings());
+    const PostSettings::ShaderSettings& settings(renderSettings.postSettings.shaderSettings);
 
     if (settings.enableBloom)
         postDefines.insert("BLOOM");
@@ -204,8 +188,7 @@ void PostProcesser::draw()
     const Texture2D* colorMap(m_ReadRenderTarget->getTextureTarget(0));
     const Texture2D* normalDepthMap(m_ReadRenderTarget->getTextureTarget(1));
 
-    const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
-    if (settings.enableHDR)
+    if (nullptr != m_AutoExposure)
     {
         m_ToneMapUniformBuffer->uploadData(&m_ToneMapData, sizeof(ToneMapData));
         PROFILER_BEGIN("Auto Exposure");
@@ -214,10 +197,10 @@ void PostProcesser::draw()
     }
     
     GL::heBlendEnabled(false);
-    if (settings.enableBloom)
+    if (nullptr != m_Bloom)
     {
         PROFILER_BEGIN("Bloom");
-        if (settings.enableHDR)
+        if (nullptr != m_AutoExposure)
             m_Bloom->render(colorMap, m_AutoExposure->getLuminanceMap());
         else
             m_Bloom->render(colorMap);
@@ -234,22 +217,22 @@ void PostProcesser::draw()
     m_PostShader->bind();
 
     m_PostShader->setShaderVar(m_PostShaderVars[PV_ColorMap], colorMap);
-    if (settings.enableBloom)
+    if (nullptr != m_Bloom)
     {
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom0], m_Bloom->getBloom(0));
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom1], m_Bloom->getBloom(1));
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom2], m_Bloom->getBloom(2));
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom3], m_Bloom->getBloom(3));
     }
-    if (settings.enableHDR)
+    if (nullptr != m_AutoExposure)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_LumMap], m_AutoExposure->getLuminanceMap());
 
-    if (settings.enableAO || settings.enableFog)
+    if (m_AOEnabled || m_FogEnabled)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalDepthMap], normalDepthMap); 
-    if (settings.enableFog)
+    if (m_FogEnabled)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
 
-    if (settings.enableAO)
+    if (m_AOEnabled)
     {
         m_PostShader->setShaderVar(m_PostShaderVars[PV_SSAORandomNormals], m_RandomNormals);
         m_PostShader->setShaderVar(m_PostShaderVars[PV_ViewPortSize], 
@@ -271,7 +254,7 @@ void PostProcesser::draw2D(gui::Canvas2D* canvas)
         canvas->blitImage(m_Bloom->getBloom(1), vec2(12 * 2 + width * 1, height), false, vec2(width, height));
         canvas->blitImage(m_Bloom->getBloom(2), vec2(12 * 3 + width * 2, height), false, vec2(width, height));
         canvas->blitImage(m_Bloom->getBloom(3), vec2(12 * 4 + width * 3, height), false, vec2(width, height));
-        if (m_Settings.postSettings.shaderSettings.enableHDR)
+        if (nullptr != m_AutoExposure)
             canvas->drawImage(m_AutoExposure->getLuminanceMap(), vec2(12 * 5 + width * 4, 12), vec2(height, height));
     }
 }

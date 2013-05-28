@@ -39,6 +39,7 @@
 #include "SkyBox.h"
 #include "ControlsManager.h"
 #include "OculusRiftBinding.h"
+#include "GlobalSettings.h"
 
 namespace he {
 namespace gfx {
@@ -70,7 +71,8 @@ View::View():
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_IntermediateRenderTarget(nullptr),
-    m_Camera(nullptr)
+    m_Camera(nullptr),
+    m_Stereo(StereoSetting_None)
 {
     if (m_Window != nullptr)
         m_Window->Resized -= m_WindowResizedCallback;
@@ -93,10 +95,11 @@ View::~View()
     m_NormalDepthRenderMap->release();
 }
 
-void View::init( const RenderSettings& settings )
+void View::init( const CameraSettings& cameraSettings, const bool forceDisablePost)
 {
-    m_Settings = settings;
-    setStereo(m_Settings.stereoSetting, true);
+    m_CameraSettings = cameraSettings;
+    const gfx::RenderSettings& renderSettings(GlobalSettings::getInstance()->getRenderSettings());
+    setStereo(renderSettings.stereoSetting, true);
 
     HE_ASSERT(ViewportSizeChanged.empty() == true, "Do not register events before View::init"); // we want to be first in line
     he::eventCallback0<void> updateCameraAspect([this]()
@@ -107,11 +110,12 @@ void View::init( const RenderSettings& settings )
         }
     });
     ViewportSizeChanged += updateCameraAspect;
-    if (settings.enablePost)
+    const bool postEnabled(renderSettings.enablePost && forceDisablePost == false && m_PrePostRenderPlugins.empty() == false);
+    if (postEnabled)
     {
-        he::eventCallback0<void> resizeCallback([&]()
+        he::eventCallback0<void> resizeCallback([this, postEnabled]()
         {
-            if (m_Settings.enablePost)
+            if (postEnabled)
             {
                 // Color
                 m_ColorRenderMap->setData(m_Viewport.width, m_Viewport.height, 0,
@@ -131,12 +135,11 @@ void View::init( const RenderSettings& settings )
     uint32 width(m_Viewport.width), 
         height(m_Viewport.height);
 
-    m_Settings.postSettings.shaderSettings.enableHDR = m_Settings.postSettings.shaderSettings.enableHDR && m_Settings.enablePost;
-    if (m_Settings.enablePost)
+    if (postEnabled)
     {
         // Color
         m_ColorRenderMap->init(gfx::TextureWrapType_Clamp,  gfx::TextureFilterType_Nearest,
-            m_Settings.postSettings.shaderSettings.enableHDR ? gfx::TextureFormat_RGBA16F : gfx::TextureFormat_RGBA8, false);
+            renderSettings.postSettings.shaderSettings.enableHDR ? gfx::TextureFormat_RGBA16F : gfx::TextureFormat_RGBA8, false);
         m_ColorRenderMap->setData(width, height, 0,
             gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0 );
 
@@ -156,11 +159,11 @@ void View::init( const RenderSettings& settings )
 
     m_PrePostRenderPlugins.sort(&rendererSorter);
     m_PostPostRenderPlugins.sort(&rendererSorter);
-    m_PrePostRenderPlugins.forEach([this, &settings, outputRT](IRenderer* renderer)
+    m_PrePostRenderPlugins.forEach([this, outputRT, postEnabled](IRenderer* renderer)
     {
-        renderer->init(this, settings.enablePost? m_IntermediateRenderTarget : outputRT);
+        renderer->init(this, postEnabled? m_IntermediateRenderTarget : outputRT);
     });
-    if (m_Settings.enablePost)
+    if (postEnabled)
     {
         m_PostProcesser = NEW PostProcesser();
         m_PostProcesser->init(this, outputRT, m_IntermediateRenderTarget);
@@ -174,52 +177,50 @@ void View::init( const RenderSettings& settings )
 //  Setters  //////////////////////////////////////////////////////////////
 void View::setStereo( const StereoSetting stereo, const bool force )
 {
-    if (stereo != m_Settings.stereoSetting || force)
+    if (stereo != m_Stereo || force)
     {
         switch (stereo)
         {
             case StereoSetting_None:
             {
-                const CameraSettings& camSettings(m_Settings.cameraSettings);
                 if (m_Camera != nullptr)
                 {
                     m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
                     if (m_Camera->getCameraType() == eCameraType_Perspective)
                     {
                         m_Camera->setEyeShift(0.0f, 0.0f);
-                        m_Camera->setFov(camSettings.fov);
+                        m_Camera->setFov(m_CameraSettings.fov);
                     }
                 }
-                if (camSettings.useRelativeViewport)
+                if (m_CameraSettings.useRelativeViewport)
                 {
                     setRelativeViewport(RectF(
-                        camSettings.viewport.relativeViewport[0], 
-                        camSettings.viewport.relativeViewport[1], 
-                        camSettings.viewport.relativeViewport[2], 
-                        camSettings.viewport.relativeViewport[3]));
+                        m_CameraSettings.viewport.relativeViewport[0], 
+                        m_CameraSettings.viewport.relativeViewport[1], 
+                        m_CameraSettings.viewport.relativeViewport[2], 
+                        m_CameraSettings.viewport.relativeViewport[3]));
                 }
                 else
                 {
                     setAbsoluteViewport(RectI(
-                        camSettings.viewport.absoluteViewport[0], 
-                        camSettings.viewport.absoluteViewport[1], 
-                        camSettings.viewport.absoluteViewport[2], 
-                        camSettings.viewport.absoluteViewport[3]));
+                        m_CameraSettings.viewport.absoluteViewport[0], 
+                        m_CameraSettings.viewport.absoluteViewport[1], 
+                        m_CameraSettings.viewport.absoluteViewport[2], 
+                        m_CameraSettings.viewport.absoluteViewport[3]));
                 }
             } break;
             case StereoSetting_OculusRift:
             {
-                const CameraSettings& camSettings(m_Settings.cameraSettings);
-                HE_ASSERT(camSettings.useRelativeViewport == true, "When using the oculus we must have a relative viewport!");
+                HE_ASSERT(m_CameraSettings.useRelativeViewport == true, "When using the oculus we must have a relative viewport!");
                 // Oculus can only work if we go fullscreen! ( + horizontal splitscreen)
-                setRelativeViewport(RectF(0.0f, camSettings.viewport.relativeViewport[1], 0.5f, camSettings.viewport.relativeViewport[3]));
+                setRelativeViewport(RectF(0.0f, m_CameraSettings.viewport.relativeViewport[1], 0.5f, m_CameraSettings.viewport.relativeViewport[3]));
             } break;
             default:
             {
                 LOG(LogType_ProgrammerAssert, "Unknown stereo mode");
             }
         }
-        m_Settings.stereoSetting = stereo;
+        m_Stereo = stereo;
     }
 }
 
@@ -327,7 +328,7 @@ void View::draw()
     m_PrePostRenderPlugins.forEach([](IRenderer* const renderer){ renderer->preRender(); });
     m_PostPostRenderPlugins.forEach([](IRenderer* const renderer){ renderer->preRender(); });
 
-    if (m_Settings.stereoSetting == StereoSetting_OculusRift)
+    if (m_Stereo == StereoSetting_OculusRift)
     {
         RectI newViewport(m_Viewport);
 
@@ -379,7 +380,7 @@ void View::render()
     m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 
     HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
-    if (m_Settings.enablePost)
+    if (nullptr != m_PostProcesser)
         m_PostProcesser->draw();
 
     HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");

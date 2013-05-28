@@ -126,7 +126,7 @@ void Renderer2D::preRender()
 void Renderer2D::render()
 {
     m_RenderTarget->prepareForRendering();
-    if (m_View->getSettings().stereoSetting == StereoSetting_None)
+    if (m_View->getStereo() == StereoSetting_None)
     {
         m_DefaultCanvas->draw();
     }
