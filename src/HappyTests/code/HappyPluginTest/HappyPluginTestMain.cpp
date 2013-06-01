@@ -185,15 +185,35 @@ void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
 {
     if (m_VREnabled == true)
     {
-        m_DebugText->clear();
         he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
         if (device)
         {
+            VRCamera* const camera(checked_cast<VRCamera*>(m_Camera));
+            const he::vec3& velocityVector(camera->getVelocityVector());
             const he::vec3 pitchYawRoll(device->getPitchYawRoll());
-            m_DebugText->addTextExt("Pitch: %.2f\nYaw: %.2f\nRoll: %.2f\n", he::toDegrees(pitchYawRoll.x), he::toDegrees(pitchYawRoll.y), he::toDegrees(pitchYawRoll.z));
 
+            const he::mat44 velocityPitch(he::mat44::createRotation(he::vec3::right, -pitchYawRoll.x));
+            const he::mat44 velocityRoll(he::mat44::createRotation(he::vec3::forward, -pitchYawRoll.z));
+            const he::vec3 forceVector( velocityRoll * velocityPitch * he::vec3::forward );
+
+            m_DebugText->clear();
+            m_DebugText->addTextExt("TurnValue: %.2f\n"
+                                    "Speed: %.2f\n"
+                                    "Throttle: %.2f\n"
+                                    "Direction: %.2f, %.2f, %.2f"
+                , pitchYawRoll.z, camera->getSpeed(), camera->getThrottle()
+                , velocityVector.x, velocityVector.y, velocityVector.z);
+
+            canvas->setColor(he::Color(0.2f, 0.2f, 1.0f));
+            canvas->fillText(*m_DebugText, he::vec2(300, 300));
+
+            m_DebugText->clear();
+            m_DebugText->addTextExt("Device: \n  Pitch: %.2f\n  Yaw: %.2f\n  Roll: %.2f"
+                , he::toDegrees(pitchYawRoll.x), he::toDegrees(pitchYawRoll.y), he::toDegrees(pitchYawRoll.z));
+
+            canvas->setColor(he::Color(0.2f, 0.2f, 1.0f));
+            canvas->fillText(*m_DebugText, he::vec2(64, 400));
         }
-        canvas->fillText(*m_DebugText, he::vec2(300, 400));
     }
 }
 

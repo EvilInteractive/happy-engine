@@ -47,7 +47,7 @@ inline T clamp(T p_value, T p_min, T p_max)
 template<typename T>
 inline T sign(T p_value)
 {
-    return p_value < 0? -1 : 1;
+    return (p_value < 0)? T(-1) : (p_value > 0? T(1) : T(0));
 }
 
 inline float rsqrtf(float number)

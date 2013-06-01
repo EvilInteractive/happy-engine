@@ -26,15 +26,24 @@
 #include <IMouse.h>
 #include <OculusRiftBinding.h>
 
+namespace 
+{
+    const float g_ThrottleMax = 5.0f;
+    const float g_SpeedMax = 12.0f;
+    const float g_ThrottleSensitivity = 5.0f;
+    const float g_Acceleration = 2.5f;
+    const float g_AirFriction = 0.5f;
+    const float g_Gravity = 9.81f;
+    const float g_AirBreakFriction = 10.0f;
+}
+
 namespace ht {
 
 // CONSTRUCTOR - DESTRUCTOR
 VRCamera::VRCamera()
-:	m_Moveable(true),
-    m_Speed(10.0f),
-    m_FastForward(20.0f),
-    m_PreviousMousePos(0,0),
-    m_MouseSensitivity(100.0f)
+: m_Moveable(true)
+, m_Speed(0.0f)
+, m_Throttle(0.0f)
 {
 }
 
@@ -52,47 +61,68 @@ void VRCamera::tick(const float dTime)
     //const he::io::IMouse* const mouse(controls->getMouse());
     controls->getFocus(this);
     
-    if (m_Moveable)
+    he::io::OculusRiftDevice* const device(controls->getOculusRiftBinding()->getDevice(0));
+    if (m_Moveable && device)
     {
-        bool bRunning = false;
+        const vec3 newPitchYawRoll(device->getPitchYawRoll());
+        const vec3 diff(newPitchYawRoll - m_PrevDevicePitchYawRoll);
+        m_PrevDevicePitchYawRoll = newPitchYawRoll;
 
-        // camera controls
-        vec3 dir(0.0f, 0.0f, 0.0f);
+        const mat44 velocityPitch(mat44::createRotation(he::vec3::right, -newPitchYawRoll.x));
+        const mat44 velocityRoll(mat44::createRotation(he::vec3::forward, -newPitchYawRoll.z));
+        const vec3 forceVector( velocityRoll * velocityPitch * he::vec3::forward );
 
-        if (controls->hasFocus(this))
+        m_PitchYawRoll.x = newPitchYawRoll.x;
+        m_PitchYawRoll.y += diff.y;
+        m_PitchYawRoll.z = newPitchYawRoll.z;
+        
+        if (keyboard->isKeyDown(io::Key_Z) || keyboard->isKeyDown(io::Key_W))
         {
-            if (keyboard->isKeyDown(io::Key_Z) || keyboard->isKeyDown(io::Key_W))
-                dir += m_LookWorld;
-            if (keyboard->isKeyDown(io::Key_Q) || keyboard->isKeyDown(io::Key_A))
-                dir -= m_RightWorld;
-
-            if (keyboard->isKeyDown(io::Key_S))
-                dir -= m_LookWorld;
-            if (keyboard->isKeyDown(io::Key_D))
-                dir += m_RightWorld;
-
-            // fast forward
-            if (keyboard->isKeyDown(io::Key_Lshift))
-                bRunning = true;
+            m_Throttle = he::min(g_ThrottleMax, m_Throttle + g_ThrottleSensitivity * dTime);
+        }
+        if (keyboard->isKeyDown(io::Key_S))
+        {
+            m_Throttle = he::max(0.0f, m_Throttle - g_ThrottleSensitivity * dTime);
         }
 
-        dir = normalize(dir);
+        if (m_Speed < m_Throttle)
+        {
+            m_Speed += g_Acceleration * dTime;
+        }
+        else
+        {
+            m_Speed -= g_AirFriction * dTime;
+        }
 
-        float finalSpeed = m_Speed;
-        if (bRunning) finalSpeed *= m_FastForward;
+        if (m_PitchYawRoll.x > 0.0f) // Rising
+        {
+            if (m_Speed > m_Throttle)
+            {
+                m_Speed -= g_AirFriction * dTime * m_PitchYawRoll.x / he::piOverTwo;
+            }
+        }
+        else
+        {
+            if (m_Speed < g_SpeedMax)
+            {
+                m_Speed += g_Gravity * dTime * -m_PitchYawRoll.x / he::piOverTwo;
+            }
+        }
 
-        m_PosWorld += dir * finalSpeed * dTime;
-    }
+        if (keyboard->isKeyDown(io::Key_Space))
+        {
+            m_Speed = he::max(0.0f, m_Speed - g_AirBreakFriction * dTime);
+        }
 
-    he::io::OculusRiftDevice* const device(controls->getOculusRiftBinding()->getDevice(0));
-    if (device)
-    {
-        const vec3 pitchYawRoll(device->getPitchYawRoll());
-
-        const mat44 pitch(mat44::createRotation(he::vec3::right, -pitchYawRoll.x));
-        const mat44 yaw(mat44::createRotation(he::vec3::up, pitchYawRoll.y));
-        const mat44 roll(mat44::createRotation(he::vec3::forward, -pitchYawRoll.z));
+        m_PitchYawRoll.y += newPitchYawRoll.z * m_Speed * 0.0002f;
+        
+        const mat44 pitch(mat44::createRotation(he::vec3::right, -m_PitchYawRoll.x));
+        const mat44 yaw(mat44::createRotation(he::vec3::up, m_PitchYawRoll.y));
+        const mat44 roll(mat44::createRotation(he::vec3::forward, -m_PitchYawRoll.z));
         const mat44 transf(yaw * pitch * roll);
+
+        m_VelocityVector = transf * he::vec3::forward;
+        m_PosWorld += m_VelocityVector * m_Speed * dTime;
 
         m_LookWorld = transf * he::vec3::forward;
         m_UpWorld = transf * he::vec3::up;
@@ -109,11 +139,6 @@ void VRCamera::tick(const float dTime)
 void VRCamera::moveable(bool moveable)
 {
     m_Moveable = moveable;
-}
-
-void VRCamera::setMouseSensitivty(float sens)
-{
-    m_MouseSensitivity = sens;
 }
 
 } //end namespace

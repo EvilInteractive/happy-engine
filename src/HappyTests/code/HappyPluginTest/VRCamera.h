@@ -36,16 +36,19 @@ public:
     
     // SETTERS
     void moveable(bool moveable);
-    void setMouseSensitivty(float sens = 100.0f);
+
+    const he::vec3& getVelocityVector() { return m_VelocityVector; }
+    float getSpeed() const { return m_Speed; }
+    float getThrottle() const { return m_Throttle; }
 
 private:
     bool m_Moveable;
 
+    he::vec3 m_PrevDevicePitchYawRoll;
+    he::vec3 m_PitchYawRoll;
+    he::vec3 m_VelocityVector;
     float m_Speed;
-    float m_FastForward;
-    float m_MouseSensitivity;
-
-    he::vec2 m_PreviousMousePos;
+    float m_Throttle;
 
     //Disable default copy constructor and default assignment operator
     VRCamera(const VRCamera&);
