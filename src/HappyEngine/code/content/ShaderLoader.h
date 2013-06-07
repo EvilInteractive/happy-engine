@@ -23,7 +23,6 @@
 #pragma once
 
 #include "AssetContainer.h"
-#include "RenderSettings.h"
 
 namespace he {
 namespace gfx {
@@ -36,17 +35,13 @@ class ShaderLoader
 {
 public:
     ShaderLoader();
-    virtual ~ShaderLoader();
+    ~ShaderLoader();
     
     ObjectHandle load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
-
-    void setRenderSettings(const gfx::RenderSettings& settings);
-
+    
 private:
     AssetContainer<ObjectHandle> m_AssetContainer;
-
-    gfx::RenderSettings m_RenderSettings;
-
+    
     //Disable default copy constructor and default assignment operator
     ShaderLoader(const ShaderLoader&);
     ShaderLoader& operator=(const ShaderLoader&);

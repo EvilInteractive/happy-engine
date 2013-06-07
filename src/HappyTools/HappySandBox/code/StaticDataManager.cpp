@@ -24,6 +24,7 @@
 #include "system/GameStateMachine.h"
 #include "system/UIManager.h"
 #include "system/PluginManager.h"
+#include "system/EditorPickingManager.h"
 #include "Sandbox.h"
 
 namespace hs {
@@ -35,6 +36,7 @@ void StaticDataManager::init()
     UIManager::sdmInit();
     SelectionManger::sdmInit();
     PluginManager::sdmInit();
+    EditorPickingManager::sdmInit();
 }
 
 void StaticDataManager::destroy()
@@ -44,6 +46,7 @@ void StaticDataManager::destroy()
     UIManager::sdmDestroy();
     SelectionManger::sdmDestroy();
     PluginManager::sdmDestroy();
+    EditorPickingManager::sdmDestroy();
 }
 
 } //end namespace

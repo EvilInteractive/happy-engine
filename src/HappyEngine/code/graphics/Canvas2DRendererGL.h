@@ -66,6 +66,7 @@ public:
                     bool useBlending = true,
                     const vec2& newDimensions = vec2(),
                     const RectI regionToDraw = RectI());
+    void blitImage3D( const Texture2D* tex2D, const gfx::ICamera* const camera);
     void strokeShape(Mesh2D* const shape);
     void fillShape(Mesh2D* const shape);
     void strokeRect(const RectI& rect);

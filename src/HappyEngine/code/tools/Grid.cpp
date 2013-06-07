@@ -95,7 +95,7 @@ Grid::~Grid()
 }
 
 /* GENERAL */
-void Grid::drawShapes(gfx::ShapeRenderer* renderer)
+void Grid::drawShapes(gfx::ShapeRenderer* const renderer)
 {
     mat44 world(mat44::createTranslation(m_Position));
 

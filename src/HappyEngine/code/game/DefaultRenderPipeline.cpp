@@ -27,6 +27,7 @@
 #include "Forward3DRenderer.h"
 #include "ShapeRenderer.h"
 #include "Renderer2D.h"
+#include "GlobalSettings.h"
 
 namespace he {
 namespace ge {
@@ -51,8 +52,9 @@ DefaultRenderPipeline::~DefaultRenderPipeline()
     delete m_2DRenderer;
 }
 
-void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene, const gfx::RenderSettings& settings )
+void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene )
 {
+    const gfx::RenderSettings settings(GlobalSettings::getInstance()->getRenderSettings());
     m_2DRenderer = NEW gfx::Renderer2D();
     if (settings.enableDeferred)
     {

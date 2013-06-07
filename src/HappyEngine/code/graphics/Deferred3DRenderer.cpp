@@ -36,7 +36,7 @@
 #include "ContentManager.h"
 
 #include "CameraManager.h"
-#include "CameraPerspective.h"
+#include "ICamera.h"
 #include "CameraBound.h"
 #include "LightFactory.h"
 
@@ -48,6 +48,7 @@
 #include "Texture2D.h"
 #include "ModelMesh.h"
 #include "Canvas2D.h"
+#include "GlobalSettings.h"
 
 namespace he {
 namespace gfx {
@@ -65,7 +66,8 @@ Deferred3DRenderer::Deferred3DRenderer():
             m_OutputRenderTarget(nullptr),
             m_View(nullptr),
             m_Scene(nullptr),
-            m_NormalDepthTexture(nullptr)
+            m_NormalDepthTexture(nullptr),
+            m_SpecularEnabled(false)
 {
     ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
     m_ColorIllTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
@@ -83,7 +85,6 @@ Deferred3DRenderer::Deferred3DRenderer():
 void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
-    //CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
     
     m_View = view;
     m_CollectionRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
@@ -91,12 +92,9 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 
     m_NormalDepthTexture = target->getTextureTarget(1);
 
-    eventCallback0<void> settingsChangedHandler(boost::bind(&Deferred3DRenderer::onSettingChanged, this));
-    m_View->SettingsChanged += settingsChangedHandler;
     eventCallback0<void> viewportSizeChangedHandler(boost::bind(&Deferred3DRenderer::onViewResized, this));
     m_View->ViewportSizeChanged += viewportSizeChangedHandler;
 
-    m_Settings = m_View->getSettings().lightingSettings;
     compileShaders();
     onViewResized();
 
@@ -133,6 +131,8 @@ Deferred3DRenderer::~Deferred3DRenderer()
 }
 void Deferred3DRenderer::compileShaders()
 {
+    const RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
+
     //////////////////////////////////////////////////////////////////////////
     ///                                 CLEAN                              ///
     //////////////////////////////////////////////////////////////////////////
@@ -161,8 +161,11 @@ void Deferred3DRenderer::compileShaders()
     //////////////////////////////////////////////////////////////////////////
     const he::String& folder(CONTENT->getShaderFolderPath().str());
     std::set<he::String> shaderDefines;
-    if (m_Settings.enableSpecular)
+    if (settings.lightingSettings.enableSpecular)
+    {
+        m_SpecularEnabled = true;
         shaderDefines.insert("SPECULAR");
+    }
     // Shadowless
     m_PointLightShader->initFromFile(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostPLShader.frag", shaderLayout, shaderDefines);
     m_SpotLightShader->initFromFile(folder  + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostSLShader.frag", shaderLayout, shaderDefines);
@@ -188,7 +191,7 @@ void Deferred3DRenderer::compileShaders()
     m_PointLightData.endAttenuation = m_PointLightShader->getShaderVarId("light.endAttenuation");
     m_PointLightData.colorIllMap = m_PointLightShader->getShaderSamplerId("colorIllMap");
     m_PointLightData.normalDepthMap = m_PointLightShader->getShaderSamplerId("normalDepthMap");
-    if (m_Settings.enableSpecular)
+    if (settings.lightingSettings.enableSpecular)
         m_PointLightData.sgMap = m_PointLightShader->getShaderSamplerId("sgMap");
     m_PointLightData.wvp = m_PointLightShader->getShaderVarId("mtxWVP");
     //----SL----------------------------------------------------------------------
@@ -202,7 +205,7 @@ void Deferred3DRenderer::compileShaders()
         m_SpotLightData.cosCutOff = m_SpotLightShader->getShaderVarId("light.cosCutoff");
         m_SpotLightData.colorIllMap = m_SpotLightShader->getShaderSamplerId("colorIllMap");
         m_SpotLightData.normalDepthMap = m_SpotLightShader->getShaderSamplerId("normalDepthMap");
-        if (m_Settings.enableSpecular)
+        if (settings.lightingSettings.enableSpecular)
             m_SpotLightData.sgMap = m_SpotLightShader->getShaderSamplerId("sgMap");
         m_SpotLightData.wvp = m_SpotLightShader->getShaderVarId("mtxWVP");
 
@@ -216,7 +219,7 @@ void Deferred3DRenderer::compileShaders()
         m_ShadowSpotLightData.cosCutOff = m_ShadowSpotLightShader->getShaderVarId("light.cosCutoff");
         m_ShadowSpotLightData.colorIllMap = m_ShadowSpotLightShader->getShaderSamplerId("colorIllMap");
         m_ShadowSpotLightData.normalDepthMap = m_ShadowSpotLightShader->getShaderSamplerId("normalDepthMap");
-        if (m_Settings.enableSpecular)
+        if (settings.lightingSettings.enableSpecular)
             m_ShadowSpotLightData.sgMap = m_ShadowSpotLightShader->getShaderSamplerId("sgMap");
         m_ShadowSpotLightData.wvp = m_ShadowSpotLightShader->getShaderVarId("mtxWVP");
         m_ShadowSpotLightData.shadowMap = m_ShadowSpotLightShader->getShaderSamplerId("shadowMap");
@@ -230,17 +233,8 @@ void Deferred3DRenderer::compileShaders()
 
     m_AmbDirIllLightData.colorIllMap  = m_AmbDirIllShader->getShaderSamplerId("colorIllMap");
     m_AmbDirIllLightData.normalDepthMap  = m_AmbDirIllShader->getShaderSamplerId("normalDepthMap");
-    if (m_Settings.enableSpecular)
+    if (settings.lightingSettings.enableSpecular)
         m_AmbDirIllLightData.sgMap  = m_AmbDirIllShader->getShaderSamplerId("sgMap");
-}
-
-void Deferred3DRenderer::onSettingChanged()
-{
-    if (m_View->getSettings().lightingSettings != m_Settings)
-    {
-        m_Settings = m_View->getSettings().lightingSettings;
-        compileShaders();
-    }
 }
 
 void Deferred3DRenderer::onViewResized()
@@ -267,7 +261,7 @@ void Deferred3DRenderer::onViewResized()
 void Deferred3DRenderer::render()
 {
     HE_ASSERT(m_Scene != nullptr, "Scene is nullptr, assign a scene first!");
-    const CameraPerspective* camera(m_View->getCamera());
+    const ICamera* const camera(m_View->getCamera());
     if (camera != nullptr)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -348,7 +342,7 @@ void Deferred3DRenderer::postAmbDirIllLight()
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.dirDirection, normalize((m_View->getCamera()->getView() * vec4(dirLight->getDirection(), 0.0f)).xyz()));
   
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorIllMap, m_ColorIllTexture);
-    if (m_Settings.enableSpecular)
+    if (m_SpecularEnabled)
         m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_SGTexture);
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalDepthMap,   m_NormalDepthTexture);
 
@@ -368,13 +362,13 @@ void Deferred3DRenderer::postPointLights()
     m_PointLightShader->bind();
 
     m_PointLightShader->setShaderVar(m_PointLightData.colorIllMap, m_ColorIllTexture);
-    if (m_Settings.enableSpecular)
+    if (m_SpecularEnabled)
         m_PointLightShader->setShaderVar(m_PointLightData.sgMap,   m_SGTexture);
     m_PointLightShader->setShaderVar(m_PointLightData.normalDepthMap,   m_NormalDepthTexture);
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
 
-    const CameraPerspective& camera(*m_View->getCamera());
+    const ICamera& camera(*m_View->getCamera());
     vec3 position;
     lights.forEach([&](const ObjectHandle& lightHandle)
     {
@@ -422,7 +416,7 @@ void Deferred3DRenderer::postSpotLights()
 
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
-    const CameraPerspective& camera(*m_View->getCamera());
+    const ICamera& camera(*m_View->getCamera());
     vec3 position;
 
     bool shadowLights(false);
@@ -432,7 +426,7 @@ void Deferred3DRenderer::postSpotLights()
         {
             m_SpotLightShader->bind();
             m_SpotLightShader->setShaderVar(m_SpotLightData.colorIllMap, m_ColorIllTexture);
-            if (m_Settings.enableSpecular)
+            if (m_SpecularEnabled)
                 m_SpotLightShader->setShaderVar(m_SpotLightData.sgMap,   m_SGTexture);
             m_SpotLightShader->setShaderVar(m_SpotLightData.normalDepthMap,   m_NormalDepthTexture);
         }
@@ -440,7 +434,7 @@ void Deferred3DRenderer::postSpotLights()
         {
             m_ShadowSpotLightShader->bind();
             m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.colorIllMap, m_ColorIllTexture);
-            if (m_Settings.enableSpecular)
+            if (m_SpecularEnabled)
                 m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.sgMap,   m_SGTexture);
             m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.normalDepthMap,   m_NormalDepthTexture);
         }

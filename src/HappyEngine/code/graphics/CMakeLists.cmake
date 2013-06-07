@@ -112,7 +112,7 @@ addFilter(CODE_SRCS src/graphics/rendering/instancing code/graphics/
 addFilter(CODE_SRCS src/graphics/rendering/manager code/graphics/
 			DrawListContainer.cpp               DrawListContainer.h
 			GraphicsEngine.cpp                  GraphicsEngine.h 
-			RenderSettings.h
+			RenderSettings.cpp                  RenderSettings.h
         )
 			
 addFilter(CODE_SRCS src/graphics/rendering/post code/graphics/

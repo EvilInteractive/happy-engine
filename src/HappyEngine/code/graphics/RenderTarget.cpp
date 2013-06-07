@@ -194,7 +194,7 @@ void RenderTarget::removeAllTargets()
 
 void RenderTarget::setSize( uint32 width, uint32 height )
 {
-    HE_IF_ASSERT(m_Width == 0 && m_Height == 0, "Size is already assigned, I cannot change this on the fly")
+    //HE_IF_ASSERT(m_Width == 0 && m_Height == 0, "Size is already assigned, I cannot change this on the fly")
     {
         m_Width = width;
         m_Height = height;

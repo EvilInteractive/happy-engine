@@ -72,6 +72,7 @@ Entity* EntityManager::createEmptyEntity()
 void EntityManager::destroyEntity( Entity* const entity )
 {
     EntityDestroyed(entity);
+    entity->deactivate();
     while (entity->getComponentCount() > 0)
     {
         EntityComponent* comp(entity->getComponentAt(0));

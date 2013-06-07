@@ -13,3 +13,8 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/runtime/gamestates code/runtime/
         GameStateUnloadPlugin.cpp       GameStateUnloadPlugin.h
         GameStatePlay.cpp               GameStatePlay.h
     )
+
+addFilter(HAPPYSANDBOX_CODE_SRCS src/runtime/components code/runtime/
+        SandboxEntityComponentFactory.cpp       SandboxEntityComponentFactory.h
+        EditorComponent.cpp                     EditorComponent.h
+)

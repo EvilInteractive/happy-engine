@@ -30,7 +30,7 @@ class IShapeDrawable
 public:
     virtual ~IShapeDrawable() {};
 
-    virtual void drawShapes(ShapeRenderer* renderer) = 0;
+    virtual void drawShapes(he::gfx::ShapeRenderer* const renderer) = 0;
 }; 
 
 } } //end namespace

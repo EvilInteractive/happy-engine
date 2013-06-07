@@ -28,6 +28,7 @@
 #include "ContentManager.h"
 #include "Bone.h"
 #include "ShaderVar.h"
+#include "GlobalSettings.h"
 
 namespace he {
 namespace ct {
@@ -149,12 +150,13 @@ ObjectHandle MaterialLoader::load(const he::String& path)
         
         if (reader.isOpen())
         {     
+            const gfx::RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
             gfx::BufferLayout vertexLayout;
             // [Shader]
             {
                 he::String file;
                 file = reader.readString(L"Forward", L"shader", "");
-                if (m_RenderSettings.enableDeferred)
+                if (settings.enableDeferred)
                 {
                     he::String temp = reader.readString(L"Deferred", L"shader", file);
                     if (temp != file)
@@ -489,11 +491,6 @@ ObjectHandle MaterialLoader::load(const he::String& path)
         }
         return material->getHandle();
     }
-}
-
-void MaterialLoader::setRenderSettings( const gfx::RenderSettings& settings )
-{
-    m_RenderSettings = settings;
 }
 
 } } //end namespace

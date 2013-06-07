@@ -40,7 +40,7 @@ public:
     virtual ~Grid();
 
     /* GENERAL */
-    virtual void drawShapes(gfx::ShapeRenderer* renderer);
+    virtual void drawShapes(gfx::ShapeRenderer* const renderer);
 
     /* SETTERS */
     void setPosition(const vec3& pos);

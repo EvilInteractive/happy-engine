@@ -8,6 +8,7 @@ addFilter(CODE_SRCS src/game code/game/
         )
 
 addFilter(CODE_SRCS src/game/picking code/game/
+            IPickingManager.h
             PickingManager.cpp                      PickingManager.h
             PickResult.h
             Pickable.cpp                            Pickable.h

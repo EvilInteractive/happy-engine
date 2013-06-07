@@ -33,14 +33,23 @@
 #include <Entity.h>
 #include <ModelComponent.h>
 #include <LightManager.h>
+#include <Font.h>
+#include <OculusRiftBinding.h>
+#include <ControlsManager.h>
+#include <Canvas2D.h>
+#include <Renderer2D.h>
+#include <GlobalSettings.h>
 
 #include "FlyCamera.h"
+#include "VRCamera.h"
 
 ht::HappyPluginTestMain::HappyPluginTestMain()
     : m_View(nullptr)
     , m_Scene(nullptr)
     , m_RenderPipeline(nullptr)
     , m_Camera(nullptr)
+    , m_DebugText(nullptr)
+    , m_VREnabled(false)
 {
 
 }
@@ -57,28 +66,45 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_View = graphicsEngine->createView();
     m_Scene = graphicsEngine->createScene();
 
-    he::gfx::RenderSettings settings;
-    settings.stereoSetting = he::gfx::StereoSetting_None;
-    settings.cameraSettings.setRelativeViewport(relViewport);
-    CONTENT->setRenderSettings(settings);
+    he::ct::ContentManager* contentMan(CONTENT);
+
+    he::gfx::CameraSettings cameraSettings;
+    cameraSettings.setRelativeViewport(relViewport);
 
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
-    m_RenderPipeline->init(m_View, m_Scene, settings);
+    m_RenderPipeline->init(m_View, m_Scene);
 
-    m_Camera = NEW FlyCamera();
+    m_VREnabled = he::GlobalSettings::getInstance()->getRenderSettings().stereoSetting == he::gfx::StereoSetting_OculusRift;
+
+    if (m_VREnabled)
+    {
+        m_Camera = NEW VRCamera();
+    }
+    else
+    {
+        m_Camera = NEW FlyCamera();
+    }
     m_Camera->setNearFarPlane(0.1f, 500.0f);
 
     m_View->setWindow(window, he::gfx::View::eViewInsertMode_First);
-    m_View->init(settings);
+    m_View->init(cameraSettings);
     m_View->setCamera(m_Camera);
 
     he::gfx::LightManager* lightMan(m_Scene->getLightManager());
     lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 2.0f);
     lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.5f);
+
+    he::gui::Font* const debugFont(contentMan->getDefaultFont(16));
+    m_DebugText = NEW he::gui::Text();
+    m_DebugText->setFont(debugFont);
+    debugFont->release();
+    m_RenderPipeline->get2DRenderer()->attachToRender(this);
 }
 
 void ht::HappyPluginTestMain::terminate()
 {
+    m_RenderPipeline->get2DRenderer()->detachFromRender(this);
+
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
     graphicsEngine->removeView(m_View);
     m_View = nullptr;
@@ -86,6 +112,8 @@ void ht::HappyPluginTestMain::terminate()
     m_Scene = nullptr;
     delete m_Camera;
     m_Camera = nullptr;
+    delete m_DebugText;
+    m_DebugText = nullptr;
 
     delete m_RenderPipeline;
     m_RenderPipeline = nullptr;
@@ -140,11 +168,52 @@ void ht::HappyPluginTestMain::onPauseGame()
 
 void ht::HappyPluginTestMain::onResumeGame()
 {
-
+    m_View->setCamera(m_Camera);
 }
 
 he::gfx::ICamera* ht::HappyPluginTestMain::getActiveCamera() const
 {
     return m_View->getCamera();
+}
+
+void ht::HappyPluginTestMain::setActiveCamera( he::gfx::ICamera* const camera )
+{
+    m_View->setCamera(camera);
+}
+
+void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
+{
+    if (m_VREnabled == true)
+    {
+        he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
+        if (device)
+        {
+            VRCamera* const camera(checked_cast<VRCamera*>(m_Camera));
+            const he::vec3& velocityVector(camera->getVelocityVector());
+            const he::vec3 pitchYawRoll(device->getPitchYawRoll());
+
+            const he::mat44 velocityPitch(he::mat44::createRotation(he::vec3::right, -pitchYawRoll.x));
+            const he::mat44 velocityRoll(he::mat44::createRotation(he::vec3::forward, -pitchYawRoll.z));
+            const he::vec3 forceVector( velocityRoll * velocityPitch * he::vec3::forward );
+
+            m_DebugText->clear();
+            m_DebugText->addTextExt("TurnValue: %.2f\n"
+                                    "Speed: %.2f\n"
+                                    "Throttle: %.2f\n"
+                                    "Direction: %.2f, %.2f, %.2f"
+                , pitchYawRoll.z, camera->getSpeed(), camera->getThrottle()
+                , velocityVector.x, velocityVector.y, velocityVector.z);
+
+            canvas->setColor(he::Color(0.2f, 0.2f, 1.0f));
+            canvas->fillText(*m_DebugText, he::vec2(300, 300));
+
+            m_DebugText->clear();
+            m_DebugText->addTextExt("Device: \n  Pitch: %.2f\n  Yaw: %.2f\n  Roll: %.2f"
+                , he::toDegrees(pitchYawRoll.x), he::toDegrees(pitchYawRoll.y), he::toDegrees(pitchYawRoll.z));
+
+            canvas->setColor(he::Color(0.2f, 0.2f, 1.0f));
+            canvas->fillText(*m_DebugText, he::vec2(64, 400));
+        }
+    }
 }
 

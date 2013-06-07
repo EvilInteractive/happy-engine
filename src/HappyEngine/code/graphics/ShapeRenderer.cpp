@@ -33,7 +33,7 @@
 #include "Scene.h"
 #include "View.h"
 #include "CameraManager.h"
-#include "CameraPerspective.h"
+#include "ICamera.h"
 #include "IShapeDrawable.h"
 
 namespace he {
@@ -55,15 +55,18 @@ ShapeRenderer::~ShapeRenderer()
     delete m_BillboardEffect;
     if (m_BillboardQuad != nullptr)
         m_BillboardQuad->release();
+    if (m_AABB != nullptr)
+        m_AABB->release();
 }
 
 void ShapeRenderer::createBillboardQuad()
 {
-    m_VertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    m_VertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
+    BufferLayout vertexLayoutBillboard;
+    vertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    vertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
 
     m_BillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
-    m_BillboardQuad->init(m_VertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
+    m_BillboardQuad->init(vertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
 
     he::ObjectList<VertexPosTex> vertices(4);
     vertices.add(
@@ -91,6 +94,46 @@ void ShapeRenderer::createBillboardQuad()
     m_BillboardQuad->setLoaded();
 }
 
+void ShapeRenderer::createAABB()
+{
+    BufferLayout vertexLayoutBillboard;
+    vertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+
+    m_AABB = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
+    m_AABB->init(vertexLayoutBillboard, gfx::MeshDrawMode_Lines);
+
+    vec3 vertices[8];
+    vertices[0] = vec3(-0.5f,  0.5f, 0.5f);
+    vertices[1] = vec3( 0.5f,  0.5f, 0.5f);
+    vertices[2] = vec3(-0.5f, -0.5f, 0.5f);
+    vertices[3] = vec3( 0.5f, -0.5f, 0.5f);
+
+    vertices[4] = vec3(-0.5f,  0.5f, -0.5f);
+    vertices[5] = vec3( 0.5f,  0.5f, -0.5f);
+    vertices[6] = vec3(-0.5f, -0.5f, -0.5f);
+    vertices[7] = vec3( 0.5f, -0.5f, -0.5f);
+
+    uint8 indices[24];
+    indices[0] = 0; indices[1] = 1; 
+    indices[2] = 0; indices[3] = 2;
+    indices[4] = 1; indices[5] = 3;
+    indices[6] = 2; indices[7] = 3;
+
+    indices[8] = 4; indices[9] = 5; 
+    indices[10] = 4; indices[11] = 6;
+    indices[12] = 5; indices[13] = 7;
+    indices[14] = 6; indices[15] = 7;
+
+    indices[16] = 0; indices[17] = 4; 
+    indices[18] = 1; indices[19] = 5;
+    indices[20] = 2; indices[21] = 6;
+    indices[22] = 3; indices[23] = 7;
+
+    m_AABB->setVertices(vertices, 8, gfx::MeshUsage_Static, true);
+    m_AABB->setIndices(indices, 24, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_AABB->setLoaded();
+}
+
 /* GENERAL */
 void ShapeRenderer::init(View* view, const RenderTarget* target)
 {
@@ -98,12 +141,19 @@ void ShapeRenderer::init(View* view, const RenderTarget* target)
     m_RenderTarget = target;
 
     createBillboardQuad();
+    createAABB();
 
     m_ColorEffect->load();
     m_BillboardEffect->load();
 }
 
 /* DRAW METHODS */
+
+void ShapeRenderer::drawAABB( const vec3& position, const vec3& dimensions, const Color& color ) const
+{
+    drawColored(m_AABB, mat44::createTranslation(position) * mat44::createScale(dimensions), color);
+}
+
 void ShapeRenderer::drawColored(const ModelMesh* model, const mat44& world, const Color& color) const
 {
     m_ColorEffect->begin();
@@ -112,7 +162,7 @@ void ShapeRenderer::drawColored(const ModelMesh* model, const mat44& world, cons
     m_ColorEffect->setColor(color);
 
     GL::heBindVao(model->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, model->getNumIndices(), model->getIndexType(), 0);
+    glDrawElements(model->getDrawMode(), model->getNumIndices(), model->getIndexType(), 0);
 }
 
 void ShapeRenderer::drawColoredNoDepth(const ModelMesh* model, const mat44& world, const Color& color) const
@@ -169,14 +219,17 @@ void ShapeRenderer::render()
 
     m_RenderTarget->prepareForRendering(1);
 
-    gfx::CameraPerspective* cam(m_View->getCamera());
-    m_ViewProjection = cam->getViewProjection();
-    m_BillboardMatrix = mat44::createBillboard(cam);
-
-    std::for_each(m_Drawables.cbegin(), m_Drawables.cend(), [this](IShapeDrawable* drawable)
+    const gfx::ICamera* const cam(m_View->getCamera());
+    if (cam != nullptr)
     {
-        drawable->drawShapes(this);
-    });
+        m_ViewProjection = cam->getViewProjection();
+        m_BillboardMatrix = mat44::createBillboard(cam);
+
+        std::for_each(m_Drawables.cbegin(), m_Drawables.cend(), [this](IShapeDrawable* drawable)
+        {
+            drawable->drawShapes(this);
+        });
+    }
 }
 
 void ShapeRenderer::attachToRenderer( IShapeDrawable* drawable )
@@ -191,5 +244,6 @@ void ShapeRenderer::detachFromRenderer( IShapeDrawable* drawable )
         m_Drawables.remove(drawable);
     }
 }
+
 
 } } //end namespace

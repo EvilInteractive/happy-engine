@@ -49,37 +49,39 @@ public:
     virtual ~CameraOrtho();
 
     // ICamera
-    virtual const mat44& getView() const { return m_View; }
-    virtual const mat44& getProjection() const { return m_Projection; }
-    virtual const mat44& getViewProjection() const { return m_ViewProjection; }
+    const mat44& getView() const { return m_View; } // override
+    const mat44& getProjection() const { return m_Projection; } // override
+    const mat44& getViewProjection() const { return m_ViewProjection; } // override
+    float getNearClip() const { return m_NearZ; } // override
+    float getFarClip() const { return m_FarZ; } // override
+    const vec3& getPosition() const { return m_PosWorld; } // override
+    const vec3& getLook() const { return m_LookWorld; } // override
+    ECameraType getCameraType() { return eCameraType_Ortho; } // override
 
-    virtual float getNearClip() const { return m_NearZ; }
-    virtual float getFarClip() const { return m_FarZ; }
-
-    virtual const vec3& getPosition() const { return m_PosWorld; }
-    virtual const vec3& getLook() const { return m_LookWorld; }
-
-    virtual IntersectResult intersect(const Bound& bound) const;
-    virtual IntersectResult intersect(const Sphere& bound) const;
-
-    virtual void prepareForRendering();
+    IntersectResult intersect(const Bound& bound) const; // override
+    IntersectResult intersect(const Sphere& bound) const; // override
 
     // GENERAL
-    virtual void tick(float /*dTime*/) {}
-    virtual void lookAt(const vec3& pos, const vec3& target, const vec3& up);
+    virtual void prepareForRendering(); // override
+    virtual void tick(const float /*dTime*/) {} // override
+    void lookAt(const vec3& pos, const vec3& target, const vec3& up);
 
     // SETTERS
-    virtual void setPosition(const vec3& pos);
-    virtual void setLens(float left, float right, float top, float bottom, float zNear = 10, float zFar = 500);
+    void setPosition(const vec3& pos); // override
+    void setAspectRatio(float aspectRatio);  // override
+    void setFov( const float /*fov*/ ) { LOG(LogType_ProgrammerAssert, "Ortho camera does not support fov"); } // override
+    void setNearFarPlane(float nearZ, float farZ); // override
+    void setEyeShift(const float /*lookShift*/, const float /*projShift*/) { LOG(LogType_ProgrammerAssert, "Ortho camera does not support eyeshift"); } // override
+    void setLens(float left, float right, float top, float bottom, float zNear = 1.0f, float zFar = 500.0f);
 
     // GETTERS
-    virtual const vec3& getRight() const { return m_RightWorld; }
-    virtual const vec3& getUp() const { return m_UpWorld; }
+    const vec3& getRight() const { return m_RightWorld; }
+    const vec3& getUp() const { return m_UpWorld; }
 
-    virtual float getLeftClip() const { return m_Left; }
-    virtual float getRightClip() const { return m_Right; }
-    virtual float getTopClip() const { return m_Top; }
-    virtual float getBottomClip() const { return m_Bottom; }
+    float getLeftClip() const { return m_Left; }
+    float getRightClip() const { return m_Right; }
+    float getTopClip() const { return m_Top; }
+    float getBottomClip() const { return m_Bottom; }
 
 protected:
 
@@ -100,6 +102,8 @@ protected:
     float m_NearZ, m_FarZ;
 
     CameraBound m_Bound;
+    bool m_RegenViewMatrix;
+    bool m_RegenProjMatrix;
     
 private:
 

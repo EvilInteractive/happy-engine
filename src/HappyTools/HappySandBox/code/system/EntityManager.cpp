@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
 //Created: 05/03/2013
 
 #include "HappySandBoxPCH.h" 
@@ -23,6 +22,8 @@
 #include "EntityManager.h"
 
 #include "Sandbox.h"
+#include "runtime/SandboxEntityComponentFactory.h"
+#include "runtime/EditorComponent.h"
 
 #include <Scene.h>
 #include <Entity.h>
@@ -60,6 +61,7 @@ void EntityManager::init()
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
+    entityMan->installComponentFactory(NEW SandboxEntityComponentFactory());
 
     he::PrimitiveList<he::ge::EntityComponentDesc*> descList;
     entityMan->fillComponentDescList(descList);
@@ -131,9 +133,12 @@ he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::Fi
     return m_ComponentDescList[component];
 }
 
-void EntityManager::onEntityCreated( he::ge::Entity* const /*entity*/ )
+void EntityManager::onEntityCreated( he::ge::Entity* const entity )
 {
     HE_INFO("Logged a new entity!");
+    EditorComponent* const comp(checked_cast<EditorComponent*>(
+        he::ge::EntityManager::getInstance()->createComponent(HSFS::strEditorComponent)));
+    entity->addComponent(comp);
 }
 
 void EntityManager::onEntityDestroyed( he::ge::Entity* const /*entity*/ )

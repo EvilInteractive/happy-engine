@@ -76,6 +76,7 @@ public:
     void clear();
     // draw to screen
     void draw();
+    void draw3D(const gfx::ICamera* const camera);
 
     // draw dynamic text, for static use sprite
     void fillText(const Text& text, const vec2& pos);

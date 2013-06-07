@@ -30,6 +30,8 @@ namespace io {
 }
 namespace gfx {
 class Window;
+class RenderTarget;
+class Texture2D;
 
 class WindowFactory: public ObjectFactory<Window>, public Singleton<WindowFactory>
 {
@@ -50,6 +52,16 @@ class HAPPY_ENTRY Window
 {
 DECLARE_OBJECT(Window)
 friend GraphicsEngine;
+enum EFlags
+{
+    eFlags_VSyncEnabled = 1 << 0,
+    eFlags_IsCursorVisible = 1 << 1,
+    eFlags_Fullscreen = 1 << 2,
+    eFlags_Resizeable = 1 << 3, 
+    eFlags_IsVisible = 1 << 4,
+    eFlags_EnableOculusRift = 1 << 5
+};
+struct OculusRiftBarrelDistorter;
 public:
     Window();
     virtual ~Window();
@@ -64,6 +76,7 @@ public:
     // Do
     void doEvents(float dTime);
     void prepareForRendering();
+    void finishRendering();
     void present();
 
     // Setters
@@ -76,6 +89,7 @@ public:
     void setFullscreen(bool fullscreen);
     void setResizable(bool resizable);   // call before creating, or destroy and create
     void setMousePosition(const vec2& pos);
+    void setOculusRiftEnabled(const bool enable);
 
     // Getters
     void getWindowPosition(int& x, int& y) const;
@@ -83,6 +97,7 @@ public:
     uint32 getWindowHeight() const;
     GLContext* getContext() { return &m_Context; }  
     NativeWindowHandle getNativeHandle() const;
+    const RenderTarget* getRenderTarget() const { return m_RenderTarget; }
 
     // Views
     void addViewAtBegin(const ObjectHandle& view);
@@ -97,7 +112,16 @@ public:
     event0<void> LostFocus;
 
 private:
+    FORCEINLINE void raiseFlag(const EFlags flag) { m_Flags |= flag; }
+    FORCEINLINE bool checkFlag(const EFlags flag) const { return (m_Flags & flag) != 0; }
+    FORCEINLINE void clearFlag(const EFlags flag) { m_Flags &= ~flag; }
+    FORCEINLINE void setFlag(const EFlags flag, const bool enable) { enable? raiseFlag(flag) : clearFlag(flag); }
+
     he::ObjectList<ObjectHandle> m_Views;
+    RenderTarget* m_RenderTarget;
+
+    // Oculus
+    OculusRiftBarrelDistorter* m_OVRDistorter;
 
     sf::Window* m_Window;
     Window* m_Parent;
@@ -105,11 +129,7 @@ private:
     RectI m_WindowRect;
     he::String m_Titel;
     Color m_ClearColor;
-    bool m_VSyncEnabled;
-    bool m_IsCursorVisible;
-    bool m_Fullscreen;
-    bool m_Resizeable; 
-    bool m_IsVisible;
+    uint8 m_Flags;
 
     GLContext m_Context;
 

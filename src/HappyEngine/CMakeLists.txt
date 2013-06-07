@@ -16,6 +16,7 @@ include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
 IncludeThirdParty()
 
 # Create HappyEngine library
+link_directories (${HappyEngine_SOURCE_DIR}/HappyJson/bin)
 add_library (HappyEngine SHARED ${HAPPYENGINE_SRCS})
 target_link_libraries(HappyEngine HappyJson)
 target_link_libraries(HappyEngine HappyMessageBox)

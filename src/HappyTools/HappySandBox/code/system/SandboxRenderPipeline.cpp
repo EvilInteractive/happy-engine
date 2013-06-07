@@ -31,20 +31,24 @@ namespace hs {
 SandboxRenderPipeline::SandboxRenderPipeline()
     : m_UIRenderer(nullptr)
     , m_DebugRenderer(nullptr)
+    , m_ShapeRenderer(nullptr)
 {
 }
 
 
 SandboxRenderPipeline::~SandboxRenderPipeline()
 {
+    delete m_ShapeRenderer;
     delete m_UIRenderer;
     delete m_DebugRenderer;
 }
 
 void SandboxRenderPipeline::init( he::gfx::View* const view )
 {
+    m_ShapeRenderer = NEW he::gfx::ShapeRenderer();
     m_UIRenderer = NEW UIRenderer();
     m_DebugRenderer = NEW DebugRenderer();
+    view->addRenderPlugin(m_ShapeRenderer);
     view->addRenderPlugin(m_UIRenderer);
     view->addRenderPlugin(m_DebugRenderer);
 }

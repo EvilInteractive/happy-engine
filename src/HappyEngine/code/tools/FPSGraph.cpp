@@ -33,17 +33,23 @@
 #include "Gui.h"
 #include "SystemStats.h"
 
+#define XMARGE 5
+#define YMARGE 5
+#define WIDTH 100
+#define HEIGHT 82
+#define GRAPHLOWERBOUND 45
+
 namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-FPSGraph::FPSGraph(float interval, uint16 recordTime) :
+FPSGraph::FPSGraph(float visualScale, float interval, uint16 recordTime) :
                         m_GameTime(0.0f),
                         m_TBase(0.0f),
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(interval),
-                        m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 6, gui::Font::NO_COMPRESSION)),
+                        m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", static_cast<uint16>(6 * m_VisualScale), gui::Font::NO_COMPRESSION)),
                         m_FPSGraphState(Type_TextOnly),
                         m_Pos(5.0f, 5.0f),
                         m_FpsHistory(300),
@@ -60,16 +66,17 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_ColorBlue(Color((uint8)94,(uint8)195,(uint8)247)),
                         m_ColorBlueAlpha(Color((uint8)94,(uint8)195,(uint8)247,(uint8)100)),
                         m_ColorGrey(Color((uint8)50,(uint8)47,(uint8)54)),
-                        m_ColorDarkGrey(Color((uint8)30,(uint8)27,(uint8)34))
+                        m_ColorDarkGrey(Color((uint8)30,(uint8)27,(uint8)34)),
+                        m_VisualScale(visualScale)
 {
     m_Text.setFont(m_Font);
-    m_Text.setBounds(vec2(100,20));
+    m_Text.setBounds(vec2(m_VisualScale * 100, m_VisualScale * 20));
 
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
-    m_Sprites[0] = cr->createSprite(vec2(110,82), gui::Sprite::DYNAMIC_DRAW);
-    m_Sprites[1] = cr->createSprite(vec2(110,82), gui::Sprite::DYNAMIC_DRAW);
+    m_Sprites[0] = cr->createSprite(vec2(visualScale * (WIDTH + XMARGE * 2.0f), visualScale * HEIGHT), gui::Sprite::DYNAMIC_DRAW);
+    m_Sprites[1] = cr->createSprite(vec2(visualScale * (WIDTH + XMARGE * 2.0f), visualScale * HEIGHT), gui::Sprite::DYNAMIC_DRAW);
 }
 
 FPSGraph::~FPSGraph()
@@ -215,7 +222,7 @@ void FPSGraph::drawFull(gui::Canvas2D* canvas)
 {
     if (m_FpsHistory.size() == 0)
         return;
-
+    canvas->setColor(Color(1, 1, 1, 0.5f));
     canvas->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 }
 
@@ -232,13 +239,20 @@ void FPSGraph::renderGraph()
 {
     gui::SpriteCreator* cr(GUI->getSpriteCreator());
 
+
+    const float realWidth(WIDTH * m_VisualScale);
+    const float realXMarge(XMARGE);
+    const float realYMarge(YMARGE);
+    const float graphPointPadding(2 * m_VisualScale);
+    const float realLowerBound(GRAPHLOWERBOUND * m_VisualScale);
+
     cr->setActiveSprite(m_Sprites[m_ActiveSprite]);
 
     cr->setLineJoin(gui::LINE_JOIN_ROUND);
 
     cr->newPath();
 
-    cr->rectangle(vec2(5,5),vec2(100,40));
+    cr->rectangle(vec2(realXMarge,realXMarge),vec2(realWidth , realLowerBound - realYMarge));
     cr->setColor(m_ColorGrey);
     cr->fill();
 
@@ -270,25 +284,25 @@ void FPSGraph::renderGraph()
 
         if (k == 0)
         {
-            poly0.add(vec2(110.0f - (k * 2), 45.0f - (currentFPS / (m_CurrentScale / 2.0f))));
+            poly0.add(vec2( (realWidth + realXMarge * 2.0f) - (k * graphPointPadding), realLowerBound - (currentFPS / (m_CurrentScale / 2.0f))));
         }
 
-        poly0.add(vec2(105.0f - (k * 2), 45.0f - (currentFPS / (m_CurrentScale / 2.0f))));
+        poly0.add(vec2((realWidth + realXMarge) - (k * graphPointPadding), realLowerBound - (currentFPS / (m_CurrentScale / 2.0f))));
 
         ++k;
     }
 
     if (k < 50)
     {
-        poly0.add(vec2(105.0f - ((k - 1) * 2), 50.0f));
+        poly0.add(vec2((realWidth + realXMarge) - ((k - 1) * graphPointPadding), realLowerBound + realYMarge));
     }
     else
     {
-        poly0.add(vec2(0.0f, 45.0f - (currentFPS / (m_CurrentScale / 2.0f))));
-        poly0.add(vec2(0.0f, 50.0f));
+        poly0.add(vec2(0.0f, realLowerBound - (currentFPS / (m_CurrentScale / 2.0f))));
+        poly0.add(vec2(0.0f, realLowerBound + realYMarge));
     }
 
-    poly0.add(vec2(110.0f, 50.0f));
+    poly0.add(vec2((realWidth + realXMarge * 2.0f), realLowerBound + realYMarge));
 
     if (m_FpsHistory.size() > 50)
     {
@@ -311,25 +325,25 @@ void FPSGraph::renderGraph()
 
         if (k == 0)
         {
-            poly1.add(vec2(110.0f - (k * 2), 45.0f - (currentDTime / (m_CurrentScale / 2.0f))));
+            poly1.add(vec2((realWidth + realXMarge * 2.0f) - (k * graphPointPadding), realLowerBound - (currentDTime / (m_CurrentScale / 2.0f))));
         }
 
-        poly1.add(vec2(105.0f - (k * 2), 45.0f - (currentDTime / (m_CurrentScale / 2.0f))));
+        poly1.add(vec2((realWidth + realXMarge) - (k * graphPointPadding), realLowerBound - (currentDTime / (m_CurrentScale / 2.0f))));
 
         ++k;
     }
 
     if (k < 50)
     {
-        poly1.add(vec2(105.0f - ((k - 1) * 2), 50.0f));
+        poly1.add(vec2((realWidth + realXMarge) - ((k - 1) * graphPointPadding), realLowerBound + realYMarge));
     }
     else
     {
-        poly1.add(vec2(0.0f, 45.0f - (currentDTime / (m_CurrentScale / 2.0f))));
-        poly1.add(vec2(0.0f, 50.0f));
+        poly1.add(vec2(0.0f, realLowerBound - (currentDTime / (m_CurrentScale / 2.0f))));
+        poly1.add(vec2(0.0f, realLowerBound + realYMarge));
     }
 
-    poly1.add(vec2(110.0f, 50.0f));
+    poly1.add(vec2((realWidth + realXMarge * 2.0f), realLowerBound + realYMarge));
 
     updateScale(maxFpsInGraph);
 
@@ -435,8 +449,8 @@ void FPSGraph::renderGraph()
 
     cr->newPath();
 
-    cr->rectangle(vec2(5,24),vec2(5,1));
-    cr->rectangle(vec2(5,44),vec2(5,1));
+    cr->rectangle(vec2(realXMarge,24 * m_VisualScale),vec2(realXMarge,1));
+    cr->rectangle(vec2(realXMarge,44 * m_VisualScale),vec2(realXMarge,1));
 
     cr->setColor(m_ColorWhite);
 
@@ -444,17 +458,17 @@ void FPSGraph::renderGraph()
 
     cr->newPath();
 
-    cr->rectangle(vec2(0,0),vec2(110,5));
-    cr->rectangle(vec2(0,0),vec2(5,65));
-    cr->rectangle(vec2(105,0),vec2(5,65));
-    cr->rectangle(vec2(0,45),vec2(110,50));
+    cr->rectangle(vec2(0,0),vec2((realWidth + realXMarge * 2.0f),realYMarge));
+    cr->rectangle(vec2(0,0),vec2(realXMarge,65 * m_VisualScale));
+    cr->rectangle(vec2((realWidth + realXMarge),0),vec2(realXMarge,65 * m_VisualScale));
+    cr->rectangle(vec2(0,realLowerBound),vec2((realWidth + realXMarge * 2.0f),realLowerBound + realYMarge));
 
     cr->setColor(m_ColorDarkGrey);
     cr->fill();
 
     cr->newPath();
 
-    cr->rectangle(vec2(0,0),vec2(110,82));
+    cr->rectangle(vec2(0,0),vec2((realWidth + realXMarge * 2.0f),82 * m_VisualScale));
 
     cr->setColor(Color((uint8)20,(uint8)20,(uint8)20));
 
@@ -466,7 +480,7 @@ void FPSGraph::renderGraph()
 
     cr->newPath();
     cr->setColor(m_ColorYellow);
-    cr->text(m_Text, vec2(5,50));
+    cr->text(m_Text, vec2(realXMarge,realLowerBound + realYMarge));
     cr->fill();
 
     m_Text.clear();
@@ -475,7 +489,7 @@ void FPSGraph::renderGraph()
     
     cr->newPath();
     cr->setColor(m_ColorBlue);
-    cr->text(m_Text, vec2(5,50));
+    cr->text(m_Text, vec2(realXMarge,realLowerBound + realYMarge));
     cr->fill();
 
     cr->setColor(m_ColorWhiteAlpha);
@@ -485,14 +499,14 @@ void FPSGraph::renderGraph()
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cr->newPath();
-    cr->text(m_Text, vec2(5,11));
+    cr->text(m_Text, vec2(realXMarge,11 * m_VisualScale));
     cr->fill();
 
     m_Text.clear();
     m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.25f);
 
     cr->newPath();
-    cr->text(m_Text, vec2(5,31));
+    cr->text(m_Text, vec2(realXMarge,31 * m_VisualScale));
     cr->fill();
 
     m_Text.clear();
@@ -501,7 +515,7 @@ void FPSGraph::renderGraph()
 
     cr->newPath();
     cr->setColor(m_ColorWhite);
-    cr->text(m_Text, vec2(5,61));
+    cr->text(m_Text, vec2(realXMarge,61 * m_VisualScale));
     cr->fill();
 
     he::tools::SystemStats* const stats(he::tools::SystemStats::getInstance());
@@ -513,7 +527,7 @@ void FPSGraph::renderGraph()
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     cr->newPath();
-    cr->text(m_Text, vec2(5,61));
+    cr->text(m_Text, vec2(realXMarge,61 * m_VisualScale));
     cr->fill();
 
     m_Text.clear();
@@ -521,7 +535,7 @@ void FPSGraph::renderGraph()
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cr->newPath();
-    cr->text(m_Text, vec2(5,72));
+    cr->text(m_Text, vec2(realXMarge,72 * m_VisualScale));
     cr->fill();
 
     m_Text.clear();
@@ -529,7 +543,7 @@ void FPSGraph::renderGraph()
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     cr->newPath();
-    cr->text(m_Text, vec2(5,72));
+    cr->text(m_Text, vec2(realXMarge,72 * m_VisualScale));
     cr->fill();
 
     cr->renderSpriteAsync();

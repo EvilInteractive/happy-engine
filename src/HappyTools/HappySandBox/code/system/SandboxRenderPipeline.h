@@ -27,6 +27,7 @@
 namespace he {
 namespace gfx {
     class Renderer2D;
+    class ShapeRenderer;
     class View;
 } }
 namespace hs {
@@ -50,12 +51,14 @@ public:
 
     void init(he::gfx::View* const view);
 
+    he::gfx::ShapeRenderer* getShapeRenderer() const { return m_ShapeRenderer; }
     UIRenderer* getUIRenderer() const { return m_UIRenderer; }
     DebugRenderer* getDebugRenderer() const { return m_DebugRenderer; }
 
 private:
     UIRenderer* m_UIRenderer;
     DebugRenderer* m_DebugRenderer;
+    he::gfx::ShapeRenderer* m_ShapeRenderer;
     
     //Disable default copy constructor and default assignment operator
     SandboxRenderPipeline(const SandboxRenderPipeline&);

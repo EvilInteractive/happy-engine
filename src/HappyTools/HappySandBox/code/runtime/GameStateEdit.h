@@ -5,7 +5,7 @@
 #include "system/GameState.h"
 
 namespace hs {
-
+class FlyCamera;
 class GameStateEdit : public GameState
 {
 public:
@@ -18,6 +18,7 @@ public:
     virtual void tick(const float dTime);
 
 private:
+    FlyCamera* m_EditorCamera;
 
     //Disable default copy constructor and default assignment operator
     GameStateEdit(const GameStateEdit&);

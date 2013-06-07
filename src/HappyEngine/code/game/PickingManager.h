@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Singleton.h"
+#include "IPickingManager.h"
 
 namespace he {
 class Ray;
@@ -30,7 +31,7 @@ namespace ge {
 class PickResult;
 class Pickable;
 
-class PickingManager : public Singleton<PickingManager>
+class PickingManager : public IPickingManager, public Singleton<PickingManager>
 {
     friend class Singleton<PickingManager>;
 public:

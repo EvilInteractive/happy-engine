@@ -25,5 +25,6 @@
 #pragma message("HappySandBox: Compiling precompiled headers.")
 
 #include "HappyPCH.h"
+#include "SandboxFixedStrings.h"
 
 #endif

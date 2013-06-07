@@ -27,7 +27,6 @@
 #include "IRenderer.h"
 #include "DrawListContainer.h"
 #include "BufferLayout.h"
-#include "RenderSettings.h"
 #include "IDrawable2D.h"
 
 namespace he {
@@ -128,6 +127,7 @@ public:
     virtual RenderPass getRenderPass() const { return RenderPass_Opac; }
     virtual uint8 getRenderPriority() const { return 50; }
 
+    virtual void preRender() {}
     virtual void render();
     virtual void draw2D(gui::Canvas2D* canvas);
 
@@ -135,14 +135,12 @@ private:
     static BufferLayout s_VertexLayoutFullscreenQuad;
 
     void onViewResized();
-    void onSettingChanged();
+    void initFromSettings();
     void compileShaders();
 
     void postAmbDirIllLight();
     void postPointLights();
     void postSpotLights();
-
-
 
     //////////////////////////////////////////////////////////////////////////
     ///                              Draw Data                             ///
@@ -185,7 +183,7 @@ private:
     //////////////////////////////////////////////////////////////////////////
     ///                              Settings                              ///
     ////////////////////////////////////////////////////////////////////////// 
-    LightingSettings m_Settings;
+    bool m_SpecularEnabled;
     bool m_ShowDebugTextures;
 
     

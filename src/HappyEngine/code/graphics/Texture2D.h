@@ -29,7 +29,11 @@
 
 namespace he {
 namespace gfx {
-   
+
+class Texture2D;
+  
+typedef ResourceFactory<Texture2D> TextureFactory;
+
 class Texture2D : public Resource<Texture2D>
 {
 public:

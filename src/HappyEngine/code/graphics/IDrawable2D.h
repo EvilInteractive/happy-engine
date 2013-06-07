@@ -35,7 +35,7 @@ public:
 
     virtual ~IDrawable2D() {};
 
-    virtual void draw2D(gui::Canvas2D* canvas) = 0;
+    virtual void draw2D(he::gui::Canvas2D* canvas) = 0;
 }; 
 
 } } //end namespace

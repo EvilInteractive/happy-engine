@@ -31,14 +31,24 @@
 
 #include "PluginLoader.h"
 #include "system/EntityManager.h"
+#include "system/SandboxRenderPipeline.h"
+#include "system/GameStateMachine.h"
+#include "system/EditorPickingManager.h"
+#include "system/SelectionManager.h"
+
 #include <EntityManager.h>
 #include <ControlsManager.h>
 #include <Keyboard.h>
+#include <Mouse.h>
 #include <materialGenerator/MaterialGeneratorGraph.h>
 #include <GraphicsEngine.h>
+#include <Ray.h>
+#include <PickResult.h>
+#include <CameraPerspective.h>
+#include <PickingComponent.h>
+#include <IPlugin.h>
+#include <GlobalSettings.h>
 
-#include "system/SandboxRenderPipeline.h"
-#include "system/GameStateMachine.h"
 
 namespace hs {
 
@@ -79,6 +89,10 @@ void Sandbox::destroy()
 
 void Sandbox::init()
 {
+    he::GlobalSettings* const globalSettings(he::GlobalSettings::getInstance());
+    globalSettings->load(he::Path("sandboxSettings.cfg"));
+    globalSettings->save(he::Path("sandboxSettings.cfg"));
+
     m_View = GRAPHICS->createView();
     m_Window = GRAPHICS->createWindow();
 
@@ -92,16 +106,13 @@ void Sandbox::init()
     
     using namespace he;
 
-    he::gfx::RenderSettings settings;
-    settings.enableDeferred = false;
-    settings.enablePost = false;
-    settings.stereoSetting = gfx::StereoSetting_None;
-    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    he::gfx::CameraSettings cameraSettings;
+    cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->setWindow(m_Window);
 
     m_RenderPipeline = NEW SandboxRenderPipeline();
     m_RenderPipeline->init(m_View);
-    m_View->init(settings);
+    m_View->init(cameraSettings);
             
     m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph();
     m_MaterialGenerator->init();
@@ -115,14 +126,15 @@ void Sandbox::init()
 
 void Sandbox::tick(float dTime)
 {
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_F9))
+    he::io::ControlsManager* const controls(CONTROLS);
+    he::io::IKeyboard* const keyboard(controls->getKeyboard());
+    if (keyboard->isKeyPressed(he::io::Key_F9))
     {
         if (m_MaterialGenerator->isOpen())
             m_MaterialGenerator->close();
         else
             m_MaterialGenerator->open();
     }
-
     he::ge::Game::tick(dTime);
 }
 

@@ -36,6 +36,7 @@ public:
     inline const vec3& getHitPosition() const { return m_HitPosition; }
     inline const vec3& getHitNormal() const { return m_HitNormal; }
     inline float getHitDistance() const { return m_HitDistance; }
+    inline Pickable* getObject() const { return m_HitObject; }
 
     void reset() { m_HitObject = nullptr; m_HitDistance = FLT_MAX; }
 
