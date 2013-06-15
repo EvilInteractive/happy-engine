@@ -13,7 +13,11 @@ add_definitions(-DSFML_STATIC -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNING
 include_directories (${HappyEngine_SOURCE_DIR}/HappyMessageBox/include)
 
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/include)
+if (MSVC11)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0-mcvc11/include)
+else()
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/include)
+endif()
 
 # set compiler options
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
