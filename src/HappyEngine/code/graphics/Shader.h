@@ -104,7 +104,7 @@ public:
 
         he_free(m_Buffer);
     }
-    ~UniformBuffer()
+    ~SharedUniformBuffer()
     {
         glDeleteBuffers(1, &m_GlBuffer);
     }

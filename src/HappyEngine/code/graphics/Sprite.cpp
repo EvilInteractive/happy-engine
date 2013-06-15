@@ -71,7 +71,7 @@ void Sprite::init(const vec2& size, char flags)
         gfx::TextureBufferLayout_RGBA,
         gfx::TextureBufferType_Byte,
         0);
-    m_Render->setLoadFinished();
+    m_Render->setLoaded();
 
     float thirdX(size.x / 3);
     float thirdY(size.y / 3);

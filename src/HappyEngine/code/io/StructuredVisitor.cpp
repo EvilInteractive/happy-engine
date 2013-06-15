@@ -130,6 +130,7 @@ bool StructuredVisitor::visit( const he::FixedString& key, he::FixedString& valu
         he::String str(value.c_str());
         result = visit(key, str, comment);
     }
+    return result;
 }
 
 } } //end namespace
