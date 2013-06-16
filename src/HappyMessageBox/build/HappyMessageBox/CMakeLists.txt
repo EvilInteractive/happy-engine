@@ -14,7 +14,7 @@ include_directories (${HappyEngine_SOURCE_DIR}/HappyMessageBox/include)
 
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/include)
 if (MSVC11)
-include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0-mcvc11/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0-msvc11/include)
 else()
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/include)
 endif()

@@ -8,7 +8,11 @@ include_directories (${HappyEngine_SOURCE_DIR}/HappyMessageBox/include)
 include_directories (${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/include)
 
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/lib/${PLATFORM}${BITNESS})
+if (MSVC11)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0-msvc11/lib/${PLATFORM}${BITNESS})
+else()
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/lib/${PLATFORM}${BITNESS})
+endif()
 
 # set compiler options
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
@@ -21,6 +25,7 @@ add_executable (HappyMessageBoxTest ${HAPPYMESSAGEBOXTEST_SRCS})
 # link HappyJson
 target_link_libraries(HappyMessageBoxTest HappyMessageBox)
 target_link_libraries(HappyMessageBoxTest awesomium)
+
 target_link_libraries(HappyMessageBoxTest debug sfml-main-d)
 target_link_libraries(HappyMessageBoxTest debug sfml-system-s-d)
 target_link_libraries(HappyMessageBoxTest debug sfml-window-s-d)
