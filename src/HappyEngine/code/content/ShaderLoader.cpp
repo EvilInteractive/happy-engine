@@ -26,6 +26,7 @@
 #include "Shader.h"
 #include "StructuredVisitor.h"
 #include "ShaderVar.h"
+#include "GlobalSettings.h"
 
 namespace
 {
@@ -241,13 +242,14 @@ ObjectHandle ShaderLoader::load(const he::String& vsPath, const he::String& fsPa
     }
     else
     {
+        const gfx::RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
         gfx::Shader* shader(factory->get(factory->create()));
         std::set<he::String> defines;
-        if (m_RenderSettings.lightingSettings.enableShadows)
+        if (settings.lightingSettings.enableShadows)
             defines.insert("SHADOWS");
-        if (m_RenderSettings.lightingSettings.enableSpecular)
+        if (settings.lightingSettings.enableSpecular)
             defines.insert("SPECULAR");
-        if (m_RenderSettings.lightingSettings.enableNormalMap)
+        if (settings.lightingSettings.enableNormalMap)
             defines.insert("NORMALMAP");
 
         shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
@@ -255,11 +257,6 @@ ObjectHandle ShaderLoader::load(const he::String& vsPath, const he::String& fsPa
         shader->setLoaded();
         return shader->getHandle();
     }
-}
-
-void ShaderLoader::setRenderSettings( const gfx::RenderSettings& settings )
-{
-    m_RenderSettings = settings;
 }
 
 } } //end namespace

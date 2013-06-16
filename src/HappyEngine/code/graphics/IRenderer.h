@@ -45,8 +45,9 @@ public:
 
     virtual RenderPass getRenderPass() const = 0;
     virtual uint8 getRenderPriority() const = 0; // highest = first 
-    
-    virtual void render() = 0;
+
+    virtual void preRender() = 0; // Render all your textures
+    virtual void render() = 0; // Render to screen (can get called twice (3D))
 
 };
 

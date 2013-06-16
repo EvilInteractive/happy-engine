@@ -22,9 +22,9 @@
 #define _HE_View_H_
 #pragma once
 
-#include "RenderSettings.h"
 #include "ITickable.h"
 #include "Singleton.h"
+#include "RenderSettings.h"
 
 namespace he {
 namespace gfx {
@@ -54,6 +54,42 @@ public:
 private:
 };
 
+struct CameraSettings
+{
+    CameraSettings(): fov(pi / 3.0f), useRelativeViewport(true) 
+    { 
+        viewport.relativeViewport[0] = 0.0f; 
+        viewport.relativeViewport[1] = 0.0f;
+        viewport.relativeViewport[2] = 1.0f;
+        viewport.relativeViewport[3] = 1.0f;
+    }
+
+    void setRelativeViewport(const RectF& rect)
+    {
+        useRelativeViewport = true;
+        viewport.relativeViewport[0] = rect.x; 
+        viewport.relativeViewport[1] = rect.y;
+        viewport.relativeViewport[2] = rect.width;
+        viewport.relativeViewport[3] = rect.height;
+    }
+    void setAbsoluteViewport(const RectI& rect)
+    {
+        useRelativeViewport = false;
+        viewport.absoluteViewport[0] = rect.x; 
+        viewport.absoluteViewport[1] = rect.y;
+        viewport.absoluteViewport[2] = rect.width;
+        viewport.absoluteViewport[3] = rect.height;
+    }
+
+    float fov;
+    bool useRelativeViewport;
+    union 
+    {
+        float relativeViewport[4];
+        uint32 absoluteViewport[4];
+    } viewport;
+};
+
 class HAPPY_ENTRY View : public ge::ITickable
 {
     DECLARE_OBJECT(View)
@@ -65,17 +101,16 @@ public:
     };
 
     View();
-    virtual ~View();
+    ~View();
 
     // Init
-    virtual void init(const RenderSettings& settings);
-    const RenderSettings& getSettings() const { return m_Settings; }
+    void init(const CameraSettings& cameraSettings, const bool forceDisablePost = false);
 
     // Setters
     void setStereo(const StereoSetting stereo, const bool force = false);
 
     // PLugin
-    virtual void addRenderPlugin(IRenderer* renderer);
+    void addRenderPlugin(IRenderer* renderer);
     
     // Window
     const RectI& getViewport() const { return m_Viewport; }
@@ -83,7 +118,6 @@ public:
     void setWindow(Window* window, const EViewInsertMode mode = eViewInsertMode_Last);
     Window* getWindow() const { return m_Window; }
     
-    event0<void> SettingsChanged;
     event0<void> ViewportSizeChanged;
 
     PostProcesser* getPostProcessor() const { return m_PostProcesser; }
@@ -91,10 +125,12 @@ public:
     // Camera
     void setCamera(ICamera* const camera);
     ICamera* getCamera() const { return m_Camera; }
+
+    gfx::StereoSetting getStereo() const { return m_Stereo; }
     
     // Update / Draw
-    virtual void tick( float dTime );
-    virtual void draw();
+    void tick( float dTime );
+    void draw();
 
 private:
     void resize();
@@ -112,7 +148,6 @@ private:
     Texture2D* m_ColorRenderMap;
     Texture2D* m_NormalDepthRenderMap;
     RenderTarget* m_IntermediateRenderTarget;
-    RenderTarget* m_OutputRenderTarget;
     
     // Post
     PostProcesser* m_PostProcesser;
@@ -124,7 +159,8 @@ private:
 
     gfx::Window* m_Window;
 
-    RenderSettings m_Settings;
+    gfx::CameraSettings m_CameraSettings;
+    gfx::StereoSetting m_Stereo;
 
     he::PrimitiveList<IRenderer*> m_PrePostRenderPlugins;
     he::PrimitiveList<IRenderer*> m_PostPostRenderPlugins;

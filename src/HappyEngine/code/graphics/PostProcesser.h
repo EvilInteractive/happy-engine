@@ -22,7 +22,6 @@
 #define _HE_POST_PROCESSER_H_
 #pragma once
 
-#include "RenderSettings.h"
 #include "IDrawable2D.h"
 
 namespace he {
@@ -62,7 +61,7 @@ class PostProcesser : public IDrawable2D
 {
 public:
     PostProcesser();
-    virtual ~PostProcesser();
+    ~PostProcesser();
 
     void init(View* view, const RenderTarget* writeTarget, const RenderTarget* readTarget);
 
@@ -73,10 +72,10 @@ public:
     void setDebugRenderer(Renderer2D* renderer);
 
     void draw();
-    virtual void draw2D(gui::Canvas2D* canvas);
+    void draw2D(gui::Canvas2D* canvas);
 
 private:
-    void onSettingsChanged(const RenderSettings& settings, bool force = false);
+    void initFromSettings();
     void compileShader();
 
     enum PostShaderVar
@@ -108,7 +107,6 @@ private:
     View* m_View;
     const RenderTarget* m_WriteRenderTarget;
     const RenderTarget* m_ReadRenderTarget;
-    RenderSettings m_Settings;
 
     Renderer2D* m_DebugRenderer;
 
@@ -125,6 +123,8 @@ private:
 
     ModelMesh* m_Quad;
 
+    bool m_AOEnabled;
+    bool m_FogEnabled;
     vec3 m_FogColor;
     ToneMapData m_ToneMapData;
 

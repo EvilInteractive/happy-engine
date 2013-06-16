@@ -23,6 +23,7 @@
 #include "HappyEngine.h"
 #include "ContentManager.h"
 #include "Canvas2D.h"
+#include "Font.h"
 
 namespace ht {
 
@@ -35,6 +36,7 @@ Grid::Grid(int width, int height)
 	,m_GoalTexture(nullptr)
 	,m_StartTexture(nullptr)
 	,m_PathTexture(nullptr)
+	,m_DebugText(nullptr)
 {
 }
 
@@ -76,12 +78,21 @@ void Grid::init()
 	m_GoalTexture = CONTENT->asyncLoadTexture2D("AI/node_goal.png");
 	m_BlockedTexture = CONTENT->asyncLoadTexture2D("AI/node_blocked.png");
 	m_PathTexture = CONTENT->asyncLoadTexture2D("AI/node_path.png");
+
+	// INIT DEBUGTEXT
+	he::ct::ContentManager* contentMan(CONTENT);
+	he::gui::Font* const debugFont(contentMan->getDefaultFont(6));
+	m_DebugText = NEW he::gui::Text();
+	m_DebugText->setFont(debugFont);
+	debugFont->release();
 }
 
 void Grid::draw2D( he::gui::Canvas2D* canvas )
 {
 	m_Nodes.forEach([&](ht::Node& gridNode)
 	{
+		m_DebugText->clear();
+
 		float xPos = (float)gridNode.GetCoords().xPos * 64;
 		float yPos = (float)gridNode.GetCoords().yPos * 64;
 		he::vec2 drawPos(xPos, yPos);
@@ -107,6 +118,10 @@ void Grid::draw2D( he::gui::Canvas2D* canvas )
 			canvas->drawImage(m_PathTexture, drawPos);
 			break;
 		}
+
+		m_DebugText->addTextExt("GValue: %i\nHValue: %i\nTotal: %i\n", gridNode.GetCost(), gridNode.GetHeuristic(), gridNode.GetTotalScore());
+
+		canvas->fillText(*m_DebugText, drawPos);
 	});
 }
 

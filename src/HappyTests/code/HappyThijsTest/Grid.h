@@ -23,6 +23,13 @@
 #pragma once
 #include "Node.h"
 #include "Texture2D.h"
+#include <IDrawable2D.h>
+
+namespace he {
+	namespace gui {
+		class Text;
+	}
+}
 
 namespace ht {
 
@@ -53,7 +60,6 @@ public:
 
 	void ResetNodes(const int goalIndex);
 
-
 private:
 
 	int m_Width; 
@@ -68,6 +74,9 @@ private:
 	const he::gfx::Texture2D* m_GoalTexture;
 	const he::gfx::Texture2D* m_BlockedTexture;
 	const he::gfx::Texture2D* m_PathTexture;
+
+	// DEBUG TEXT
+	he::gui::Text* m_DebugText;
 
     //Disable default copy constructor and default assignment operator
     Grid(const Grid&);

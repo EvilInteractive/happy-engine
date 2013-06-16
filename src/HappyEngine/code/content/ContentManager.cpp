@@ -314,12 +314,6 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
     return m_FullscreenQuad;
 }
 
-void ContentManager::setRenderSettings( const gfx::RenderSettings& settings )
-{
-    m_MaterialLoader->setRenderSettings(settings);
-    m_ShaderLoader->setRenderSettings(settings);
-}
-
 bool ContentManager::isLoading() const
 {
     return m_ModelLoader->isLoading() || m_TextureLoader->isLoading();

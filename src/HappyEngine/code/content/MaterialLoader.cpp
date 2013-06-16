@@ -28,6 +28,7 @@
 #include "Material.h"
 #include "ShaderLayout.h"
 #include "GlobalStringTable.h"
+#include "GlobalSettings.h"
 
 namespace he {
 namespace ct {
@@ -149,12 +150,13 @@ ObjectHandle MaterialLoader::load(const he::String& path)
         
         if (reader.isOpen())
         {     
+            const gfx::RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
             gfx::ShaderLayout materialLayout;
             // [Shader]
             {
                 he::String file;
                 file = reader.readString("Forward", "shader", "");
-                if (m_RenderSettings.enableDeferred)
+                if (settings.enableDeferred)
                 {
                     he::String temp = reader.readString("Deferred", "shader", file);
                     if (temp != file)
@@ -478,11 +480,6 @@ ObjectHandle MaterialLoader::load(const he::String& path)
         material->setLoaded();
         return material->getHandle();
     }
-}
-
-void MaterialLoader::setRenderSettings( const gfx::RenderSettings& settings )
-{
-    m_RenderSettings = settings;
 }
 
 } } //end namespace

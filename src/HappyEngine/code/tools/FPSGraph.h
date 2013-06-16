@@ -65,7 +65,7 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    FPSGraph(float interval = 0.5f, uint16 recordTime = 60);
+    FPSGraph(float visualScale = 1.0f, float interval = 0.5f, uint16 recordTime = 60);
     virtual ~FPSGraph();
 
     /* GENERAL */
@@ -103,6 +103,7 @@ private:
     float m_CurrentDTime;
     float m_Interval;
     float m_AcumulatedDTime;
+    float m_VisualScale;
 
     uint16 m_CurrentFPS;
     uint16 m_Ticks;

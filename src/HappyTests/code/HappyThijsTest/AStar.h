@@ -58,9 +58,9 @@ public:
 
 	void init();
 	void draw2D(he::gui::Canvas2D* /*canvas*/ );
-	void calculate();
+	void Calculate();
 
-	void processNode(const int nodeIndex);
+	void ProcessNode(const int nodeIndex);
 
 	// SET GOAL AND START
 	void SetGoal(const int column, const int row);

@@ -98,9 +98,7 @@ public:
     const he::String& getShaderFolder() const;
     const he::String& getMaterialFolder() const;
     const he::String& getFxFolder() const;
-
-    void setRenderSettings(const gfx::RenderSettings& settings);
-
+    
     bool isLoading() const;
 
 private:

@@ -23,6 +23,7 @@
 #pragma once
 
 #include <Game.h>
+#include <IDrawable2D.h>
 
 namespace he {
     namespace gfx {
@@ -41,7 +42,7 @@ namespace he {
 
 namespace ht {
 
-class MainGame : public he::ge::Game
+    class MainGame : public he::ge::Game, public he::gfx::IDrawable2D
 {
 public:
     MainGame();
@@ -49,6 +50,8 @@ public:
 
     virtual void init();
     virtual void destroy();
+
+    void draw2D(he::gui::Canvas2D* canvas);
     
 private:
 

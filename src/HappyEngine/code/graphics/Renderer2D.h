@@ -62,6 +62,7 @@ public:
     virtual void init(View* view, const RenderTarget* target);
     virtual RenderPass getRenderPass() const { return RenderPass_Gui; }
     virtual uint8 getRenderPriority() const { return static_cast<uint8>(50); }
+    virtual void preRender();
     virtual void render();
 
 private:

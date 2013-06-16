@@ -22,7 +22,8 @@
 #define _HT_HappyPluginTestMain_H_
 #pragma once
 
-#include "IPlugin.h"
+#include <IPlugin.h>
+#include <IDrawable2D.h>
 
 namespace he {
     namespace gfx {
@@ -34,11 +35,14 @@ namespace he {
         class DefaultRenderPipeline;
         class Entity;
     }
+    namespace gui {
+        class Text;
+    }
 }
 
 namespace ht {
 class FlyCamera;
-class HappyPluginTestMain : public he::pl::IPlugin
+class HappyPluginTestMain : public he::pl::IPlugin, public he::gfx::IDrawable2D
 {
 public:
     HappyPluginTestMain();
@@ -61,13 +65,20 @@ public:
     virtual void onPauseGame();
     virtual void onResumeGame();
 
+
+    virtual void draw2D(he::gui::Canvas2D* canvas);
+
 private:
     he::gfx::View* m_View;
     he::gfx::Scene* m_Scene;
     he::ge::DefaultRenderPipeline* m_RenderPipeline;
-    FlyCamera* m_Camera;
+    he::gfx::CameraPerspective* m_Camera;
 
     he::PrimitiveList<he::ge::Entity*> m_Entities;
+    
+    he::gui::Text* m_DebugText;
+
+    bool m_VREnabled;
 
     /* DEFAULT COPY & ASSIGNMENT */
     HappyPluginTestMain(const HappyPluginTestMain&);

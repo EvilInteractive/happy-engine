@@ -25,6 +25,9 @@
 #include "HappyTypes.h"
 
 namespace he {
+namespace io {
+    class StructuredVisitor;
+}
 namespace gfx {
  
 struct PostSettings
@@ -34,6 +37,8 @@ struct PostSettings
         float exposureSpeed;
 
         HdrSettings(): exposureSpeed(1.0f) {}
+
+        void visit(io::StructuredVisitor* const visitor);
     };
     struct AOSettings
     {
@@ -41,19 +46,21 @@ struct PostSettings
         float maxDistance;
 
         AOSettings(): radius(1.0f), maxDistance(2.0f) {}
+
+        void visit(io::StructuredVisitor* const visitor);
     };
     struct ShaderSettings
     {
         ShaderSettings(): enableHDR(true), enableAO(false), enableBloom(true), enableNormalEdgeDetect(false),
             enableDepthEdgeDetect(false), enableVignette(true), enableFog(true) {}
 
-        bool enableHDR : 1;
-        bool enableAO : 1;
-        bool enableBloom : 1;
-        bool enableNormalEdgeDetect : 1;
-        bool enableDepthEdgeDetect : 1;
-        bool enableVignette : 1;
-        bool enableFog : 1;
+        bool enableHDR;
+        bool enableAO;
+        bool enableBloom;
+        bool enableNormalEdgeDetect;
+        bool enableDepthEdgeDetect;
+        bool enableVignette;
+        bool enableFog;
 
         bool operator==(const ShaderSettings& other) const
         {
@@ -69,16 +76,22 @@ struct PostSettings
         {
             return !(*this == other);
         }
+
+        void visit(io::StructuredVisitor* const visitor);
     };
 
     HdrSettings hdrSettings;
     ShaderSettings shaderSettings;
     AOSettings aoSettings;
+
+    void visit(io::StructuredVisitor* const visitor);
 };  
 struct ShadowSettings
 {
     ShadowSettings(): shadowMult(1) {}
     uint8 shadowMult;
+
+    void visit(io::StructuredVisitor* const visitor);
 };
 struct LightingSettings
 {
@@ -100,53 +113,21 @@ struct LightingSettings
     {
         return !(*this == other);
     }
+
+    void visit(io::StructuredVisitor* const visitor);
 };
 enum StereoSetting
 {
     StereoSetting_None,
     StereoSetting_OculusRift
 }; 
-struct CameraSettings
-{
-    CameraSettings(): fov(pi / 3.0f), useRelativeViewport(true) 
-    { 
-        viewport.relativeViewport[0] = 0.0f; 
-        viewport.relativeViewport[1] = 0.0f;
-        viewport.relativeViewport[2] = 1.0f;
-        viewport.relativeViewport[3] = 1.0f;
-    }
-
-    void setRelativeViewport(const RectF& rect)
-    {
-        useRelativeViewport = true;
-        viewport.relativeViewport[0] = rect.x; 
-        viewport.relativeViewport[1] = rect.y;
-        viewport.relativeViewport[2] = rect.width;
-        viewport.relativeViewport[3] = rect.height;
-    }
-    void setAbsoluteViewport(const RectI& rect)
-    {
-        useRelativeViewport = false;
-        viewport.absoluteViewport[0] = rect.x; 
-        viewport.absoluteViewport[1] = rect.y;
-        viewport.absoluteViewport[2] = rect.width;
-        viewport.absoluteViewport[3] = rect.height;
-    }
-
-    float fov;
-    bool useRelativeViewport;
-    union 
-    {
-        float relativeViewport[4];
-        uint32 absoluteViewport[4];
-    } viewport;
-};
 
 struct RenderSettings
 {
 public:
     RenderSettings(): enableDeferred(true), enablePost(true), stereoSetting(StereoSetting_None)
     {}
+
     bool enableDeferred;
     bool enablePost; 
     StereoSetting stereoSetting;
@@ -154,7 +135,8 @@ public:
     LightingSettings lightingSettings;
     PostSettings postSettings;
     ShadowSettings shadowSettings;
-    CameraSettings cameraSettings;
+
+    void visit(io::StructuredVisitor* const visitor);
 };
 
 } } //end namespace

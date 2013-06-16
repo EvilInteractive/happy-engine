@@ -33,7 +33,7 @@ class Texture2D;
 class RenderTarget
 {
 public:
-    RenderTarget(GLContext* context);
+    explicit RenderTarget(GLContext* const context);
     virtual ~RenderTarget();
 
     // Add all targets then call init
