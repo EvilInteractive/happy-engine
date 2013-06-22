@@ -127,7 +127,7 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
     ///                             Shaders                                ///
     //////////////////////////////////////////////////////////////////////////
     ShaderLayout layout;
-    layout.addElement(ShaderLayoutElement(0, "inPosition"));
+    layout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
 
     const he::String& folder(CONTENT->getShaderFolderPath().str());
 

@@ -36,6 +36,9 @@ struct HAPPY_ENTRY vec4
 public:
     float x, y, z, w;
 
+    const static vec4 one;
+    const static vec4 zero;
+
     vec4();
     explicit vec4(const physx::PxVec4& vec);
     vec4(const vec3& vec, float w);

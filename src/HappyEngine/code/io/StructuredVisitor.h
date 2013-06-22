@@ -129,17 +129,19 @@ public:
     }
     
     template<typename CastType, typename EnumType>
-    bool visitEnum(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL)
+    bool visitCasted(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL, 
+        const std::function<CastType(EnumType)>& castTo = checked_numcast<CastType>, 
+        const std::function<EnumType(CastType)>& castFrom = checked_numcast<EnumType>)
     {
         HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
         CastType value;
         if (m_OpenType == eOpenType_Write)
         {
-            value = checked_numcast<CastType>(enumValue);
+            value = castTo(enumValue);
         }
         const bool result(visit(key, value, comment));
 
-        enumValue = checked_numcast<EnumType>(value);
+        enumValue = castFrom(value);
 
         return result;
     }

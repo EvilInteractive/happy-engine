@@ -25,7 +25,32 @@
 #include "AssetContainer.h"
 
 namespace he {
+namespace io {
+    class StructuredVisitor;
+}
+namespace gfx {
+    class Material;
+}
 namespace ct {
+
+struct MaterialDesc
+{
+    MaterialDesc();
+
+    he::String m_Shader; // Path to shader desc file, later this should be a resource ID
+    bool m_IsBlended;
+    bool m_NoPost;
+    bool m_CullFrontFace;
+    bool m_DepthRead;
+    bool m_DepthWrite;
+    gfx::BlendEquation m_BlendEquation;
+    gfx::BlendFunc m_SourceBlend;
+    gfx::BlendFunc m_DestBlend;
+
+    // Default values for uniforms go here as well
+
+    void visit(he::io::StructuredVisitor* const visitor);
+};
 
 class MaterialLoader
 {
@@ -33,10 +58,10 @@ public:
     MaterialLoader();
     ~MaterialLoader();
     
-    ObjectHandle load(const he::String& path);
+    gfx::Material* load(const he::Path& path);
     
 private:
-    AssetContainer<ObjectHandle> m_AssetContainer;
+    AssetContainer<ObjectHandle, he::Path> m_AssetContainer;
     
     //Disable default copy constructor and default assignment operator
     MaterialLoader(const MaterialLoader&);

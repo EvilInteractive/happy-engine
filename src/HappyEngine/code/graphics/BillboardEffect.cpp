@@ -44,8 +44,8 @@ void BillboardEffect::load()
     using namespace gfx;
 
     ShaderLayout layout;
-    layout.addElement(ShaderLayoutElement(0, "inPosition"));
-    layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
+    layout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
+    layout.addAttribute(ShaderLayoutAttribute(1, "inTexCoord"));
 
     m_pShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     he::ObjectList<he::String> shaderOutputs;

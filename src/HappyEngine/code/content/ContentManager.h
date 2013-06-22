@@ -46,7 +46,7 @@ public:
     ContentManager();
     virtual ~ContentManager();
     
-    void tick(float dTime); //checks for new load operations, if true start thread
+    void tick(float dTime);
     void glThreadInvoke();  //needed for all of the gl operations
 
     gfx::Model* asyncLoadModel(const he::String& path);
@@ -59,9 +59,11 @@ public:
     const gfx::Texture2D* asyncLoadTexture2D(const he::String& path);
     const gfx::TextureCube* asyncLoadTextureCube(const he::String& path);
     const gfx::Texture2D* asyncMakeTexture2D(const Color& color);
+    const gfx::TextureCube* asyncMakeTextureCube(const Color& color);
     const gfx::Texture2D* loadTexture2D(const he::String& path);
     const gfx::TextureCube* loadTextureCube(const he::String& path);
     const gfx::Texture2D* makeTexture2D(const Color& color);
+    const gfx::TextureCube* makeTextureCube(const Color& color);
     
     ObjectHandle loadPhysicsConvex(const he::String& path);
     ObjectHandle loadPhysicsConcave(const he::String& path);
@@ -70,8 +72,9 @@ public:
     gui::Font* getDefaultFont(uint16 size = 12);
 
     ObjectHandle loadShader(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
+    gfx::Shader* asyncLoadShader(const he::String& asset);
    
-    ObjectHandle loadMaterial(const he::String& path);
+    gfx::Material* loadMaterial(const he::String& asset);
 
     void setTextureFolder(const he::String& folder);
     void setModelFolder(const he::String& folder);
@@ -102,6 +105,7 @@ public:
     bool isLoading() const;
 
 private:
+    void loadTick();
 
     ModelLoader* m_ModelLoader;
     TextureLoader* m_TextureLoader;
@@ -118,6 +122,9 @@ private:
     
     gfx::ModelMesh* m_ParticleQuad;
     gfx::ModelMesh* m_FullscreenQuad;
+
+    bool m_LoadThreadRunning;
+    he::Thread* m_LoadThread;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

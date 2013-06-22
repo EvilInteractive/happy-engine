@@ -23,28 +23,46 @@
 #pragma once
 
 #include "BufferLayout.h"
+#include "ShaderEnums.h"
 
 namespace he {
 namespace gfx {
 
-class ShaderLayoutElement
+class ShaderLayoutAttribute
 {
 public:
-    ShaderLayoutElement(): m_ElementIndex(UINT32_MAX), m_Usage(BufferElement::Usage_Other), m_NameInShader("ERROR") {}
-    ShaderLayoutElement(const he::String& nameInShader, const BufferElement::Usage usage);
-    ~ShaderLayoutElement() {}
+    ShaderLayoutAttribute(): m_ElementIndex(UINT32_MAX), m_Usage(eShaderAttributePropertyUsage_Invalid), m_Name(HEFS::strError) {}
+    ShaderLayoutAttribute(const he::FixedString& nameInShader, const EShaderAttributePropertyUsage usage);
+    ~ShaderLayoutAttribute() {}
     //default copy constructor and assignment operator are fine
 
     uint32 getElementIndex() const { return m_ElementIndex; }
     void setElementIndex(const uint32 index) { m_ElementIndex = index; }
 
-    const he::String& getShaderVariableName() const { return m_NameInShader; }
-    const BufferElement::Usage getUsage() const { return m_Usage; }
+    const he::FixedString& getName() const { return m_Name; }
+    const EShaderAttributePropertyUsage getUsage() const { return m_Usage; }
 
 private:
     uint32 m_ElementIndex;
-    BufferElement::Usage m_Usage;
-    he::String m_NameInShader;
+    EShaderAttributePropertyUsage m_Usage;
+    he::FixedString m_Name;
+};
+
+class ShaderLayoutUniform
+{
+public:
+    ShaderLayoutUniform(): m_Usage(eShaderUniformUsage_Invalid), m_Name(HEFS::strError) {}
+    ShaderLayoutUniform(const he::String& nameInShader, const EShaderUniformUsage usage);
+    ~ShaderLayoutUniform() {}
+    //default copy constructor and assignment operator are fine
+    
+    const he::FixedString& getName() const { return m_Name; }
+    const EShaderUniformUsage getUsage() const { return m_Usage; }
+
+private:
+    uint32 m_ElementIndex;
+    EShaderUniformUsage m_Usage;
+    he::FixedString m_Name;
 };
 
 class ShaderLayout
@@ -53,14 +71,18 @@ public:
     ShaderLayout();
     ~ShaderLayout();
     
-    typedef he::ObjectList<ShaderLayoutElement> layout;
+    typedef he::ObjectList<ShaderLayoutAttribute> AttributeLayoutList;
+    typedef he::ObjectList<ShaderLayoutUniform> UniformLayoutList;
 
-    void addElement(const ShaderLayoutElement& element);
+    void addAttribute(const ShaderLayoutAttribute& element);
+    void addUniform(const ShaderLayoutUniform& element);
 
-    const layout& getElements() const;
+    const AttributeLayoutList& getAttributes() const { return m_Attributes; }
+    const UniformLayoutList& getUniforms() const { return m_Uniforms; }
 
 private:
-    layout m_Layout;
+    AttributeLayoutList m_Attributes;
+    UniformLayoutList m_Uniforms;
 
     ShaderLayout(ShaderLayout&);
     ShaderLayout& operator=(const ShaderLayout&);

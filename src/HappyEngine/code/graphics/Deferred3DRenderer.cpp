@@ -150,7 +150,7 @@ void Deferred3DRenderer::compileShaders()
     m_AmbDirIllShader  =  factory->get(factory->create());
 
     ShaderLayout shaderLayout;
-    shaderLayout.addElement(ShaderLayoutElement("inPosition", BufferElement::Usage_Position));
+    shaderLayout.addAttribute(ShaderLayoutAttribute("inPosition", BufferElement::Usage_Position));
 
     //////////////////////////////////////////////////////////////////////////
     ///                                 Load                               ///

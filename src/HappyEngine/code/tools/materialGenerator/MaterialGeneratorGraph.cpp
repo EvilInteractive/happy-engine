@@ -861,7 +861,7 @@ void MaterialGeneratorGraph::visit( he::io::StructuredVisitor* const visitor )
             [isLoading, factory, this](io::StructuredVisitor* const visitor, const size_t /*index*/, MaterialGeneratorNode*& node)
         {
             MaterialGeneratorNodeType type(isLoading? MaterialGeneratorNodeType_Unassigned : node->getType());
-            visitor->visitEnum<uint16>(HEFS::strType, type);
+            visitor->visitCasted<uint16>(HEFS::strType, type);
             if (isLoading)
             {
                 node = factory->create(type);

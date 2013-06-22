@@ -25,7 +25,7 @@
 #include "AmbientLight.h"
 #include "DirectionalLight.h"
 #include "Shader.h"
-#include "ShaderVar.h"
+#include "StructuredVisitor.h"
 #include "ICamera.h"
 #include "Scene.h"
 #include "ModelMesh.h"
@@ -208,8 +208,8 @@ void Material::applyShader( const EShaderType type, const DrawContext& context )
 
     Shader* const shader(m_Shader[type]);
     shader->bind();
-    m_ShaderCommonVars.forEach(boost::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
-    m_ShaderSpecificVars[type].forEach(boost::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
+    m_ShaderCommonVars.forEach(std::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
+    m_ShaderSpecificVars[type].forEach(std::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
 }
 
 void Material::applyMesh( const EShaderType type, const DrawContext& context ) const
@@ -257,9 +257,9 @@ void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, Materi
         MaterialLayout::layout& elements(outMaterialLayout.m_Layout[t]);
         elements.clear();
 
-        const ShaderLayout::layout& shaderElements(m_Shader[t]->getShaderLayout().getElements());
+        const ShaderLayout::AttributeLayoutList& shaderElements(m_Shader[t]->getShaderLayout().getAttributes());
 
-        std::for_each(shaderElements.cbegin(), shaderElements.cend(), [&](const ShaderLayoutElement& e)
+        std::for_each(shaderElements.cbegin(), shaderElements.cend(), [&](const ShaderLayoutAttribute& e)
         {
             for (size_t i(0); i < meshElementCount; ++i)
             {

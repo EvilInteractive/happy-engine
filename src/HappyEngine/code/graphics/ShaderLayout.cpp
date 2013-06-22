@@ -24,10 +24,10 @@
 namespace he {
 namespace gfx {
 
-ShaderLayoutElement::ShaderLayoutElement(const he::String& nameInShader, const BufferElement::Usage usage)
+ShaderLayoutAttribute::ShaderLayoutAttribute(const he::FixedString& nameInShader, const EShaderAttributePropertyUsage usage)
     : m_ElementIndex(UINT32_MAX)
     , m_Usage(usage)
-    , m_NameInShader(nameInShader)
+    , m_Name(nameInShader)
 {
 }
 
@@ -39,14 +39,14 @@ ShaderLayout::~ShaderLayout()
 {
 }
 
-void ShaderLayout::addElement(const ShaderLayoutElement& element)
+void ShaderLayout::addAttribute(const ShaderLayoutAttribute& element)
 {
-    m_Layout.add(element);
+    m_Attributes.add(element);
 }
 
-const ShaderLayout::layout& ShaderLayout::getElements() const
+void ShaderLayout::addUniform( const ShaderLayoutUniform& element )
 {
-    return m_Layout;
+    m_Uniforms.add(element);
 }
 
 } } //end namespace

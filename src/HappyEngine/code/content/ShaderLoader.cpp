@@ -38,7 +38,7 @@ namespace
         bool visit(he::io::StructuredVisitor* const visitor)
         {
             visitor->visit(he::HEFS::strName, m_Name);
-            visitor->visitEnum<he::uint8>(he::HEFS::strAttributeType, m_Type);
+            visitor->visitCasted<he::uint8>(he::HEFS::strAttributeType, m_Type);
             return true;
         }
     };
@@ -142,12 +142,12 @@ namespace
         bool visit(he::io::StructuredVisitor* const visitor)
         {
             visitor->visit(he::HEFS::strName, m_Name);
-            visitor->visitEnum<he::uint8>(he::HEFS::strUniformType, m_UniformType);
+            visitor->visitCasted<he::uint8>(he::HEFS::strUniformType, m_UniformType);
             switch (m_UniformType)
             {
-            case eShaderVariableType_ObjectProperty: visitor->visitEnum<he::uint8>(he::HEFS::strVariableType, m_VariableType.m_ObjectType); break;
-            case eShaderVariableType_GlobalProperty: visitor->visitEnum<he::uint8>(he::HEFS::strVariableType, m_VariableType.m_GlobalType); break;
-            case eShaderVariableType_UserProperty: visitor->visitEnum<he::uint8>(he::HEFS::strVariableType, m_VariableType.m_UserType); break;
+            case eShaderVariableType_ObjectProperty: visitor->visitCasted<he::uint8>(he::HEFS::strVariableType, m_VariableType.m_ObjectType); break;
+            case eShaderVariableType_GlobalProperty: visitor->visitCasted<he::uint8>(he::HEFS::strVariableType, m_VariableType.m_GlobalType); break;
+            case eShaderVariableType_UserProperty: visitor->visitCasted<he::uint8>(he::HEFS::strVariableType, m_VariableType.m_UserType); break;
             default: LOG(he::LogType_ProgrammerAssert, "Unknown Uniform type!"); break;
             }
             if (m_UniformType == eShaderVariableType_UserProperty)

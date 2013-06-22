@@ -41,7 +41,7 @@
 namespace he {
 namespace ct {
 
-TextureLoader::TextureLoader(): m_isLoadThreadRunning(false), m_GCTimer(GC_TIME)
+TextureLoader::TextureLoader(): m_GCTimer(GC_TIME)
 {
 }
 
@@ -64,34 +64,42 @@ inline void handleILError(const he::String& file)
     }
 }
 
-void TextureLoader::tick(float dTime) //checks for new load operations, if true start thread
+void TextureLoader::tick(float /*dTime*/)
 {
-    if (m_isLoadThreadRunning == false)
+}
+
+bool TextureLoader::loadTick()
+{
+    if (m_TextureLoadQueue.empty() == false)
     {
-        PROFILER_BEGIN("TextureFactory garbage collect");
-        if (m_GCTimer > 0.0f)
+        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
+        TextureLoadData data(m_TextureLoadQueue.front());
+        m_TextureLoadQueue.pop();
+        m_TextureLoadQueueMutex.unlock();
+
+        if (data.m_Path[0] != '_')
         {
-            m_GCTimer -= dTime;
-            if (m_GCTimer <= 0.0f)
+            if (loadData(data))
             {
-                ResourceFactory<gfx::Texture2D>* const factory(ResourceFactory<gfx::Texture2D>::getInstance());
-                uint32 destoyed(factory->garbageCollect());
-                if (destoyed > 0)
-                {
-                    HE_WARNING("TextureFactory: GC'd %d textures!", destoyed);
-                }
-                m_GCTimer = GC_TIME;
+                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
+                m_TextureInvokeQueue.push(data);
+                m_TextureInvokeQueueMutex.unlock();
             }
         }
-        PROFILER_END();
-        if (m_TextureLoadQueue.empty() == false)
+        else
         {
-            m_isLoadThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_TextureLoadThread.join();
-            m_TextureLoadThread.startThread(boost::bind(&TextureLoader::TextureLoadThread, this), "TextureLoadThread");
+            if (makeData(data))
+            {
+                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
+                m_TextureInvokeQueue.push(data);
+                m_TextureInvokeQueueMutex.unlock();
+            }
         }
+        return true;
     }
+    return false;
 }
+
 void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_TextureInvokeQueue.empty() == false)
@@ -488,43 +496,10 @@ bool TextureLoader::makeData( TextureLoadData& data )
     return true;
 }
 
-void TextureLoader::TextureLoadThread()
-{
-    HE_INFO("Texture Load thread started");
-    while (m_TextureLoadQueue.empty() == false)
-    {
-        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
-        TextureLoadData data(m_TextureLoadQueue.front());
-        m_TextureLoadQueue.pop();
-        m_TextureLoadQueueMutex.unlock();
-
-        if (data.m_Path[0] != '_')
-        {
-            if (loadData(data))
-            {
-                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
-                m_TextureInvokeQueue.push(data);
-                m_TextureInvokeQueueMutex.unlock();
-            }
-        }
-        else
-        {
-            if (makeData(data))
-            {
-                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
-                m_TextureInvokeQueue.push(data);
-                m_TextureInvokeQueueMutex.unlock();
-            }
-        }
-    }
-    m_isLoadThreadRunning = false;
-    HE_INFO("Texture load thread stopped");
-}
-
 /* GETTERS */
 bool TextureLoader::isLoading() const
 {
-    return m_isLoadThreadRunning;
+    return m_TextureLoadQueue.empty() == false || m_TextureInvokeQueue.empty() == false;
 }
 
 } } //end namespace

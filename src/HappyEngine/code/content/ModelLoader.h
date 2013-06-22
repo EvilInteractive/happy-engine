@@ -50,7 +50,8 @@ public:
     virtual ~ModelLoader();
     
     /* GENERAL */
-    void tick(float dTime); //checks for new load operations, if true start thread
+    void tick(float dTime);
+    bool loadTick();
     void glThreadInvoke();  //needed for all of the gl operations
 
     gfx::Model* asyncLoadModel(const he::String& path, const bool savePickingData);
@@ -81,8 +82,6 @@ private:
     bool createModel(ModelLoadData& data);
 
     bool isModelLoaded(const he::String& path, ObjectHandle& outHandle);
-    void modelLoadThread();
-    bool m_isModelThreadRunning;
 
     std::queue<ModelLoadData> m_ModelLoadQueue;
     he::Mutex m_ModelLoadQueueMutex;
@@ -90,10 +89,7 @@ private:
     he::Mutex m_ModelInvokeQueueMutex;
 
     he::Mutex m_WaitListMutex;
-
-    he::Thread m_ModelLoadThread;
-
-
+    
     AssetContainer<ObjectHandle> m_AssetContainer;
 
     gfx::ModelMesh* m_EmptyMesh;

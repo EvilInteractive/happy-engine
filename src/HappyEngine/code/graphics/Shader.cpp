@@ -25,11 +25,64 @@
 #include "TextureCube.h"
 #include "ExternalError.h"
 
+namespace 
+{
+    bool validateShader(GLuint shaderID, const he::String& file)
+    {
+        GLint compiled;
+        glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
+        if (compiled == GL_FALSE)
+        {
+            const he::uint32 BUFFER_SIZE = 512;
+            char buffer[BUFFER_SIZE];
+            GLsizei length = 0;
+
+            glGetShaderInfoLog(shaderID, BUFFER_SIZE, &length, buffer);
+
+            HE_ERROR("Shader %d(%s) compile err:", shaderID, file.c_str());
+            HE_ERROR(buffer);
+        }
+        return compiled == GL_TRUE;
+    }
+    bool validateProgram(GLuint programID)
+    {
+        bool succes = true;
+
+        GLint linkStatus;
+        glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
+
+        if (linkStatus == GL_FALSE)
+        {
+            const he::uint32 BUFFER_SIZE = 512;
+            char buffer[BUFFER_SIZE];
+            GLsizei length = 0;
+
+            glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
+            if (length > 0)
+            {
+                HE_ERROR("Program %d link err:", (int)programID);
+                HE_ERROR(buffer);
+            }
+            succes = false;
+        }
+
+        glValidateProgram(programID);
+        GLint validateStatus;
+        glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
+        if (validateStatus == GL_FALSE)
+        {
+            HE_ERROR("Error validating shader %d", programID);
+            succes = false;
+        }
+
+        return succes;
+    }
+}
+
 namespace he {
 namespace gfx {
 
 uint32 Shader::s_CurrentBoundShader = 0;
-uint32 UniformBuffer::s_UniformBufferCount = 0;
 
 Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 {
@@ -37,11 +90,6 @@ Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 
 Shader::~Shader()
 {
-    std::for_each(m_UniformBufferMap.cbegin(), m_UniformBufferMap.cend(), [](const std::pair<uint32, UniformBuffer*>& p)
-    {
-        delete p.second;
-    });
-
     glDetachShader(m_Id, m_VsId);
     glDetachShader(m_Id, m_FsId);
 
@@ -49,56 +97,7 @@ Shader::~Shader()
     glDeleteShader(m_FsId);
     glDeleteProgram(m_Id);
 }
-bool validateShader(GLuint shaderID, const he::String& file)
-{
-    GLint compiled;
-    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
-    if (compiled == GL_FALSE)
-    {
-        const uint32 BUFFER_SIZE = 512;
-        char buffer[BUFFER_SIZE];
-        GLsizei length = 0;
 
-        glGetShaderInfoLog(shaderID, BUFFER_SIZE, &length, buffer);
-
-        HE_ERROR("Shader %d(%s) compile err:", shaderID, file.c_str());
-        HE_ERROR(buffer);
-    }
-    return compiled == GL_TRUE;
-}
-bool validateProgram(GLuint programID)
-{
-    bool succes = true;
-
-    GLint linkStatus;
-    glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
-
-    if (linkStatus == GL_FALSE)
-    {
-        const uint32 BUFFER_SIZE = 512;
-        char buffer[BUFFER_SIZE];
-        GLsizei length = 0;
-
-        glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
-        if (length > 0)
-        {
-            HE_ERROR("Program %d link err:", (int)programID);
-            HE_ERROR(buffer);
-        }
-        succes = false;
-    }
-
-    glValidateProgram(programID);
-    GLint validateStatus;
-    glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
-    if (validateStatus == GL_FALSE)
-    {
-        HE_ERROR("Error validating shader %d", programID);
-        succes = false;
-    }
-
-    return succes;
-}
 bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout)
 {
     return initFromFile(vsPath, fsPath, shaderLayout, std::set<he::String>(), he::ObjectList<he::String>());
@@ -187,19 +186,19 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
 
     succes = succes && validateProgram(m_Id);
 
-    const ShaderLayout::layout& layout(shaderLayout.getElements());
-    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
+    const ShaderLayout::AttributeLayoutList& layout(shaderLayout.getAttributes());
+    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutAttribute& e)
     {
-        const GLint loc(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()));
+        const GLint loc(glGetAttribLocation(m_Id, e.getName().c_str()));
         if (loc != -1)
         {
-            ShaderLayoutElement el(e);
+            ShaderLayoutAttribute el(e);
             el.setElementIndex(checked_numcast<uint32>(loc));
-            m_Layout.addElement(el);
+            m_Layout.addAttribute(el);
         }
         else
         {
-            LOG(LogType_ProgrammerAssert, "Could not bind shader attribute: %s to shader: %s", e.getShaderVariableName().c_str(), debugVertName.c_str());
+            LOG(LogType_ProgrammerAssert, "Could not bind shader attribute: %s to shader: %s", e.getName().c_str(), debugVertName.c_str());
         }
     });
 

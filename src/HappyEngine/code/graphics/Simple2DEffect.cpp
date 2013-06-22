@@ -42,7 +42,7 @@ void Simple2DEffect::load()
 {
 
     ShaderLayout layout;
-    layout.addElement(ShaderLayoutElement(0, "inPosition"));
+    layout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     he::ObjectList<he::String> shaderOutputs;

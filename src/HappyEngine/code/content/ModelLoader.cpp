@@ -30,7 +30,8 @@
 namespace he {
 namespace ct {
 
-ModelLoader::ModelLoader(): m_isModelThreadRunning(false)               
+ModelLoader::ModelLoader()
+    : m_EmptyMesh(nullptr)
 {
     ObjectHandle handle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
     m_EmptyMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(handle);
@@ -45,18 +46,26 @@ ModelLoader::~ModelLoader()
 
 void ModelLoader::tick(float /*dTime*/)
 {
-    if (m_isModelThreadRunning == false)
+}
+
+bool ModelLoader::loadTick()
+{
+    if (m_ModelLoadQueue.empty() == false)
     {
-        PROFILER_BEGIN("ModelFactory garbage collect");
-        //ResourceFactory<gfx::ModelMesh>::getInstance()->garbageCollect();
-        PROFILER_END();
-        if (m_ModelLoadQueue.empty() == false)
+        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
+        ModelLoadData data(m_ModelLoadQueue.front());
+        m_ModelLoadQueue.pop();
+        m_ModelLoadQueueMutex.unlock();
+
+        if (loadModel(data))
         {
-            m_isModelThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_ModelLoadThread.join(); // wait for previous to really finish
-            m_ModelLoadThread.startThread(boost::bind(&ModelLoader::modelLoadThread, this), "ModelLoadThread");
+            m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
+            m_ModelInvokeQueue.push(data);
+            m_ModelInvokeQueueMutex.unlock();
         }
+        return true;
     }
+    return false;
 }
 
 void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
@@ -72,26 +81,6 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
     }
 }
 
-void ModelLoader::modelLoadThread()
-{
-    HE_INFO("Model Load thread started");
-    while (m_ModelLoadQueue.empty() == false)
-    {
-        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
-        ModelLoadData data(m_ModelLoadQueue.front());
-        m_ModelLoadQueue.pop();
-        m_ModelLoadQueueMutex.unlock();
-
-        if (loadModel(data))
-        {
-            m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
-            m_ModelInvokeQueue.push(data);
-            m_ModelInvokeQueueMutex.unlock();
-        }                
-    }
-    HE_INFO("Model load thread stopped");
-    m_isModelThreadRunning = false;
-}
 bool ModelLoader::loadModel( ModelLoadData& data )
 {
     if (data.loader->load(data.path)) 
@@ -387,7 +376,7 @@ gfx::ModelMesh* ModelLoader::loadModelMesh(const he::String& path, const he::Str
 /* GETTERS */
 bool ModelLoader::isLoading() const
 {
-    return m_isModelThreadRunning;
+    return m_ModelLoadQueue.empty() == false || m_ModelInvokeQueue.empty() == false;
 }
 
 

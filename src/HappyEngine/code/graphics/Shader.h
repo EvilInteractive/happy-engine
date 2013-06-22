@@ -23,107 +23,14 @@
 
 #include "ShaderLayout.h"
 #include "Resource.h"
-#include "FixedStringMap.h"
 
 namespace he {
-class mat44;
 namespace gfx {
-
-class UniformBuffer;
-class Shader;
-class Texture2D;
-class TextureCube;
-
-class ShaderVariableBase
-{
-friend class Shader;
-friend class UniformBuffer;
-
-protected:
-    ShaderVariableBase(): m_Update(false), m_Size(0), m_Offset(0) {}
-    bool m_Update;
-    int m_Size;
-
-private:
-    virtual void* data() = 0;
-    virtual const void* data() const = 0;
-
-    int m_Offset;
-};
-
-template<typename T>
-class ShaderVariable : public ShaderVariableBase
-{
-public:
-    ShaderVariable() { m_Size = sizeof(T); }
-
-    void set(const T& data)
-    {
-        if (m_Data != data)
-        {
-            m_Data = data;
-            m_Update = true;
-        }
-    }
-    const T& get() const
-    {
-        return m_Data;
-    }
-
-    virtual void* data()
-    {
-        return &m_Data;
-    }
-    virtual const void* data() const
-    {
-        return &m_Data;
-    }
-
-private:
-    T m_Data;
-
-    ShaderVariable(const ShaderVariable&);
-    ShaderVariable& operator=(const ShaderVariable&);
-};
-
-class SharedUniformBuffer
-{
-friend class Shader;
-private:
-    static uint32 s_UniformBufferCount;
-
-public:
-    explicit SharedUniformBuffer(const size_t sizeInBytes): m_BufferId(s_UniformBufferCount++), m_BufferSize(sizeInBytes)
-    {
-        void* m_Buffer = he_malloc(sizeInBytes);
-        he_memset(m_Buffer, 0, sizeInBytes);
-
-        glGenBuffers(1, &m_GlBuffer);
-        glBindBuffer(GL_UNIFORM_BUFFER, m_GlBuffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeInBytes, m_Buffer, GL_STREAM_DRAW);
-
-        he_free(m_Buffer);
-    }
-    ~SharedUniformBuffer()
-    {
-        glDeleteBuffers(1, &m_GlBuffer);
-    }
-
-    void uploadData(void* data, size_t sizeInBytes, size_t offsetInBytes = 0)
-    {
-        HE_ASSERT(sizeInBytes + offsetInBytes <= m_BufferSize, "Uniformbuffer going out of bounds!");
-        GL::heBindUniformBuffer(m_BufferId, m_GlBuffer);
-        glBufferSubData(GL_UNIFORM_BUFFER, offsetInBytes, sizeInBytes, data);
-    }
-
-private:
-    uint32 m_GlBuffer;
-    uint32 m_BufferId;
-    size_t m_BufferSize;
-};
 
 class Shader;
 typedef ResourceFactory<Shader> ShaderFactory;
+
+class IShaderUniform;
 
 class Shader : public Resource<Shader>
 {
@@ -131,6 +38,7 @@ public:
     Shader();
     virtual ~Shader();
 
+    // Init
     bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout);
     bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
     bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
@@ -139,18 +47,14 @@ public:
     bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>& outputs);
     bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
 
+    // Use
     void bind();
 
-    uint32 getShaderVarId(const he::FixedString& id) const;
-    uint32 getBufferId(const he::FixedString& id) const;
-    uint32 getBufferVarId(uint32 bufferId, const he::FixedString& id) const;
-    uint32 getShaderSamplerId(const he::FixedString& id);
-
+    // Getters
+    IShaderUniform* getUniform(const he::FixedString& name) const;
     const ShaderLayout& getShaderLayout() const { return m_Layout; }
-
-    UniformBuffer* setBuffer(uint32 id); //create new buffer
-    void setBuffer(uint32 id, UniformBuffer* pBuffer); //used to share buffer
-
+    
+    // Setters
     void setShaderVar(uint32 id, const int value) const;
     void setShaderVar(uint32 id, const uint32 value) const;
     void setShaderVar(uint32 id, const float value) const;
@@ -164,12 +68,10 @@ public:
     
 private:
     uint32 m_Id;
+    he::PrimitiveList<IShaderUniform*> m_Uniforms;
+
     uint32 m_VsId;
     uint32 m_FsId;
-
-    FixedStringMap<uint32> m_SamplerLocationMap;
-    std::map<uint32, UniformBuffer*> m_UniformBufferMap;
-
     ShaderLayout m_Layout;
 
     he::String m_FragShaderName;

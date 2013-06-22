@@ -36,7 +36,6 @@ class Shader;
 class ModelMesh;
 struct DrawContext;
 
-
 enum EShaderType
 {
     eShaderType_Normal,
@@ -51,6 +50,7 @@ struct MaterialLayoutElement
 {
     MaterialLayoutElement(): m_ElementIndex(UINT16_MAX), m_Components(0), m_Type(0), m_Stride(0), m_ByteOffset(0) {}
     ~MaterialLayoutElement() {}
+
     uint16 m_ElementIndex;
     uint8 m_Components;
     uint16 m_Type;

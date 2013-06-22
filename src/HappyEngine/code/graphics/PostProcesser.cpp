@@ -144,7 +144,7 @@ void PostProcesser::compileShader()
     m_PostShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
 
     ShaderLayout shaderLayout;
-    shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
+    shaderLayout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
 
     const he::String& folder(CONTENT->getShaderFolderPath().str());
 

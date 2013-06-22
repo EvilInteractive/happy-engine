@@ -42,6 +42,8 @@ ContentManager::ContentManager():
     m_FontLoader(NEW FontLoader()),
     m_ShaderLoader(NEW ShaderLoader()), 
     m_MaterialLoader(NEW MaterialLoader()), 
+    m_LoadThread(NEW Thread()),
+    m_LoadThreadRunning(true),
 
     m_TextureFolder("textures/"), 
     m_ModelFolder("models/"), 
@@ -71,10 +73,16 @@ ContentManager::ContentManager():
     setPhysicsFolder(getPhysicsFolder());
     setShaderFolder(getShaderFolder());
     setTextureFolder(getTextureFolder());
+
+    m_LoadThread->startThread(std::bind(&ContentManager::loadTick, this), "ContentLoadThread");
 }
 
 ContentManager::~ContentManager()
 {
+    m_LoadThreadRunning = false;
+    m_LoadThread->join();
+    delete m_LoadThread;
+
     if (m_ParticleQuad != nullptr)
         m_ParticleQuad->release();
     if (m_FullscreenQuad != nullptr)
@@ -93,14 +101,26 @@ ContentManager::~ContentManager()
 
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {
-    PROFILER_BEGIN("Model Loader loop");
     m_ModelLoader->tick(dTime);
-    PROFILER_END();
-
-    PROFILER_BEGIN("Texture Loader loop");
     m_TextureLoader->tick(dTime);
-    PROFILER_END();
 }
+
+void ContentManager::loadTick()
+{
+    while (m_LoadThreadRunning)
+    {
+        bool sleep(true);
+        sleep &= !m_ModelLoader->loadTick();
+        sleep &= !m_TextureLoader->loadTick();
+        sleep &= !m_MaterialLoader->loadTick();
+        sleep &= !m_ShaderLoader->loadTick();
+        if (sleep)
+        {
+            Thread::sleep(100);
+        }
+    }
+}
+
 void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 {
     m_ModelLoader->glThreadInvoke();
@@ -138,6 +158,11 @@ const gfx::Texture2D* ContentManager::asyncMakeTexture2D(const Color& color)
 {
     return m_TextureLoader->asyncMakeTexture2D(color);
 }
+const gfx::TextureCube* ContentManager::asyncMakeTextureCube( const Color& color )
+{
+    HE_NOT_IMPLEMENTED;
+    return nullptr;
+}
 const gfx::Texture2D* ContentManager::loadTexture2D(const he::String& path)
 {
     return m_TextureLoader->loadTexture2D(m_TexturePath.str()  + path);
@@ -149,6 +174,11 @@ const gfx::TextureCube* ContentManager::loadTextureCube( const he::String& path 
 const gfx::Texture2D* ContentManager::makeTexture2D(const Color& color)
 {
     return m_TextureLoader->makeTexture2D(color);
+}
+const gfx::TextureCube* ContentManager::makeTextureCube( const Color& color )
+{
+    HE_NOT_IMPLEMENTED;
+    return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -179,9 +209,9 @@ ObjectHandle ContentManager::loadShader(const he::String& vsAsset, const he::Str
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadMaterial(const he::String& asset)
+he::gfx::Material* ContentManager::loadMaterial(const he::String& asset)
 {
-    return m_MaterialLoader->load(m_MaterialPath.str() + asset);
+    return m_MaterialLoader->load(m_MaterialPath.append(asset));
 }
 
 //////////////////////////////////////////////////////////////////////////

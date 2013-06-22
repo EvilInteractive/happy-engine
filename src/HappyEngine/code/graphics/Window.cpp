@@ -94,7 +94,7 @@ void Window::OculusRiftBarrelDistorter::init(const uint32 width, const uint32 he
     m_Shader = shaderFactory->get(shaderFactory->create());
 
     ShaderLayout shaderLayout;
-    shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
+    shaderLayout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
 
     const he::String& folder(CONTENT->getShaderFolderPath().str());
 
