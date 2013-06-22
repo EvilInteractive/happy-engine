@@ -28,8 +28,14 @@ namespace he {
 template<typename T>
 class LockFreeQueueMP1C
 {
-    template<typename T>
-    struct Node;
+    template<typename R>
+    struct Node
+    {
+        Node(const R& data): m_Next(nullptr), m_Data(data) {}
+        Node(): m_Next(nullptr) {}
+        Node<R>* m_Next;
+        R m_Data;
+    };
     typedef Node<T> TNode;
 public:
     LockFreeQueueMP1C();
@@ -48,8 +54,8 @@ private:
     LockFreeQueueMP1C& operator=(const LockFreeQueueMP1C&);
 };
 
-#include "LockFreeQueueMP1C.inl"
-
 } //end namespace
+
+#include "LockFreeQueueMP1C.inl"
 
 #endif

@@ -29,6 +29,7 @@
 #include <JsonFileReader.h>
 #include <JsonFileWriter.h>
 #include <FileReader.h>
+#include <LockFreeQueueMP1C.h>
 
 namespace hut {
 
@@ -47,8 +48,8 @@ void MainGame::init()
     //nodeGraphUnitTest();
     //guidUnitTest();
     //mat33UnitTest();
-
-    jsonUnitTest();
+    //jsonUnitTest();
+    lockFreeQueueMP1CTest();
     HAPPYENGINE->quit();
 }
 
@@ -506,6 +507,75 @@ void MainGame::jsonUnitTest()
     {
         HE_ASSERT(memcmp(resultA.c_str(), resultB.c_str(), resultA.size()) == 0, "unitTest fail: Json: files do not match!");
     }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Lock Free Queue test
+//////////////////////////////////////////////////////////////////////////
+void MainGame::lockFreeQueueMP1CTest()
+{
+    const static int producerThreadCount(12);
+    const static int valuesToProduce(1000000);
+
+    he::Thread consumerThread;
+    he::Thread producerThread[producerThreadCount];
+
+    std::atomic_size_t counter(0);
+    size_t consumedValues(0);
+    size_t producedValuesPerThread[producerThreadCount + 1];
+    he::LockFreeQueueMP1C<size_t> queue;
+
+    producedValuesPerThread[0] = 0;
+    consumerThread.startThread([&]()
+    {
+        while (queue.empty() == false || counter.load() < valuesToProduce)
+        {
+            size_t currentValue(0);
+            if (queue.pop(currentValue))
+            {
+                ++consumedValues;
+            }
+            if (counter.load() < valuesToProduce && rand() % 20 == 0)
+            {
+                const size_t val(counter.fetch_add(1));
+                ++producedValuesPerThread[0];
+                queue.push(val);
+            }
+        }
+    }, "ConsumerThread");
+
+    for (size_t i(0); i < producerThreadCount; ++i)
+    {
+        char name[20];
+        sprintf(name, "ProducerThread%d", i);
+        producedValuesPerThread[i+1] = 0;
+        producerThread[i].startThread([&, i]()
+        {
+            while (counter.load() < valuesToProduce)
+            {
+                const size_t val(counter.fetch_add(1));
+                ++producedValuesPerThread[i + 1];
+                queue.push(val);
+                he::Thread::sleep(0);
+            }
+        }, name);
+    }
+
+    for (size_t i(0); i < producerThreadCount; ++i)
+    {
+        producerThread[i].join();
+    }
+
+    consumerThread.join();
+
+    HE_INFO("Consumer produced %d values", producedValuesPerThread[0]);
+    for (size_t i(0); i < producerThreadCount; ++i)
+    {
+        HE_INFO("Producer%d produced %d values", i, producedValuesPerThread[i+1]);
+    }
+
+    HE_INFO("Total Values Produced: %d", counter.load());
+    HE_INFO("Total Values Consumed: %d", consumedValues);
 }
 
 } //end namespace

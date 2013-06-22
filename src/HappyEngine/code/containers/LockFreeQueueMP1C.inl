@@ -18,31 +18,22 @@
 //Author:  Bastian Damman
 //Created: 2013/06/22
 namespace he {
-
+    
 template<typename T>
-struct LockFreeQueueMP1C::Node
-{
-    Node(const T& data): m_Next(nullptr), m_Data(data) {}
-    volatile Node* m_Next;
-    volatile T m_Data;
-};
-
-template<typename T>
-LockFreeQueueMP1C::LockFreeQueueMP1C()
+LockFreeQueueMP1C<T>::LockFreeQueueMP1C()
     : m_Head(NEW TNode())
     , m_Tail(nullptr)
 {
     m_Tail.store(m_Head);
 }
 
-
 template<typename T>
-LockFreeQueueMP1C::~LockFreeQueueMP1C()
+LockFreeQueueMP1C<T>::~LockFreeQueueMP1C()
 {
     // No access should happen when the destructor is called
     while (m_Head != nullptr)
     {
-        Node* oldHead(m_Head);
+        TNode* oldHead(m_Head);
         m_Head = m_Head->m_Next;
         delete oldHead;
     }
@@ -61,10 +52,10 @@ bool LockFreeQueueMP1C<T>::pop(T& outObj)
 {
     while (empty() == false) 
     { 
-        Node* next(m_Head->m_Next);
+        TNode* next(m_Head->m_Next);
         if (next != nullptr)
         {
-            Node* oldHead(m_Head);
+            TNode* oldHead(m_Head);
             m_Head = next;
             outObj = m_Head->m_Data;
             delete oldHead;
@@ -77,6 +68,6 @@ bool LockFreeQueueMP1C<T>::pop(T& outObj)
 template<typename T>
 bool LockFreeQueueMP1C<T>::empty()
 {
-    return m_Head->m_Next == nullptr;
+    return m_Head == m_Tail.load();
 }
 } //end namespace
