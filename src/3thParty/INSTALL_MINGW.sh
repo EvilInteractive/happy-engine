@@ -1,4 +1,7 @@
 #!/bin/bash
+if [ -n $1 ]; then
+	cd $1
+fi
 7z x installers/win/Assimp.exe -y
 7z x installers/win/Awesomium.exe -y
 7z x installers/win/Boost.exe -y
