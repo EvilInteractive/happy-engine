@@ -276,8 +276,7 @@ MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _path _inputh _inputcpp)
 	ENDIF("${ARGN}" STREQUAL "0")
 	
 	if(CMAKE_GENERATOR MATCHES Visual*)
-    SET(_inputcpp ${_path}${_inputcpp})
-
+    
 		GET_TARGET_PROPERTY(oldProps ${_targetName} COMPILE_FLAGS)
 		if (${oldProps} MATCHES NOTFOUND)
 			SET(oldProps "")
@@ -287,7 +286,7 @@ MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _path _inputh _inputcpp)
 		SET_TARGET_PROPERTIES(${_targetName} PROPERTIES COMPILE_FLAGS "${newProperties}")
 		
 		#also inlude ${oldProps} to have the same compile options 
-		SET_SOURCE_FILES_PROPERTIES(${_inputcpp} PROPERTIES COMPILE_FLAGS "${oldProps} /Yc\"${_inputh}\"")
+		SET_SOURCE_FILES_PROPERTIES(${_path}${_inputcpp} PROPERTIES COMPILE_FLAGS "${oldProps} /Yc\"${_inputh}\"")
 		
 	else(CMAKE_GENERATOR MATCHES Visual*)
 	

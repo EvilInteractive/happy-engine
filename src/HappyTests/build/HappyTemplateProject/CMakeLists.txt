@@ -31,7 +31,7 @@ target_link_libraries(Xx HappyEngine)
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
-ADD_NATIVE_PRECOMPILED_HEADER(Xx XxPCH.h ../../code/Xx/XxPCH.cpp)
+ADD_NATIVE_PRECOMPILED_HEADER(Xx ../../code/Xx/ XxPCH.h XxPCH.cpp)
 
 # set output dir
 SET_TARGET_PROPERTIES(Xx PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)

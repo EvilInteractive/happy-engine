@@ -34,7 +34,7 @@ target_link_libraries(HappyThijsTest HappyEngine)
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
-ADD_NATIVE_PRECOMPILED_HEADER(HappyThijsTest HappyThijsTestPCH.h ../../code/HappyThijsTest/HappyThijsTestPCH.cpp)
+ADD_NATIVE_PRECOMPILED_HEADER(HappyThijsTest ../../code/HappyThijsTest/ HappyThijsTestPCH.h HappyThijsTestPCH.cpp)
 
 # set output dir
 SET_TARGET_PROPERTIES(HappyThijsTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)
