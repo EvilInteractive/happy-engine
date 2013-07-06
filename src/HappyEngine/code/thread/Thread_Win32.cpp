@@ -57,6 +57,7 @@ void Thread::startThread(const boost::function0<void>& threadWorker, const char*
     m_Handle = ::CreateThread(0, 0, he::threadProc, this, 0, &m_ID);
     HE_ASSERT(m_Handle != NULL, "Thread '%s' failed to create!", name);
 
+#ifdef _DEBUG
     THREADNAME_INFO info;
     info.dwType = 0x1000;
     info.szName = name;
@@ -70,6 +71,9 @@ void Thread::startThread(const boost::function0<void>& threadWorker, const char*
     __except(EXCEPTION_EXECUTE_HANDLER)
     {
     }
+#else
+    name;
+#endif
 }
 
 Thread::~Thread()

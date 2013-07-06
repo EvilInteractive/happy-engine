@@ -57,6 +57,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include <deque>
 #include <queue>
 #include <set>
+#include <atomic>
 
 #include <boost/bind.hpp>
 #include <boost/chrono.hpp>
