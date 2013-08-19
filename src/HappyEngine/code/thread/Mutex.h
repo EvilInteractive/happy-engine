@@ -26,7 +26,7 @@
 
 namespace he {
 
-class Mutex
+class HAPPY_ENTRY Mutex
 {
 public:
     Mutex();

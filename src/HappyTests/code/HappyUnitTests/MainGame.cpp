@@ -29,7 +29,8 @@
 #include <JsonFileReader.h>
 #include <JsonFileWriter.h>
 #include <FileReader.h>
-#include <LockFreeQueueMP1C.h>
+#include <ThreadSafeQueueMP1C.h>
+#include <Timer.h>
 
 namespace hut {
 
@@ -49,7 +50,7 @@ void MainGame::init()
     //guidUnitTest();
     //mat33UnitTest();
     //jsonUnitTest();
-    lockFreeQueueMP1CTest();
+    threadSafeQueueMP1CTest();
     HAPPYENGINE->quit();
 }
 
@@ -512,70 +513,96 @@ void MainGame::jsonUnitTest()
 //////////////////////////////////////////////////////////////////////////
 // Lock Free Queue test
 //////////////////////////////////////////////////////////////////////////
-void MainGame::lockFreeQueueMP1CTest()
+void MainGame::threadSafeQueueMP1CTest()
 {
-    const static int producerThreadCount(12);
-    const static int valuesToProduce(1000000);
+    const static int producerThreadCount(2);
+    const static int valuesToProduce(200);
+    const static int loops(500);
 
-    he::Thread consumerThread;
-    he::Thread producerThread[producerThreadCount];
+    he::ThreadSafeQueueMP1C<size_t> queue(10, 10, "TestThreadSafeQueue");
 
-    std::atomic_size_t counter(0);
-    size_t consumedValues(0);
-    size_t producedValuesPerThread[producerThreadCount + 1];
-    he::LockFreeQueueMP1C<size_t> queue;
-
-    producedValuesPerThread[0] = 0;
-    consumerThread.startThread([&]()
+    float totalTime(0);
+    size_t loop(0);
+    for (; loop < loops; ++loop)
     {
-        while (queue.empty() == false || counter.load() < valuesToProduce)
+        he::Thread consumerThread;
+        he::Thread producerThread[producerThreadCount];
+
+        std::atomic_size_t counter(0);
+        size_t consumedValues(0);
+        size_t producedValuesPerThread[producerThreadCount + 1];
+        bool consumeValues(true);
+
+        he::Timer timer;
+        timer.start();
+
+        producedValuesPerThread[0] = 0;
+        consumerThread.startThread([&]()
+        {
+            while (consumeValues == true || queue.empty() == false)
+            {
+                size_t currentValue(0);
+                if (queue.pop(currentValue))
+                {
+                    ++consumedValues;
+                }
+            }
+        }, "ConsumerThread");
+
+        for (size_t i(0); i < producerThreadCount; ++i)
+        {
+            char name[20];
+            sprintf(name, "ProducerThread%d", i);
+            producedValuesPerThread[i+1] = 0;
+            producerThread[i].startThread([&, i]()
+            {
+                while (counter.load() < valuesToProduce)
+                {
+                    const size_t val(counter.fetch_add(1));
+                    ++producedValuesPerThread[i + 1];
+                    queue.push(val);
+                    he::Thread::sleep(0);
+                }
+            }, name);
+        }
+
+        for (size_t i(0); i < producerThreadCount; ++i)
+        {
+            producerThread[i].join();
+        }
+        consumeValues = false;
+        consumerThread.join();
+
+        while (queue.empty() == false)
         {
             size_t currentValue(0);
             if (queue.pop(currentValue))
             {
                 ++consumedValues;
             }
-            if (counter.load() < valuesToProduce && rand() % 20 == 0)
-            {
-                const size_t val(counter.fetch_add(1));
-                ++producedValuesPerThread[0];
-                queue.push(val);
-            }
         }
-    }, "ConsumerThread");
 
-    for (size_t i(0); i < producerThreadCount; ++i)
-    {
-        char name[20];
-        sprintf(name, "ProducerThread%d", i);
-        producedValuesPerThread[i+1] = 0;
-        producerThread[i].startThread([&, i]()
+        timer.stop();
+        totalTime += timer.getElapsedSecondsF();
+        HE_INFO("Test %d finished in %.8fs", loop, timer.getElapsedSecondsF());
+
+        if (consumedValues != counter.load())
         {
-            while (counter.load() < valuesToProduce)
+            HE_ERROR("Inconsistent consumed / produced values!");
+            HE_WARNING("Consumer produced %d values", producedValuesPerThread[0]);
+            for (size_t i(0); i < producerThreadCount; ++i)
             {
-                const size_t val(counter.fetch_add(1));
-                ++producedValuesPerThread[i + 1];
-                queue.push(val);
-                he::Thread::sleep(0);
+                HE_WARNING("Producer%d produced %d values", i, producedValuesPerThread[i+1]);
             }
-        }, name);
+
+            HE_WARNING("Total Values Produced: %d", counter.load());
+            HE_WARNING("Total Values Consumed: %d", consumedValues);
+            HE_WARNING("Still queued values: %s", queue.empty()? "No" : "Yes");
+
+            break;
+        }
     }
-
-    for (size_t i(0); i < producerThreadCount; ++i)
-    {
-        producerThread[i].join();
-    }
-
-    consumerThread.join();
-
-    HE_INFO("Consumer produced %d values", producedValuesPerThread[0]);
-    for (size_t i(0); i < producerThreadCount; ++i)
-    {
-        HE_INFO("Producer%d produced %d values", i, producedValuesPerThread[i+1]);
-    }
-
-    HE_INFO("Total Values Produced: %d", counter.load());
-    HE_INFO("Total Values Consumed: %d", consumedValues);
+    HE_INFO("---AVERAGE TIME: %.8fs", totalTime / loop);
 }
 
 } //end namespace

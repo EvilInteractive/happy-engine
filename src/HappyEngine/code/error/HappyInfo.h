@@ -32,6 +32,10 @@ HAPPY_ENTRY void heWarning(const char* msg, ...);
 #define HE_ERROR he::heError
 #define HE_WARNING he::heWarning
 
+#define HE_CONDITIONAL_INFO(check, msg, ...) if (check) { he::heInfo(msg, ##__VA_ARGS__); }
+#define HE_CONDITIONAL_ERROR(check, msg, ...) if (check) { he::heError(msg, ##__VA_ARGS__); }
+#define HE_CONDITIONAL_WARNING(check, msg, ...) if (check) { he::heWarning(msg, ##__VA_ARGS__); }
+
 } //end namespace
 
 #endif

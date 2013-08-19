@@ -42,7 +42,7 @@ private:
     void guidUnitTest();
     void mat33UnitTest();
     void jsonUnitTest();
-    void lockFreeQueueMP1CTest();
+    void threadSafeQueueMP1CTest();
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

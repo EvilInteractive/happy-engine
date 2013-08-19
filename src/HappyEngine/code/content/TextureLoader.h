@@ -26,6 +26,7 @@
 
 #include "AssetContainer.h"
 #include "Texture.h"
+#include "ThreadSafeQueueMP1C.h"
 
 namespace he {
     class IResourceFactory;
@@ -134,11 +135,8 @@ private:
     bool createTextureCube(const TextureLoadData& data);
 
     /* DATAMEMBERS */
-    std::queue<TextureLoadData> m_TextureLoadQueue;
-    he::Mutex m_TextureLoadQueueMutex;
-
-    std::queue<TextureLoadData> m_TextureInvokeQueue;
-    he::Mutex m_TextureInvokeQueueMutex;
+    he::ThreadSafeQueueMP1C<TextureLoadData> m_TextureLoadQueue;
+    he::ThreadSafeQueueMP1C<TextureLoadData> m_TextureInvokeQueue;
 
     he::Thread m_TextureLoadThread;
 

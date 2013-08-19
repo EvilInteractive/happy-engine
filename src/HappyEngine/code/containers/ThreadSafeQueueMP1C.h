@@ -16,46 +16,59 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/06/22
+//Created: 2013/08/19
 
-#ifndef _HE_LockFreeQueueMP1C_H_
-#define _HE_LockFreeQueueMP1C_H_
+#ifndef _HE_ThreadSafeQueueMP1C_H_
+#define _HE_ThreadSafeQueueMP1C_H_
 #pragma once
 
 namespace he {
 
 // Lock free queue: multiple producers, 1 consumer
 template<typename T>
-class LockFreeQueueMP1C
+class ThreadSafeQueueMP1C
 {
     template<typename R>
     struct Node
     {
         Node(const R& data): m_Next(nullptr), m_Data(data) {}
         Node(): m_Next(nullptr) {}
-        Node<R>* m_Next;
+        Node<R>* m_Next; 
         R m_Data;
     };
     typedef Node<T> TNode;
 public:
-    LockFreeQueueMP1C();
-    ~LockFreeQueueMP1C();
+    ThreadSafeQueueMP1C(const size_t initSize, const size_t growBy, const char* debugName);
+    ~ThreadSafeQueueMP1C();
 
     void push(const T& obj);
     bool pop(T& outObj);
     bool empty();
 
 private:
-    std::atomic<TNode*> m_Tail;
-    TNode* m_Head;
+    void enlargePool(const size_t amount);
+
+    TNode* createNode(const T& data);
+    void removeNode(TNode* const node);
+
+    TNode* m_Tail;            // Queue tail
+    TNode* m_Head;            // Queue head
+
+    TNode* m_NodeStackHead;   // Stack used as node pool
+
+    Mutex m_Mutex; // Need lock pushing / popping
+
+    size_t m_GrowBy;
+    size_t m_PoolSize;
+    const char* m_Name;
 
     //Disable default copy constructor and default assignment operator
-    LockFreeQueueMP1C(const LockFreeQueueMP1C&);
-    LockFreeQueueMP1C& operator=(const LockFreeQueueMP1C&);
+    ThreadSafeQueueMP1C(const ThreadSafeQueueMP1C&);
+    ThreadSafeQueueMP1C& operator=(const ThreadSafeQueueMP1C&);
 };
 
 } //end namespace
 
-#include "LockFreeQueueMP1C.inl"
+#include "ThreadSafeQueueMP1C.inl"
 
 #endif
