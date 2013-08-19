@@ -29,6 +29,8 @@
 #include <JsonFileReader.h>
 #include <JsonFileWriter.h>
 #include <FileReader.h>
+#include <ThreadSafeQueueMP1C.h>
+#include <Timer.h>
 
 namespace hut {
 
@@ -47,8 +49,8 @@ void MainGame::init()
     //nodeGraphUnitTest();
     //guidUnitTest();
     //mat33UnitTest();
-
-    jsonUnitTest();
+    //jsonUnitTest();
+    threadSafeQueueMP1CTest();
     HAPPYENGINE->quit();
 }
 
@@ -506,6 +508,101 @@ void MainGame::jsonUnitTest()
     {
         HE_ASSERT(memcmp(resultA.c_str(), resultB.c_str(), resultA.size()) == 0, "unitTest fail: Json: files do not match!");
     }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Lock Free Queue test
+//////////////////////////////////////////////////////////////////////////
+void MainGame::threadSafeQueueMP1CTest()
+{
+    const static int producerThreadCount(2);
+    const static int valuesToProduce(200);
+    const static int loops(500);
+
+    he::ThreadSafeQueueMP1C<size_t> queue(10, 10, "TestThreadSafeQueue");
+
+    float totalTime(0);
+    size_t loop(0);
+    for (; loop < loops; ++loop)
+    {
+        he::Thread consumerThread;
+        he::Thread producerThread[producerThreadCount];
+
+        std::atomic_size_t counter(0);
+        size_t consumedValues(0);
+        size_t producedValuesPerThread[producerThreadCount + 1];
+        bool consumeValues(true);
+
+        he::Timer timer;
+        timer.start();
+
+        producedValuesPerThread[0] = 0;
+        consumerThread.startThread([&]()
+        {
+            while (consumeValues == true || queue.empty() == false)
+            {
+                size_t currentValue(0);
+                if (queue.pop(currentValue))
+                {
+                    ++consumedValues;
+                }
+            }
+        }, "ConsumerThread");
+
+        for (size_t i(0); i < producerThreadCount; ++i)
+        {
+            char name[20];
+            sprintf(name, "ProducerThread%d", i);
+            producedValuesPerThread[i+1] = 0;
+            producerThread[i].startThread([&, i]()
+            {
+                while (counter.load() < valuesToProduce)
+                {
+                    const size_t val(counter.fetch_add(1));
+                    ++producedValuesPerThread[i + 1];
+                    queue.push(val);
+                    he::Thread::sleep(0);
+                }
+            }, name);
+        }
+
+        for (size_t i(0); i < producerThreadCount; ++i)
+        {
+            producerThread[i].join();
+        }
+        consumeValues = false;
+        consumerThread.join();
+
+        while (queue.empty() == false)
+        {
+            size_t currentValue(0);
+            if (queue.pop(currentValue))
+            {
+                ++consumedValues;
+            }
+        }
+
+        timer.stop();
+        totalTime += timer.getElapsedSecondsF();
+        HE_INFO("Test %d finished in %.8fs", loop, timer.getElapsedSecondsF());
+
+        if (consumedValues != counter.load())
+        {
+            HE_ERROR("Inconsistent consumed / produced values!");
+            HE_WARNING("Consumer produced %d values", producedValuesPerThread[0]);
+            for (size_t i(0); i < producerThreadCount; ++i)
+            {
+                HE_WARNING("Producer%d produced %d values", i, producedValuesPerThread[i+1]);
+            }
+
+            HE_WARNING("Total Values Produced: %d", counter.load());
+            HE_WARNING("Total Values Consumed: %d", consumedValues);
+            HE_WARNING("Still queued values: %s", queue.empty()? "No" : "Yes");
+
+            break;
+        }
+    }
+    HE_INFO("---AVERAGE TIME: %.8fs", totalTime / loop);
 }
 
 } //end namespace

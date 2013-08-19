@@ -26,7 +26,7 @@
 
 namespace he {
 
-class Thread
+class HAPPY_ENTRY Thread
 {
     friend ThreadProc;
 public:

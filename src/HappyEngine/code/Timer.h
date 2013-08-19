@@ -24,7 +24,7 @@
 
 namespace he {
 
-class Timer
+class HAPPY_ENTRY Timer
 {
 public:
     Timer();

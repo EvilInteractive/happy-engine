@@ -28,6 +28,7 @@
 #include "Model.h"
 #include "BufferLayout.h"
 #include "AssetContainer.h"
+#include "ThreadSafeQueueMP1C.h"
 
 namespace he {
 namespace gfx {
@@ -83,10 +84,8 @@ private:
 
     bool isModelLoaded(const he::String& path, ObjectHandle& outHandle);
 
-    std::queue<ModelLoadData> m_ModelLoadQueue;
-    he::Mutex m_ModelLoadQueueMutex;
-    std::queue<ModelLoadData> m_ModelInvokeQueue;
-    he::Mutex m_ModelInvokeQueueMutex;
+    he::ThreadSafeQueueMP1C<ModelLoadData> m_ModelLoadQueue;
+    he::ThreadSafeQueueMP1C<ModelLoadData> m_ModelInvokeQueue;
 
     he::Mutex m_WaitListMutex;
     

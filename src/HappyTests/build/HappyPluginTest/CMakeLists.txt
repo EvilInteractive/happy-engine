@@ -31,7 +31,7 @@ target_link_libraries(HappyPluginTest HappyEngine)
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
-ADD_NATIVE_PRECOMPILED_HEADER(HappyPluginTest HappyPluginTestPCH.h ../../code/HappyPluginTest/HappyPluginTestPCH.cpp)
+ADD_NATIVE_PRECOMPILED_HEADER(HappyPluginTest ../../code/HappyPluginTest/ HappyPluginTestPCH.h HappyPluginTestPCH.cpp)
 
 # set output dir
 SET_TARGET_PROPERTIES(HappyPluginTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)

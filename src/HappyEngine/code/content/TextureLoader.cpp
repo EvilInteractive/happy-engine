@@ -41,7 +41,7 @@
 namespace he {
 namespace ct {
 
-TextureLoader::TextureLoader(): m_GCTimer(GC_TIME)
+TextureLoader::TextureLoader(): m_GCTimer(GC_TIME), m_TextureLoadQueue(10, 10, "TextureLoadQueue"), m_TextureInvokeQueue(10, 10, "TextureInvokeQueue")
 {
 }
 
@@ -72,27 +72,22 @@ bool TextureLoader::loadTick()
 {
     if (m_TextureLoadQueue.empty() == false)
     {
-        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
-        TextureLoadData data(m_TextureLoadQueue.front());
-        m_TextureLoadQueue.pop();
-        m_TextureLoadQueueMutex.unlock();
-
-        if (data.m_Path[0] != '_')
+        TextureLoadData data;
+        if (m_TextureLoadQueue.pop(data))
         {
-            if (loadData(data))
+            if (data.m_Path[0] != '_')
             {
-                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
-                m_TextureInvokeQueue.push(data);
-                m_TextureInvokeQueueMutex.unlock();
+                if (loadData(data))
+                {
+                    m_TextureInvokeQueue.push(data);
+                }
             }
-        }
-        else
-        {
-            if (makeData(data))
+            else
             {
-                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
-                m_TextureInvokeQueue.push(data);
-                m_TextureInvokeQueueMutex.unlock();
+                if (makeData(data))
+                {
+                    m_TextureInvokeQueue.push(data);
+                }
             }
         }
         return true;
@@ -104,12 +99,11 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_TextureInvokeQueue.empty() == false)
     {
-        m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
-        TextureLoadData data(m_TextureInvokeQueue.front());
-        m_TextureInvokeQueue.pop();
-        m_TextureInvokeQueueMutex.unlock();
-
-        createTexture(data);
+        TextureLoadData data;
+        if (m_TextureInvokeQueue.pop(data))
+        {
+            createTexture(data);
+        }
     }
 }
 
@@ -134,9 +128,7 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
         data.m_Color = color;
         data.m_Tex = handle;
 
-        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         m_TextureLoadQueue.push(data);
-        m_TextureLoadQueueMutex.unlock();
 
         m_AssetContainer.addAsset(stream.str(), handle);
 
@@ -230,9 +222,7 @@ he::ObjectHandle TextureLoader::asyncLoadTexture( const he::String& path, IResou
         data.m_Path = path;
         data.m_Tex = handle;
 
-        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         m_TextureLoadQueue.push(data);
-        m_TextureLoadQueueMutex.unlock();
 
         m_AssetContainer.addAsset(path, handle);
     }

@@ -18,10 +18,8 @@ src/3thParty/dll/*
 src/3thParty/lib/*
 src/3thParty/installers/7zs/*.7z
 src/3thParty/installers/7zs/*/*
-src/build_install/*
 *.idea/
-src/build_install64/*
 *.cfg
 *.orig
-src/build_install_vc12/*
 src/bin/*
+src/build*

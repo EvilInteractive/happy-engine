@@ -8,8 +8,9 @@ else()
     add_definitions(-DHE_LINUX)
 endif()
 
-macro (IncludeThirdPartyOSX)
+macro (IncludeThirdParty)
 
+if(APPLE)
 
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/assimp/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/awesomium/include)
@@ -26,10 +27,21 @@ include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML/include)
 
 add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX -DLLVM )
 
-endmacro()
 
-macro (IncludeThirdParty)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/assimp/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/awesomium/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/boost/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/cairo/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/devIL/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/freeType/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/glew/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/libsndfile/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/openAl/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/physX/lib/osx32)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/rakNet/lib)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML/lib)
 
+else()
 
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Assimp/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/include)
@@ -82,15 +94,72 @@ link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/glew/lib/${PLATFORM}${BI
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/libsndfile/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/LibOVR/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/OpenAl/lib/${PLATFORM}${BITNESS})
-endmacro()
 
+endif()
 
-
-macro (LinkThirdPartyOSX target)
-target_link_libraries($(target) ${Boost_LIBRARIES})
 endmacro()
 
 macro (LinkThirdParty target)
+
+if (APPLE)
+
+target_link_libraries(${target} libassimp.dylib)
+target_link_libraries(${target} libplugin_carbon_helper.dylib)
+
+target_link_libraries(${target} libboost_chrono-mt.a)
+target_link_libraries(${target} libboost_date_time-mt.a)
+target_link_libraries(${target} libboost_regex-mt.a)
+target_link_libraries(${target} libboost_system-mt.a)
+target_link_libraries(${target} libboost_thread-mt.a)
+target_link_libraries(${target} libboost_filesystem-mt.a)
+
+target_link_libraries(${target} libIL.a)
+target_link_libraries(${target} libILU.a)
+
+target_link_libraries(${target} libfreetype.a)
+
+target_link_libraries(${target} libGLEWmx.a)
+target_link_libraries(${target} libsndfile.a)
+target_link_libraries(${target} libopenal.dylib)
+target_link_libraries(${target} libcairo.a)
+
+target_link_libraries(${target} debug libLowLevelCHECKED.a)
+target_link_libraries(${target} debug libLowLevelClothCHECKED.a)
+target_link_libraries(${target} debug libPhysX3CharacterKinematicCHECKED.a)
+target_link_libraries(${target} debug libPhysX3CHECKED.a)
+target_link_libraries(${target} debug libPhysX3CommonCHECKED.a)
+target_link_libraries(${target} debug libPhysX3CookingCHECKED.a)
+target_link_libraries(${target} debug libPhysX3ExtensionsCHECKED.a)
+target_link_libraries(${target} debug libPhysX3VehicleCHECKED.a)
+target_link_libraries(${target} debug libPhysXProfileSDKCHECKED.a)
+target_link_libraries(${target} debug libPhysXVisualDebuggerSDKCHECKED.a)
+target_link_libraries(${target} debug libPxTaskCHECKED.a)
+target_link_libraries(${target} debug libRepX3CHECKED.a)
+target_link_libraries(${target} debug libRepXUpgrader3CHECKED.a)
+target_link_libraries(${target} debug libRepXUpgrader3CHECKED.a)
+target_link_libraries(${target} debug libSceneQueryCHECKED.a)
+target_link_libraries(${target} debug libSimulationControllerCHECKED.a)
+
+target_link_libraries(${target} optimized libPhysX3CharacterKinematic.a)
+target_link_libraries(${target} optimized libPhysX3.a)
+target_link_libraries(${target} optimized libPhysX3Common.a)
+target_link_libraries(${target} optimized libPhysX3Cooking.a)
+target_link_libraries(${target} optimized libPhysX3Extensions.a)
+target_link_libraries(${target} optimized libPhysX3Vehicle.a)
+target_link_libraries(${target} optimized libPhysXProfileSDK.a)
+target_link_libraries(${target} optimized libPhysXVisualDebuggerSDK.a)
+target_link_libraries(${target} optimized libPxTask.a)
+target_link_libraries(${target} optimized libRepX3.a)
+target_link_libraries(${target} optimized libRepXUpgrader3.a)
+
+target_link_libraries(${target} libRakNetLibStatic.a)
+
+target_link_libraries(${target} libsfml-graphics.dylib)
+target_link_libraries(${target} libsfml-system.dylib)
+target_link_libraries(${target} libsfml-window.dylib)
+
+else()
+
 target_link_libraries(${target} assimp)
 target_link_libraries(${target} awesomium)
 
@@ -181,11 +250,22 @@ target_link_libraries(${target} optimized sfml-graphics-s)
 target_link_libraries(${target} optimized sfml-main)
 target_link_libraries(${target} optimized sfml-system-s)
 target_link_libraries(${target} optimized sfml-window-s)
+
+endif()
+
 endmacro()
 
 macro (CopyThirdParty target)
+
+if (APPLE)
+
+else()
+
 file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Debug/${PLATFORM}${BITNESS}/ DESTINATION ${target}/Debug FILES_MATCHING REGEX .*)
 file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Release/${PLATFORM}${BITNESS}/ DESTINATION ${target}/MinSizeRel FILES_MATCHING REGEX .*)
 file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Release/${PLATFORM}${BITNESS}/ DESTINATION ${target}/Release FILES_MATCHING REGEX .*)
 file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Release/${PLATFORM}${BITNESS}/ DESTINATION ${target}/RelWithDebInfo FILES_MATCHING REGEX .*)
+
+endif()
+
 endmacro()

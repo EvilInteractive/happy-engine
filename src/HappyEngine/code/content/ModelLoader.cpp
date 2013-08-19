@@ -32,6 +32,8 @@ namespace ct {
 
 ModelLoader::ModelLoader()
     : m_EmptyMesh(nullptr)
+    , m_ModelInvokeQueue(10, 10, "ModelInvokeQueue")
+    , m_ModelLoadQueue(10, 10, "ModelInvokeQueue")
 {
     ObjectHandle handle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
     m_EmptyMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(handle);
@@ -52,16 +54,10 @@ bool ModelLoader::loadTick()
 {
     if (m_ModelLoadQueue.empty() == false)
     {
-        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
-        ModelLoadData data(m_ModelLoadQueue.front());
-        m_ModelLoadQueue.pop();
-        m_ModelLoadQueueMutex.unlock();
-
-        if (loadModel(data))
+        ModelLoadData data;
+        if (m_ModelLoadQueue.pop(data) && loadModel(data))
         {
-            m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
             m_ModelInvokeQueue.push(data);
-            m_ModelInvokeQueueMutex.unlock();
         }
         return true;
     }
@@ -72,12 +68,11 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_ModelInvokeQueue.empty() == false)
     {
-        m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
-        ModelLoadData data(m_ModelInvokeQueue.front());
-        m_ModelInvokeQueue.pop();
-        m_ModelInvokeQueueMutex.unlock();
-
-        createModel(data);
+        ModelLoadData data;
+        if (m_ModelInvokeQueue.pop(data))
+        {
+            createModel(data);
+        }
     }
 }
 
@@ -277,9 +272,7 @@ bool ModelLoader::startAsyncLoadModel(ModelLoadData& data)
     {
         // need reference for async loading
         ResourceFactory<gfx::Model>::getInstance()->instantiate(data.modelHandle);
-        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
         m_ModelLoadQueue.push(data);
-        m_ModelLoadQueueMutex.unlock();
     }
 
     return doLoad;
