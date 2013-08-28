@@ -20,10 +20,14 @@
 
 #include "FileReader.h"
 #include "ShaderPreProcessor.h"
+#include "ShaderUniform.h"
+#include "ShaderUniformFactory.h"
 
 #include "Texture2D.h"
 #include "TextureCube.h"
 #include "ExternalError.h"
+
+#include "GlobalStringTable.h"
 
 namespace 
 {
@@ -184,7 +188,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
 
     glLinkProgram(m_Id);
 
-    succes = succes && validateProgram(m_Id);
+    succes &= validateProgram(m_Id);
 
     const ShaderLayout::AttributeLayoutList& layout(shaderLayout.getAttributes());
     std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutAttribute& e)
@@ -202,6 +206,69 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
         }
     });
 
+    bind();
+
+    GLint unitformCount(-1);
+    glGetProgramiv( m_Id, GL_ACTIVE_UNIFORMS, &unitformCount ); 
+    for(GLint i(0); i < unitformCount; ++i)  
+    {
+        GLint nameLen(-1);
+        GLint num(1);
+        GLenum type(GL_ZERO);
+        char name[100];
+        glGetActiveUniform( m_Id, i, sizeof(name) - 1,
+            &nameLen, &num, &type, name );
+        name[nameLen] = '\0'; // Add null terminator
+        const GLuint location(glGetUniformLocation( m_Id, name ));
+        size_t samplers(0);
+        if (location != -1)
+        {
+            const he::FixedString fsName(he::GlobalStringTable::getInstance()->add(name, nameLen));
+            IShaderUniform* uniform(nullptr);
+            if (num == 1)
+            {
+                switch (type)
+                {
+                case GL_FLOAT: uniform = ShaderUniformFactory::create(eShaderUniformType_Float, fsName, location); break;
+                case GL_FLOAT_VEC2: uniform = ShaderUniformFactory::create(eShaderUniformType_Float2, fsName, location); break;
+                case GL_FLOAT_VEC3: uniform = ShaderUniformFactory::create(eShaderUniformType_Float3, fsName, location); break;
+                case GL_FLOAT_VEC4: uniform = ShaderUniformFactory::create(eShaderUniformType_Float4, fsName, location); break;
+                case GL_INT: uniform = ShaderUniformFactory::create(eShaderUniformType_Int, fsName, location); break;
+                case GL_UNSIGNED_INT: uniform = ShaderUniformFactory::create(eShaderUniformType_UInt, fsName, location); break;
+                case GL_FLOAT_MAT4: uniform = ShaderUniformFactory::create(eShaderUniformType_Mat44, fsName, location); break;
+                case GL_SAMPLER_2D: 
+                {
+                    glUniform1i(location, samplers);
+                    uniform = ShaderUniformFactory::create(eShaderUniformType_Texture2D, fsName, samplers++);
+                } break;
+                case GL_SAMPLER_CUBE: 
+                {
+                    glUniform1i(location, samplers);
+                    uniform = ShaderUniformFactory::create(eShaderUniformType_TextureCube, fsName, samplers++); 
+                } break;
+                default: LOG(LogType_ProgrammerAssert, "Unsupported shader uniform type %d", type);
+                }
+            }
+            else
+            {
+                HE_ASSERT(num > 1, "GL returned a uniform with an array size of 0?");
+                switch (type)
+                {
+                case GL_FLOAT_MAT4: uniform = ShaderUniformFactory::create(eShaderUniformType_Mat44Array, fsName, location); break;
+                default: LOG(LogType_ProgrammerAssert, "Unsupported shader uniform array type %d", type);
+                }
+            }
+            if (nullptr != uniform)
+            {
+                m_Uniforms.add(uniform);
+            }
+        }
+        else
+        {
+            HE_ERROR("Could not get shader location for shadervar: %s in shader: %s", name, m_FragShaderName.c_str());
+        }
+    }
+
     return succes;
 }
 
@@ -211,45 +278,6 @@ void Shader::bind()
     {
         glUseProgram(m_Id);
         s_CurrentBoundShader = m_Id;
-    }
-}
-
-uint32 Shader::getBufferId( const he::FixedString& id ) const
-{
-    uint32 loc(glGetUniformBlockIndex(m_Id, id.c_str()));
-    if (loc == -1)
-    {
-        HE_ERROR("Uniform buffer: '%s' not found!",  id.c_str());
-        HE_ERROR("In shader: %s", m_FragShaderName.c_str());
-    }
-    return loc;
-}
-
-uint32 Shader::getShaderVarId(const he::FixedString& id) const
-{
-    uint32 loc(glGetUniformLocation(m_Id, id.c_str()));
-    if (loc == -1)
-    {
-        HE_ERROR("Shader var: '%s' not found!", id.c_str());
-        HE_ERROR("In shader: %s", m_FragShaderName.c_str());
-    }
-    return loc;
-}
-uint32 Shader::getShaderSamplerId(const he::FixedString& id)
-{
-    he::FixedStringMap<uint32>::const_iterator loc(m_SamplerLocationMap.find(id));
-    if (loc != m_SamplerLocationMap.cend())
-    {
-        return loc->second;
-    }
-    else
-    {
-        const uint32 texLoc(getShaderVarId(id));
-        const uint32 samplerIndex(static_cast<uint32>(m_SamplerLocationMap.size()));
-        bind();
-        glUniform1i(texLoc, samplerIndex);
-        m_SamplerLocationMap[id] = samplerIndex;
-        return samplerIndex;
     }
 }
 
@@ -303,21 +331,6 @@ void Shader::setShaderVar( uint32 id, const gfx::TextureCube* texCube ) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTextureCube(id, texCube->getID());
-}
-
-void Shader::setBuffer( uint32 id, UniformBuffer* buffer )
-{
-    glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
-}
-
-UniformBuffer* Shader::setBuffer( uint32 id )
-{
-    int blockSize;
-    glGetActiveUniformBlockiv(m_Id, id, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-    UniformBuffer* buffer(NEW UniformBuffer(blockSize));
-    glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
-    m_UniformBufferMap[buffer->m_BufferId] = buffer;
-    return buffer;
 }
 
 } } //end namespace

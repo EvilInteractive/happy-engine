@@ -28,6 +28,9 @@
 namespace he {
 namespace gfx {
 
+class Texture2D;
+class TextureCube;
+
 class IShaderUniform
 {
 public:
@@ -59,36 +62,12 @@ template<typename T, EShaderUniformType TType>
 class ShaderUniform : public IShaderUniform
 {
 public:
-    ShaderUniform(const he::FixedString& name, const uint32 id, const T& defaultValue)
-        : m_Dirty(true)
-        , m_Name(name)
-        , m_Value(defaultValue)
-        , m_ID(id)
-    {
-        
-    }
+    ShaderUniform(const he::FixedString& name, const uint32 id, const T& defaultValue);
 
-    void push(Shader* const shader)
-    {
-        if (m_Dirty)
-        {
-            shader->setShaderVar(m_ID, m_Value);
-            m_Dirty = false;
-        }
-    }
-    void set(const T& value)
-    {
-        if (m_Value != value)
-        {
-            m_Value = value;
-            m_Dirty = true;
-        }
-    }
+    void push(Shader* const shader);
+    void set(const T& value);
 
-    const he::FixedString& getName() const
-    {
-        return m_Name;
-    }
+    const he::FixedString& getName() const;
 
     EShaderUniformType getType() const { return TType; }
     
@@ -99,66 +78,10 @@ private:
     he::FixedString m_Name;
 };
 
-template<>
-class ShaderUniform<he::PrimitiveList<mat44>, eShaderUniformType_Mat44Array> : public IShaderUniform
-{
-public:
-    ShaderUniform(const he::FixedString& name, const uint32 id)
-        : m_Dirty(true)
-        , m_Name(name)
-        , m_ID(id)
-    {
-
-    }
-
-    void push(Shader* const shader)
-    {
-        if (m_Dirty)
-        {
-            shader->setShaderVar(m_ID, m_Value);
-            m_Dirty = false;
-        }
-    }
-    void set(const he::PrimitiveList<mat44>& value)
-    {
-        const size_t size(value.size());
-        if (m_Dirty == false)
-        {
-            if (m_Value.size() == size)
-            {
-                for (size_t i(0); i < size; ++i)
-                {
-                    if (m_Value[i] != value[i])
-                    {
-                        m_Dirty = true;
-                        break;
-                    }
-                }
-            }
-        }
-        if (m_Dirty == true)
-        {
-            m_Value.clear();
-            m_Value.append(value);
-        }
-    }
-
-    const he::FixedString& getName() const
-    {
-        return m_Name;
-    }
-
-    EShaderUniformType getType() const { return eShaderUniformType_Mat44Array; }
-
-private:
-    he::PrimitiveList<mat44> m_Value;
-    bool m_Dirty;
-    uint32 m_ID;
-    he::FixedString m_Name;
-};
-
 }
 
 } } //end namespace
+
+#include "ShaderUniform.inl"
 
 #endif

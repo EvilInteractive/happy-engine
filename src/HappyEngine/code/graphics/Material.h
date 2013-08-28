@@ -31,7 +31,7 @@ namespace gfx {
 
 class Drawable;
 class ICamera;
-class ShaderVar;
+class ShaderUniform;
 class Shader;
 class ModelMesh;
 struct DrawContext;
@@ -83,9 +83,9 @@ public:
     Material();
     virtual ~Material();
         
-    void registerCommonVar(ShaderVar* const var);
-    void registerSpecificVar(const EShaderType type, ShaderVar* const var);
-    ShaderVar* getVar(const he::FixedString& var); // Only from user vars
+    void registerCommonVar(ShaderUniform* const var);
+    void registerSpecificVar(const EShaderType type, ShaderUniform* const var);
+    ShaderUniform* getVar(const he::FixedString& var); // Only from user vars
 
     void setNormalShader(Shader* const shader);
     void setSkinnedShader(Shader* const shader);

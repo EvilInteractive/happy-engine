@@ -30,6 +30,7 @@ ENUM(EShaderUniformType, uint8);
 
 class ShaderUniformFactory
 {
+public:
     static IShaderUniform* create(const EShaderUniformType type, const he::FixedString& name, const uint32 id);
 };
 

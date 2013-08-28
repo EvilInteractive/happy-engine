@@ -24,14 +24,12 @@
 
 #include "ModelMesh.h"
 #include "Shader.h"
-#include "ShaderVar.h"
 #include "Texture2D.h"
 #include "Material.h"
 #include "TextureCube.h"
 
 #include "Entity.h"
 #include "ModelComponent.h"
-#include "ShaderVar.h"
 
 namespace he {
 namespace gfx {
@@ -112,7 +110,7 @@ void SkyBox::load( const he::String& asset )
     Material* const material(he::ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/sky.material")));
     m_Drawable->setMaterial(material);
 
-    ShaderUserVar<const TextureCube*>* cubeMap(static_cast<ShaderUserVar<const gfx::TextureCube*>*>(material->getVar(HEFS::strcubeMap)));
+    ShaderUserVar<const TextureCube*>* cubeMap(checked_cast<ShaderUserVar<const gfx::TextureCube*>*>(material->getVar(HEFS::strcubeMap)));
     if (cubeMap != nullptr)
     {
         const TextureCube* cube(CONTENT->asyncLoadTextureCube(asset));

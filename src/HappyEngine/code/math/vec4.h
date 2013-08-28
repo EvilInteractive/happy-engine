@@ -41,6 +41,7 @@ public:
 
     vec4();
     explicit vec4(const physx::PxVec4& vec);
+    explicit vec4(const float val);
     vec4(const vec3& vec, float w);
     vec4(const vec2& xy, float z, float w);
     vec4(float x, float y, float z, float w);

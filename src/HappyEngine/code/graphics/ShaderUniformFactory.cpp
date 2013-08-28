@@ -23,6 +23,8 @@
 #include "ShaderUniform.h"
 #include "ShaderEnums.h"
 #include "ContentManager.h"
+#include "Texture2D.h"
+#include "TextureCube.h"
 
 namespace he {
 namespace gfx {
@@ -40,8 +42,18 @@ he::gfx::IShaderUniform* ShaderUniformFactory::create( const EShaderUniformType 
     case eShaderUniformType_Float4: uniform = NEW ShaderUniformVec4(name, id, vec4::zero); break;
     case eShaderUniformType_Mat44: uniform = NEW ShaderUniformMat44(name, id, mat44::Identity); break;
     case eShaderUniformType_Mat44Array: uniform = NEW ShaderUniformMat44Array(name, id); break;
-    case eShaderUniformType_Texture2D: uniform = NEW ShaderUniformTexture2D(name, id, CONTENT->makeTexture2D(Color(0.0f, 0.0f, 0.0f, 1.0f))); break;
-    case eShaderUniformType_TextureCube: uniform = NEW ShaderUniformTextureCube(name, id, CONTENT->makeTextureCube(Color(0.0f, 0.0f, 0.0f, 1.0f))); break;
+    case eShaderUniformType_Texture2D: 
+        {
+            const Texture2D* tex(CONTENT->makeTexture2D(Color(0.0f, 0.0f, 0.0f, 1.0f)));
+            uniform = NEW ShaderUniformTexture2D(name, id, tex);
+            tex->release();
+        } break;
+    case eShaderUniformType_TextureCube: 
+        {
+            const TextureCube* tex(CONTENT->makeTextureCube(Color(0.0f, 0.0f, 0.0f, 1.0f)));
+            uniform = NEW ShaderUniformTextureCube(name, id, tex);
+            tex->release();
+        } break;
     default:
         LOG(LogType_ProgrammerAssert, "Trying to create an unknown ShaderUniform type, %d", type);
         break;

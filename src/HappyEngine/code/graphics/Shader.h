@@ -28,6 +28,8 @@ namespace he {
 namespace gfx {
 
 class Shader;
+class Texture2D;
+class TextureCube;
 typedef ResourceFactory<Shader> ShaderFactory;
 
 class IShaderUniform;

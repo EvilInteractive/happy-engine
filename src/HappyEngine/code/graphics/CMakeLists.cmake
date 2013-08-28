@@ -46,7 +46,7 @@ addFilter(CODE_SRCS src/graphics/material code/graphics/
             Material.cpp                        Material.h
             Shader.cpp                          Shader.h
             ShaderLayout.cpp                    ShaderLayout.h
-            ShaderUniform.h                     
+            ShaderUniform.inl                   ShaderUniform.h         
             ShaderEnums.h
             ShaderUniformFactory.cpp            ShaderUniformFactory.h
         )
