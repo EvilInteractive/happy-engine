@@ -34,6 +34,7 @@ class ICamera;
 class ShaderUniform;
 class Shader;
 class ModelMesh;
+class MaterialParameter;
 struct DrawContext;
 
 enum EShaderType
@@ -112,7 +113,7 @@ public:
     void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
 
     void calculateMaterialLayout(const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout);
-
+    
 private:
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }
     HE_FORCEINLINE void raiseFlag(const EMaterialFlags flag) { m_Flags |= flag; }
@@ -127,8 +128,8 @@ private:
     BlendFunc m_SourceBlend, m_DestBlend;
 
     Shader* m_Shader[eShaderType_MAX];
-    he::PrimitiveList<ShaderVar*> m_ShaderCommonVars;
-    he::PrimitiveList<ShaderVar*> m_ShaderSpecificVars[eShaderType_MAX];
+    he::ObjectList<MaterialParameter> m_ShaderCommonVars;
+    he::ObjectList<MaterialParameter> m_ShaderSpecificVars[eShaderType_MAX];
     
     // Disabled
     Material(const Material* other);

@@ -178,18 +178,21 @@ void Material::setInstancedShader( Shader* const shader, const BufferLayout& /*i
 
 void Material::applyNormal( const DrawContext& context ) const
 {
+    HE_ASSERT(m_Shader[eShaderType_Normal] != nullptr, "Trying to apply material %s as a normal shader, but it is not!");
     applyShader(eShaderType_Normal, context);
     applyMesh(eShaderType_Normal, context);
 }
 
 void Material::applySkinned( const DrawContext& context ) const
 {
+    HE_ASSERT(m_Shader[eShaderType_Skinned] != nullptr, "Trying to apply material %s as a skinned shader, but it is not!");
     applyShader(eShaderType_Skinned, context);
     applyMesh(eShaderType_Skinned, context);
 }
 
 void Material::applyInstanced( const DrawContext& context ) const
 {
+    HE_ASSERT(m_Shader[eShaderType_Instanced] != nullptr, "Trying to apply material %s as a instanced shader, but it is not!");
     applyShader(eShaderType_Instanced, context);
     applyMesh(eShaderType_Instanced, context);
 }

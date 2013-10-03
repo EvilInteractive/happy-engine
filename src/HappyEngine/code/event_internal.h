@@ -18,7 +18,6 @@
 //Author:  Bastian Damman
 //Created: 28/10/2012
 
-#define CONCAT(a, b) a##b
 #define CONCAT_EXT(a, b) CONCAT(a, b)
 #define EVALUATE(x) x
 #define EVENTCALLBACK CONCAT_EXT(eventCallback, ARGS)

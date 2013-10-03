@@ -44,10 +44,13 @@ addFilter(CODE_SRCS src/graphics/light code/graphics/
             
 addFilter(CODE_SRCS src/graphics/material code/graphics/
             Material.cpp                        Material.h
+            MaterialParameter.cpp               MaterialParameter.h
             Shader.cpp                          Shader.h
             ShaderLayout.cpp                    ShaderLayout.h
             ShaderUniform.inl                   ShaderUniform.h         
             ShaderEnums.h
+            ShaderUniformBuffer.cpp             ShaderUniformBuffer.h
+            ShaderUniformBufferManager.cpp      ShaderUniformBufferManager.h
             ShaderUniformFactory.cpp            ShaderUniformFactory.h
         )
             

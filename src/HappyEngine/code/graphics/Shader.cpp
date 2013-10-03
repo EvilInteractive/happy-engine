@@ -87,6 +87,8 @@ namespace he {
 namespace gfx {
 
 uint32 Shader::s_CurrentBoundShader = 0;
+const size_t ShaderUniformID::Unassigned(SIZE_T_MAX);
+
 
 Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 {
@@ -331,6 +333,26 @@ void Shader::setShaderVar( uint32 id, const gfx::TextureCube* texCube ) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTextureCube(id, texCube->getID());
+}
+
+ShaderUniformID Shader::getUniformID( const he::FixedString& name ) const
+{
+    ShaderUniformID id;
+    size_t unitformCount(m_Uniforms.size());
+    for (size_t i(0); i < unitformCount; ++i)
+    {
+        if (m_Uniforms[i]->getName() == name)
+        {
+            id.m_ID = i;
+            break;
+        }
+    }
+    return id;
+}
+
+IShaderUniform* Shader::getUniform( const ShaderUniformID id ) const
+{
+    return m_Uniforms[id.m_ID];
 }
 
 } } //end namespace

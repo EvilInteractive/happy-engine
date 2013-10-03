@@ -34,6 +34,14 @@ typedef ResourceFactory<Shader> ShaderFactory;
 
 class IShaderUniform;
 
+struct ShaderUniformID
+{
+    const static size_t Unassigned;
+    size_t m_ID;
+
+    ShaderUniformID(): m_ID(Unassigned) {}
+};
+
 class Shader : public Resource<Shader>
 {
 public:
@@ -53,7 +61,8 @@ public:
     void bind();
 
     // Getters
-    IShaderUniform* getUniform(const he::FixedString& name) const;
+    ShaderUniformID getUniformID(const he::FixedString& name) const;
+    IShaderUniform* getUniform(const ShaderUniformID id) const;
     const ShaderLayout& getShaderLayout() const { return m_Layout; }
     
     // Setters
