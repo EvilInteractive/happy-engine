@@ -32,6 +32,7 @@
 #include <FileReader.h>
 #include <ThreadSafeQueueMP1C.h>
 #include <Timer.h>
+#include <Pool.h>
 
 namespace hut {
 
@@ -52,7 +53,8 @@ void MainGame::init()
     //mat33UnitTest();
     //jsonUnitTest();
     //threadSafeQueueMP1CTest();
-    midiTest();
+    //midiTest();
+    poolTest();
     HAPPYENGINE->quit();
 }
 
@@ -614,6 +616,52 @@ void MainGame::midiTest()
     {
 
     }
+}
+
+struct PoolTestItem
+{
+    PoolTestItem(): m_A(0), m_B(123.45f) {}
+    size_t m_A;
+    float m_B;
+
+    void resetPoolElement()
+    {
+        ++m_A;
+    }
+};
+
+void MainGame::poolTest()
+{
+    he::Pool<PoolTestItem> pool;
+    pool.init(10, 5, 50);
+
+    HE_INFO("Test1");
+    he::PrimitiveList<PoolTestItem*> list;
+    for (size_t i(0); i < 17; ++i)
+    {
+        list.add(pool.getFreeElement());
+    }
+
+    list.forEach([&pool](PoolTestItem* const item)
+    {
+        HE_INFO("Pool element: %d - %.2f", item->m_A, item->m_B);
+        pool.releaseElement(item);
+    });
+    list.clear();
+
+    HE_INFO("Test2");
+    for (size_t i(0); i < 6; ++i)
+    {
+        list.add(pool.getFreeElement());
+    }
+
+    list.forEach([&pool](PoolTestItem* const item)
+    {
+        HE_INFO("Pool element: %d - %.2f", item->m_A, item->m_B);
+        pool.releaseElement(item);
+    });
+
+    pool.destroy();
 }
 
 } //end namespace

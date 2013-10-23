@@ -71,6 +71,8 @@ public:
     inline T& front();
     inline bool empty() const { return m_Size == 0; }
 
+    inline void pop();
+
     inline T& operator[](const size_t index);
     inline const T& operator[](const size_t index) const;
 
@@ -210,6 +212,15 @@ void he::List<T, Creator>::trim()
     }
 }
 //////////////////////////////////////////////////////////////////////////
+template<typename T, typename Creator>
+void he::List<T, Creator>::pop()
+{
+    HE_IF_ASSERT(m_Size > 0, "Index out of bounds! cannot pop an item of the list when there are not items!")
+    {
+        --m_Size;
+    }
+}
+
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::remove( const T& element )
 {

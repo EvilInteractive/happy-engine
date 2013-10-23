@@ -8,6 +8,7 @@ addFilter(CODE_SRCS src/containers code/containers/
                 NodeGraphError.h
                 NodeGraphNode.inl           NodeGraphNode.h
                 ObjectFactory.h
+                Pool.h                      Pool.inl
                 Resource.h
                 ResourceFactory.h
                 SlotPContainer.h

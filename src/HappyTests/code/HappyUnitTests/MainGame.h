@@ -44,6 +44,7 @@ private:
     void jsonUnitTest();
     void threadSafeQueueMP1CTest();
     void midiTest();
+    void poolTest();
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
