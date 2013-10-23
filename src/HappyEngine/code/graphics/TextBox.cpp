@@ -48,7 +48,10 @@ TextBox::TextBox(RectF posSize,
                                                     m_BackSpaceDelayTimer(0)
 {
     m_Font = CONTENT->loadFont(customFont, fontSize, false);
-    m_Text.setFont(m_Font);
+    if (nullptr != m_Font)
+    {
+        m_Text.setFont(m_Font);
+    }
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Center);
     m_Text.setBounds(vec2(m_Rect.width - 4, m_Rect.height - 4));

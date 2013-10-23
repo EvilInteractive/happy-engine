@@ -1,6 +1,6 @@
 import os
 
-path = os.environ['VS100COMNTOOLS'] + "..\\Packages\\Debugger\\autoexp.dat"
+path = os.environ['VS110COMNTOOLS'] + "..\\Packages\\Debugger\\autoexp.dat"
 print path + "\n"
 
 autoExpand = """; HappyEngine

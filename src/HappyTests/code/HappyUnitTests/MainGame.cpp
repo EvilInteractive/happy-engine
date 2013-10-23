@@ -26,6 +26,7 @@
 #include "NodeGraph.h"
 #include "NodeGraphNode.h"
 
+#include <MidiReader.h>
 #include <JsonFileReader.h>
 #include <JsonFileWriter.h>
 #include <FileReader.h>
@@ -50,7 +51,8 @@ void MainGame::init()
     //guidUnitTest();
     //mat33UnitTest();
     //jsonUnitTest();
-    threadSafeQueueMP1CTest();
+    //threadSafeQueueMP1CTest();
+    midiTest();
     HAPPYENGINE->quit();
 }
 
@@ -603,6 +605,15 @@ void MainGame::threadSafeQueueMP1CTest()
         }
     }
     HE_INFO("---AVERAGE TIME: %.8fs", totalTime / loop);
+}
+
+void MainGame::midiTest()
+{
+    he::io::MidiReader reader;
+    if (reader.load(he::Path("../../data/test.mid")))
+    {
+
+    }
 }
 
 } //end namespace

@@ -44,7 +44,7 @@ class ModelMesh;
 class RenderTarget;
 class Scene;
 
-class Deferred3DRenderer : public IRenderer, public IDrawable2D
+class HAPPY_ENTRY Deferred3DRenderer : public IRenderer, public IDrawable2D
 {
 private:
     struct PostPointLightData

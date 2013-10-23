@@ -26,6 +26,7 @@ namespace io {
 
 BinaryFileVisitor::BinaryFileVisitor()
     : m_File(nullptr)
+    , m_DoEndianSwap(false)
 {
 }
 
@@ -34,10 +35,11 @@ BinaryFileVisitor::~BinaryFileVisitor()
     HE_ASSERT(m_OpenType == BinaryVisitor::eOpenType_Closed, "Stream is still open when disposing BinaryFileVisitor!");
 }
 
-bool BinaryFileVisitor::openRead( const Path& path )
+bool BinaryFileVisitor::openRead( const Path& path, const bool doBigToLittleEndianSwap )
 {
     if (open(path, "rb"))
     {
+        m_DoEndianSwap = doBigToLittleEndianSwap;
         m_OpenType = BinaryVisitor::eOpenType_Read;
         return true;
     }
@@ -56,19 +58,10 @@ bool BinaryFileVisitor::openWrite( const Path& path )
 
 bool BinaryFileVisitor::open( const Path& path, const char* type )
 {
-    int err(0);
-#ifdef _MSC_VER
-    err = fopen_s(&m_File, path.str().c_str(), type);
-#else
-    m_File = fopen(path.str().c_str(), type);
+    m_File = std::fopen(path.str().c_str(), type);
     if (m_File == nullptr)
-        err = 1;
-    else
-        err = 0;
-#endif
-    if (err != 0)
     {
-        HE_ERROR("BinaryFileVisitor open file failed('%s'): errno: %d", path.str().c_str(), err);
+        HE_ERROR("BinaryFileVisitor open file failed('%s'): errno: %d", path.str().c_str(), std::ferror(m_File));
         return false;
     }
     return true;
@@ -80,7 +73,7 @@ void BinaryFileVisitor::close()
     m_OpenType = BinaryVisitor::eOpenType_Closed;
     if (m_File != nullptr)
     {
-        fclose(m_File);
+        std::fclose(m_File);
         m_File = nullptr;
     }
 }
@@ -89,7 +82,13 @@ size_t BinaryFileVisitor::readBuffer( void* buffer, const size_t size )
 {
     if (size > 0)
     {
-        const size_t count(fread(buffer, size, 1, m_File));
+        const size_t count(std::fread(buffer, size, 1, m_File));
+        if (m_DoEndianSwap)
+        {
+            char* value(static_cast<char*>(buffer));
+            std::reverse(value, value + size);
+        }
+
         HE_ASSERT(count == 1, "unsuccessful read operation!"); count;
     }
     return size;
@@ -103,6 +102,19 @@ size_t BinaryFileVisitor::writeBuffer(const void* buffer, const size_t size)
         HE_ASSERT(count == 1, "unsuccessful write operation!"); count;
     }
     return size;
+}
+
+void BinaryFileVisitor::skipBytes( const size_t bytes )
+{
+    const size_t processedBytes(getProcessedBytes());
+    int ret(std::fseek(m_File, bytes, SEEK_CUR));
+    HE_ASSERT(ret == 0, "Error occurred when skipping bytes in file");
+    HE_ASSERT(processedBytes + bytes == getProcessedBytes(), "I did not skip the requested bytes! Got file pointer %d instead of %d", getProcessedBytes(), processedBytes + bytes);
+}
+
+size_t BinaryFileVisitor::getProcessedBytes()
+{
+    return std::ftell(m_File);
 }
 
 } } //end namespace

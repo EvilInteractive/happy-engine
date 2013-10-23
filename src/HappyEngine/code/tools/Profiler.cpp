@@ -124,7 +124,10 @@ Profiler::Profiler()
 void Profiler::load()
 {
     m_Font = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
-    m_Text.setFont(m_Font);
+    if (nullptr != m_Font)
+    {
+        m_Text.setFont(m_Font);
+    }
 
     CONSOLE->registerCmd(boost::bind(&he::tools::Profiler::toggleProfiler, this), "toggle_profiler");
 }

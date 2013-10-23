@@ -45,6 +45,7 @@ namespace tools {
 /* CONSTRUCTOR - DESTRUCTOR */
 Console::Console() :	m_Shortcut(io::Key_F1),
                         m_MaxMessages(0),
+                        m_MaxMessagesInWindow(0),
                         m_IsOpen(false),
                         m_TextBox(nullptr),
                         m_MsgHistory(0),
@@ -92,7 +93,11 @@ void Console::load()
 {
     // don't compress font because it is small and needs crispness
     m_Font = CONTENT->loadFont("DejaVuSansMono.ttf", 8, gui::Font::NO_COMPRESSION);
-    m_Text.setFont(m_Font);
+    if (m_Font != nullptr)
+    {
+        m_Text.setFont(m_Font);
+        m_MaxMessagesInWindow = static_cast<uint32>(190 / m_Font->getLineSpacing());
+    }
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Top);
 
@@ -117,8 +122,6 @@ void Console::load()
     m_CmdHistory.add("");
 
     m_ScrollBar->setBarPos(1.0f);
-
-    m_MaxMessagesInWindow = static_cast<uint32>(190 / m_Font->getLineSpacing());
 
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Background = cr->createSprite(vec2(1280.0f, 200.0f));

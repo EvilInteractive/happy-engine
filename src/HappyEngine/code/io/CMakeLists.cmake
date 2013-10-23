@@ -10,6 +10,8 @@ addFilter(CODE_SRCS src/io code/io/
             IniWriter.cpp                       IniWriter.h
             JsonFileReader.cpp                  JsonFileReader.h
             JsonFileWriter.cpp                  JsonFileWriter.h
+            MidiReader.cpp                      MidiReader.h
+            MidiEvents.h
             StructuredVisitor.cpp               StructuredVisitor.h
         )
             
