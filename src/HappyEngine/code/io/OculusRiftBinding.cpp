@@ -158,12 +158,12 @@ vec3 OculusRiftDevice::getPitchYawRoll() const
 class OculusAllocater : public OVR::Allocator
 {
 public:
-    virtual void*   Alloc(OVR::UPInt size) { return he_malloc(size); }
-    virtual void*   AllocDebug(OVR::UPInt size, const char* file, unsigned line) { return he_malloc_dbg(size, file, line); }
-    virtual void*   Realloc(void* p, OVR::UPInt newSize) { return he_realloc(p, newSize); }
-    virtual void    Free(void *p) { he_free(p); }
-    virtual void*   AllocAligned(OVR::UPInt size, OVR::UPInt align) { return he_aligned_malloc(size, align); }
-    virtual void    FreeAligned(void* p) { he_aligned_free(p); }
+    void*   Alloc(OVR::UPInt size) { return he_malloc(size); }
+    void*   AllocDebug(OVR::UPInt size, const char* file, unsigned line) { return he_malloc_dbg(size, file, line); }
+    void*   Realloc(void* p, OVR::UPInt newSize) { return he_realloc(p, newSize); }
+    void    Free(void *p) { he_free(p); }
+    void*   AllocAligned(OVR::UPInt size, OVR::UPInt align) { return he_aligned_malloc(size, align); }
+    void    FreeAligned(void* p) { he_aligned_free(p); }
 };
 
 class OculusLogger : public OVR::Log
@@ -171,7 +171,7 @@ class OculusLogger : public OVR::Log
 public:
     OculusLogger() : OVR::Log(OVR::LogMask_All) {}
 
-    virtual void LogMessageVarg(OVR::LogMessageType messageType, const char* fmt, va_list argList)
+    void LogMessageVarg(OVR::LogMessageType messageType, const char* fmt, va_list argList)
     {
         switch (messageType)
         {
@@ -191,9 +191,9 @@ public:
 
 struct OculusRiftBinding::OculusContext : public OVR::MessageHandler
 {
-    OculusContext(OculusRiftBinding* const parent) 
-        : m_DeviceManager(nullptr)
-        , m_Parent(parent) {}
+    OculusContext(OculusRiftBinding* const parent)
+        : m_Parent(parent)
+        , m_DeviceManager(nullptr) {}
 
     ~OculusContext()
     {

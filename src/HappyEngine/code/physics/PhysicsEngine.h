@@ -44,9 +44,11 @@ namespace physx
     namespace pxtask {
         class CudaContextManager;
     }
+#ifdef HE_WINDOWS
     namespace debugger { namespace comm {
             class PvdConnection;
     } }
+#endif
 }
 
 
@@ -130,8 +132,10 @@ private:
 
     physx::PxDefaultCpuDispatcher* m_CpuDispatcher;
     physx::pxtask::CudaContextManager* m_CudaContextManager;
-
+    
+#ifdef HE_WINDOWS
     physx::debugger::comm::PvdConnection* m_VisualDebuggerConnection;
+#endif
 
     //PhysicsCarManager* m_pCarManager;
 

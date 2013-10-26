@@ -23,8 +23,10 @@
 #include "PhysicsEngine.h"
 #include "PhysicsCarManager.h"
 #include "PhysicsTrigger.h"
+#ifdef HE_WINDOWS
 #include <extensions/PxVisualDebuggerExt.h>
 #include <physxvisualdebuggersdk/PvdConnection.h>
+#endif
 
 #include "Ray.h"
 #include "PxPhysicsAPI.h"
@@ -34,12 +36,15 @@
 namespace he {
 namespace px {
 
-PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr), 
-                            m_CpuDispatcher(nullptr), m_CudaContextManager(nullptr), 
-                            m_Allocator(NEW HappyPhysicsAllocator()), m_ErrorCallback(NEW err::HappyPhysicsErrorCallback()),
-                            m_Simulate(false), m_PxProfileZoneManager(nullptr),
-                           /* m_pCarManager(NEW PhysicsCarManager()),*/ m_PhysXFoundation(nullptr), m_VisualDebuggerConnection(nullptr),
-                           m_ControllerManager(nullptr), m_Timer(0.0f)
+PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr)
+                            , m_CpuDispatcher(nullptr), m_CudaContextManager(nullptr)
+                            , m_Allocator(NEW HappyPhysicsAllocator()), m_ErrorCallback(NEW err::HappyPhysicsErrorCallback())
+                            , m_Simulate(false), m_PxProfileZoneManager(nullptr)
+                            , m_PhysXFoundation(nullptr)
+                            #ifdef HE_WINDOWS
+                            , m_VisualDebuggerConnection(nullptr),
+                            #endif
+                            , m_ControllerManager(nullptr), m_Timer(0.0f)
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
@@ -64,7 +69,7 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
     {
         LOG(LogType_ProgrammerAssert, "PxInitExtensions failed!");
     }
-
+#ifdef HE_WINDOWS
     if (m_PhysXSDK->getPvdConnectionManager() != nullptr)
     {
         //#if _DEBUG || DEBUG
@@ -78,7 +83,7 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
             HE_INFO("    CONNECTED!");
         //#endif
     }
-
+#endif
     createScene();
 
 }
@@ -161,8 +166,10 @@ PhysicsEngine::~PhysicsEngine()
     
     PxCloseExtensions();
 
+#ifdef HE_WINDOWS
     if (m_VisualDebuggerConnection != nullptr)
         m_VisualDebuggerConnection->release();
+#endif
 
     if (m_CpuDispatcher != nullptr)
         m_CpuDispatcher->release();

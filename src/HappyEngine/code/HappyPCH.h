@@ -34,10 +34,15 @@
 #define FILE_AND_LINE
 #endif
 
-#ifdef HappyEngine_EXPORTS
-#define HAPPY_ENTRY __declspec(dllexport)
+#ifdef HE_WINDOWS
+    #ifdef HappyEngine_EXPORTS
+        #define HAPPY_ENTRY __declspec(dllexport)
+    #else
+        #define HAPPY_ENTRY __declspec(dllimport)
+    #endif
 #else
-#define HAPPY_ENTRY __declspec(dllimport)
+    #define HAPPY_ENTRY
+    #define APIENTRY
 #endif
 
 /*

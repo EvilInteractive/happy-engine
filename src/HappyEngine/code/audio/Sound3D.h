@@ -22,10 +22,8 @@
 #define _HE_SOUND3D_H_
 #pragma once
 
-#include "al.h"
-#include "HappyTypes.h"
+#include "AL/al.h"
 #include "ISound.h"
-#include "vec3.h"
 
 namespace he {
 namespace sfx {

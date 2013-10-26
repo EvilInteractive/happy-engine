@@ -109,7 +109,7 @@ he::ObjectHandle ShaderGenerator::addVariable()
 
     const uint32 id(m_LocalVarUID++);
     char name[20];
-    sprintf(name, "localvar%d\0", id);
+    sprintf(name, "localvar%d", id);
     var->setLocalName(name);
 
     return result;
@@ -125,7 +125,7 @@ ShaderGeneratorVariable* ShaderGenerator::addInternalVariable()
 
     const uint32 id(m_LocalVarUID++);
     char name[20];
-    sprintf(name, "localvar%d\0", id);
+    sprintf(name, "localvar%d", id);
     var->setLocalName(name);
 
     return var;

@@ -22,7 +22,7 @@
 #define _HE_String_H_
 #pragma once
 
-#include <xstring>
+#include <string>
 
 namespace he {
 

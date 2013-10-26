@@ -75,7 +75,7 @@ struct ValueTest : JsonTest::TestCase
 
    void checkConstMemberCount( const json::Value &value, unsigned int expectedCount );
 
-   void checkMemberCount( json::Value &value, unsigned int expectedCount );
+   void checkMemberCount( json::Value &value, json::ArrayIndex expectedCount );
 
    void checkIs( const json::Value &value, const IsCheck &check );
 
@@ -181,7 +181,7 @@ JSONTEST_FIXTURE( ValueTest, isUInt )
 
 JSONTEST_FIXTURE( ValueTest, accessArray )
 {
-    const unsigned int index0 = 0;
+    const json::ArrayIndex index0 = 0;
     JSONTEST_ASSERT( json::Value(1234) == array1_[index0] ) << "Json::Value::operator[ArrayIndex]";
     JSONTEST_ASSERT( json::Value(1234) == array1_[0] ) << "Json::Value::operator[int]";
 
@@ -209,11 +209,11 @@ ValueTest::checkConstMemberCount( const json::Value &value, unsigned int expecte
 }
 
 void
-ValueTest::checkMemberCount( json::Value &value, unsigned int expectedCount )
+ValueTest::checkMemberCount( json::Value &value, json::ArrayIndex expectedCount )
 {
    JSONTEST_ASSERT_EQUAL( expectedCount, value.size() );
 
-   unsigned int count = 0;
+   json::ArrayIndex count = 0;
    json::Value::iterator itEnd = value.end();
    for ( json::Value::iterator it = value.begin(); it != itEnd; ++it )
    {

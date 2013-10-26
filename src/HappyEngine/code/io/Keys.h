@@ -93,7 +93,7 @@ enum Key
     Key_RSystem = sf::Keyboard::RSystem,
     Key_Menu = sf::Keyboard::Menu,
     Key_Return = sf::Keyboard::Return,
-    Key_BackSpace = sf::Keyboard::BackSpace,
+    Key_BackSpace = sf::Keyboard::Back,
     Key_Tab = sf::Keyboard::Tab,
     Key_PageUp = sf::Keyboard::PageUp,
     Key_PageDown = sf::Keyboard::PageDown,

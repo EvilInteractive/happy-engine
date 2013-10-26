@@ -52,13 +52,12 @@ public:
     }
     bool visitBlob(void* buffer, const size_t byteSize)
     {
-        m_Stream->Serialize(m_OpenType == eOpenType_Write, static_cast<char*>(buffer), checked_numcast<unsigned int>(byteSize));
+        return m_Stream->Serialize(m_OpenType == eOpenType_Write, static_cast<char*>(buffer), checked_numcast<unsigned int>(byteSize));
     }
 
     template<typename EnumType, typename CastType>
     bool visitEnum(EnumType& enumValue)
     {
-        HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
         CastType value;
         if (m_OpenType == eOpenType_Write)
         {

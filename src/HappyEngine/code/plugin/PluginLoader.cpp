@@ -26,6 +26,10 @@
 #include "BinaryStreamVisitor.h"
 #include "StaticDataManager.h"
 
+#ifndef HE_WINDOWS
+#include <dlfcn.h>
+#endif
+
 namespace he {
 namespace pl {
 
@@ -42,10 +46,17 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path )
 {
     IPlugin* result(nullptr);
 #ifdef HE_WINDOWS
-    HMODULE mod(LoadLibrary(path.str().c_str())); // if it fails, convert to backslashes
+    PLUGIN_HANDLE mod(LoadLibrary(path.str().c_str())); // if it fails, convert to backslashes
+#else
+    PLUGIN_HANDLE mod(dlopen(path.str().c_str(), RTLD_LAZY));
+#endif
     if (mod != NULL)
     {
-        FARPROC proc(GetProcAddress(mod, "createPlugin"));
+#ifdef HE_WINDOWS
+        PLUGIN_FUNCTION proc(GetProcAddress(mod, "createPlugin"));
+#else
+        PLUGIN_FUNCTION proc(dlsym(mod, "createPlugin"));
+#endif
         if (proc != NULL)
         {
             CreatePluginFunc func(reinterpret_cast<CreatePluginFunc>(proc));
@@ -70,9 +81,6 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path )
     {
         HE_WARNING("Could not load plugin: '%s', file not found?", path.str().c_str());
     }
-#else
-#error Implement dynamic linking for mac and linux
-#endif
 
     return result;
 }
@@ -93,7 +101,11 @@ void PluginLoader::unloadPlugin( IPlugin* const plugin )
         delete wrapper.m_Plugin;
         if (wrapper.m_ModuleHandle != NULL)
         {
+#ifdef HE_WINDOWS
             FreeLibrary(wrapper.m_ModuleHandle);
+#else
+            dlclose(wrapper.m_ModuleHandle);
+#endif
         }
         m_Plugins.removeAt(index);
     }

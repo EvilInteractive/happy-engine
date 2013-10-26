@@ -22,9 +22,7 @@
 #define _HE_SOUNDFILE_H_
 #pragma once
 
-#include <string>
 #include "sndfile.h"
-#include "HappyTypes.h"
 
 namespace he {
 namespace sfx {

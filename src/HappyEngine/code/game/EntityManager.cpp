@@ -97,7 +97,7 @@ EntityComponent* EntityManager::createComponent( const he::FixedString& type )
         if (result != nullptr)
             break;
     }
-    HE_IF_ASSERT(result != nullptr, "Trying to create component for unregistered type: %s", type)
+    HE_IF_ASSERT(result != nullptr, "Trying to create component for unregistered type: %s", type.c_str())
     {
         m_ComponentFactory.registerObject(result);
     }

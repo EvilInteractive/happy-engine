@@ -72,7 +72,8 @@ HappyMessageBox::Button HappyMessageBox::showExt(const char* caption, const char
 
     return window.getResult();
 }
-
+    
+#ifdef _WIN32
 class HappyStackWalker : public StackWalker
 {
 public:
@@ -124,6 +125,8 @@ public:
 private:
     std::stringstream m_Buffer;
 };
+#endif
+    
 
 HappyMessageBox::Button HappyMessageBox::showAssert( const char* caption, const char* message, const Icon icon /*= Icon_ProgrammerAssert*/, const char* button1/*="Debug"*/, const char* button2/*="Skip"*/, const char* button3/*="Ignore"*/ )
 {

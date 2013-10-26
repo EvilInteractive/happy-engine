@@ -371,7 +371,7 @@ StyledWriter::writeArrayValue( const Value &value )
          writeWithIndent( "[" );
          indent();
          bool hasChildValue = !childValues_.empty();
-         unsigned index =0;
+         size_t index =0;
          for (;;)
          {
             const Value &childValue = value[index];
@@ -647,7 +647,7 @@ StyledStreamWriter::writeArrayValue( const Value &value )
          writeWithIndent( "[" );
          indent();
          bool hasChildValue = !childValues_.empty();
-         unsigned index =0;
+         size_t index =0;
          for (;;)
          {
             const Value &childValue = value[index];

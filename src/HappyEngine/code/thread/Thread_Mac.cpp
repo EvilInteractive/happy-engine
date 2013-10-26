@@ -43,8 +43,8 @@ void* threadProc(void* param)
 void Thread::startThread(const boost::function0<void>& threadWorker, const char* /*name*/)
 {
     m_Worker = threadWorker;
-    const int fail(pthread_create(&m_Internal, 0, threadProc, this));
-    HE_ASSERT(!failed, "Thread failed to create!"); fail;
+    const int fail(pthread_create(&m_ID, 0, threadProc, this));
+    HE_ASSERT(!fail, "Thread failed to create!"); fail;
 }
 
 Thread::~Thread()
@@ -54,7 +54,7 @@ Thread::~Thread()
 
 void Thread::join()
 {
-    pthread_join(m_Internal, NULL);
+    pthread_join(m_ID, NULL);
 }
 
 he::ThreadID Thread::getCurrentThread()

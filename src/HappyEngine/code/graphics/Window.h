@@ -112,10 +112,10 @@ public:
     event0<void> LostFocus;
 
 private:
-    FORCEINLINE void raiseFlag(const EFlags flag) { m_Flags |= flag; }
-    FORCEINLINE bool checkFlag(const EFlags flag) const { return (m_Flags & flag) != 0; }
-    FORCEINLINE void clearFlag(const EFlags flag) { m_Flags &= ~flag; }
-    FORCEINLINE void setFlag(const EFlags flag, const bool enable) { enable? raiseFlag(flag) : clearFlag(flag); }
+    inline void raiseFlag(const EFlags flag) { m_Flags |= flag; }
+    inline bool checkFlag(const EFlags flag) const { return (m_Flags & flag) != 0; }
+    inline void clearFlag(const EFlags flag) { m_Flags &= ~flag; }
+    inline void setFlag(const EFlags flag, const bool enable) { enable? raiseFlag(flag) : clearFlag(flag); }
 
     he::ObjectList<ObjectHandle> m_Views;
     RenderTarget* m_RenderTarget;

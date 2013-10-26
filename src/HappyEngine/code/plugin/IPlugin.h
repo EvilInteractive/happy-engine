@@ -40,10 +40,10 @@ class IPlugin;
 
 #ifdef HE_WINDOWS
 #define PLUGIN_EXPORT extern "C" __declspec(dllexport)
-typedef IPlugin* (*CreatePluginFunc)();
 #else
-#error Implement for non windows!
+#define PLUGIN_EXPORT
 #endif
+typedef IPlugin* (*CreatePluginFunc)();
 
 enum EPluginType
 {

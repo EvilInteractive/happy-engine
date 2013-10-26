@@ -10,6 +10,8 @@
 # include "config.h"
 #endif // if !defined(JSON_IS_AMALGAMATION)
 
+#include <cstddef>
+
 namespace json {
 
    // writer.h
@@ -23,7 +25,7 @@ namespace json {
    class Features;
 
    // value.h
-   typedef unsigned int ArrayIndex;
+   typedef size_t ArrayIndex;
    class StaticString;
    class Path;
    class PathArgument;
