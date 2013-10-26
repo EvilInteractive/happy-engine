@@ -32,7 +32,7 @@ namespace
         outValue = 0;
         for (;;)
         {
-            byte a;
+            uint8 a;
             visitor->visit(a);
             outValue <<= 7; 
             outValue |= (a & 0x7F);
@@ -242,7 +242,7 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
         readVariableLength(visitor, m_DeltaTime);
     }
     {
-        byte data;
+        uint8 data;
         visitor->visitBlob(&data, 1);
         m_Type = checked_numcast<EMidiEventType>((data & 0xF0) >> 4);
         m_MidiChannel = (data & 0x0F);
@@ -290,7 +290,7 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
             } break;
         case eEventType_PitchBend:
             {
-                byte lsb, msb;
+                uint8 lsb, msb;
                 visitor->visit(lsb);
                 visitor->visit(msb);
                 MidiPitchBendEvent ev;
@@ -304,7 +304,7 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
                 m_MidiChannel = -1;
                 if (data == 0xFF)
                 {
-                    byte metaType(0);
+                    uint8 metaType(0);
                     visitor->visit(metaType);
                     m_Type = checked_numcast<EMidiEventType>(eEventType_Meta + metaType);
                     size_t eventLength(0);
