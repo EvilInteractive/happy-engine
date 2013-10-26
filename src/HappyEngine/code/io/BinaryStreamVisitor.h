@@ -40,6 +40,9 @@ public:
     const uint8* getData() const;
     size_t getByteCount() const;
 
+    virtual void skipBytes(const size_t bytes);
+    virtual size_t getProcessedBytes();
+
 protected:
     virtual	size_t readBuffer(void* buffer, const size_t byteCount);
     virtual size_t writeBuffer(const void* buffer, const size_t byteCount);

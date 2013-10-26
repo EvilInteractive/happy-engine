@@ -27,6 +27,7 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
 ADD_NATIVE_PRECOMPILED_HEADER(HappyEngine code/ HappyPCH.h HappyPCH.cpp)
 
 #set output dir
+SET(HappyEngine_BinOutDir ${HappyEngine_SOURCE_DIR}/bin CACHE PATH "Where the HappyEngine dll goes")
 SET_TARGET_PROPERTIES(HappyEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyEngine/bin
-                                             RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)    
+                                             RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_BinOutDir})    
 SET_TARGET_PROPERTIES(HappyEngine PROPERTIES FOLDER "HappyEngine")

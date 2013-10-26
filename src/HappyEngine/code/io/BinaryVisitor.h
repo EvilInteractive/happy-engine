@@ -38,6 +38,9 @@ public:
     virtual ~BinaryVisitor() {}
 
     bool isOpen() const { return m_OpenType != eOpenType_Closed; }
+
+    virtual void skipBytes(const size_t bytes) = 0;
+    virtual size_t getProcessedBytes() = 0; // read bytes when reading, written bytes while writing
     
     template<typename T>
     void visit(T& value)
@@ -52,6 +55,7 @@ public:
             writeBuffer(&value, sizeof(T));
         }
     }
+
 
     void visitBlob(const void* buffer, const size_t byteSize)
     {

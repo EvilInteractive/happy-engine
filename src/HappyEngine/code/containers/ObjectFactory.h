@@ -191,7 +191,7 @@ protected:
     virtual void resize(size_t newSize)
     {
         HE_ASSERT(newSize < OBJECTHANDLE_MAX, "ObjectFactory (%s): resize out of range: %d", m_DisplayName.c_str(), (int)newSize);
-        HE_WARNING("ObjectFactory (%s): increasing pool to %d", m_DisplayName.c_str(), (int)newSize);
+        HE_CONDITIONAL_WARNING(m_Pool.size() != 0, "ObjectFactory (%s): increasing pool to %d", m_DisplayName.c_str(), (int)newSize);
         ObjectHandle::IndexType oldSize(static_cast<ObjectHandle::IndexType>(m_Pool.size()));
         m_Pool.resize(newSize);
         m_Salt.resize(newSize);
