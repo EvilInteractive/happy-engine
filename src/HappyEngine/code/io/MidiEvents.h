@@ -139,34 +139,34 @@ namespace io {
 
     ENUM(EMidiEventType, uint8)
     {
-        eEventType_Invalid = 0x0,
+        eMidiEventType_Invalid = 0x0,
 
         // Channel Events
-        eEventType_NoteOff = 0x8,
-        eEventType_NoteOn = 0x9,
-        eEventType_NoteAftertouch = 0xA,
-        eEventType_Controller = 0xB,
-        eEventType_ProgramChange = 0xC,
-        eEventType_ChannelAftertouch = 0xD,
-        eEventType_PitchBend = 0xE,
-        eEventType_Meta = 0xF,
+        eMidiEventType_NoteOff = 0x8,
+        eMidiEventType_NoteOn = 0x9,
+        eMidiEventType_NoteAftertouch = 0xA,
+        eMidiEventType_Controller = 0xB,
+        eMidiEventType_ProgramChange = 0xC,
+        eMidiEventType_ChannelAftertouch = 0xD,
+        eMidiEventType_PitchBend = 0xE,
+        eMidiEventType_Meta = 0xF,
         
         // Meta Events
-        eEventType_SequenceNumber = 0x00 + eEventType_Meta,
-        eEventType_Text = 0x01 + eEventType_Meta,
-        eEventType_CopyrightNotice = 0x02 + eEventType_Meta,
-        eEventType_TrackName = 0x03 + eEventType_Meta,
-        eEventType_InstrumentName = 0x04 + eEventType_Meta,
-        eEventType_Lyrics = 0x05 + eEventType_Meta,
-        eEventType_Marker = 0x06 + eEventType_Meta,
-        eEventType_CuePoint = 0x07 + eEventType_Meta,
-        eEventType_MidiChannelPrefix = 0x20 + eEventType_Meta,
-        eEventType_EndOfTrack = 0x2F + eEventType_Meta,
-        eEventType_SetTempo = 0x51 + eEventType_Meta,
-        eEventType_SMPTEOffset = 0x54 + eEventType_Meta,
-        eEventType_TimeSignature = 0x58 + eEventType_Meta,
-        eEventType_KeySignature = 0x59 + eEventType_Meta,
-        eEventType_SequencerSpecific = 0x7F + eEventType_Meta,
+        eMidiEventType_SequenceNumber = 0x00 + eMidiEventType_Meta,
+        eMidiEventType_Text = 0x01 + eMidiEventType_Meta,
+        eMidiEventType_CopyrightNotice = 0x02 + eMidiEventType_Meta,
+        eMidiEventType_TrackName = 0x03 + eMidiEventType_Meta,
+        eMidiEventType_InstrumentName = 0x04 + eMidiEventType_Meta,
+        eMidiEventType_Lyrics = 0x05 + eMidiEventType_Meta,
+        eMidiEventType_Marker = 0x06 + eMidiEventType_Meta,
+        eMidiEventType_CuePoint = 0x07 + eMidiEventType_Meta,
+        eMidiEventType_MidiChannelPrefix = 0x20 + eMidiEventType_Meta,
+        eMidiEventType_EndOfTrack = 0x2F + eMidiEventType_Meta,
+        eMidiEventType_SetTempo = 0x51 + eMidiEventType_Meta,
+        eMidiEventType_SMPTEOffset = 0x54 + eMidiEventType_Meta,
+        eMidiEventType_TimeSignature = 0x58 + eMidiEventType_Meta,
+        eMidiEventType_KeySignature = 0x59 + eMidiEventType_Meta,
+        eMidiEventType_SequencerSpecific = 0x7F + eMidiEventType_Meta,
     };
 
     // The Note On Event is used to signal when a MIDI key is pressed. This type of event has two parameters. 

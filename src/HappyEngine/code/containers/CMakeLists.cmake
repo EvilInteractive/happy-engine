@@ -7,6 +7,7 @@ addFilter(CODE_SRCS src/containers code/containers/
                 NodeGraph.inl               NodeGraph.h
                 NodeGraphError.h
                 NodeGraphNode.inl           NodeGraphNode.h
+                Map.h                       Map.inl
                 ObjectFactory.h
                 Pool.h                      Pool.inl
                 Resource.h
