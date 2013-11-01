@@ -51,6 +51,12 @@ MidiReader::MidiReader()
 
 MidiReader::~MidiReader()
 {
+    reset();
+}
+
+void MidiReader::reset()
+{
+    m_Tracks.clear();
 }
 
 bool MidiReader::load( const he::Path& path )
@@ -165,6 +171,10 @@ MidiReader::TrackChunk::TrackChunk()
 
 MidiReader::TrackChunk::~TrackChunk()
 {
+}
+
+void MidiReader::TrackChunk::reset()
+{
     const size_t stringCount(m_TextPool.size());
     for (size_t i(0); i < stringCount; ++i)
     {
@@ -174,12 +184,20 @@ MidiReader::TrackChunk::~TrackChunk()
 
 MidiReader::TrackChunk::TrackChunk(const TrackChunk& other)
 {
-    HE_ASSERT(other.m_EventData.size() == 0, "Trying to copy non empty track! This should not happen for efficienty");
+    if (&other != this)
+    {
+        HE_ASSERT(other.m_EventData.size() == 0, "Trying to copy non empty track! This should not happen for efficienty");
+        reset();
+    }
 }
 
 MidiReader::TrackChunk& MidiReader::TrackChunk::operator=( const TrackChunk& other )
 {
-    HE_ASSERT(other.m_EventData.size() == 0, "Trying to copy non empty track! This should not happen for efficienty");
+    if (&other != this)
+    {
+        HE_ASSERT(other.m_EventData.size() == 0, "Trying to copy non empty track! This should not happen for efficienty");
+        reset();
+    }
     return *this;
 }
 
@@ -226,7 +244,7 @@ const char* MidiReader::TrackChunk::readString( BinaryVisitor* const visitor, si
 //////////////////////////////////////////////////////////////////////////
 MidiReader::EventData::EventData()
     : m_DeltaTime(0)
-    , m_Type(eEventType_Invalid)
+    , m_Type(eMidiEventType_Invalid)
     , m_MidiChannel(-1)
 {
     he_memset(&m_Event, 0, sizeof(Event));
@@ -248,47 +266,47 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
         m_MidiChannel = (data & 0x0F);
         switch (m_Type)
         {
-        case eEventType_NoteOff: 
+        case eMidiEventType_NoteOff: 
             {
                 MidiNoteOffEvent ev;
                 visitor->visit(ev.m_NoteNumber);
                 visitor->visit(ev.m_Velocity);
                 m_Event.m_NoteOff = ev;
             } break;
-        case eEventType_NoteOn:
+        case eMidiEventType_NoteOn:
             {
                 MidiNoteOnEvent ev;
                 visitor->visit(ev.m_NoteNumber);
                 visitor->visit(ev.m_Velocity);
                 m_Event.m_NoteOn = ev;
             } break;
-        case eEventType_NoteAftertouch:
+        case eMidiEventType_NoteAftertouch:
             {
                 MidiNoteAftertouchEvent ev;
                 visitor->visit(ev.m_NoteNumber);
                 visitor->visit(ev.m_AfterTouchValue);
                 m_Event.m_NoteAftertouch = ev;
             } break;
-        case eEventType_Controller:
+        case eMidiEventType_Controller:
             {
                 MidiControllerEvent ev;
                 visitor->visit(ev.m_ControllerNumber);
                 visitor->visit(ev.m_ControllerValue);
                 m_Event.m_ControllerChanged = ev;
             } break;
-        case eEventType_ProgramChange:
+        case eMidiEventType_ProgramChange:
             {
                 MidiProgramChangedEvent ev;
                 visitor->visit(ev.m_ProgramNumber);
                 m_Event.m_ProgramChanged = ev;
             } break;
-        case eEventType_ChannelAftertouch:
+        case eMidiEventType_ChannelAftertouch:
             {
                 MidiChannelAftertouchEvent ev;
                 visitor->visit(ev.m_AfterTouchValue);
                 m_Event.m_ChannelAftertouch = ev;
             } break;
-        case eEventType_PitchBend:
+        case eMidiEventType_PitchBend:
             {
                 byte lsb, msb;
                 visitor->visit(lsb);
@@ -299,87 +317,87 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
                           ev.m_PitchBendValue >= MidiPitchBendEvent::s_LowValue, "Invalid pitch value! %d", ev.m_PitchBendValue );
                 m_Event.m_PitchBend = ev;
             } break;
-        case eEventType_Meta:
+        case eMidiEventType_Meta:
             {
                 m_MidiChannel = -1;
                 if (data == 0xFF)
                 {
                     byte metaType(0);
                     visitor->visit(metaType);
-                    m_Type = checked_numcast<EMidiEventType>(eEventType_Meta + metaType);
+                    m_Type = checked_numcast<EMidiEventType>(eMidiEventType_Meta + metaType);
                     size_t eventLength(0);
                     readVariableLength(visitor, eventLength);
                     switch (m_Type)
                     {
-                    case he::io::eEventType_SequenceNumber:
+                    case he::io::eMidiEventType_SequenceNumber:
                         {
                             MidiMetaEventSequenceNumber ev;
                             visitor->visit(ev.m_LSB);
                             visitor->visit(ev.m_MSB);
                             m_Event.m_SequenceNumber = ev;
                         } break;
-                    case he::io::eEventType_Text:
+                    case he::io::eMidiEventType_Text:
                         {
                             MidiMetaEventText ev;
                             ev.m_TextLength = eventLength;
                             ev.m_Text = parent->readString(visitor, eventLength);
                             m_Event.m_Text = ev;
                         } break;
-                    case he::io::eEventType_CopyrightNotice:
+                    case he::io::eMidiEventType_CopyrightNotice:
                         {
                             MidiMetaEventCopyrightNotice ev;
                             ev.m_TextLength = eventLength;
                             ev.m_Text = parent->readString(visitor, eventLength);
                             m_Event.m_CopyrightNotice = ev;
                         } break;
-                    case he::io::eEventType_TrackName:
+                    case he::io::eMidiEventType_TrackName:
                         {
                             MidiMetaEventTrackName ev;
                             ev.m_TextLength = eventLength;
                             ev.m_Text = parent->readString(visitor, eventLength);
                             m_Event.m_TrackName = ev;
                         } break;
-                    case he::io::eEventType_InstrumentName:
+                    case he::io::eMidiEventType_InstrumentName:
                         {
                             MidiMetaEventInstrumentName ev;
                             ev.m_TextLength = eventLength;
                             ev.m_Text = parent->readString(visitor, eventLength);
                             m_Event.m_InstrumentName = ev;
                         } break;
-                    case he::io::eEventType_Lyrics:
+                    case he::io::eMidiEventType_Lyrics:
                         {
                             MidiMetaEventLyrics ev;
                             ev.m_TextLength = eventLength;
                             ev.m_Text = parent->readString(visitor, eventLength);
                             m_Event.m_Lyrics = ev;
                         } break;
-                    case he::io::eEventType_Marker:
+                    case he::io::eMidiEventType_Marker:
                         {
                             MidiMetaEventMarker ev;
                             ev.m_TextLength = eventLength;
                             ev.m_Text = parent->readString(visitor, eventLength);
                             m_Event.m_EventMarker = ev;
                         } break;
-                    case he::io::eEventType_CuePoint:
+                    case he::io::eMidiEventType_CuePoint:
                         {
                             MidiMetaEventCuePoint ev;
                             ev.m_TextLength = eventLength;
                             ev.m_Text = parent->readString(visitor, eventLength);
                             m_Event.m_CuePoint = ev;
                         } break;
-                    case he::io::eEventType_MidiChannelPrefix:
+                    case he::io::eMidiEventType_MidiChannelPrefix:
                         {
                             MidiMetaEventMidiChannelPrefix ev;
                             HE_ASSERT(eventLength == 1, "Channel event has wrong size!");
                             visitor->visit(ev.m_Channel);
                             m_Event.m_MidiChannelPrefix = ev;
                         } break;
-                    case he::io::eEventType_EndOfTrack:
+                    case he::io::eMidiEventType_EndOfTrack:
                         {
                             HE_ASSERT(eventLength == 0, "End of track event has wrong size!");
                             m_Event.m_EndOfTrack = MidiMetaEventEndOfTrack();
                         } break;
-                    case he::io::eEventType_SetTempo:
+                    case he::io::eMidiEventType_SetTempo:
                         {
                             HE_ASSERT(eventLength == 3, "Set Tempo event has wrong size!");
                             MidiMetaEventSetTempo ev;
@@ -387,7 +405,7 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
                             visitor->visitBlob(&ev.m_MPQN, 3);
                             m_Event.m_SetTempo = ev;
                         } break;
-                    case he::io::eEventType_SMPTEOffset:
+                    case he::io::eMidiEventType_SMPTEOffset:
                         {
                             HE_ASSERT(eventLength == 5, "SMPTEOffset event has wrong size!");
                             MidiMetaEventSMPTEOffset ev;
@@ -410,7 +428,7 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
                             ev.m_Hour &= 0x1F;
                             m_Event.m_SMPTEOffset = ev;
                         } break;
-                    case he::io::eEventType_TimeSignature:
+                    case he::io::eMidiEventType_TimeSignature:
                         {
                             HE_ASSERT(eventLength == 4, "TimeSignature event has wrong size!");
                             MidiMetaEventTimeSignature ev;
@@ -421,7 +439,7 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
                             visitor->visit(ev.m_32nds);
                             m_Event.m_TimeSignature = ev;
                         } break;
-                    case he::io::eEventType_KeySignature:
+                    case he::io::eMidiEventType_KeySignature:
                         {
                             HE_ASSERT(eventLength == 2, "TimeSignature event has wrong size!");
                             MidiMetaEventKeySignature ev;
@@ -429,7 +447,7 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
                             visitor->visit(ev.m_Scale);
                             m_Event.m_KeySignature = ev;
                         } break;
-                    case he::io::eEventType_SequencerSpecific:
+                    case he::io::eMidiEventType_SequencerSpecific:
                         {
                             visitor->skipBytes(eventLength);
                         } break;
@@ -455,6 +473,132 @@ bool MidiReader::EventData::load( TrackChunk* const parent, BinaryVisitor* const
 
     }
     return true;
+}
+
+const MidiNoteOffEvent& MidiReader::EventData::getNoteOff() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_NoteOff, "getting wrong event data! type is different!");
+    return m_Event.m_NoteOff;
+}
+
+const MidiNoteOnEvent& MidiReader::EventData::getNoteOn() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_NoteOn, "getting wrong event data! type is different!");
+    return m_Event.m_NoteOn;
+}
+
+const MidiNoteAftertouchEvent& MidiReader::EventData::getNoteAftertouch() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_NoteAftertouch, "getting wrong event data! type is different!");
+    return m_Event.m_NoteAftertouch;
+}
+
+const MidiControllerEvent& MidiReader::EventData::getControllerChanged() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_Controller, "getting wrong event data! type is different!");
+    return m_Event.m_ControllerChanged;
+}
+
+const MidiProgramChangedEvent& MidiReader::EventData::getProgramChanged() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_ProgramChange, "getting wrong event data! type is different!");
+    return m_Event.m_ProgramChanged;
+}
+
+const MidiChannelAftertouchEvent& MidiReader::EventData::getChannelAftertouch() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_ChannelAftertouch, "getting wrong event data! type is different!");
+    return m_Event.m_ChannelAftertouch;
+}
+
+const MidiPitchBendEvent& MidiReader::EventData::getPitchBend() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_PitchBend, "getting wrong event data! type is different!");
+    return m_Event.m_PitchBend;
+}
+
+const MidiMetaEventSequenceNumber& MidiReader::EventData::getSequenceNumber() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_SequenceNumber, "getting wrong event data! type is different!");
+    return m_Event.m_SequenceNumber;
+}
+
+const MidiMetaEventText& MidiReader::EventData::getText() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_Text, "getting wrong event data! type is different!");
+    return m_Event.m_Text;
+}
+
+const MidiMetaEventCopyrightNotice& MidiReader::EventData::getCopyrightNotice() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_CopyrightNotice, "getting wrong event data! type is different!");
+    return m_Event.m_CopyrightNotice;
+}
+
+const MidiMetaEventTrackName& MidiReader::EventData::getTrackName() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_TrackName, "getting wrong event data! type is different!");
+    return m_Event.m_TrackName;
+}
+
+const MidiMetaEventInstrumentName& MidiReader::EventData::getInstrumentName() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_InstrumentName, "getting wrong event data! type is different!");
+    return m_Event.m_InstrumentName;
+}
+
+const MidiMetaEventLyrics& MidiReader::EventData::getLyrics() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_Lyrics, "getting wrong event data! type is different!");
+    return m_Event.m_Lyrics;
+}
+
+const MidiMetaEventMarker& MidiReader::EventData::getMarker() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_Marker, "getting wrong event data! type is different!");
+    return m_Event.m_EventMarker;
+}
+
+const MidiMetaEventCuePoint& MidiReader::EventData::getCuePoint() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_CuePoint, "getting wrong event data! type is different!");
+    return m_Event.m_CuePoint;
+}
+
+const MidiMetaEventMidiChannelPrefix& MidiReader::EventData::getMidiChannelPrefix() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_MidiChannelPrefix, "getting wrong event data! type is different!");
+    return m_Event.m_MidiChannelPrefix;
+}
+
+const MidiMetaEventEndOfTrack& MidiReader::EventData::getEndOfTrack() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_EndOfTrack, "getting wrong event data! type is different!");
+    return m_Event.m_EndOfTrack;
+}
+
+const MidiMetaEventSetTempo& MidiReader::EventData::getSetTempo() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_SetTempo, "getting wrong event data! type is different!");
+    return m_Event.m_SetTempo;
+}
+
+const MidiMetaEventSMPTEOffset& MidiReader::EventData::getSMPTEOffset() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_SMPTEOffset, "getting wrong event data! type is different!");
+    return m_Event.m_SMPTEOffset;
+}
+
+const MidiMetaEventTimeSignature& MidiReader::EventData::getTimeSignature() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_TimeSignature, "getting wrong event data! type is different!");
+    return m_Event.m_TimeSignature;
+}
+
+const MidiMetaEventKeySignature& MidiReader::EventData::getKeySignature() const
+{
+    HE_ASSERT(m_Type == eMidiEventType_KeySignature, "getting wrong event data! type is different!");
+    return m_Event.m_KeySignature;
 }
 
 

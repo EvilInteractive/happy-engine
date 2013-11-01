@@ -29,7 +29,8 @@ namespace io {
 
 class HAPPY_ENTRY MidiReader
 {
-    struct Header
+public:
+    struct HAPPY_ENTRY Header
     {
     public:
         Header();
@@ -51,13 +52,8 @@ class HAPPY_ENTRY MidiReader
         uint16 m_Tracks;
         uint16 m_TimeDivision;
     };
-    struct MidiChannelEvent
-    {
-        int8 m_MidiChannel;
-
-    };
     class TrackChunk;
-    class EventData
+    class HAPPY_ENTRY EventData
     {
     public:
         EventData();
@@ -68,6 +64,29 @@ class HAPPY_ENTRY MidiReader
         EMidiEventType getEventType() const { return m_Type; } 
 
         bool load(TrackChunk* const parent, BinaryVisitor* const visitor);
+
+        const MidiNoteOffEvent& getNoteOff() const;
+        const MidiNoteOnEvent& getNoteOn() const;
+        const MidiNoteAftertouchEvent& getNoteAftertouch() const;
+        const MidiControllerEvent& getControllerChanged() const;                         
+        const MidiProgramChangedEvent& getProgramChanged() const;                        
+        const MidiChannelAftertouchEvent& getChannelAftertouch() const;                  
+        const MidiPitchBendEvent& getPitchBend() const;                                  
+                                                                                         
+        const MidiMetaEventSequenceNumber& getSequenceNumber() const;                    
+        const MidiMetaEventText& getText() const;                                        
+        const MidiMetaEventCopyrightNotice& getCopyrightNotice() const;                  
+        const MidiMetaEventTrackName& getTrackName() const;                              
+        const MidiMetaEventInstrumentName& getInstrumentName() const;                    
+        const MidiMetaEventLyrics& getLyrics() const;                                    
+        const MidiMetaEventMarker& getMarker() const;                               
+        const MidiMetaEventCuePoint& getCuePoint() const;                                
+        const MidiMetaEventMidiChannelPrefix& getMidiChannelPrefix() const;              
+        const MidiMetaEventEndOfTrack& getEndOfTrack() const;                            
+        const MidiMetaEventSetTempo& getSetTempo() const;                                
+        const MidiMetaEventSMPTEOffset& getSMPTEOffset() const;                          
+        const MidiMetaEventTimeSignature& getTimeSignature() const;
+        const MidiMetaEventKeySignature& getKeySignature() const;
 
     private:
         size_t m_DeltaTime;
@@ -101,7 +120,7 @@ class HAPPY_ENTRY MidiReader
         } m_Event;
 
     };
-    class TrackChunk
+    class HAPPY_ENTRY TrackChunk
     {
         friend class EventData;
     public:
@@ -109,6 +128,8 @@ class HAPPY_ENTRY MidiReader
         ~TrackChunk();
         TrackChunk(const TrackChunk& other);
         TrackChunk& operator=(const TrackChunk& other);
+
+        void reset();
 
         const ObjectList<EventData>& getEventData() const { return m_EventData; }
 
@@ -120,9 +141,11 @@ class HAPPY_ENTRY MidiReader
         ObjectList<EventData> m_EventData;
         PrimitiveList<char*> m_TextPool;
     };
-public:
+
     MidiReader();
     ~MidiReader();
+
+    void reset();
 
     const Header& getHeader() { return m_Header; }
     const ObjectList<TrackChunk>& getTracks() const { return m_Tracks; }
