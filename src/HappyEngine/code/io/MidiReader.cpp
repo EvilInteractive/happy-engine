@@ -110,7 +110,7 @@ bool MidiReader::Header::isTicksPerBeat() const
     return (m_TimeDivision & 0x8000) == 0;
 }
 
-he::uint16 MidiReader::Header::getTimeDivisionInTickPerBeat() const
+he::uint16 MidiReader::Header::getTimeDivisionInTicksPerBeat() const
 {
     HE_ASSERT(isTicksPerBeat(), "Getting time division in ticks per beat when we are not"); 
     return m_TimeDivision & 0x7fff;

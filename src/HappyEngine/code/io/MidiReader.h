@@ -39,7 +39,7 @@ public:
         uint16 getTrackCount() const { return m_Tracks; }
 
         bool isTicksPerBeat() const;
-        uint16 getTimeDivisionInTickPerBeat() const;
+        uint16 getTimeDivisionInTicksPerBeat() const;
 
         bool isFramesPerSecond() const { return !isTicksPerBeat(); }
         float getTimeDivisionFrameRate() const; // in frames / sec
