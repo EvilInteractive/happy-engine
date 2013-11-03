@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 16/12/2012
-#include "HappyPCH.h" 
+#include "HappyPCH.h"
 
 #include "MaterialGeneratorNodeParam.h"
 
@@ -99,7 +99,7 @@ he::vec3 MaterialGeneratorNodeParam::getFloat3() const
 he::vec4 MaterialGeneratorNodeParam::getFloat4() const
 {
     HE_ASSERT(m_Type == Type_Float4, "Type mismatch getting Float4 when var is not");
-    return vec4(m_Data.m_Float[0], m_Data.m_Float[1], m_Data.m_Float[2], m_Data.m_Float[4]);
+    return vec4(m_Data.m_Float[0], m_Data.m_Float[1], m_Data.m_Float[2], m_Data.m_Float[3]);
 }
 
 bool MaterialGeneratorNodeParam::getBool() const
