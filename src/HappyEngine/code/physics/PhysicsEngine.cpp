@@ -42,7 +42,7 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr)
                             , m_Simulate(false), m_PxProfileZoneManager(nullptr)
                             , m_PhysXFoundation(nullptr)
                             #ifdef HE_WINDOWS
-                            , m_VisualDebuggerConnection(nullptr),
+                            , m_VisualDebuggerConnection(nullptr)
                             #endif
                             , m_ControllerManager(nullptr), m_Timer(0.0f)
 {
