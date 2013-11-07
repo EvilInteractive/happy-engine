@@ -171,6 +171,7 @@ MidiReader::TrackChunk::TrackChunk()
 
 MidiReader::TrackChunk::~TrackChunk()
 {
+    reset();
 }
 
 void MidiReader::TrackChunk::reset()
@@ -180,6 +181,7 @@ void MidiReader::TrackChunk::reset()
     {
         he_free(m_TextPool[i]);
     }
+    m_TextPool.clear();
 }
 
 MidiReader::TrackChunk::TrackChunk(const TrackChunk& other)
