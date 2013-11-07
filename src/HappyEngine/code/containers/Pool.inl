@@ -55,7 +55,7 @@ void he::Pool<T>::destroy()
         const size_t elements(i == 0? m_InitialSize : m_GrowSize);
         for (size_t j(0); j < elements; ++j)
         {
-            pool->~T();
+            (pool+j)->~T();
         }
         he_free(pool);
     }
