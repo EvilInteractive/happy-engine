@@ -22,19 +22,19 @@
 #define _HE_MouseButtons_H_
 #pragma once
 
-#include <SFML/Window/Mouse.hpp>
+#include <SDL2/SDL_mouse.h>
 
 namespace he {
 namespace io {
 
 enum MouseButton
 {
-    MouseButton_Left = sf::Mouse::Left, 
-    MouseButton_Right = sf::Mouse::Right, 
-    MouseButton_Middle = sf::Mouse::Middle,
-    MouseButton_X1 = sf::Mouse::XButton1, 
-    MouseButton_X2 = sf::Mouse::XButton2,
-    MouseButton_MAX = sf::Mouse::ButtonCount
+    MouseButton_Left = SDL_BUTTON_LEFT,
+    MouseButton_Right = SDL_BUTTON_RIGHT,
+    MouseButton_Middle = SDL_BUTTON_MIDDLE,
+    MouseButton_X1 = SDL_BUTTON_X1,
+    MouseButton_X2 = SDL_BUTTON_X2,
+    MouseButton_MAX
 };
 
 } } //end namespace

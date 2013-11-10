@@ -66,7 +66,7 @@ View::View():
     m_ViewportPercentage(0, 0, 1, 1),
     m_UsePercentage(true),
     m_Window(nullptr),
-    m_WindowResizedCallback(boost::bind(&View::resize, this)),
+    m_WindowResizedCallback(boost::bind(&View::resize, this, _1, _2)),
     m_PostProcesser(nullptr),
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
@@ -280,7 +280,7 @@ void View::setRelativeViewport( const RectF& viewportPercentage, const bool forc
         }
     }
 }
-void View::resize()
+void View::resize(const int32 /*width*/, const int32 /*height*/)
 {
     RectI oldViewPort(m_Viewport);
     calcViewportFromPercentage();

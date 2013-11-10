@@ -22,6 +22,8 @@
 #define _HE_WEBVIEW_H_
 #pragma once
 
+#ifdef USE_WEB
+
 #include "IDrawable2D.h"
 
 #pragma warning(disable:4100)
@@ -156,4 +158,5 @@ private:
 
 } } //end namespace
 
+#endif
 #endif

@@ -22,6 +22,8 @@
 #define _HE_WEBWINDOW_H_
 #pragma once
 
+#ifdef USE_WEB
+
 #pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
 #pragma warning(default:4100)
@@ -112,5 +114,7 @@ private:
 };
 
 }} //end namespace
+
+#endif
 
 #endif

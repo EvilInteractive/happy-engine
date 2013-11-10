@@ -19,6 +19,8 @@
 //Created: 15/03/2013
 
 #include "HappyPCH.h" 
+
+#ifdef USE_WEB
 #include "WebViewSurface.h"
 
 namespace he {
@@ -188,3 +190,4 @@ RectI WebViewSurface::getDirtyBounds(bool flipY) const
 }
 
 }} //end namespace
+#endif // USE_WEB

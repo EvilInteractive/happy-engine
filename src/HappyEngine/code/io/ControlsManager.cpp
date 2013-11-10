@@ -34,7 +34,7 @@ ControlsManager::ControlsManager()
     , m_Locked(false)
     , m_LockedObject(nullptr)
 {
-    m_OculusRiftBinding->init();
+    //m_OculusRiftBinding->init();
 }
 
 ControlsManager::~ControlsManager()

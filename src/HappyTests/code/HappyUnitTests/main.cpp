@@ -24,7 +24,7 @@
 
 int main( int /*argc*/, char** /*args[]*/ )
 {
-#if _DEBUG && !GCC
+#if defined(HE_WINDOWS) && _DEBUG && !GCC
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 

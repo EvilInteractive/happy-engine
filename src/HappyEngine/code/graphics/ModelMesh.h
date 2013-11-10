@@ -77,8 +77,8 @@ public:
     // Getters
     inline const he::ObjectList<Bone>& getBones() const { return m_BoneList; }
 
-    inline VaoID getVertexArraysID() const { return m_VaoID[GL::s_CurrentContext->id]; } 
-    inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->id]; }
+    inline VaoID getVertexArraysID() const { return m_VaoID[GL::s_CurrentContext->getID()]; }
+    inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->getID()]; }
     inline uint32 getVBOID() const { return m_VertexVboID; }
     inline uint32 getVBOIndexID() const { return m_IndexVboID; }
     inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }

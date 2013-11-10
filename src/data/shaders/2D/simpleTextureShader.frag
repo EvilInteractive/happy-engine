@@ -34,8 +34,8 @@ void main()
 
 	vec3 lightDir = normalize(vec3(0, 5, 0) - passWorldPos);
 	float diffValue = clamp(dot(normal, lightDir), 0.0f, 1.0f);
-	vec4 color = texture2D(diffuseMap, passTexCoord);
-	vec4 overlay = texture2D(overlayMap, passTexCoord);
+	vec4 color = texture(diffuseMap, passTexCoord);
+	vec4 overlay = texture(overlayMap, passTexCoord);
 	if (overlay.a > 0.2f)
 		color.rgb = overlay.rgb;
 

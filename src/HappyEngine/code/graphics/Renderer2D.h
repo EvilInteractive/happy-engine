@@ -27,7 +27,9 @@
 namespace he {
 namespace gui {
 class Canvas2D;
+#ifdef USE_WEB
 class WebView;
+#endif
 }
 namespace gfx {
 class IDrawable2D;
@@ -47,9 +49,11 @@ public:
     gui::Canvas2D* getDefaultCanvas() { return m_DefaultCanvas; }
     void removeCanvas(gui::Canvas2D* canvas);
 
+#ifdef USE_WEB
     gui::WebView* createWebViewAbsolute(const RectI& viewport, bool enableUserInput = false);
     gui::WebView* createWebViewRelative(const RectF& viewportPercent, bool enableUserInput = false);
     void removeWebView(gui::WebView* webview);
+#endif
 
     View* getView() const { return m_View; }
     const RenderTarget* getRTG() const {return m_RenderTarget;}
@@ -70,8 +74,9 @@ private:
     /* DATAMEMBERS */
     View* m_View;
     const RenderTarget* m_RenderTarget;
-
+#ifdef USE_WEB
     he::PrimitiveList<gui::WebView*> m_WebViews;
+#endif
     he::PrimitiveList<gui::Canvas2D*> m_Canvas2Ds;
     he::PrimitiveList<IDrawable2D*> m_Drawables;
     he::PrimitiveList<std::pair<uint32,uint16> > m_DrawablesDepth;

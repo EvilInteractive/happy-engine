@@ -61,7 +61,7 @@ void main()
 	newPartBorder /= size.xyxy;
     
     vec2 texcoord = remap(passTexCoord, newPartBorder, origPartBorder);
-    color = texture2D(diffuseMap, texcoord);
+    color = texture(diffuseMap, texcoord);
     
     outColor = color * blendColor;
 }

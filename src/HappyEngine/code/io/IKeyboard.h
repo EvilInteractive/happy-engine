@@ -42,13 +42,13 @@ public:
     virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3) const = 0;
     virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3, const Key key4) const = 0;
     
-    virtual const char& getTextCharEntered() const = 0;
+    virtual const he::String& getTextEntered() const = 0;
 
     virtual void tick() = 0;
 
     event1<void, Key> KeyPressed;
     event1<void, Key> KeyReleased;
-    event1<void, uint32> TextCharEntered;
+    event1<void, const char*> TextEntered;
 };
 
 } } //end namespace

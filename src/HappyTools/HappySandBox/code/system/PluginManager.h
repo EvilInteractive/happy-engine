@@ -38,7 +38,7 @@ public:
     PluginManager();
     ~PluginManager();
 
-    he::pl::IPlugin* loadPlugin(const he::Path& path);
+    he::pl::IPlugin* loadPlugin(const he::Path& path, const char* name );
     void releasePlugin(he::pl::IPlugin* const plugin);
 
 private:

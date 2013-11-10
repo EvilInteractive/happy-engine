@@ -42,12 +42,10 @@ const char* mutexErrorCodeToString(const int error)
 
 Mutex::Mutex()
 {
-    pthread_mutex_init(&m_Internal, 0);
-#ifdef _DEBUG
-    //pthread_mutexattr_settype(&m_Internal, PTHREAD_MUTEX_ERRORCHECK);
-#else
-    //pthread_mutexattr_settype(&m_Internal, PTHREAD_MUTEX_NORMAL);
-#endif
+    pthread_mutexattr_t mta;
+    pthread_mutexattr_init(&mta);
+    pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&m_Internal, &mta);
 }
 
 

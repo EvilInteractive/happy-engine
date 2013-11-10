@@ -42,13 +42,15 @@ PluginLoader::~PluginLoader()
 }
 
 // http://en.wikipedia.org/wiki/Dynamic_loading
-IPlugin* PluginLoader::loadPlugin( const he::Path& path )
+IPlugin* PluginLoader::loadPlugin( const he::Path& path, const char* fileName )
 {
     IPlugin* result(nullptr);
 #ifdef HE_WINDOWS
-    PLUGIN_HANDLE mod(LoadLibrary(path.str().c_str())); // if it fails, convert to backslashes
+    he::String fullpath(path.str() + fileName + ".dll");
+    PLUGIN_HANDLE mod(LoadLibrary(fullpath.c_str())); // if it fails, convert to backslashes
 #else
-    PLUGIN_HANDLE mod(dlopen(path.str().c_str(), RTLD_LAZY));
+    he::String fullpath(path.str() + fileName + ".dylib");
+    PLUGIN_HANDLE mod(dlopen(fullpath.c_str(), RTLD_LAZY));
 #endif
     if (mod != NULL)
     {
@@ -69,17 +71,17 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path )
             }
             else
             {
-                HE_WARNING("Could not load plugin: '%s'\n because the plugin == nullptr.", path.str().c_str());
+                HE_WARNING("Could not load plugin: '%s'\n because the plugin == nullptr.", fullpath.c_str());
             }
         }
         else
         {
-            HE_WARNING("Could not load plugin: '%s'\n because I could not retrieve the plugin pointer.", path.str().c_str());
+            HE_WARNING("Could not load plugin: '%s'\n because I could not retrieve the plugin pointer.", fullpath.c_str());
         }
     }
     else
     {
-        HE_WARNING("Could not load plugin: '%s', file not found?", path.str().c_str());
+        HE_WARNING("Could not load plugin: '%s', file not found?", fullpath.c_str());
     }
 
     return result;

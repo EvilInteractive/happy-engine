@@ -55,10 +55,11 @@ Mesh2D::Mesh2D(bool staticDraw) :
 void Mesh2D::initVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_VAOID[context->id] == UINT32_MAX, "vao already assigned on context")
+    const uint32 contextID(context->getID());
+    HE_IF_ASSERT(m_VAOID[contextID] == UINT32_MAX, "vao already assigned on context")
     {
-        glGenVertexArrays(1, m_VAOID + context->id);
-        GL::heBindVao(m_VAOID[context->id]);
+        glGenVertexArrays(1, m_VAOID + contextID);
+        GL::heBindVao(m_VAOID[contextID]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
@@ -69,10 +70,11 @@ void Mesh2D::initVao( GLContext* context )
 void Mesh2D::destroyVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_VAOID[context->id] != UINT32_MAX, "vao not alive on context")
+    const uint32 contextID(context->getID());
+    HE_IF_ASSERT(m_VAOID[contextID] != UINT32_MAX, "vao not alive on context")
     {
-        glDeleteVertexArrays(1, m_VAOID + context->id);
-        m_VAOID[context->id] = UINT32_MAX;
+        glDeleteVertexArrays(1, m_VAOID + contextID);
+        m_VAOID[contextID] = UINT32_MAX;
     }
 }
 
@@ -143,7 +145,7 @@ void Mesh2D::createBuffer(bool outline)
 /* GETTERS */
 uint32 Mesh2D::getBufferID() const
 {
-    return m_VAOID[GL::s_CurrentContext->id];
+    return m_VAOID[GL::s_CurrentContext->getID()];
 }
 
 const mat44& Mesh2D::getWorldMatrix() const

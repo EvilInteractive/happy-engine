@@ -14,9 +14,7 @@ link_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/bin)
 
 # include + link 3thParth
 include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
-if (WIN32)
 IncludeThirdParty()
-endif()
 
 # add HappyThijsTest executable
 add_executable (HappyThijsTest ${HAPPYTHIJSTEST_SRCS})
@@ -25,9 +23,7 @@ include(${HappyEngine_SOURCE_DIR}/cmakeHelpers/CopyHappyRuntime.cmake)
 copyHappyRuntime(HappyThijsTest)
 
 # link thirdparty
-if (WIN32)
 LinkThirdParty(HappyThijsTest)
-endif()
 
 # link HappyEngine
 target_link_libraries(HappyThijsTest HappyEngine)

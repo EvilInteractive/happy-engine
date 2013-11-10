@@ -20,6 +20,8 @@
 
 #include "HappyPCH.h" 
 
+#ifdef USE_WEB
+
 #include "WebWindow.h"
 #include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
@@ -28,8 +30,6 @@
 #include "GraphicsEngine.h"
 #include "Window.h"
 #include "WebListener.h"
-
-#include <SFML/Window.hpp>
 
 namespace he {
 namespace gui {
@@ -168,3 +168,5 @@ bool WebWindow::isOpen() const
 }
 
 }} //end namespace
+
+#endif

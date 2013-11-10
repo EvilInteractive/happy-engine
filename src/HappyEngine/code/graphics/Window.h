@@ -24,6 +24,8 @@
 
 #include "Singleton.h"
 
+struct SDL_Window;
+
 namespace he {
 namespace io {
     ENUM(MouseCursor, uint8);
@@ -51,15 +53,15 @@ typedef void* NativeWindowHandle;
 class HAPPY_ENTRY Window
 {
 DECLARE_OBJECT(Window)
-friend GraphicsEngine;
+friend class GraphicsEngine;
+friend class GLContext;
 enum EFlags
 {
     eFlags_VSyncEnabled = 1 << 0,
-    eFlags_IsCursorVisible = 1 << 1,
-    eFlags_Fullscreen = 1 << 2,
-    eFlags_Resizeable = 1 << 3, 
-    eFlags_IsVisible = 1 << 4,
-    eFlags_EnableOculusRift = 1 << 5
+    eFlags_Fullscreen = 1 << 1,
+    eFlags_Resizeable = 1 << 2,
+    eFlags_IsVisible = 1 << 3,
+    eFlags_EnableOculusRift = 1 << 4
 };
 struct OculusRiftBarrelDistorter;
 public:
@@ -67,14 +69,15 @@ public:
     virtual ~Window();
 
     // Open/Close
-    void create(Window* parent = nullptr);
+    bool create();
     void destroy();
     bool isOpen();
-    void open();
-    void close();
+    
+    bool isVisible() const { return checkFlag(eFlags_IsVisible); }
+    void show();
+    void hide();
 
     // Do
-    void doEvents(float dTime);
     void prepareForRendering();
     void finishRendering();
     void present();
@@ -84,14 +87,13 @@ public:
     void setWindowPosition(int x, int y);
     void setWindowDimension(uint32 width, uint32 height);
     void setVSync(bool enable);
-    void setCursorVisible(bool visible);
-    void setCursor(const io::MouseCursor cursor);
     void setFullscreen(bool fullscreen);
     void setResizable(bool resizable);   // call before creating, or destroy and create
     void setMousePosition(const vec2& pos);
     void setOculusRiftEnabled(const bool enable);
 
     // Getters
+    uint32 getID() const { return m_ID; }
     void getWindowPosition(int& x, int& y) const;
     uint32 getWindowWidth() const;
     uint32 getWindowHeight() const;
@@ -106,7 +108,8 @@ public:
     const he::ObjectList<ObjectHandle>& getViews() const { return m_Views; }
 
     // Events
-    event0<void> Resized;
+    event2<void, int32, int32> Moved; // x, y
+    event2<void, int32, int32> Resized; // width, height
     event0<void> Closed;
     event0<void> GainedFocus;
     event0<void> LostFocus;
@@ -117,13 +120,15 @@ private:
     inline void clearFlag(const EFlags flag) { m_Flags &= ~flag; }
     inline void setFlag(const EFlags flag, const bool enable) { enable? raiseFlag(flag) : clearFlag(flag); }
 
+    uint32 m_ID;
+    
     he::ObjectList<ObjectHandle> m_Views;
     RenderTarget* m_RenderTarget;
 
     // Oculus
     OculusRiftBarrelDistorter* m_OVRDistorter;
 
-    sf::Window* m_Window;
+    SDL_Window* m_Window;
     Window* m_Parent;
 
     RectI m_WindowRect;
@@ -132,13 +137,6 @@ private:
     uint8 m_Flags;
 
     GLContext m_Context;
-
-#ifdef HE_WINDOWS
-    HCURSOR m_Cursor;
-#elif HE_LINUX
-    XID m_Cursor;
-    Display* m_Display;
-#endif
 
     //Disable default copy constructor and default assignment operator
     Window(const Window&);

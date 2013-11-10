@@ -272,10 +272,13 @@ void Console::tick()
             addMessage(m_HelpCommand.c_str(), CMSG_TYPE_INFO);
         }
 
-        if (m_IsOpen)
-            m_Renderer->attachToRender(this, 1);
-        else
-            m_Renderer->detachFromRender(this);
+        HE_IF_ASSERT(m_Renderer != nullptr, "Please set the renderer on CONSOLE!")
+        {
+            if (m_IsOpen)
+                m_Renderer->attachToRender(this, 1);
+            else
+                m_Renderer->detachFromRender(this);
+        }
     }
 
     if (m_IsOpen)

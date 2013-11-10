@@ -36,6 +36,10 @@
 #include "Sprite.h"
 #include "PluginLoader.h"
 #include "Timer.h"
+#include "IKeyboard.h"
+#include "IMouse.h"
+
+#include <SDL2/SDL.h>
 
 namespace he {
     
@@ -182,19 +186,23 @@ void HappyEngine::start(ge::Game* game)
     HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
 #endif
     m_Game = game;
-  
+    
+
     // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
-        m_GraphicsEngine->init();        
-        m_Console->load();
-
+        he::eventCallback0<void> mainContextCreatedCallback([this]()
+        {
+            m_Console->load();
 #ifdef ENABLE_PROFILING
-        PROFILER->load();
+            PROFILER->load();
 #endif
+        });
+        m_GraphicsEngine->MainContextCreated += mainContextCreatedCallback;
+        m_GraphicsEngine->init();
     }
     
-    m_Game->init();
+    m_Game->init();    
     
     if (m_SubEngines & SubEngine_Audio)
     {
@@ -243,18 +251,97 @@ void HappyEngine::updateLoop(float dTime)
     {
         m_ControlsManager->tick();
 
-        PROFILER_BEGIN("SFML poll events");
-        const he::ObjectList<ObjectHandle>& windows(GRAPHICS->getAllWindows());
-        gfx::WindowFactory* windowFactory(gfx::WindowFactory::getInstance());
-        std::for_each(windows.cbegin(), windows.cend(), [&dTime,windowFactory](const ObjectHandle& window)
+        PROFILER_BEGIN("Window Poll events");
         {
-            windowFactory->get(window)->doEvents(dTime);
-        });
+            SDL_Event event;
+            while (SDL_PollEvent(&event))
+            {
+                io::IMouse* mouse(m_ControlsManager->getMouse());
+                io::IKeyboard* keyboard(m_ControlsManager->getKeyboard());
+                //bool hasFocus(m_GraphicsEngine->getActiveWindow() == this);
+                
+                switch (event.type)
+                {
+                        // Window
+                    case SDL_WINDOWEVENT:
+                    {
+                        he::gfx::Window* window(m_GraphicsEngine->getWindow(event.window.windowID));
+                        if (nullptr != window)
+                        {
+                            switch (event.window.event)
+                            {
+                                case SDL_WINDOWEVENT_MOVED:
+                                {
+                                    window->Moved(event.window.data1, event.window.data2);
+                                } break;
+                                case SDL_WINDOWEVENT_CLOSE:
+                                {
+                                    window->Closed();
+                                } break;
+                                case SDL_WINDOWEVENT_RESIZED:
+                                {
+                                    window->Resized(event.window.data1, event.window.data2);
+                                } break;
+                                case SDL_WINDOWEVENT_ENTER:
+                                {
+                                    
+                                } break;
+                                case SDL_WINDOWEVENT_LEAVE:
+                                {
+                                    
+                                } break;
+                                case SDL_WINDOWEVENT_FOCUS_GAINED:
+                                {
+                                    m_GraphicsEngine->setActiveWindow(window);
+                                    window->GainedFocus();
+                                } break;
+                                case SDL_WINDOWEVENT_FOCUS_LOST:
+                                {
+                                    window->LostFocus();
+                                } break;
+                            }
+                        }
+                    } break;
+                        
+                        // Mouse
+                    case SDL_MOUSEBUTTONDOWN:
+                    {
+                        mouse->MouseButtonPressed(static_cast<io::MouseButton>(event.button.button));
+                    } break;
+                    case SDL_MOUSEBUTTONUP:
+                    {
+                        mouse->MouseButtonReleased(static_cast<io::MouseButton>(event.button.button));
+                    } break;
+                    case SDL_MOUSEMOTION:
+                    {
+                        mouse->MouseMoved(vec2(static_cast<float>(event.motion.x), static_cast<float>(event.motion.y)));
+                    } break;
+                    case SDL_MOUSEWHEEL:
+                    {
+                        mouse->MouseWheelMoved(event.wheel.y);
+                    } break;
+                        
+                        // Keyboard
+                    case SDL_KEYDOWN:
+                    {
+                        keyboard->KeyPressed(static_cast<io::Key>(event.key.keysym.sym));
+                    } break;
+                    case SDL_KEYUP:
+                    {
+                        keyboard->KeyReleased(static_cast<io::Key>(event.key.keysym.sym));
+                    } break;
+                    case SDL_TEXTINPUT:
+                    {
+                        keyboard->TextEntered(event.text.text);
+                    } break;
+                }
+            }
+        }
         PROFILER_END();
 
         m_GraphicsEngine->tick(dTime);
         CONSOLE->tick();
-        if (m_GameLoading == true && CONTENT->isLoading() == false) // TODO: event this
+        if (m_GameLoading == true && m_ContentManager->isLoading() == false) // TODO: event this
             m_GameLoading = false;
     }
 

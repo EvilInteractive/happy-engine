@@ -29,6 +29,6 @@ uniform float alpha;
 
 void main()
 {
-	vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale));
+	vec4 color = texture(diffuseMap, (passTexCoord * texCoordScale));
 	outColor =  color;
 }

@@ -29,7 +29,7 @@ uniform vec4 blendColor;
 
 void main()
 {
-	float alpha = texture2D(diffuseMap, passTexCoord).r;
+	float alpha = texture(diffuseMap, passTexCoord).r;
     vec4 color = passColor * blendColor;
 	outColor = vec4(color.xyz, alpha * color.a);
 }

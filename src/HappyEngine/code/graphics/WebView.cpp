@@ -20,6 +20,7 @@
 
 #include "HappyPCH.h" 
 
+#ifdef USE_WEB
 #include "WebView.h"
 #include "Awesomium/WebView.h"
 #include "Canvas2D.h"
@@ -486,3 +487,5 @@ void WebView::OnAddConsoleMessage(
 }
 
 }} //end namespace
+
+#endif

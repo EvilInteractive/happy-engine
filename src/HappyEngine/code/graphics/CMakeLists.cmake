@@ -5,7 +5,7 @@ addFilter(CODE_SRCS src/graphics code/graphics/
             DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
             DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
             Hitregion.cpp                       Hitregion.h
-            GLContext.h
+            GLContext.cpp                       GLContext.h
             IDrawable2D.h
             IShapeDrawable.h
             Object3D.cpp                        Object3D.h

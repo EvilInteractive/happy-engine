@@ -93,7 +93,15 @@ bool validateProgram(GLuint programID)
     glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
     if (validateStatus == GL_FALSE)
     {
-        HE_ERROR("Error validating shader %d", programID);
+        const uint32 BUFFER_SIZE(512);
+        char buffer[BUFFER_SIZE];
+        he_memset(buffer, 0, BUFFER_SIZE);
+        GLsizei length(0);
+        
+        glGetProgramInfoLog(programID, BUFFER_SIZE - 1, &length, buffer);
+        
+        HE_ERROR("Error validating shader %d\n%s", programID, buffer);
+        
         succes = false;
     }
 

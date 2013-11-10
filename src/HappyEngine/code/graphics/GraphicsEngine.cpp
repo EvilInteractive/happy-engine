@@ -30,19 +30,26 @@
 #include "Light.h"
 
 // warnings in awesomium lib
+#ifdef USE_WEB
 #pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
 #pragma warning(default:4100)
+#endif
 #include "GLContext.h"
-#include <SFML/Window.hpp>
-
 #include "WebViewSurfaceFactory.h"
+
+#include <SDL2/SDL.h>
 
 namespace he {
 namespace gfx {
 
-GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr),
-    m_DefaultContext(nullptr), m_DefaultSfContext(nullptr), m_WebViewSurfaceFactory(nullptr)
+GraphicsEngine::GraphicsEngine()
+    : m_ActiveWindow(nullptr)
+    , m_ActiveView(nullptr)
+#ifdef USE_WEB
+    , m_WebCore(nullptr)
+    , m_WebViewSurfaceFactory(nullptr)
+#endif
 {
     for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -53,11 +60,13 @@ GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m
 
 GraphicsEngine::~GraphicsEngine()
 {
-    delete m_DefaultSfContext;
+#ifdef USE_WEB
     delete m_WebViewSurfaceFactory;
+#endif
 }
 void GraphicsEngine::destroy()
 {
+    SDL_Quit();
     HE_ASSERT(ViewFactory::getInstance()->isEmpty(), "View leak detected!");
     HE_ASSERT(SceneFactory::getInstance()->isEmpty(), "Scene leak detected!");
     HE_ASSERT(WindowFactory::getInstance()->isEmpty(), "Window leak detected!");
@@ -67,37 +76,13 @@ void GraphicsEngine::init()
 {
     using namespace err;
     
-    m_DefaultSfContext = NEW sf::Context();
-    registerContext(&m_DefaultContext);
-    GL::init();
-
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+    
+#ifdef USE_WEB
     m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
     m_WebCore = Awesomium::WebCore::instance();
     m_WebCore->set_surface_factory(m_WebViewSurfaceFactory);
-        
-    HE_INFO((char*)glGetString(GL_VENDOR));
-    HE_INFO((char*)glGetString(GL_RENDERER));
-    HE_INFO((char*)glGetString(GL_VERSION));
-    HE_INFO((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-
-    int major, minor;
-    glGetIntegerv(GL_MAJOR_VERSION, &major);
-    glGetIntegerv(GL_MINOR_VERSION, &minor);
-    HE_INFO("GL version %d.%d", major, minor);
-
-    int doubleBuff;
-    glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
-    HE_INFO("Doubly buffered: %s", (doubleBuff == GL_TRUE)?"TRUE":"FALSE");
-
-    int maxTexSize, maxRenderSize, maxRectSize;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
-    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderSize);
-    glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectSize);
-    HE_INFO("Max texture size: %d", maxTexSize);
-    HE_INFO("Max render size: %d", maxRenderSize);
-    HE_INFO("Max rect tex size: %d", maxRectSize);
-
-    HE_INFO("Max anisotropic filtering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
+#endif
 }
 
 Scene* GraphicsEngine::createScene()
@@ -158,6 +143,21 @@ void GraphicsEngine::removeWindow( Window* window )
         factory->destroyObject(window->getHandle());
     }
 }
+    
+Window* GraphicsEngine::getWindow(const uint32 id)
+{
+    WindowFactory* factory(WindowFactory::getInstance());
+    const size_t windowCount(factory->getSize());
+    for (size_t i(0); i < windowCount; ++i)
+    {
+        Window* const window(factory->getAt(i));
+        if (window->getID() == id)
+        {
+            return window;
+        }
+    }
+    return nullptr;
+}
 
 void GraphicsEngine::draw()
 {
@@ -195,18 +195,51 @@ void GraphicsEngine::draw()
 
 void GraphicsEngine::tick( float /*dTime*/ )
 {
+#ifdef USE_WEB
     m_WebCore->Update();
+#endif
 }
 
 bool GraphicsEngine::registerContext( GLContext* context )
 {
-    HE_IF_ASSERT(context->id == UINT32_MAX, "Context is already registered")
+    HE_IF_ASSERT(context->getID() == UINT32_MAX, "Context is already registered")
     if (m_FreeContexts.empty() == false)
     {
-        context->id = m_FreeContexts.front();
+        setActiveContext(context);
+        
+        if (m_Contexts.size() == 0)
+        {
+            HE_INFO((char*)glGetString(GL_VENDOR));
+            HE_INFO((char*)glGetString(GL_RENDERER));
+            HE_INFO((char*)glGetString(GL_VERSION));
+            HE_INFO((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+            
+            int major, minor;
+            glGetIntegerv(GL_MAJOR_VERSION, &major);
+            glGetIntegerv(GL_MINOR_VERSION, &minor);
+            HE_INFO("GL version %d.%d", major, minor);
+            
+            int doubleBuff;
+            glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
+            HE_INFO("Doubly buffered: %s", (doubleBuff == GL_TRUE)?"TRUE":"FALSE");
+            
+            int maxTexSize, maxRenderSize, maxRectSize;
+            glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+            glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderSize);
+            glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectSize);
+            HE_INFO("Max texture size: %d", maxTexSize);
+            HE_INFO("Max render size: %d", maxRenderSize);
+            HE_INFO("Max rect tex size: %d", maxRectSize);
+            
+            HE_INFO("Max anisotropic filtering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
+            
+            MainContextCreated();
+        }
+        
+        context->setID(m_FreeContexts.front());
         m_Contexts.add(context);
         m_FreeContexts.pop();
-        setActiveContext(context);
+        
         ContextCreated(context);
         return true;
     }
@@ -216,15 +249,13 @@ bool GraphicsEngine::registerContext( GLContext* context )
 
 void GraphicsEngine::unregisterContext( GLContext* context )
 {
-    HE_IF_ASSERT(context->id != UINT32_MAX, "Context has not been registered or is already unregistered")
+    HE_IF_ASSERT(context->getID() != UINT32_MAX, "Context has not been registered or is already unregistered")
     {
-        m_FreeContexts.push(context->id);
+        m_FreeContexts.push(context->getID());
         m_Contexts.remove(context);
         setActiveContext(context);
         ContextRemoved(context);
-        context->window->m_Window->setActive(false);
-        context->id = UINT32_MAX;
-        setActiveContext(&m_DefaultContext);
+        context->setID(UINT32_MAX);
     }
 }
 
@@ -232,10 +263,7 @@ void GraphicsEngine::setActiveContext( GLContext* context )
 {
     if (GL::s_CurrentContext != context)
     {
-        if (context == &m_DefaultContext)
-            m_DefaultSfContext->setActive(true);
-        else
-            context->window->m_Window->setActive(true);
+        context->makeCurrent();
         GL::s_CurrentContext = context;
     }
 }

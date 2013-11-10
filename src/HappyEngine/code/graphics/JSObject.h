@@ -21,7 +21,7 @@
 #ifndef _HE_JSOBJECT_H_
 #define _HE_JSOBJECT_H_
 #pragma once
-
+#ifdef USE_WEB
 #include "Awesomium/JSObject.h"
 #include "Awesomium/JSValue.h"
 #include "event.h"
@@ -66,5 +66,7 @@ private:
 };
 
 } } //end namespace
+
+#endif
 
 #endif

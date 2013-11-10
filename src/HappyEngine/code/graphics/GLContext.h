@@ -35,57 +35,23 @@ class GLContext
 {
 friend GL;
 public:
-    GLContext(Window* window_)
-        : id(UINT32_MAX)
-        , window(window_) 
+    GLContext();
+    
+    bool create(Window* const window);
+    void destroy();
+    void makeCurrent();
 
-        // Clear
-        , m_ClearColor(0.2452f, 0.432413f, 0.1312f, 0.8783f)
-
-            // Misc
-        , m_Viewport(-1, -1, -1, -1)
-        , m_MaxMultiSamples(-1)
-
-            //Depth
-        , m_DepthWrite(false)
-        , m_DepthFunc(DepthFunc_Unassigned)
-
-            //Culling
-        , m_CullFrontFace(false)
-        , m_CullCWFrontFace(false)
-
-            //Binding
-        , m_ActiveTex(0)
-            //Blending
-        , m_BlendEnabled(false)
-        , m_ColorBlendSrc(BlendFunc_Unassigned)
-        , m_ColorBlendDest(BlendFunc_Unassigned)
-        , m_AlphaBlendSrc(BlendFunc_Unassigned)
-        , m_AlphaBlendDest(BlendFunc_Unassigned)
-        , m_BlendDest(BlendFunc_Unassigned)
-        , m_BlendEquation(BlendEquation_Unassigned)
-        , m_BlendColor(0.0f, 0.0f, 0.0f, 0.0f)
-
-            //Scissor
-        , m_ScissorEnabled(false)
-        , m_ScissorRect(0, 0, 0, 0)
-
-            //Line Smoothing
-        , m_LineSmoothEnabled(false)
-
-            // Texture
-        , m_MaxAnisotropicFilteringSupport(0.0f)
-        , m_SupportTextureCompression(false)
-    {
-        he_memset(m_BoundTex2D, 0xff, MAX_SAMPLERS * sizeof(uint32));
-        he_memset(m_BoundTexCube, 0xff, MAX_SAMPLERS * sizeof(uint32));
-        he_memset(m_BoundUbo, 0xff, MAX_UBO * sizeof(uint32));
-    }
-
-    GLEWContextStruct internalContext;
-    unsigned int id;
-    Window* window;
+    inline const GLEWContextStruct& getGlewContext() const { return m_GLEWContext; }
+    inline uint32 getID() const { return m_ID; }
+    inline void setID(const uint32 id) { m_ID = id; }
+    inline Window* getWindow() const { return m_Window; }
+    
 private:
+    GLEWContextStruct m_GLEWContext;
+    uint32 m_ID;
+    Window* m_Window;
+    void* m_InternalContextPointer;
+    
     // Clear
     Color m_ClearColor;
 
@@ -128,6 +94,8 @@ private:
     // Texture
     float m_MaxAnisotropicFilteringSupport;
     bool  m_SupportTextureCompression;
+    
+    uint32 m_DefaultVAO;
 
     GLContext(const GLContext&);
     GLContext& operator=(const GLContext&);

@@ -28,21 +28,28 @@
 #define GetCurrentDir getcwd
 #endif
 
+#ifdef USE_WEB
 #pragma warning(disable:4100)
 #include <Awesomium/WebCore.h>
 #pragma warning(default:4100)
+#endif
 
 int main( int /*argc*/, char** /*args[]*/ )
 {
     char workDir[FILENAME_MAX];
     if (GetCurrentDir(workDir, sizeof(workDir)))
     {
+#ifdef USE_WEB
         Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+#endif
         std::string file(std::string(workDir) + "/../../data/messageBox.html");
         he::HappyMessageBox::init(file.c_str(), 1024, 512);
         he::HappyMessageBox::showAssert("Test", "Test");
         he::HappyMessageBox::destroy();
+        
+#ifdef USE_WEB
         Awesomium::WebCore::Shutdown();
+#endif
     }
     return 0;
 }

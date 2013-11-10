@@ -110,10 +110,11 @@ void InstancingController::initVao( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///  Regular Draw
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_Vao[context->id] == UINT32_MAX, "vao already inited?")
+    const uint32 contextID(context->getID());
+    HE_IF_ASSERT(m_Vao[contextID] == UINT32_MAX, "vao already inited?")
     {
-        glGenVertexArrays(1, m_Vao + context->id);
-        GL::heBindVao(m_Vao[context->id]);
+        glGenVertexArrays(1, m_Vao + contextID);
+        GL::heBindVao(m_Vao[contextID]);
         //////////////////////////////////////////////////////////////////////////
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
@@ -154,7 +155,7 @@ void InstancingController::initVao( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///  Shadow Draw
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_ShadowVao[context->id] == UINT32_MAX, "shadow vao already inited?")
+    HE_IF_ASSERT(m_ShadowVao[context->getID()] == UINT32_MAX, "shadow vao already inited?")
     {
         uint32 posOffset(UINT32_MAX);
         BufferLayout::layout::const_iterator it(vertexElements.cbegin());
@@ -167,8 +168,8 @@ void InstancingController::initVao( GLContext* context )
             }
         }
 
-        glGenVertexArrays(1, m_ShadowVao + context->id);
-        GL::heBindVao(m_ShadowVao[context->id]);
+        glGenVertexArrays(1, m_ShadowVao + contextID);
+        GL::heBindVao(m_ShadowVao[contextID]);
 
         //////////////////////////////////////////////////////////////////////////
         ///  Vertex Buffer
@@ -204,15 +205,16 @@ void InstancingController::initVao( GLContext* context )
 void InstancingController::destroyVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_Vao[context->id] != UINT32_MAX, "Vao not initialized or already destroyed")
+    const uint32 contextID(context->getID());
+    HE_IF_ASSERT(m_Vao[contextID] != UINT32_MAX, "Vao not initialized or already destroyed")
     {
-        glDeleteVertexArrays(1, m_Vao + context->id);
-        m_Vao[context->id] = UINT32_MAX;
+        glDeleteVertexArrays(1, m_Vao + contextID);
+        m_Vao[contextID] = UINT32_MAX;
     }
-    HE_IF_ASSERT(m_ShadowVao[context->id] != UINT32_MAX, "Shadow Vao not initialized or already destroyed")
+    HE_IF_ASSERT(m_ShadowVao[contextID] != UINT32_MAX, "Shadow Vao not initialized or already destroyed")
     {
-        glDeleteVertexArrays(1, m_ShadowVao + context->id);
-        m_ShadowVao[context->id] = UINT32_MAX;
+        glDeleteVertexArrays(1, m_ShadowVao + contextID);
+        m_ShadowVao[contextID] = UINT32_MAX;
     }
 }
 void InstancingController::init()
@@ -298,12 +300,12 @@ void InstancingController::updateBuffer()
 
 void InstancingController::draw()
 {
-    GL::heBindVao(m_Vao[GL::s_CurrentContext->id]);
+    GL::heBindVao(m_Vao[GL::s_CurrentContext->getID()]);
     glDrawElementsInstanced(GL_TRIANGLES, m_ModelMesh->getNumIndices(), m_ModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 void InstancingController::drawShadow()
 {
-    GL::heBindVao(m_ShadowVao[GL::s_CurrentContext->id]);
+    GL::heBindVao(m_ShadowVao[GL::s_CurrentContext->getID()]);
     glDrawElementsInstanced(GL_TRIANGLES, m_ModelMesh->getNumIndices(), m_ModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 

@@ -11,21 +11,15 @@ addFilter(HAPPYMESSAGEBOX_SRCS src/stack ../../../HappyMessageBox/src/HappyMessa
 )
 ENDIF()
  
-add_definitions(-DSFML_STATIC -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS )
+add_definitions(-D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS )
 include_directories (${HappyEngine_SOURCE_DIR}/HappyMessageBox/include)
 
 if(WIN32)
 	include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/awesomium/include)
-	if (MSVC11)
-	include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0-msvc11/include)
-	else()
-	include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/include)
-	else()
-	include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML/include)
-	endif()
+    include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SDL2/include)
 else()
-find_library(AWESOMIUM NAMES Awesomium)
-find_library(SFMLMAIN NAMES SFML)
+	find_library(AWESOMIUM NAMES Awesomium)
+	find_library(SDL2 NAMES SDL2)
 endif()
 
 
@@ -37,7 +31,7 @@ add_library (HappyMessageBox STATIC ${HAPPYMESSAGEBOX_SRCS})
 
 IF (APPLE)
 target_link_libraries(HappyMessageBox ${AWESOMIUM})
-target_link_libraries(HappyMessageBox ${SFMLMAIN})
+target_link_libraries(HappyMessageBox ${SDL2})
 ENDIF()
 
 #set output dir

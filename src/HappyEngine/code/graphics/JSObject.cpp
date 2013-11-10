@@ -19,7 +19,7 @@
 //Created: 10/07/2012
 
 #include "HappyPCH.h" 
-
+#ifdef USE_WEB
 #include "JSObject.h"
 #include "Awesomium/WebView.h"
 #pragma warning(disable:4267) // conversion warning
@@ -149,3 +149,6 @@ void JSObject::executeFunction(const Awesomium::WebString& method, const Awesomi
 }
 
 } } //end namespace
+
+#endif
+

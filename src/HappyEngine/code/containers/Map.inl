@@ -19,23 +19,23 @@
 //Created: 2013/10/29
 
 namespace he {
-
+    
 template<typename KEY, typename VALUE>
-void Map<KEY, VALUE>::forEach( const boost::function1<void, std::pair<const KEY, VALUE>&>& func )
+void he::Map<KEY, VALUE>::forEach( const boost::function1<void, std::pair<const KEY, VALUE>&>& func )
 {
-    iterator it(begin());
-    iterator end(end());
+    typename std::unordered_map<KEY, VALUE>::iterator it(this->begin());
+    typename std::unordered_map<KEY, VALUE>::iterator end(this->end());
     for (; it != end; ++it)
-        func(*it);
+    func(*it);
 }
 
 template<typename KEY, typename VALUE>
-void Map<KEY, VALUE>::forEach( const boost::function1<void, const std::pair<const KEY, VALUE>&>& func ) const
+void he::Map<KEY, VALUE>::forEach( const boost::function1<void, const std::pair<const KEY, VALUE>&>& func ) const
 {
-    const_iterator it(cbegin());
-    const_iterator end(cend());
+    typename std::unordered_map<KEY, VALUE>::const_iterator it(this->cbegin());
+    typename std::unordered_map<KEY, VALUE>::const_iterator end(this->cend());
     for (; it != end; ++it)
-        func(*it);
+    func(*it);
 }
 
 } //end namespace

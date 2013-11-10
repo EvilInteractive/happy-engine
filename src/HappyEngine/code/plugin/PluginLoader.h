@@ -50,7 +50,7 @@ public:
     PluginLoader();
     ~PluginLoader();
 
-    IPlugin* loadPlugin(const he::Path& path);
+    IPlugin* loadPlugin(const he::Path& path, const char* fileName);
     IPlugin* loadPlugin(IPlugin* const plugin);
     void unloadPlugin(IPlugin* const plugin);
     

@@ -133,7 +133,7 @@ public:
     void draw();
 
 private:
-    void resize();
+    void resize(const int32 width, const int32 height);
     void calcViewportFromPercentage();
 
     void render();
@@ -166,7 +166,7 @@ private:
     he::PrimitiveList<IRenderer*> m_PostPostRenderPlugins;
 
     // Events
-    he::eventCallback0<void> m_WindowResizedCallback;
+    he::eventCallback2<void, int32, int32> m_WindowResizedCallback;
 
 };
 

@@ -26,10 +26,12 @@
 #include "ControlsManager.h"
 #include "IMouse.h"
 #include "IKeyboard.h"
+#ifdef USE_WEB
 // warnings in awesomium lib
 #pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
 #pragma warning(default:4100)
+#endif
 #include "Canvas2D.h"
 #include "WebView.h"
 #include "RenderTarget.h"
@@ -74,7 +76,8 @@ void Renderer2D::removeCanvas(gui::Canvas2D* canvas)
         delete canvas;
     }
 }
-
+    
+#ifdef USE_WEB
 gui::WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
     gui::WebView* web(NEW gui::WebView(m_View, viewport, enableUserInput));
@@ -95,6 +98,7 @@ void Renderer2D::removeWebView(gui::WebView* webview)
         delete webview;
     }
 }
+#endif
 
 void Renderer2D::preRender()
 {

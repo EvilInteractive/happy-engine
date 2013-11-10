@@ -19,9 +19,9 @@
 //Created: 2013/03/16
 #include "HappyMessageBox.h"
 #include "MessageBoxWindow.h"
-
+#ifdef USE_WEB
 #include "Awesomium/STLHelpers.h"
-
+#endif
 #ifdef _WIN32
 #include "stackwalk/StackWalker.h"
 #endif
@@ -46,7 +46,9 @@ HappyMessageBox::~HappyMessageBox()
 
 void HappyMessageBox::init( const char* htmlPage, const int width, const int height )
 {
+#ifdef USE_WEB
     assert(Awesomium::WebCore::instance() != nullptr); // Please initialize Webcore before calling this method
+#endif
     s_HtmlPage = htmlPage;
     s_DefaultWidth = width;
     s_DefaultHeigth = height;

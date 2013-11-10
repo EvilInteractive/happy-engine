@@ -20,6 +20,7 @@
 
 #include "HappyPCH.h" 
 
+#ifdef USE_WEB
 #include "WebListener.h"
 #include "WebView.h"
 #include "Awesomium/JSValue.h"
@@ -172,3 +173,5 @@ Awesomium::JSValue WebListener::OnMethodCallWithReturnValue(Awesomium::WebView* 
 }
 
 } } //end namespace
+
+#endif

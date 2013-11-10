@@ -189,7 +189,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-struct OculusRiftBinding::OculusContext : public OVR::MessageHandler
+struct OculusRiftBinding::OculusContext /*: public OVR::MessageHandler */
 {
     OculusContext(OculusRiftBinding* const parent)
         : m_Parent(parent)
@@ -201,7 +201,7 @@ struct OculusRiftBinding::OculusContext : public OVR::MessageHandler
         m_DeviceManager.Clear();
     }
 
-    virtual void OnMessage(const OVR::Message& msg)
+    void OnMessage(const OVR::Message& msg)
     {
         if (msg.Type == OVR::Message_DeviceAdded)
         {
@@ -220,6 +220,7 @@ struct OculusRiftBinding::OculusContext : public OVR::MessageHandler
 OculusRiftBinding::OculusRiftBinding()
     : m_Logger(nullptr)
     , m_Allocater(nullptr)
+    , m_Context(nullptr)
 {
 }
 
@@ -231,21 +232,24 @@ void OculusRiftBinding::init()
 {
     HE_ASSERT(m_Logger == nullptr, "OVR already initialized");
     HE_ASSERT(m_Allocater == nullptr, "OVR already initialized");
-    m_Logger = NEW OculusLogger();
-    m_Allocater = NEW OculusAllocater();
+    //m_Logger = NEW OculusLogger();
+    //m_Allocater = NEW OculusAllocater();
 
     OVR::System::Init(m_Logger, m_Allocater);
 
     m_Context = NEW OculusContext(this);
     m_Context->m_DeviceManager = *OVR::DeviceManager::Create();
-    m_Context->m_DeviceManager->SetMessageHandler(m_Context);
+    //m_Context->m_DeviceManager->SetMessageHandler(m_Context);
 
     createDevice();
 }
 
 void OculusRiftBinding::shutdown()
 {
-    releaseDevice(m_ConnectedDevices[0]);
+    if (m_ConnectedDevices.size() > 0)
+    {
+        releaseDevice(m_ConnectedDevices[0]);
+    }
     delete m_Context;
     m_Context = nullptr;
 

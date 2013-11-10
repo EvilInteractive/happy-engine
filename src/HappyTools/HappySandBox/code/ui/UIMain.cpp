@@ -44,6 +44,7 @@ void UIMain::load()
     {
         Sandbox* const sandbox(Sandbox::getInstance());
         UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
+#ifdef USE_WEB
         m_WebView = renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true);
         m_WebView->setTransparent(true);
         he::eventCallback0<void> onUrlLoaded([this, renderer]()
@@ -61,6 +62,7 @@ void UIMain::load()
         m_WebView->OnUrlLoaded += onUrlLoaded;
         he::Path url(he::Path::getWorkingDir().append("../../data/gui/main.html"));
         m_WebView->loadUrl(url);
+#endif
     }
 }
 
@@ -72,27 +74,33 @@ void UIMain::unload()
         {
             hide();
         }
+#ifdef USE_WEB
         Sandbox* const sandbox(Sandbox::getInstance());
         UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
         renderer->removeWebView(m_WebView);
         m_WebView = nullptr;
+#endif
     }
 }
 
 void UIMain::show()
 {
     UI::show();
+#ifdef USE_WEB
     Sandbox* const sandbox(Sandbox::getInstance());
     UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
     renderer->attachToRender(m_WebView);
+#endif
 }
 
 void UIMain::hide()
 {
     UI::hide();
+#ifdef USE_WEB
     Sandbox* const sandbox(Sandbox::getInstance());
     UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
     renderer->detachFromRender(m_WebView);
+#endif
 }
 
 void UIMain::createEntityHandler(const Awesomium::JSArray& /*args*/)

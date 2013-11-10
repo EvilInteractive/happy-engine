@@ -122,7 +122,7 @@ void TextBox::tick()
             }
         }
         // check for backspace
-        else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_BackSpace))
+        else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Backspace))
         {
             if (m_BackspaceDown == false)
             {
@@ -147,15 +147,15 @@ void TextBox::tick()
         }
         else
         {
-            const char& textEntered(CONTROLS->getKeyboard()->getTextCharEntered());
-            if (textEntered != 0)
+            const he::String& textEntered(CONTROLS->getKeyboard()->getTextEntered());
+            if (textEntered.empty() == false)
             {
-                m_String.insert(m_CursorPos, 1, textEntered);
+                m_String.insert(m_CursorPos, textEntered);
                 ++m_CursorPos;
             }
         }
 
-        if (CONTROLS->getKeyboard()->isKeyUp(io::Key_BackSpace))
+        if (CONTROLS->getKeyboard()->isKeyUp(io::Key_Backspace))
         {
             m_BackspaceDown = false;
             m_BackSpaceTimer = (uint32)(m_BlinkTimer.elapsed() * 10);
@@ -171,8 +171,7 @@ void TextBox::tick()
             m_BackSpaceDelayTimer = (uint32)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer;
         }
 
-        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return)/* ||
-            CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return2)*/)
+        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return))
         {
             m_Entered = true;
         }

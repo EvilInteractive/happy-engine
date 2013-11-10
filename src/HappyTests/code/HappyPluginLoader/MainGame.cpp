@@ -83,28 +83,32 @@ void MainGame::init()
     entityMan->init();
 
     m_PluginLoader = NEW he::pl::PluginLoader();
-    m_Plugin = m_PluginLoader->loadPlugin(he::Path("HappyPluginTest.dll"));
+    m_Plugin = m_PluginLoader->loadPlugin(he::Path(""), "HappyPluginTest");
     if (m_Plugin != nullptr)
     {
         m_Plugin->init(m_Window, he::RectF(0, 0, 1.0f, 1.0f));
         m_Plugin->onLoadLevel(he::Path(""));
+        
+        m_View = graphicsEngine->createView();
+        m_View->setWindow(m_Window);
+        m_DebugRenderer = NEW he::gfx::Renderer2D();
+        m_View->addRenderPlugin(m_DebugRenderer);
+        m_View->init(cameraSettings);
+        m_View->setCamera(m_Plugin->getActiveCamera());
+        
+        PROFILER->attachToRenderer(m_DebugRenderer);
+        CONSOLE->attachToRenderer(m_DebugRenderer);
+        m_FpsGraph = NEW he::tools::FPSGraph(oculus? 3.0f : 1.0f);
+        m_FpsGraph->setPos(he::vec2(5, 5));
+        m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);
+        addToTickList(m_FpsGraph);
+        m_DebugRenderer->attachToRender(m_FpsGraph);
+        m_DebugRenderer->attachToRender(this);
     }
-
-    m_View = graphicsEngine->createView();
-    m_View->setWindow(m_Window);
-    m_DebugRenderer = NEW he::gfx::Renderer2D();
-    m_View->addRenderPlugin(m_DebugRenderer);
-    m_View->init(cameraSettings);
-    m_View->setCamera(m_Plugin->getActiveCamera());
-
-    PROFILER->attachToRenderer(m_DebugRenderer);
-    CONSOLE->attachToRenderer(m_DebugRenderer);
-    m_FpsGraph = NEW he::tools::FPSGraph(oculus? 3.0f : 1.0f);
-    m_FpsGraph->setPos(he::vec2(5, 5));
-    m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);
-    addToTickList(m_FpsGraph);
-    m_DebugRenderer->attachToRender(m_FpsGraph);
-    m_DebugRenderer->attachToRender(this);
+    else
+    {
+        HAPPYENGINE->quit();
+    }
 }
 
 void MainGame::destroy()

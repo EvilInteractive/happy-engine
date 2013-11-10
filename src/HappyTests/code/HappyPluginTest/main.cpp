@@ -26,7 +26,7 @@ PLUGIN_EXPORT he::pl::IPlugin* createPlugin()
 {
     return NEW ht::HappyPluginTestMain();
 }
-
+#ifdef HE_WINDOWS
 BOOL WINAPI DllMain(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpReserved*/ )
 {
     switch( fdwReason ) 
@@ -45,3 +45,4 @@ BOOL WINAPI DllMain(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpReserved
     }
     return TRUE;
 }
+#endif

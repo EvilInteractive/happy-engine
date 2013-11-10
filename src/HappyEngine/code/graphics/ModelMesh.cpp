@@ -53,7 +53,7 @@ ModelMesh::~ModelMesh()
     const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
     std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
     {
-        if (m_VaoID[context->id] != UINT32_MAX)
+        if (m_VaoID[context->getID()] != UINT32_MAX)
             destroyVAO(context);
     });
     if (m_VertexVboID != UINT32_MAX)
@@ -88,10 +88,11 @@ void ModelMesh::initVAO( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///                             Normal                                 ///
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_VaoID[context->id] == UINT32_MAX, "vao already inited?")
+    const uint32 contextID(context->getID());
+    HE_IF_ASSERT(m_VaoID[contextID] == UINT32_MAX, "vao already inited?")
     {
-        glGenVertexArrays(1, m_VaoID + context->id);
-        GL::heBindVao(m_VaoID[context->id]);
+        glGenVertexArrays(1, m_VaoID + contextID);
+        GL::heBindVao(m_VaoID[contextID]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
         glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
 
@@ -108,7 +109,7 @@ void ModelMesh::initVAO( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///                             Shadow                                 ///
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_VaoShadowID[context->id] == UINT32_MAX, "shadow vao already inited?")
+    HE_IF_ASSERT(m_VaoShadowID[contextID] == UINT32_MAX, "shadow vao already inited?")
     {
         uint32 posOffset = UINT32_MAX;
         uint32 boneIdOffset = UINT32_MAX;
@@ -129,8 +130,8 @@ void ModelMesh::initVAO( GLContext* context )
             }
         });
 
-        glGenVertexArrays(1, m_VaoShadowID + context->id);
-        GL::heBindVao(m_VaoShadowID[context->id]);
+        glGenVertexArrays(1, m_VaoShadowID + contextID);
+        GL::heBindVao(m_VaoShadowID[contextID]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
         glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
         if (boneIdOffset == UINT32_MAX)
@@ -152,15 +153,16 @@ void ModelMesh::initVAO( GLContext* context )
 void ModelMesh::destroyVAO( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_VaoID[context->id] != UINT32_MAX, "Vao not initialized or already destroyed")
+    const uint32 contextID(context->getID());
+    HE_IF_ASSERT(m_VaoID[contextID] != UINT32_MAX, "Vao not initialized or already destroyed")
     {
-        glDeleteVertexArrays(1, m_VaoID + context->id);
-        m_VaoID[context->id] = UINT32_MAX;
+        glDeleteVertexArrays(1, m_VaoID + contextID);
+        m_VaoID[contextID] = UINT32_MAX;
     }
-    HE_IF_ASSERT(m_VaoShadowID[context->id] != UINT32_MAX, "Shadow Vao not initialized or already destroyed")
+    HE_IF_ASSERT(m_VaoShadowID[contextID] != UINT32_MAX, "Shadow Vao not initialized or already destroyed")
     {
-        glDeleteVertexArrays(1, m_VaoShadowID + context->id);
-        m_VaoShadowID[context->id] = UINT32_MAX;
+        glDeleteVertexArrays(1, m_VaoShadowID + contextID);
+        m_VaoShadowID[contextID] = UINT32_MAX;
     }
 }
 
