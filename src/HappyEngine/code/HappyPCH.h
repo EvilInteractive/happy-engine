@@ -77,7 +77,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 
 #undef MessageBox
 
-#define glewGetContext() (&he::gfx::GL::s_CurrentContext->m_GLEWContext)
+#define glewGetContext() (&he::gfx::GL::s_CurrentContext->getGlewContext())
 
 
 // Happy Code

@@ -246,6 +246,8 @@ target_link_libraries(${target} ws2_32)
 target_link_libraries(${target} SDL2)
 target_link_libraries(${target} SDL2main)
 
+target_link_libraries(${target} opengl32)
+
 endif()
 
 endmacro()

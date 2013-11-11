@@ -187,9 +187,7 @@ Window::Window()
   , m_OVRDistorter(nullptr)
   , m_Flags(eFlags_Resizeable | eFlags_IsVisible)
 #ifdef HE_WINDOWS
-  , m_Cursor(0)
 #elif HE_LINUX
-  , m_Cursor(0)
   , m_Display(nullptr)
 #endif
 {

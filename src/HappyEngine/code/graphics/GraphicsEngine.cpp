@@ -150,7 +150,7 @@ Window* GraphicsEngine::getWindow(const uint32 id)
     const size_t windowCount(factory->getSize());
     for (size_t i(0); i < windowCount; ++i)
     {
-        Window* const window(factory->getAt(i));
+        Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
         if (window->getID() == id)
         {
             return window;

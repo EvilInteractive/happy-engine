@@ -42,9 +42,9 @@ void UIMain::load()
 {
     HE_IF_ASSERT(m_WebView == nullptr, "UIMain already loaded!")
     {
-        Sandbox* const sandbox(Sandbox::getInstance());
-        UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
 #ifdef USE_WEB
+		Sandbox* const sandbox(Sandbox::getInstance());
+		UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
         m_WebView = renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true);
         m_WebView->setTransparent(true);
         he::eventCallback0<void> onUrlLoaded([this, renderer]()

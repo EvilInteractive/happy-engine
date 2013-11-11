@@ -196,7 +196,7 @@ MessageBoxWindow::MessageBoxWindow()
 : m_Result(HappyMessageBox::Button_None)
 {
 }
-void MessageBoxWindow::init(const char* html, const int width, const int height, const char* caption)
+void MessageBoxWindow::init(const char* /*html*/, const int /*width*/, const int /*height*/, const char* caption)
 {
     // create MessageBoxWindow
     m_Title = caption;

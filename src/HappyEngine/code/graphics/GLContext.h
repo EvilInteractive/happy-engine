@@ -41,13 +41,13 @@ public:
     void destroy();
     void makeCurrent();
 
-    inline const GLEWContextStruct& getGlewContext() const { return m_GLEWContext; }
+    inline GLEWContext& getGlewContext() { return m_GLEWContext; }
     inline uint32 getID() const { return m_ID; }
     inline void setID(const uint32 id) { m_ID = id; }
     inline Window* getWindow() const { return m_Window; }
     
 private:
-    GLEWContextStruct m_GLEWContext;
+    GLEWContext m_GLEWContext;
     uint32 m_ID;
     Window* m_Window;
     void* m_InternalContextPointer;
