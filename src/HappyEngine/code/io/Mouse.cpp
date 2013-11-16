@@ -67,6 +67,7 @@ Mouse::~Mouse()
 
 void Mouse::tick()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     he_memcpy(m_PrevButtonState, m_ButtonState, io::MouseButton_MAX);
     m_PrevPosition = m_Position;
     m_Scroll = 0;

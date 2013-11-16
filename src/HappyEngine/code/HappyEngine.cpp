@@ -324,11 +324,11 @@ void HappyEngine::updateLoop(float dTime)
                         // Keyboard
                     case SDL_KEYDOWN:
                     {
-                        keyboard->KeyPressed(static_cast<io::Key>(event.key.keysym.sym));
+                        keyboard->KeyPressed(static_cast<io::Key>(event.key.keysym.scancode));
                     } break;
                     case SDL_KEYUP:
                     {
-                        keyboard->KeyReleased(static_cast<io::Key>(event.key.keysym.sym));
+                        keyboard->KeyReleased(static_cast<io::Key>(event.key.keysym.scancode));
                     } break;
                     case SDL_TEXTINPUT:
                     {

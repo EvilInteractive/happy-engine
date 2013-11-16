@@ -93,6 +93,7 @@ ContentManager::~ContentManager()
 
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     PROFILER_BEGIN("Model Loader loop");
     m_ModelLoader->tick(dTime);
     PROFILER_END();
