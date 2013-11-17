@@ -2,5 +2,12 @@
 
 *.cpp text
 *.h text
+*.shader text
+*.frag text
+*.vert text
+*.material text
+*.txt text
+*.ini text
+
 
 *.binobj binary
