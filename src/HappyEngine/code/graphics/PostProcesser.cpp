@@ -232,7 +232,7 @@ void PostProcesser::draw()
     if (m_AOEnabled || m_FogEnabled)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalDepthMap], normalDepthMap); 
     if (m_FogEnabled)
-        m_PostShader->setSsahaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
 
     if (m_AOEnabled)
     {
