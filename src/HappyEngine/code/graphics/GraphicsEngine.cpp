@@ -161,6 +161,9 @@ Window* GraphicsEngine::getWindow(const uint32 id)
 
 void GraphicsEngine::draw()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+    
+    PROFILER_BEGIN("Scenes");
     SceneFactory* const sceneFactory(SceneFactory::getInstance());
     m_Scenes.forEach([sceneFactory](const ObjectHandle& sceneHandle)
     {
@@ -168,6 +171,9 @@ void GraphicsEngine::draw()
         if (scene->getActive())
             scene->prepareForRendering();
     });
+    PROFILER_END();
+    
+    PROFILER_BEGIN("Windows");
     WindowFactory* const windowFactory(WindowFactory::getInstance());
     m_Windows.forEach([this, windowFactory](const ObjectHandle& windowHandle)
     {
@@ -179,6 +185,7 @@ void GraphicsEngine::draw()
             {
                 window->prepareForRendering();
                 GraphicsEngine* const _this(this);
+                PROFILER_BEGIN("Views");
                 ViewFactory* const viewFactory(ViewFactory::getInstance());
                 viewList.forEach([_this, viewFactory](const ObjectHandle& viewHandle)
                 {
@@ -186,11 +193,13 @@ void GraphicsEngine::draw()
                     _this->setActiveView(view);
                     view->draw();
                 });
+                PROFILER_END();
                 window->finishRendering();
                 window->present();
             }
         }
     });
+    PROFILER_END();
 }
 
 void GraphicsEngine::tick( float /*dTime*/ )

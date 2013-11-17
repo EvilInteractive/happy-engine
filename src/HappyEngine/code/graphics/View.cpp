@@ -323,6 +323,7 @@ void View::tick( float dTime )
 
 void View::draw()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
 
     m_PrePostRenderPlugins.forEach([](IRenderer* const renderer){ renderer->preRender(); });
@@ -367,6 +368,7 @@ void View::draw()
 
 void View::render()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_Camera != nullptr)
     {
         m_Camera->prepareForRendering();

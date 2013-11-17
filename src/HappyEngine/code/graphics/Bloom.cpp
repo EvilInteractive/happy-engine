@@ -224,6 +224,7 @@ void Bloom::resize()
 
 void Bloom::render( const Texture2D* texture, const Texture2D* lumMap )
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     HE_ASSERT(m_Hdr == true && lumMap != nullptr || m_Hdr == false && lumMap == nullptr, "no valid lumMap provided");
 
     GL::heBlendEnabled(false);

@@ -184,14 +184,15 @@ void PostProcesser::compileShader()
 
 
 void PostProcesser::draw()
-{    
+{
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const Texture2D* colorMap(m_ReadRenderTarget->getTextureTarget(0));
     const Texture2D* normalDepthMap(m_ReadRenderTarget->getTextureTarget(1));
 
     if (nullptr != m_AutoExposure)
     {
-        m_ToneMapUniformBuffer->uploadData(&m_ToneMapData, sizeof(ToneMapData));
         PROFILER_BEGIN("Auto Exposure");
+        m_ToneMapUniformBuffer->uploadData(&m_ToneMapData, sizeof(ToneMapData));
         m_AutoExposure->calculate(colorMap);
         PROFILER_END();
     }
@@ -206,7 +207,8 @@ void PostProcesser::draw()
             m_Bloom->render(colorMap);
         PROFILER_END();
     }
-
+    
+    PROFILER_BEGIN("Post");
     m_WriteRenderTarget->prepareForRendering();
     GL::heBlendEnabled(false);
     GL::heSetDepthWrite(false);
@@ -230,7 +232,7 @@ void PostProcesser::draw()
     if (m_AOEnabled || m_FogEnabled)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalDepthMap], normalDepthMap); 
     if (m_FogEnabled)
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
+        m_PostShader->setSsahaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
 
     if (m_AOEnabled)
     {
@@ -241,6 +243,7 @@ void PostProcesser::draw()
 
     GL::heBindVao(m_Quad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_Quad->getNumIndices(), m_Quad->getIndexType(), 0);
+    PROFILER_END();
 }
 
 void PostProcesser::draw2D(gui::Canvas2D* canvas)
