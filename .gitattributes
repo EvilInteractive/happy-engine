@@ -1,0 +1,6 @@
+* text=auto
+
+*.cpp text
+*.h text
+
+*.binobj binary

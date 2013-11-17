@@ -41,7 +41,7 @@ class IPlugin;
 #ifdef HE_WINDOWS
 #define PLUGIN_EXPORT extern "C" __declspec(dllexport)
 #else
-#define PLUGIN_EXPORT
+#define PLUGIN_EXPORT extern "C" 
 #endif
 typedef IPlugin* (*CreatePluginFunc)();
 

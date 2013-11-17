@@ -71,7 +71,7 @@ void MainGame::init()
     m_Window->setResizable(true);
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 800);
-    m_Window->setWindowTitle("HappyPluginTest");
+    m_Window->setWindowTitle("lHappyPluginTest");
     m_Window->setFullscreen(false);
     m_Window->setOculusRiftEnabled(oculus);
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
@@ -83,7 +83,7 @@ void MainGame::init()
     entityMan->init();
 
     m_PluginLoader = NEW he::pl::PluginLoader();
-    m_Plugin = m_PluginLoader->loadPlugin(he::Path(""), "HappyPluginTest");
+    m_Plugin = m_PluginLoader->loadPlugin(he::Path(""), "libHappyPluginTest");
     if (m_Plugin != nullptr)
     {
         m_Plugin->init(m_Window, he::RectF(0, 0, 1.0f, 1.0f));

@@ -45,4 +45,13 @@ BOOL WINAPI DllMain(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpReserved
     }
     return TRUE;
 }
+#elif HE_MAC
+__attribute__((constructor)) void DylibEntry()
+{
+    std::cout << "Plugin HappyPluginTestMain loaded!\n";
+}
+__attribute__((destructor)) void DylibLeave()
+{
+    std::cout << "Plugin HappyPluginTestMain unloaded!\n";
+}
 #endif
