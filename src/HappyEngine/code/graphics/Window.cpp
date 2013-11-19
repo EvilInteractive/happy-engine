@@ -353,6 +353,7 @@ void Window::setVSync( bool enable )
 
 void Window::prepareForRendering()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_Context.makeCurrent();
     GRAPHICS->setActiveContext(&m_Context);
     if (checkFlag(eFlags_EnableOculusRift))
@@ -363,6 +364,7 @@ void Window::prepareForRendering()
 
 void Window::finishRendering()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (checkFlag(eFlags_EnableOculusRift))
     {
         const GLenum buffers(GL_BACK);
@@ -374,6 +376,7 @@ void Window::finishRendering()
 
 void Window::present()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     SDL_GL_SwapWindow(m_Window);
 }
 

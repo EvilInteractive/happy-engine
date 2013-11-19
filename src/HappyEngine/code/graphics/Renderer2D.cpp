@@ -102,6 +102,7 @@ void Renderer2D::removeWebView(gui::WebView* webview)
 
 void Renderer2D::preRender()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     he::PrimitiveList<std::pair<uint32,uint16> > orderList(m_DrawablesDepth.size());
 
     m_DrawablesDepth.forEach([&orderList](std::pair<uint32,uint16> p)
@@ -129,6 +130,7 @@ void Renderer2D::preRender()
 
 void Renderer2D::render()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_RenderTarget->prepareForRendering();
     if (m_View->getStereo() == StereoSetting_None)
     {

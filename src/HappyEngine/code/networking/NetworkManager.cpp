@@ -127,6 +127,7 @@ void NetworkManager::clientConnected( const NetworkID& id, const he::String& adr
 
 void NetworkManager::tick( float dTime )
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_RakPeer == nullptr)
         return;
     m_Sleep += dTime;

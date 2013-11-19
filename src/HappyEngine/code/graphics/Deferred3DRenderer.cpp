@@ -260,6 +260,7 @@ void Deferred3DRenderer::onViewResized()
 
 void Deferred3DRenderer::render()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     HE_ASSERT(m_Scene != nullptr, "Scene is nullptr, assign a scene first!");
     const ICamera* const camera(m_View->getCamera());
     if (camera != nullptr)

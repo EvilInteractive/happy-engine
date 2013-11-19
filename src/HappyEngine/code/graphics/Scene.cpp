@@ -100,6 +100,7 @@ void Scene::detachFromScene( IDrawable* drawable )
 
 void Scene::prepareForRendering()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_DrawList.prepareForRendering();
     m_ShadowCaster->render(this);
 }

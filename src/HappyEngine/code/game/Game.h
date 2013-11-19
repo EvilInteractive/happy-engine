@@ -40,6 +40,7 @@ public:
 
     virtual void tick(float dTime)
     {
+        HIERARCHICAL_PROFILE(__HE_FUNCTION__);
         for (size_t i(0); i < m_TickList.size(); ++i)
         {
             m_TickList[i]->tick(dTime);

@@ -27,7 +27,7 @@
 #define _DEBUG 1
 #endif
 
-#define __HE_FUNCTION__ __FUNCTION__
+#define __HE_FUNCTION__ __PRETTY_FUNCTION__
 #ifdef _DEBUG
 #define FILE_AND_LINE __FILE__, __LINE__
 #else

@@ -120,6 +120,7 @@ Keyboard::~Keyboard()
 
 void Keyboard::tick()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     he_memcpy(m_PrevKeyState, m_CurrentKeyState, s_ArraySize);
     m_TextEntered.clear();
 }
