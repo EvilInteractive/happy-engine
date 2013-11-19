@@ -58,29 +58,29 @@ MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _path _inputh _inputcpp)
 		SET_TARGET_PROPERTIES(${_targetName} PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER "YES")
 
 	else()
-    GET_TARGET_PROPERTY(oldProps ${_targetName} COMPILE_FLAGS)
-    if (${oldProps} MATCHES NOTFOUND)
-      SET(oldProps "")
-    endif(${oldProps} MATCHES NOTFOUND)
-    SET(newProperties "${oldProps} -include ${_inputh}")
-    SET_TARGET_PROPERTIES(${_targetName} PROPERTIES COMPILE_FLAGS "${newProperties}")
+        GET_TARGET_PROPERTY(oldProps ${_targetName} COMPILE_FLAGS)
+        if (${oldProps} MATCHES NOTFOUND)
+          SET(oldProps "")
+        endif(${oldProps} MATCHES NOTFOUND)
+        SET(newProperties "${oldProps} -include ${_inputh}")
+        SET_TARGET_PROPERTIES(${_targetName} PROPERTIES COMPILE_FLAGS "${newProperties}")
 
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-      SET(pchOutput "${_inputh}.pch")
-    else()
-      SET(pchOutput "${_inputh}.gch")
-    endif()
-    GET_FILENAME_COMPONENT(fullPath ${_path}${_inputh} ABSOLUTE)
-    # add pch build target
-    _PCH_GET_COMPILE_FLAGS(_compile_FLAGS)
-    #MESSAGE(${_compile_FLAGS})
-    SET(_pchTarget ${_targetName}PCH)
-    add_custom_command( OUTPUT ${pchOutput}
-      DEPENDS ${fullPath}
-      COMMAND "${CMAKE_CXX_COMPILER}" ${CMAKE_CXX_COMPILER_ARG1} -c -isysroot ${CMAKE_OSX_SYSROOT} ${_compile_FLAGS} -F/Library/Frameworks -o ${pchOutput} -x c++-header "${fullPath}" )
-    add_custom_target( ${_pchTarget} DEPENDS ${pchOutput} )
-    add_dependencies( ${_targetName} ${_pchTarget} )
-    
+        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+          SET(pchOutput "${_inputh}.pch")
+        else()
+          SET(pchOutput "${_inputh}.gch")
+        endif()
+        GET_FILENAME_COMPONENT(fullPath ${_path}${_inputh} ABSOLUTE)
+        # add pch build target
+        _PCH_GET_COMPILE_FLAGS(_compile_FLAGS)
+        #MESSAGE(${_compile_FLAGS})
+        SET(_pchTarget ${_targetName}PCH)
+        add_custom_command( OUTPUT ${pchOutput}
+          DEPENDS ${fullPath}
+          COMMAND "${CMAKE_CXX_COMPILER}" ${CMAKE_CXX_COMPILER_ARG1} -c -isysroot ${CMAKE_OSX_SYSROOT} ${_compile_FLAGS} -F/Library/Frameworks -o ${pchOutput} -x c++-header "${fullPath}" )
+        add_custom_target( ${_pchTarget} DEPENDS ${pchOutput} )
+        add_dependencies( ${_targetName} ${_pchTarget} )
+        
 	endif()
 
 ENDMACRO(ADD_NATIVE_PRECOMPILED_HEADER)
