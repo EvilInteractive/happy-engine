@@ -93,6 +93,7 @@ void Entity::removeComponentAt( const size_t index )
         component->deactivate();
     detach(component);
     m_Components.removeAt(index);
+    component->setParent(nullptr);
 }
 
 EntityComponent* Entity::getComponent( const he::FixedString& id )

@@ -71,7 +71,7 @@ const gfx::ModelMesh* ModelComponent::getModelMesh() const
     return m_ModelMesh;
 }
 
-void ModelComponent::setModelMeshAndMaterial( const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName )
+void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName )
 {
     he::ct::ContentManager* contentManager(CONTENT);
 
@@ -88,11 +88,7 @@ void ModelComponent::setModelMeshAndMaterial( const he::String& materialAsset, c
             deactivate();
             reactivate = true;
         }
-        if (m_ModelMesh != nullptr)
-        {
-            m_ModelMesh->release();
-            m_ModelMesh = nullptr;
-        }
+        unloadModelMeshAndMaterial();
 
         if (meshName == "")
             m_ModelMesh = model->instantiateMesh(0);
@@ -110,6 +106,16 @@ void ModelComponent::setModelMeshAndMaterial( const he::String& materialAsset, c
     });
 }
 
+void ModelComponent::unloadModelMeshAndMaterial()
+{
+    HE_ASSERT(m_IsAttached == false, "Trying to unload model while stil attached to the scene!");
+    if (m_ModelMesh != nullptr)
+    {
+        m_ModelMesh->release();
+        m_ModelMesh = nullptr;
+    }
+}
+
 void ModelComponent::activate()
 {
     HE_IF_ASSERT(m_IsAttached == false, "ModelComponent already active")
@@ -120,7 +126,7 @@ void ModelComponent::activate()
         {
             m_ModelMesh->callbackOnceIfLoaded([this]()
             {
-                if (m_IsAttached = true && isAttachedToScene() == false)
+                if (m_IsAttached == true && isAttachedToScene() == false)
                     m_Parent->getScene()->attachToScene(this);
             });
         }
@@ -165,7 +171,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
             m_ModelAsset = inProperty->get<he::String>();
             if (m_ModelAsset.empty() == false && m_MaterialAsset.empty() == false)
             {
-                setModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
+                loadModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
             }
             return true;
         }
@@ -174,7 +180,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
             m_MaterialAsset = inProperty->get<he::String>();
             if (m_ModelAsset.empty() == false && m_MaterialAsset.empty() == false)
             {
-                setModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
+                loadModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
             }
             return true;
         }
