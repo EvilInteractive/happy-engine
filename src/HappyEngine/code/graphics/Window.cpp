@@ -242,7 +242,10 @@ bool Window::create()
     if (checkFlag(eFlags_Resizeable))
         flags |= SDL_WINDOW_RESIZABLE;
     
-    m_Window = SDL_CreateWindow(m_Titel.c_str(), m_WindowRect.x, m_WindowRect.y, m_WindowRect.width, m_WindowRect.height, flags);
+    m_Window = SDL_CreateWindow(m_Titel.c_str(), 
+        m_WindowRect.x == -1? SDL_WINDOWPOS_CENTERED : m_WindowRect.x, 
+        m_WindowRect.y == -1? SDL_WINDOWPOS_CENTERED : m_WindowRect.y, 
+        m_WindowRect.width, m_WindowRect.height, flags);
     if (m_Window != nullptr &&  m_Context.create(this))
     {
         //m_Window->setKeyRepeatEnabled(true);
@@ -258,6 +261,8 @@ bool Window::create()
             m_ID = SDL_GetWindowID(m_Window);
             result = true;
         }
+
+        SDL_GetWindowPosition(m_Window, &m_WindowRect.x, &m_WindowRect.y);
     }
     if (result == false)
     {
