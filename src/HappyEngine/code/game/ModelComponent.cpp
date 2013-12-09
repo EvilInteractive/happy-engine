@@ -47,12 +47,9 @@ ModelComponent::ModelComponent()
 
 ModelComponent::~ModelComponent()
 {
-    if (m_ModelMesh != nullptr)
-        m_ModelMesh->release();
     if (isAttachedToScene())
         detachFromScene();
-    if (m_Material != nullptr)
-        m_Material->release();
+    unloadModelMeshAndMaterial();
 }
 
 void ModelComponent::init(Entity* parent)
@@ -79,8 +76,8 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
     m_Material = he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle);
     const gfx::BufferLayout& layout(m_Material->getCompatibleVertexLayout());
 
-    he::gfx::Model* model(contentManager->asyncLoadModel(modelAsset, layout));
-    model->callbackOnceIfLoaded([&, model, meshName]()
+    m_ModelMesh = contentManager->asyncLoadModelMesh(modelAsset, meshName, layout);
+    m_ModelMesh->callbackOnceIfLoaded(this, [&](const ELoadResult result)
     {
         bool reactivate(false);
         if (m_IsAttached)
@@ -89,13 +86,6 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
             reactivate = true;
         }
         unloadModelMeshAndMaterial();
-
-        if (meshName == "")
-            m_ModelMesh = model->instantiateMesh(0);
-        else
-            m_ModelMesh = model->instantiateMesh(meshName);
-
-        model->release();
 
         if (reactivate == true)
         {
@@ -108,12 +98,20 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 
 void ModelComponent::unloadModelMeshAndMaterial()
 {
-    HE_ASSERT(m_IsAttached == false, "Trying to unload model while stil attached to the scene!");
+    HE_ASSERT(m_IsAttached == false && isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
     if (m_ModelMesh != nullptr)
     {
+        m_ModelMesh->cancelLoadCallback(this);
         m_ModelMesh->release();
         m_ModelMesh = nullptr;
     }
+    if (m_Material != nullptr)
+    {
+        m_Material->release();
+        m_Material = nullptr;
+    }
+    m_MaterialAsset.clear();
+    m_ModelAsset.clear();
 }
 
 void ModelComponent::activate()
@@ -124,9 +122,9 @@ void ModelComponent::activate()
         m_IsAttached = true;
         if (m_ModelMesh != nullptr)
         {
-            m_ModelMesh->callbackOnceIfLoaded([this]()
+            m_ModelMesh->callbackOnceIfLoaded(this, [this](const ELoadResult result)
             {
-                if (m_IsAttached == true && isAttachedToScene() == false)
+                if (result == eLoadResult_Success && m_IsAttached == true && isAttachedToScene() == false)
                     m_Parent->getScene()->attachToScene(this);
             });
         }
@@ -165,7 +163,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
 {
     if (EntityComponent::setProperty(inProperty) == false)
     {
-        const he::FixedString name(inProperty->getName());
+        /*const he::FixedString name(inProperty->getName());
         if (name == HEFS::strModel)
         {
             m_ModelAsset = inProperty->get<he::String>();
@@ -183,7 +181,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
                 loadModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
             }
             return true;
-        }
+        }*/
     }
     return false;
 }

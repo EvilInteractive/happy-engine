@@ -116,12 +116,7 @@ bool ModelLoader::createModel( ModelLoadData& data )
         gfx::ModelMesh* mesh(nullptr);
         if (notLoadedMeshes > 0)
         {
-            for (uint32 iNotLoaded = 0; iNotLoaded < notLoadedMeshes; ++iNotLoaded)
-            {
-                mesh = model->instantiateMesh(meshName);
-                if (mesh != nullptr)
-                    break;
-            }
+            mesh = model->instantiateMesh(meshName);
         }
         if (mesh == nullptr)
         {
@@ -140,10 +135,21 @@ bool ModelLoader::createModel( ModelLoadData& data )
             mesh->createPickingData(data.loader->getVertices(i), data.loader->getNumVertices(i), data.vertexLayout, 
                 data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i));
         }
-        mesh->setLoaded();
+        mesh->setLoaded(eLoadResult_Success);
 
         mesh->release();
     }
+    
+    for (uint32 i(0); i < notLoadedMeshes; ++i)
+    {
+        gfx::ModelMesh* mesh(model->getMesh(i));
+        if (mesh->isLoaded() == false)
+        {
+            mesh->setLoaded(eLoadResult_Failed);
+        }
+    }
+    
+    
     HE_INFO("Model create completed: %s", data.path.c_str());
     model->setLoaded();
     m_WaitListMutex.unlock();

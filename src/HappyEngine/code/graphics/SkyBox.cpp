@@ -112,7 +112,7 @@ void SkyBox::load( const he::String& asset )
     m_Cube->init(layout, MeshDrawMode_Triangles);
     m_Cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
     m_Cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);
-    m_Cube->setLoaded();
+    m_Cube->setLoaded(eLoadResult_Success);
 
     m_Material = he::ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/sky.material"));
     ShaderUserVar<const TextureCube*>* cubeMap(static_cast<ShaderUserVar<const gfx::TextureCube*>*>(m_Material->getVar("cubeMap")));

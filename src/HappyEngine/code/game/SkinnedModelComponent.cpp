@@ -61,13 +61,16 @@ const gfx::ModelMesh* SkinnedModelComponent::getModelMesh() const
 void SkinnedModelComponent::setModelMesh( const ObjectHandle& modelHandle )
 {
     if (m_ModelMesh != nullptr)
+    {
+        m_ModelMesh->cancelLoadCallback(this);
         m_ModelMesh->release();
+    }
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
     m_ModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     m_BoneTransform.clear();
     m_Bones.clear();
 
-    ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&SkinnedModelComponent::modelLoadedCallback, this));
+    ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(this, boost::bind(&SkinnedModelComponent::modelLoadedCallback, this));
 }
 void SkinnedModelComponent::modelLoadedCallback()
 {

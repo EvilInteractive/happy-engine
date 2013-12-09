@@ -64,7 +64,7 @@ public:
     virtual const gfx::ModelMesh* getModelMesh() const;
     //////////////////////////////////////////////////////////////////////////
        
-    void loadModelMeshAndMaterial(const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName = "");
+    void loadModelMeshAndMaterial(const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName);
     void unloadModelMeshAndMaterial();
 
     he::event0<void> OnModelMeshLoaded;

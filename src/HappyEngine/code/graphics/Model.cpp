@@ -62,6 +62,15 @@ size_t Model::getNumMeshes() const
 {
     return m_Meshes.size();
 }
+    
+    
+ModelMesh* Model::getMesh(const uint32 index) const
+{
+    HE_ASSERT(index < m_Meshes.size(), "Model::getMesh: index out of range: %d", index);
+    ModelMesh* mesh(m_Meshes[index]);
+    return mesh;
+}
+    
 ModelMesh* Model::instantiateMesh(uint32 index) const
 {
     HE_ASSERT(index < m_Meshes.size(), "Model::instantiateMesh: index out of range: %d", index);
@@ -80,7 +89,7 @@ ModelMesh* Model::instantiateMesh( const he::String& name ) const
     if (it != cend())
     {
         ModelMesh* mesh(*it);
-        ResourceFactory<ModelMesh>::getInstance()->instantiate(mesh->getHandle());
+        mesh->instantiate();
         return mesh;
     }
     HE_ERROR("Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());

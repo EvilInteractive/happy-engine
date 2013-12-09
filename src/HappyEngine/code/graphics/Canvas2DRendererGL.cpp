@@ -678,7 +678,7 @@ void Canvas2DRendererGL::init()
         mesh->init(vLayout, MeshDrawMode_Triangles);
         mesh->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
         mesh->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
-        mesh->setLoaded();
+        mesh->setLoaded(eLoadResult_Success);
 
         m_TextureQuad = mesh;
     }
@@ -698,7 +698,7 @@ void Canvas2DRendererGL::init()
     m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
     m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
     m_DynamicFontMesh->setIndices(nullptr, 0, IndexStride_UInt, MeshUsage_Dynamic);
-    m_DynamicFontMesh->setLoaded();
+    m_DynamicFontMesh->setLoaded(eLoadResult_Success);
 
     m_DynamicShapeMesh = NEW Mesh2D(false);
 }

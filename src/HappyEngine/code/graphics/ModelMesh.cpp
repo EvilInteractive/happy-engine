@@ -30,9 +30,9 @@ namespace gfx {
 #pragma warning(disable:4355) // use of this in initializer list
 ModelMesh::ModelMesh(): 
     m_NumVertices(0), 
-    m_NumIndices(0), 
-    m_IsLoaded(false), 
+    m_NumIndices(0),
     m_isVisible(true),
+    m_IsLoaded(eLoadResult_Unknown),
     m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_ContextCreatedHandler(boost::bind(&ModelMesh::initVAO, this, _1)),
     m_ContextRemovedHandler(boost::bind(&ModelMesh::destroyVAO, this, _1)),
@@ -214,28 +214,49 @@ void ModelMesh::setBones( const he::ObjectList<Bone>& boneList )
     m_BoneList.append(boneList);
 }
 
-void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
+void ModelMesh::callbackOnceIfLoaded( const void* const id, const LoadCallback& callback)
 {
     m_LoadMutex.lock(FILE_AND_LINE);
-    if (m_IsLoaded)
+    if (m_IsLoaded != eLoadResult_Unknown)
     {
         m_LoadMutex.unlock(); //we don't know how long callback will take, and it is not necessary to keep the lock
-        callback();
+        callback(m_IsLoaded);
     }
     else
     {
         eventCallback0<void> handler(callback);
-        Loaded += handler;
+        m_LoadCallbacks.add(std::make_pair(id, callback));
         m_LoadMutex.unlock();
     }
 }
-
-void ModelMesh::setLoaded()
+void ModelMesh::cancelLoadCallback(const void* const id)
 {
-    m_IsLoaded = true;
+    if (m_LoadCallbacks.empty() == false)
+    {
+        size_t callbackCount(m_LoadCallbacks.size());
+        for (size_t i(0); i < callbackCount;)
+        {
+            const std::pair<const void*, LoadCallback>& p(m_LoadCallbacks[i]);
+            if (p.first == id)
+            {
+                m_LoadCallbacks.removeAt(i);
+            }
+            else
+            {
+                ++i;
+            }
+        }
+    }
+}
+void ModelMesh::setLoaded(const ELoadResult result)
+{
+    m_IsLoaded = result;
     m_LoadMutex.lock(FILE_AND_LINE);
-    Loaded();
-    Loaded.clear();
+    m_LoadCallbacks.forEach([result](const std::pair<const void*, LoadCallback>& p)
+    {
+        p.second(result);
+    });
+    m_LoadCallbacks.clear();
     m_LoadMutex.unlock();
 }
 

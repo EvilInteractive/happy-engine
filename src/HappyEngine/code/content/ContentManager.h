@@ -24,6 +24,7 @@
 #include "Material.h"
 
 namespace he {
+    
 namespace gfx {
     class Model;
     class ModelMesh;
