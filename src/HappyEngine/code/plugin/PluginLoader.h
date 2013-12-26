@@ -28,22 +28,29 @@ class IPlugin;
 
 class HAPPY_ENTRY PluginLoader
 {
+#ifdef HE_WINDOWS
+    typedef HMODULE PLUGIN_HANDLE;
+    typedef FARPROC PLUGIN_FUNCTION;
+#else
+    typedef void* PLUGIN_HANDLE;
+    typedef void* PLUGIN_FUNCTION;
+#endif
     struct PluginWrapper
     {
         PluginWrapper() : m_Plugin(nullptr), m_ModuleHandle(NULL) {}
         ~PluginWrapper() {}
 
         explicit PluginWrapper(IPlugin* const plugin) : m_Plugin(plugin), m_ModuleHandle(NULL) {}
-        PluginWrapper(IPlugin* const plugin, HMODULE const mod) : m_Plugin(plugin), m_ModuleHandle(mod) {}
+        PluginWrapper(IPlugin* const plugin, PLUGIN_HANDLE const mod) : m_Plugin(plugin), m_ModuleHandle(mod) {}
 
         IPlugin* m_Plugin;
-        HMODULE m_ModuleHandle;
+        PLUGIN_HANDLE m_ModuleHandle;
     };
 public:
     PluginLoader();
     ~PluginLoader();
 
-    IPlugin* loadPlugin(const he::Path& path);
+    IPlugin* loadPlugin(const he::Path& path, const char* fileName);
     IPlugin* loadPlugin(IPlugin* const plugin);
     void unloadPlugin(IPlugin* const plugin);
     

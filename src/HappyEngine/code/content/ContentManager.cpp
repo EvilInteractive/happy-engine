@@ -101,6 +101,7 @@ ContentManager::~ContentManager()
 
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_ModelLoader->tick(dTime);
     m_TextureLoader->tick(dTime);
 }

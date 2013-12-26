@@ -47,6 +47,7 @@ void ShadowCaster::init()
 
 void ShadowCaster::render(Scene* scene)
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     LightManager* lightMan(scene->getLightManager());
     LightFactory* lightFactory(LightFactory::getInstance());
     

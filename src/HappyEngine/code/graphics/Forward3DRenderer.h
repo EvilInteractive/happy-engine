@@ -34,7 +34,7 @@ class RenderTarget;
 class ICamera;
 class Scene;
 
-class Forward3DRenderer : public IRenderer
+class HAPPY_ENTRY Forward3DRenderer : public IRenderer
 {
 public:
 

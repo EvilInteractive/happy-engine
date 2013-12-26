@@ -82,4 +82,16 @@ size_t BinaryStreamVisitor::writeBuffer( const void* buffer, const size_t byteCo
     return byteCount;
 }
 
+void BinaryStreamVisitor::skipBytes( const size_t bytes )
+{
+    HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
+    HE_ASSERT(m_OpenType == eOpenType_Read, "Stream can only skip bytes when reading!");
+    m_ReadIndex += bytes;
+}
+
+size_t BinaryStreamVisitor::getProcessedBytes()
+{
+    return m_ReadIndex;
+}
+
 } } //end namespace

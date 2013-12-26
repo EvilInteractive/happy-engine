@@ -126,7 +126,9 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
     });
     m_NodeList.clear();
     m_Renderer->detachFromRender(this);
+#ifdef USE_WEB
     m_Renderer->removeWebView(m_WebViewGui);
+#endif
     delete m_Renderer;
     delete m_Generator;
     if (m_View != nullptr)
@@ -164,12 +166,11 @@ void MaterialGeneratorGraph::init()
 
     m_Window->setResizable(true);
     m_Window->create();
-    m_Window->setCursorVisible(true);
     m_Window->setFullscreen(false);
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("Happy Material Editor");
-    m_Window->close();
+    m_Window->hide();
 
     m_View->setWindow(m_Window);
     m_Renderer = NEW gfx::Renderer2D();
@@ -184,6 +185,7 @@ void MaterialGeneratorGraph::init()
 
     m_Renderer->attachToRender(this);
 
+#ifdef USE_WEB
     m_WebViewGui = m_Renderer->createWebViewRelative(RectF(0, 0, 1, 1), true);
     loadGui();
     m_WebViewGui->setTransparent(true);
@@ -270,10 +272,10 @@ void MaterialGeneratorGraph::init()
             m_WebViewGui->focus();
         }
     });
-
     m_Window->GainedFocus += gainfocusCallback;
     m_Window->LostFocus += lostfocusCallback;
     m_Window->Closed += closeCallback;
+#endif
 
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Background = cr->createSprite(vec2(1280, 720));
@@ -292,18 +294,20 @@ void MaterialGeneratorGraph::init()
 
 void MaterialGeneratorGraph::loadGui()
 {
+#ifdef USE_WEB
     m_WebViewGui->loadUrl((Path::getWorkingDir().append(CONTENT->getContentDir().str()).append("gui/materialEditor.html")).str());
+#endif
 }
 
 
 void MaterialGeneratorGraph::open()
 {
-    m_Window->open();
+    m_Window->show();
 }
 
 void MaterialGeneratorGraph::close()
 {
-    m_Window->close();
+    m_Window->hide();
 }
 
 void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
@@ -652,8 +656,10 @@ void MaterialGeneratorGraph::draw2D( gui::Canvas2D* canvas )
         canvas->drawSprite(m_ErrorBackgroundSprite, screenPos - msg.m_TextSize / 2.0f - errorTextMarge, msg.m_TextSize + errorTextMarge * 2);
         canvas->fillText(*msg.m_Text, screenPos - msg.m_TextSize / 2.0f);
     });
-
+    
+#ifdef USE_WEB
     m_WebViewGui->draw2D(canvas);
+#endif
 
     // DEBUG
     m_DebugText.clear();

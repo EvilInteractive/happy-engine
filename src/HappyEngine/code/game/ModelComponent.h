@@ -60,7 +60,8 @@ public:
     //////////////////////////////////////////////////////////////////////////
           
     const gfx::Drawable* getDrawable() const { return m_Drawable; }
-    void setModelMeshAndMaterial(const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName = "");
+    void loadModelMeshAndMaterial(const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName = "");
+    void unloadModelMeshAndMaterial();
 
     he::event0<void> OnModelMeshLoaded;
 

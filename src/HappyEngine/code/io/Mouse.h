@@ -24,6 +24,8 @@
 
 #include "IMouse.h"
 
+struct SDL_Cursor;
+
 namespace he {
 namespace io {
 
@@ -31,18 +33,21 @@ class Mouse : public IMouse
 {
 public:
     Mouse();
-    virtual ~Mouse();
+    ~Mouse();
     
-    virtual bool isButtonDown(MouseButton button) const;
-    virtual bool isButtonUp(MouseButton button) const;
-    virtual bool isButtonReleased(MouseButton button) const; //true when it goes from down to up
-    virtual bool isButtonPressed(MouseButton button) const;  //true when it goes from up to down
+    bool isButtonDown(MouseButton button) const;
+    bool isButtonUp(MouseButton button) const;
+    bool isButtonReleased(MouseButton button) const; //true when it goes from down to up
+    bool isButtonPressed(MouseButton button) const;  //true when it goes from up to down
 
-    virtual int getScroll() const;
-    virtual const vec2& getPosition() const;
-    virtual vec2 getMove() const;
+    int getScroll() const;
+    const vec2& getPosition() const;
+    vec2 getMove() const;
+    
+    void setCursorVisible(bool visible);
+    void setCursor(const MouseCursor cursor);
 
-    virtual void tick();
+    void tick();
 
 private:
 
@@ -53,6 +58,8 @@ private:
     bool m_PrevButtonState[io::MouseButton_MAX];
 
     int m_Scroll;
+    
+    SDL_Cursor* m_Cursor;
 
     //Disable default copy constructor and default assignment operator
     Mouse(const Mouse&);

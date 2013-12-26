@@ -27,17 +27,26 @@
 #define _DEBUG 1
 #endif
 
+#ifdef HE_WINDOWS
 #define __HE_FUNCTION__ __FUNCTION__
+#else
+#define __HE_FUNCTION__ __PRETTY_FUNCTION__
+#endif
 #ifdef _DEBUG
 #define FILE_AND_LINE __FILE__, __LINE__
 #else
 #define FILE_AND_LINE
 #endif
 
-#ifdef HappyEngine_EXPORTS
-#define HAPPY_ENTRY __declspec(dllexport)
+#ifdef HE_WINDOWS
+    #ifdef HappyEngine_EXPORTS
+        #define HAPPY_ENTRY __declspec(dllexport)
+    #else
+        #define HAPPY_ENTRY __declspec(dllimport)
+    #endif
 #else
-#define HAPPY_ENTRY __declspec(dllimport)
+    #define HAPPY_ENTRY
+    #define APIENTRY
 #endif
 
 #define HE_FORCEINLINE __forceinline
@@ -78,7 +87,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 
 #undef MessageBox
 
-#define glewGetContext() (&he::gfx::GL::s_CurrentContext->internalContext)
+#define glewGetContext() (&he::gfx::GL::s_CurrentContext->getGlewContext())
 
 
 // Happy Code

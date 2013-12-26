@@ -34,8 +34,11 @@ public:
     virtual ~BinaryFileVisitor();
 
     bool openWrite(const Path& file);
-    bool openRead(const Path& file);
+    bool openRead(const Path& file, const bool doBigToLittleEndianSwap = false);
     virtual void close();
+
+    virtual void skipBytes(const size_t bytes);
+    virtual size_t getProcessedBytes();
 
 protected:
     virtual	size_t readBuffer(void* buffer, const size_t byteCount);
@@ -44,6 +47,8 @@ protected:
 private:
     bool open(const Path& file, const char* type);
     FILE* m_File;
+
+    bool m_DoEndianSwap;
 
     //Disable default copy constructor and default assignment operator
     BinaryFileVisitor(const BinaryFileVisitor&);

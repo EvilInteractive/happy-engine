@@ -60,7 +60,7 @@ public:
     template<typename T>
     void init(const he::FixedString& name, const T& defaultValue)
     {
-        HE_ASSERT(m_Value == nullptr, "Property %s already initialize", m_Name);
+        HE_ASSERT(m_Value == nullptr, "Property %s already initialize", m_Name.c_str());
         m_Name = name;
         m_Value = NEW PropertyValue<T>(defaultValue);
     }

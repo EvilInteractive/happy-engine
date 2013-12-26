@@ -246,7 +246,11 @@ void GL::heLineSmoothEnabled(bool enabled)
             glDisable(GL_LINE_SMOOTH);
     }
 }
-
+ 
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+    
 void APIENTRY glDebugCallback(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity, GLsizei length,
     const GLchar* message, void* /*userParam*/)
 {
@@ -281,11 +285,12 @@ void GL::init()
     glDisable(GL_SCISSOR_TEST);
 
 #if defined(DEBUG) || defined(_DEBUG)
-    if (glewGetContext()->__GLEW_ARB_debug_output)
+	// no worky on AMD/ATI
+   /* if (glewGetContext()->__GLEW_ARB_debug_output)
     {
         glDebugMessageCallbackARB(glDebugCallback, nullptr);
         glEnable(GL_DEBUG_OUTPUT);
-    }
+    }*/
 #endif
 
     if (glewGetContext()->__GLEW_EXT_texture_filter_anisotropic == GL_TRUE)

@@ -70,6 +70,7 @@ void Forward3DRenderer::init( View* view, const RenderTarget* target)
 
 void Forward3DRenderer::render()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const ICamera* camera(m_View->getCamera());
     if (camera != nullptr)
     {

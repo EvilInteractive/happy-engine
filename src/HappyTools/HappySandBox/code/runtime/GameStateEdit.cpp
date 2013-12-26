@@ -35,10 +35,13 @@ bool GameStateEdit::enter()
 {
     Sandbox* const sandBox(Sandbox::getInstance());
     he::pl::IPlugin* const plugin(sandBox->getGamePlugin());
-    plugin->onPauseGame();
-    he::gfx::ICamera* const gameCam(plugin->getActiveCamera());
-    m_EditorCamera->lookAt(gameCam->getPosition(), gameCam->getPosition() + gameCam->getLook(), he::vec3::up);
-    plugin->setActiveCamera(m_EditorCamera);
+    if (plugin != nullptr)
+    {
+        plugin->onPauseGame();
+        he::gfx::ICamera* const gameCam(plugin->getActiveCamera());
+        m_EditorCamera->lookAt(gameCam->getPosition(), gameCam->getPosition() + gameCam->getLook(), he::vec3::up);
+        plugin->setActiveCamera(m_EditorCamera);
+    }
     sandBox->getMainView()->setCamera(m_EditorCamera);
 
     UIManager::getInstance()->showEditorUI();

@@ -21,8 +21,8 @@ GameStateLoadPlugin::~GameStateLoadPlugin()
 
 bool GameStateLoadPlugin::enter()
 {
-    he::Path pluginPath("HappyPluginTest.dll");
-    he::pl::IPlugin* const plugin(PluginManager::getInstance()->loadPlugin(pluginPath));
+    he::Path pluginPath("");
+    he::pl::IPlugin* const plugin(PluginManager::getInstance()->loadPlugin(pluginPath, "HappyPluginTest"));
     Sandbox* const sandbox(Sandbox::getInstance());
     sandbox->setGamePlugin(plugin);
 
@@ -30,7 +30,10 @@ bool GameStateLoadPlugin::enter()
 
     EntityManager* const entityMan(sandbox->getEntityManager());
     entityMan->init();
-    plugin->init(sandbox->getMainWindow(), he::RectF(0, 0, 1, 1));
+    if (plugin != nullptr)
+    {
+        plugin->init(sandbox->getMainWindow(), he::RectF(0, 0, 1, 1));
+    }
 
     return true;
 }

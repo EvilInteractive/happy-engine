@@ -14,17 +14,13 @@ link_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/bin)
 
 # include + link 3thParth
 include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
-if (WIN32)
 IncludeThirdParty()
-endif()
 
 # add HappyPluginTest executable
 add_library (HappyPluginTest SHARED ${HAPPYPLUGINTEST_SRCS})
 
 # link thirdparty
-if (WIN32)
 LinkThirdParty(HappyPluginTest)
-endif()
 
 # link HappyEngine
 target_link_libraries(HappyPluginTest HappyEngine)

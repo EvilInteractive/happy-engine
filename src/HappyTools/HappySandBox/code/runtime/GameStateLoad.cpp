@@ -19,7 +19,10 @@ bool GameStateLoad::enter()
 {
     Sandbox* const sandbox(Sandbox::getInstance());
     he::pl::IPlugin* const plugin(sandbox->getGamePlugin());
-    plugin->onLoadLevel(he::Path(""));
+    if (plugin != nullptr)
+    {
+        plugin->onLoadLevel(he::Path(""));
+    }
     return true;
 }
 

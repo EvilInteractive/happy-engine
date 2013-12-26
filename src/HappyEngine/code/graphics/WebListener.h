@@ -22,6 +22,8 @@
 #define _HE_WEB_LISTENER_H_
 #pragma once
 
+#ifdef USE_WEB
+
 #include "Awesomium/JSObject.h"
 #include "Awesomium/JSValue.h"
 #include "JSObject.h"
@@ -84,3 +86,5 @@ private:
 } } //end namespace
 
 #endif
+#endif
+

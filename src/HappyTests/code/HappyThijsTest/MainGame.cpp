@@ -55,6 +55,8 @@ void MainGame::destroy()
 {
     m_Renderer->detachFromRender(m_FpsGraph);
     m_Renderer->detachFromRender(this);
+    CONSOLE->detachFromRenderer();
+    PROFILER->detachFromRenderer();
 
     delete m_FpsGraph;
 
@@ -96,6 +98,9 @@ void MainGame::init()
 
 	m_AStar = NEW ht::AStar();
 	m_AStar->init();
+    
+    CONSOLE->attachToRenderer(m_Renderer);
+    PROFILER->attachToRenderer(m_Renderer);
 }
 
 void MainGame::tick( float dTime )

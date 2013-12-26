@@ -273,7 +273,14 @@ TestResult::operator << ( unsigned int value )
    sprintf( buffer, "%u", value );
    return addToLastFailure( buffer );
 }
-
+    
+TestResult &
+TestResult::operator << ( unsigned long value )
+{
+    char buffer[32];
+    sprintf( buffer, "%lu", value );
+    return addToLastFailure( buffer );
+}
 
 TestResult &
 TestResult::operator << ( double value )

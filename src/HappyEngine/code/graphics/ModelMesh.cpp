@@ -66,10 +66,11 @@ void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
     //////////////////////////////////////////////////////////////////////////
     ///                             Normal                                 ///
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_VaoID[context->id] == UINT32_MAX, "vao already inited?")
+    const uint32 contextID(context->getID());
+    HE_IF_ASSERT(m_VaoID[contextID] == UINT32_MAX, "vao already inited?")
     {
-        glGenVertexArrays(1, m_VaoID + context->id);
-        GL::heBindVao(m_VaoID[context->id]);
+        glGenVertexArrays(1, m_VaoID + contextID);
+        GL::heBindVao(m_VaoID[contextID]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
         glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
 
@@ -86,7 +87,7 @@ void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
     //////////////////////////////////////////////////////////////////////////
     ///                             Shadow                                 ///
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_VaoShadowID[context->id] == UINT32_MAX, "shadow vao already inited?")
+    HE_IF_ASSERT(m_VaoShadowID[contextID] == UINT32_MAX, "shadow vao already inited?")
     {
         uint32 posOffset = UINT32_MAX;
         uint32 boneIdOffset = UINT32_MAX;
@@ -107,8 +108,8 @@ void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
             }
         });
 
-        glGenVertexArrays(1, m_VaoShadowID + context->id);
-        GL::heBindVao(m_VaoShadowID[context->id]);
+        glGenVertexArrays(1, m_VaoShadowID + contextID);
+        GL::heBindVao(m_VaoShadowID[contextID]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
         glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
         if (boneIdOffset == UINT32_MAX)

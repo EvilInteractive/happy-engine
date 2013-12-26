@@ -22,11 +22,8 @@
 #define _HE_SOUND_ENGINE_H_
 #pragma once
 
-#include <string>
-#include <map>
-#include "al.h"
-#include "alc.h"
-#include "vec3.h"
+#include "AL/al.h"
+#include "AL/alc.h"
 #include "ISound.h"
 #include "SoundFile.h"
 

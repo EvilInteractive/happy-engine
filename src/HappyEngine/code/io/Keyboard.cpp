@@ -38,7 +38,7 @@ inline uint8 getPressed(const Key key, const uint8* const keys)
     return keys[index] & (1 << shift);
 }
 
-Keyboard::Keyboard(): m_TextCharEntered(0)
+Keyboard::Keyboard(): m_TextEntered("")
 {
     he_memset(&m_CurrentKeyState, 0, s_ArraySize);
     he_memset(&m_PrevKeyState, 0, s_ArraySize);
@@ -68,6 +68,7 @@ Keyboard::Keyboard(): m_TextCharEntered(0)
             {
                 mergeKey = Key_Shift;          
             } break;
+            default: break;
         }
         if (mergeKey != Key_MAX)
         {
@@ -94,6 +95,7 @@ Keyboard::Keyboard(): m_TextCharEntered(0)
 
         case Key_Lshift: mergeKey = Key_Shift; releaseMergeKey = getPressed(Key_Rshift, m_CurrentKeyState) == 0; break;
         case Key_Rshift: mergeKey = Key_Shift; releaseMergeKey = getPressed(Key_Lshift, m_CurrentKeyState) == 0; break;
+        default: break;
         }
         if (mergeKey != Key_MAX && releaseMergeKey)
         {
@@ -101,14 +103,14 @@ Keyboard::Keyboard(): m_TextCharEntered(0)
             m_CurrentKeyState[index] &= ~(1 << shift);
         }
     });
-    eventCallback1<void, uint32> textCharEnteredHandler([&](uint32 chr)
+    eventCallback1<void, const char*> textCharEnteredHandler([&](const char* chr)
     {
-        m_TextCharEntered = static_cast<char>(chr);
+        m_TextEntered = chr;
     });
 
     KeyPressed += keyPressedHandler;
     KeyReleased += keyReleasedHandler;
-    TextCharEntered += textCharEnteredHandler;
+    TextEntered += textCharEnteredHandler;
 }
 
 
@@ -118,8 +120,9 @@ Keyboard::~Keyboard()
 
 void Keyboard::tick()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     he_memcpy(m_PrevKeyState, m_CurrentKeyState, s_ArraySize);
-    m_TextCharEntered = 0;
+    m_TextEntered.clear();
 }
 
 bool Keyboard::isKeyUp(const Key key) const
@@ -143,9 +146,9 @@ bool Keyboard::isKeyReleased(const Key key) const
     return getPressed(key, m_CurrentKeyState) == 0 && getPressed(key, m_PrevKeyState) != 0;
 }
 
-const char& Keyboard::getTextCharEntered() const
+const he::String& Keyboard::getTextEntered() const
 {
-    return m_TextCharEntered;
+    return m_TextEntered;
 }
 
 bool Keyboard::isShortcutPressed( const Key key1, const Key key2 ) const

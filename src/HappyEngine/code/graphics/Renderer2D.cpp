@@ -26,10 +26,12 @@
 #include "ControlsManager.h"
 #include "IMouse.h"
 #include "IKeyboard.h"
+#ifdef USE_WEB
 // warnings in awesomium lib
 #pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
 #pragma warning(default:4100)
+#endif
 #include "Canvas2D.h"
 #include "WebView.h"
 #include "RenderTarget.h"
@@ -74,7 +76,8 @@ void Renderer2D::removeCanvas(gui::Canvas2D* canvas)
         delete canvas;
     }
 }
-
+    
+#ifdef USE_WEB
 gui::WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
     gui::WebView* web(NEW gui::WebView(m_View, viewport, enableUserInput));
@@ -95,9 +98,11 @@ void Renderer2D::removeWebView(gui::WebView* webview)
         delete webview;
     }
 }
+#endif
 
 void Renderer2D::preRender()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     he::PrimitiveList<std::pair<uint32,uint16> > orderList(m_DrawablesDepth.size());
 
     m_DrawablesDepth.forEach([&orderList](std::pair<uint32,uint16> p)
@@ -125,6 +130,7 @@ void Renderer2D::preRender()
 
 void Renderer2D::render()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_RenderTarget->prepareForRendering();
     if (m_View->getStereo() == StereoSetting_None)
     {

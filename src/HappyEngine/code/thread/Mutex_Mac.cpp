@@ -27,7 +27,7 @@ namespace he {
 
 const char* mutexErrorCodeToString(const int error)
 {
-    const char* result("")';'
+    const char* result("");
     switch (error)
     {
     case EINVAL: result = "EINVAL, The value specified by mutex does not refer to an initialized mutex object."; break;
@@ -37,16 +37,15 @@ const char* mutexErrorCodeToString(const int error)
     case EPERM: result = "EPERM, The current thread does not own the mutex."; break;
     default: result = "Unknown"; break;
     }
+    return result;
 }
 
 Mutex::Mutex()
 {
-    pthread_mutex_init(&m_Internal, 0);
-#ifdef _DEBUG
-    pthread_mutexattr_settype(&m_Internal, PTHREAD_MUTEX_ERRORCHECK);
-#else
-    pthread_mutexattr_settype(&m_Internal, PTHREAD_MUTEX_NORMAL);
-#endif
+    pthread_mutexattr_t mta;
+    pthread_mutexattr_init(&mta);
+    pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&m_Internal, &mta);
 }
 
 
@@ -87,7 +86,7 @@ bool Mutex::tryLock( const char* file, int line )
 #else
 void Mutex::lock()
 {
-    pthread_mutex_lock(&m_Internal)
+    pthread_mutex_lock(&m_Internal);
 }
 bool Mutex::tryLock()
 {

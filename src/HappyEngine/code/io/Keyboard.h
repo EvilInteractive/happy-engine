@@ -45,7 +45,7 @@ public:
     virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3) const;
     virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3, const Key key4) const;
     
-    virtual const char& getTextCharEntered() const;
+    virtual const he::String& getTextEntered() const;
 
     virtual void tick();
 
@@ -54,7 +54,7 @@ private:
     uint8 m_CurrentKeyState[s_ArraySize];
     uint8 m_PrevKeyState[s_ArraySize];
 
-    char m_TextCharEntered;
+    he::String m_TextEntered;
 
     //Disable default copy constructor and default assignment operator
     Keyboard(const Keyboard&);

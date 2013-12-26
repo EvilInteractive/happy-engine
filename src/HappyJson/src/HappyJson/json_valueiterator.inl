@@ -168,7 +168,7 @@ ValueIteratorBase::key() const
          return Value( StaticString( czstring.c_str() ) );
       return Value( czstring.c_str() );
    }
-   return Value( czstring.index() );
+   return Value( static_cast<UInt>(czstring.index()) );
 #else
    if ( isArray_ )
       return Value( ValueInternalArray::indexOf( iterator_.array_ ) );

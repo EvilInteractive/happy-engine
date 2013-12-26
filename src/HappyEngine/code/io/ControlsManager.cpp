@@ -34,7 +34,7 @@ ControlsManager::ControlsManager()
     , m_Locked(false)
     , m_LockedObject(nullptr)
 {
-    m_OculusRiftBinding->init();
+    //m_OculusRiftBinding->init();
 }
 
 ControlsManager::~ControlsManager()
@@ -47,6 +47,7 @@ ControlsManager::~ControlsManager()
 
 void ControlsManager::tick()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_Keyboard->tick();
     m_Mouse->tick();
 }

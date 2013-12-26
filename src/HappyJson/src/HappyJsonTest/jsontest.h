@@ -87,6 +87,7 @@ namespace JsonTest {
       TestResult &operator << ( bool value );
       TestResult &operator << ( int value );
       TestResult &operator << ( unsigned int value );
+      TestResult &operator << ( unsigned long value );
       TestResult &operator << ( double value );
       TestResult &operator << ( const char *value );
       TestResult &operator << ( const std::string &value );

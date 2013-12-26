@@ -214,6 +214,7 @@ void ShapeRenderer::drawBillboard(const Texture2D* tex2D, const vec3& pos)
 
 void ShapeRenderer::render()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     GL::heBlendEnabled(true);
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heSetDepthWrite(true);	

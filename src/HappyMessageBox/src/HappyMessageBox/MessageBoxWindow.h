@@ -22,9 +22,11 @@
 #define _HE_MessageBoxWindow_H_
 #pragma once
 
+#ifdef USE_WEB
 #pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
 #pragma warning(default:4100)
+#endif
 
 #include "HappyMessageBox.h"
 #include <string>
@@ -40,9 +42,14 @@ namespace sf {
 
 namespace he {
 namespace hmb {
+#ifdef USE_WEB
 class WebListener;
+#endif
 
-class MessageBoxWindow : public Awesomium::WebViewListener::Load, public Awesomium::JSMethodHandler
+class MessageBoxWindow
+#ifdef USE_WEB
+    : public Awesomium::WebViewListener::Load, public Awesomium::JSMethodHandler
+#endif
 {
 public:
 
@@ -60,6 +67,7 @@ public:
     HappyMessageBox::Button getResult() { return m_Result; }
 
     // MessageBoxWindow load listeners
+#ifdef USE_WEB
     virtual void OnFailLoadingFrame(
         Awesomium::WebView *  		caller,
         ::int64  						frame_id,
@@ -98,16 +106,22 @@ public:
         unsigned int remote_object_id,
         const Awesomium::WebString& method_name,
         const Awesomium::JSArray& args);
+#endif
 
 private:
     void tick();
+#ifdef USE_WEB
     void executeFunction(const char* method, const Awesomium::JSArray& args);
+#endif
 
     /* DATAMEMBERS */
+#ifdef USE_WEB
     Awesomium::WebView* m_WebView;
+#endif
     sf::Window* m_Window;
 
     std::string m_WebPage;
+    std::string m_Title;
 
     std::vector<std::string> m_Buttons;
     std::vector<std::pair<std::string, std::string>> m_Messages;

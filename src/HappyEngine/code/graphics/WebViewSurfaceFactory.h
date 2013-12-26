@@ -22,6 +22,7 @@
 #define _HE_WEBVIEWSURFACEFACTORY_H_
 #pragma once
 
+#ifdef USE_WEB
 #include <Awesomium/Surface.h>
 
 namespace he {
@@ -49,4 +50,5 @@ private:
 
 }} //end namespace
 
+#endif
 #endif

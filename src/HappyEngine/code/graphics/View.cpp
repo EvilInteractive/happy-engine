@@ -66,7 +66,7 @@ View::View():
     m_ViewportPercentage(0, 0, 1, 1),
     m_UsePercentage(true),
     m_Window(nullptr),
-    m_WindowResizedCallback(boost::bind(&View::resize, this)),
+    m_WindowResizedCallback(boost::bind(&View::resize, this, _1, _2)),
     m_PostProcesser(nullptr),
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
@@ -280,7 +280,7 @@ void View::setRelativeViewport( const RectF& viewportPercentage, const bool forc
         }
     }
 }
-void View::resize()
+void View::resize(const int32 /*width*/, const int32 /*height*/)
 {
     RectI oldViewPort(m_Viewport);
     calcViewportFromPercentage();
@@ -323,6 +323,7 @@ void View::tick( float dTime )
 
 void View::draw()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
 
     m_PrePostRenderPlugins.forEach([](IRenderer* const renderer){ renderer->preRender(); });
@@ -367,6 +368,7 @@ void View::draw()
 
 void View::render()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_Camera != nullptr)
     {
         m_Camera->prepareForRendering();

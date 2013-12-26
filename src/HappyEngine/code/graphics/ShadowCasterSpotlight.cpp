@@ -60,7 +60,7 @@ void ShadowCasterSpotLight::init(ShadowResolution shadowSize)
 {
     m_Resolution = shadowSize;
 
-    m_RenderTarget = NEW RenderTarget(GRAPHICS->getDefaultContext());
+    m_RenderTarget = NEW RenderTarget(GRAPHICS->getContexts()[0]);
     uint16 size(GRAPHICS->getShadowMapSize(shadowSize));
     m_RenderTarget->setSize(size, size);
     m_RenderTarget->setDepthTarget();

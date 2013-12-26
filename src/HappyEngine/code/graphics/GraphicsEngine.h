@@ -25,9 +25,11 @@
 
 #include "SlotPContainer.h"
 
+#ifdef USE_WEB
 namespace Awesomium {
     class WebCore;
 }
+#endif
 
 namespace sf {
     class Context;
@@ -42,7 +44,9 @@ namespace gfx {
 class Window;
 class Scene;
 class View;
+#ifdef USE_WEB
 class WebViewSurfaceFactory;
+#endif
 
 ENUM(ShadowResolution, uint8);
 
@@ -72,6 +76,7 @@ public:
 
     Window* createWindow();
     void removeWindow(Window* window);
+    Window* getWindow(const uint32 id);
     bool registerContext(GLContext* context);
     void unregisterContext(GLContext* context);
 
@@ -79,7 +84,6 @@ public:
     void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
     void setActiveContext(GLContext* context);
     void setActiveView(View* view) { m_ActiveView = view; } // Internal use
-    GLContext* getDefaultContext() { return &m_DefaultContext; }
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
@@ -89,17 +93,17 @@ public:
     static uint16 getShadowMapSize(const ShadowResolution& resolution);
 
     View* getActiveView() const { return m_ActiveView; }
-
+    
+#ifdef USE_WEB
     Awesomium::WebCore* getWebCore() const { return m_WebCore; }
+#endif
 
     // Events
+    he::event0<void> MainContextCreated;
     he::event1<void, GLContext*> ContextCreated;
     he::event1<void, GLContext*> ContextRemoved;
 
 private:
-    GLContext m_DefaultContext;
-    sf::Context* m_DefaultSfContext;
-
     /* DATAMEMBERS */
     he::ObjectList<ObjectHandle> m_Scenes;
     he::ObjectList<ObjectHandle> m_Views;
@@ -107,13 +111,14 @@ private:
 
     Window* m_ActiveWindow;
     View* m_ActiveView;
-
+#ifdef USE_WEB
     Awesomium::WebCore* m_WebCore;
+    WebViewSurfaceFactory* m_WebViewSurfaceFactory;
+#endif
 
     std::queue<uint32> m_FreeContexts;
     he::PrimitiveList<GLContext*> m_Contexts;
 
-    WebViewSurfaceFactory* m_WebViewSurfaceFactory;
 
     /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);

@@ -56,7 +56,7 @@ void ModelComponent::init(Entity* parent)
     m_Parent = parent;
 }
 
-void ModelComponent::setModelMeshAndMaterial( const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName )
+void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName )
 {
     he::ct::ContentManager* const contentManager(CONTENT);
 
@@ -78,6 +78,16 @@ void ModelComponent::setModelMeshAndMaterial( const he::String& materialAsset, c
         }
         model->release();        
     });
+}
+
+void ModelComponent::unloadModelMeshAndMaterial()
+{
+    HE_ASSERT(m_IsAttached == false, "Trying to unload model while stil attached to the scene!");
+    if (m_ModelMesh != nullptr)
+    {
+        m_ModelMesh->release();
+        m_ModelMesh = nullptr;
+    }
 }
 
 void ModelComponent::activate()
@@ -123,7 +133,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
             m_ModelAsset = inProperty->get<he::String>();
             if (m_ModelAsset.empty() == false && m_MaterialAsset.empty() == false)
             {
-                setModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
+                loadModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
             }
             return true;
         }
@@ -132,7 +142,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
             m_MaterialAsset = inProperty->get<he::String>();
             if (m_ModelAsset.empty() == false && m_MaterialAsset.empty() == false)
             {
-                setModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
+                loadModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
             }
             return true;
         }

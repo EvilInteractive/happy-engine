@@ -55,8 +55,8 @@ private:
 template<typename T>
 void he::FixedStringMap<T>::forEach( const boost::function1<void, std::pair<const FixedString, T>&>& func )
 {
-    iterator it(begin());
-    iterator end(end());
+    typename std::unordered_map<FixedString, T, FixedStringHasher>::iterator it(this->begin());
+    typename std::unordered_map<FixedString, T, FixedStringHasher>::iterator end(this->end());
     for (; it != end; ++it)
         func(*it);
 }
@@ -64,8 +64,8 @@ void he::FixedStringMap<T>::forEach( const boost::function1<void, std::pair<cons
 template<typename T>
 void he::FixedStringMap<T>::forEach( const boost::function1<void, const std::pair<const FixedString, T>&>& func ) const
 {
-    const_iterator it(cbegin());
-    const_iterator end(cend());
+    typename std::unordered_map<FixedString, T, FixedStringHasher>::const_iterator it(this->cbegin());
+    typename std::unordered_map<FixedString, T, FixedStringHasher>::const_iterator end(this->cend());
     for (; it != end; ++it)
         func(*it);
 }

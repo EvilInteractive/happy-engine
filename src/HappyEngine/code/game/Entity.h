@@ -50,6 +50,7 @@ public:
 
     void activate();
     void deactivate();
+    bool isActive() const { return m_IsActive; }
 
     void setScene(gfx::Scene* const scene) { m_Scene = scene; }
     gfx::Scene* getScene() const { return m_Scene; }

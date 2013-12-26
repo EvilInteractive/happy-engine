@@ -19,6 +19,9 @@
 //Created: 15/03/2013
 
 #include "HappyPCH.h"
+
+
+#ifdef USE_WEB
 #include "WebViewSurfaceFactory.h"
 
 #include "WebViewSurface.h"
@@ -48,3 +51,4 @@ void WebViewSurfaceFactory::DestroySurface(Awesomium::Surface* surface)
 }
 
 }} //end namespace
+#endif

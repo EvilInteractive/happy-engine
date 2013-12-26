@@ -22,7 +22,7 @@
 #define _HE_SOUND2D_H_
 #pragma once
 
-#include "al.h"
+#include "AL/al.h"
 #include "HappyTypes.h"
 #include "ISound.h"
 

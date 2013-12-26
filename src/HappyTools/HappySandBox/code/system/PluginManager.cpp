@@ -36,9 +36,9 @@ PluginManager::~PluginManager()
     delete m_Loader;
 }
 
-he::pl::IPlugin* PluginManager::loadPlugin( const he::Path& path )
+he::pl::IPlugin* PluginManager::loadPlugin( const he::Path& path, const char* name )
 {
-    return m_Loader->loadPlugin(path);
+    return m_Loader->loadPlugin(path, name);
 }
 
 void PluginManager::releasePlugin( he::pl::IPlugin* const plugin )
