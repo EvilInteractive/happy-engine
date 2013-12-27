@@ -138,7 +138,9 @@ namespace
             float m_Float[4];
             char m_ResourceID[he::Guid::s_CharbufferSize];
         } m_DefaultValue;
-
+        
+        
+    public:
         bool visit(he::io::StructuredVisitor* const visitor)
         {
             visitor->visit(he::HEFS::strName, m_Name);

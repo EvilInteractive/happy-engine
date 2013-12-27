@@ -127,11 +127,10 @@ public:
     {
         return internalVisitCustomList<he::PrimitiveList<T>, T>(key, list, callback, comment);
     }
-    
     template<typename CastType, typename EnumType>
     bool visitCasted(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL, 
-        const std::function<CastType(EnumType)>& castTo = checked_numcast<CastType>,
-        const std::function<EnumType(CastType)>& castFrom = checked_numcast<EnumType>)
+        const std::function<CastType(EnumType)>& castTo = (checked_numcast<CastType, EnumType>),
+        const std::function<EnumType(CastType)>& castFrom = (checked_numcast<EnumType, CastType>))
     {
         HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
         CastType value;

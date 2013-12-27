@@ -49,7 +49,11 @@
     #define APIENTRY
 #endif
 
+#ifdef _MSC_VER
 #define HE_FORCEINLINE __forceinline
+#else
+#define HE_FORCEINLINE __inline__ __attribute__((always_inline))
+#endif
 
 
 #define CONCAT(a, b) a##b
