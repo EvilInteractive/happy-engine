@@ -60,10 +60,8 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 {
     he::ct::ContentManager* const contentManager(CONTENT);
 
-    const ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
-    gfx::Material* const material(he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle));
-    
-    m_Drawable->setMaterial(material);
+    he::gfx::MaterialInstance* materialInstance(contentManager->loadMaterial(materialAsset));
+    m_Drawable->setMaterial(materialInstance);
 
     he::gfx::Model* const model(contentManager->asyncLoadModel(modelAsset));
     model->callbackOnceIfLoaded([&, model, meshName](Resource<gfx::Model>* const loadedModel)
@@ -83,11 +81,7 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 void ModelComponent::unloadModelMeshAndMaterial()
 {
     HE_ASSERT(m_IsAttached == false, "Trying to unload model while stil attached to the scene!");
-    if (m_ModelMesh != nullptr)
-    {
-        m_ModelMesh->release();
-        m_ModelMesh = nullptr;
-    }
+    m_Drawable->setModelMesh(nullptr);
 }
 
 void ModelComponent::activate()

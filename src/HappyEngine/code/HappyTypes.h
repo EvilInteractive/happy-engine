@@ -118,9 +118,9 @@ struct ObjectHandle
         return m_Handle != other.m_Handle;
     }
 
-    FORCEINLINE ObjectType getType() const { return m_Handle & s_TypeMask; }
-    FORCEINLINE SaltType getSalt() const { return m_Handle & s_SaltMask; }
-    FORCEINLINE IndexType getIndex() const { return m_Handle & s_IndexMask; }
+    HE_FORCEINLINE ObjectType getType() const { return m_Handle & s_TypeMask; }
+    HE_FORCEINLINE SaltType getSalt() const { return m_Handle & s_SaltMask; }
+    HE_FORCEINLINE IndexType getIndex() const { return m_Handle & s_IndexMask; }
 
     const static ObjectHandle unassigned;
 };

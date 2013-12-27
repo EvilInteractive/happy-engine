@@ -34,9 +34,9 @@ class IResourceFactory
 {
 public:
     virtual ObjectHandle create() = 0;
-    virtual bool isAlive(const ObjectHandle& handle) const = 0;
-    virtual void instantiate(const ObjectHandle& handle) = 0;
-    virtual void release(const ObjectHandle& handle) = 0;
+    virtual bool isAlive(const ObjectHandle handle) const = 0;
+    virtual void instantiate(const ObjectHandle handle) = 0;
+    virtual void release(const ObjectHandle handle) = 0;
 };
 
 template<typename T>

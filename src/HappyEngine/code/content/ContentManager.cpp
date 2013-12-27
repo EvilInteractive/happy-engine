@@ -113,8 +113,6 @@ void ContentManager::loadTick()
         bool sleep(true);
         sleep &= !m_ModelLoader->loadTick();
         sleep &= !m_TextureLoader->loadTick();
-        sleep &= !m_MaterialLoader->loadTick();
-        sleep &= !m_ShaderLoader->loadTick();
         if (sleep)
         {
             Thread::sleep(100);
@@ -204,7 +202,7 @@ gui::Font* ContentManager::getDefaultFont(uint16 size)
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
+he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
 {
     return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
 }

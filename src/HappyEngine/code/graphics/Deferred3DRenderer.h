@@ -107,13 +107,6 @@ private:
         uint32 shadowMap0, shadowMap1, shadowMap2, shadowMap3;
         uint32 colorIllMap, normalDepthMap, sgMap;
     };
-    struct PostSharedData
-    {
-        PostSharedData(): sharedBuffer(nullptr) {}
-        UniformBuffer* sharedBuffer;
-        // SharedBuffer
-        vec4 projParams;
-    };
 
 public:
     Deferred3DRenderer();
@@ -158,7 +151,6 @@ private:
     ///                              SHADERS                               ///
     //////////////////////////////////////////////////////////////////////////
     const Texture2D* m_pColorRampTex;
-    PostSharedData m_SharedShaderData;
 
     //Point light
     Shader* m_PointLightShader;

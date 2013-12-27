@@ -33,12 +33,12 @@ namespace he {
     namespace gfx {
 
 AutoExposure::AutoExposure():
-    m_LumShader(nullptr), 
+    m_LumShader(nullptr),
+    m_DTime(0),
     m_FirstBuffer(true),
-    m_DTime(0), 
-    m_ExposureSpeed(1.0f), 
-    m_bOnce(false),
-    m_Quad(nullptr)
+    m_ExposureSpeed(1.0f),
+    m_Quad(nullptr),
+    m_bOnce(false)
 {
     ObjectHandle handle1(ResourceFactory<Texture2D>::getInstance()->create());
     ObjectHandle handle2(ResourceFactory<Texture2D>::getInstance()->create());

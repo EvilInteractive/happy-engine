@@ -27,6 +27,7 @@
 namespace he {
 namespace gfx {
     class ShaderLayout;
+    class Shader;
 }
 
 namespace ct {
@@ -37,7 +38,7 @@ public:
     ShaderLoader();
     ~ShaderLoader();
     
-    ObjectHandle load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
+    gfx::Shader* load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
     
 private:
     AssetContainer<ObjectHandle> m_AssetContainer;

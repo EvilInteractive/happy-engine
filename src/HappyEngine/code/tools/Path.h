@@ -57,6 +57,10 @@ public:
     static const Path& getWorkingDir() { return s_WorkingDirectory; }
 
     static void init(const Path& dataPath);
+    
+    bool operator==(const Path& other) const;
+    bool operator!=(const Path& other) const;
+    int operator<(const Path& other) const;
 
 private:
     void convertBackslashesToForward();

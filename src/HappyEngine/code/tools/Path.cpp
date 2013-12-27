@@ -179,5 +179,20 @@ bool Path::exists() const
     boost::system::error_code error;
     return boost::filesystem::exists(boostPath, error);
 }
-
+    
+bool Path::operator==(const Path& other) const
+{
+    return m_Path == other.m_Path;
+}
+    
+bool Path::operator!=(const Path& other) const
+{
+    return m_Path != other.m_Path;
+}
+    
+int Path::operator<(const Path& other) const
+{
+    return m_Path < other.m_Path;
+}
+    
 } //end namespace
