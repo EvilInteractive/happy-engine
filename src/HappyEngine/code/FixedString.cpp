@@ -50,5 +50,11 @@ he::FixedString FixedString::fromString( const char* const str, const int len /*
 {
     return GlobalStringTable::getInstance()->add(str, len);
 }
-
+    
+he::FixedString FixedString::fromHandle(const char* const handle)
+{
+    HE_ASSERT(GlobalStringTable::getInstance()->contains(handle), "Constructing fixedstring from handle but it is not in the fixedstring table! (%s)", handle);
+    return FixedString(handle);
+}
+    
 } //end namespace

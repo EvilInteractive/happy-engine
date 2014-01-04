@@ -223,17 +223,22 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
             {
                 gfx::Shader* const shader(CONTENT->asyncLoadShader(desc.m_Shader));
                 material->setNormalShader(shader);
-                shader->callbackOnceIfLoaded([material](Resource<gfx::Shader>* const /*shader*/){ material->setLoaded(); });
+                shader->callbackOnceIfLoaded([material](Resource<gfx::Shader>* const shaderResource)
+                {
+                    gfx::Shader* const shader(checked_cast<gfx::Shader*>(shaderResource));
+                    const he::PrimitiveList<IShaderUniform*>& shader->getUniforms()
+                    material->setLoaded();
+                });
             }
             else
             {
                 HE_ERROR("Material %s has no shader!", path.str().c_str());
             }
             material->setIsBlended(desc.m_IsBlended, desc.m_BlendEquation, desc.m_SourceBlend, desc.m_DestBlend);
-            material->setNoPost(desc.m_IsBlended);
-            material->setCullFrontFace(desc.m_IsBlended);
-            material->setDepthReadEnabled(desc.m_IsBlended);
-            material->setDepthWriteEnabled(desc.m_IsBlended);
+            material->setNoPost(desc.m_NoPost);
+            material->setCullFrontFace(desc.m_CullFrontFace);
+            material->setDepthReadEnabled(desc.m_DepthRead);
+            material->setDepthWriteEnabled(desc.m_DepthWrite);
         }
         return material;
     }

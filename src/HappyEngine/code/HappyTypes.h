@@ -104,7 +104,9 @@ struct ObjectHandle
     // 16 bit : objects
 
     ObjectHandle()
-        : m_Handle(0) {}
+    : m_Handle(0) {}
+    explicit ObjectHandle(const uint32 handle)
+    : m_Handle(handle) {}
     ObjectHandle(const ObjectType type, const SaltType salt, const IndexType index)
         : m_Handle(type + (salt << s_TypeBits) + (index << (s_TypeBits + s_SaltBits)) ) {}
     ~ObjectHandle() {}

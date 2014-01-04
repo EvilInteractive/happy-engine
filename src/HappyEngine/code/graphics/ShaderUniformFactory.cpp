@@ -29,6 +29,11 @@
 namespace he {
 namespace gfx {
 
+void ShaderUniformFactory::destroy(IShaderUniform* const uniform)
+{
+    delete uniform;
+}
+    
 he::gfx::IShaderUniform* ShaderUniformFactory::create( const EShaderUniformType type, const he::FixedString& name, const uint32 id )
 {
     IShaderUniform* uniform(nullptr);

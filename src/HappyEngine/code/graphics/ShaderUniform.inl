@@ -24,48 +24,66 @@
 namespace he {
 namespace gfx {
 namespace details {
+    
+template<typename T, EShaderUniformType TType>
+ShaderUniform<T, TType>::ShaderUniform(const he::FixedString& name, const uint32 id, const T& defaultValue)
+: m_Value(id)
+, m_ID(id)
+, m_Name(name)
+{
+}
 
+template<typename T, EShaderUniformType TType>
+void ShaderUniform<T, TType>::init(Shader* const shader)
+{
+    shader->setShaderVar(m_ID, m_Value);
+}
+    
+template<typename T, EShaderUniformType TType>
+void ShaderUniform<T, TType>::set(Shader* const shader, const T& value)
+{
+    if (m_Value != value)
+    {
+        m_Value = value;
+        shader->setShaderVar(m_ID, value);
+    }
+}
+    
 template<>
 class ShaderUniform<he::PrimitiveList<mat44>, eShaderUniformType_Mat44Array> : public IShaderUniform
 {
 public:
     ShaderUniform(const he::FixedString& name, const uint32 id)
-        : m_Dirty(true)
+        : m_ID(id)
         , m_Name(name)
-        , m_ID(id)
     {
-
     }
-
-    void push(Shader* const shader)
+    
+    void init(Shader* const shader)
     {
-        if (m_Dirty)
-        {
-            shader->setShaderVar(m_ID, m_Value);
-            m_Dirty = false;
-        }
+        shader->setShaderVar(m_ID, m_Value);
     }
-    void set(const he::PrimitiveList<mat44>& value)
+    
+    void set(Shader* const shader, const he::PrimitiveList<mat44>& value)
     {
         const size_t size(value.size());
-        if (m_Dirty == false)
+        bool dirty(false);
+        if (m_Value.size() == size)
         {
-            if (m_Value.size() == size)
+            for (size_t i(0); i < size; ++i)
             {
-                for (size_t i(0); i < size; ++i)
+                if (m_Value[i] != value[i])
                 {
-                    if (m_Value[i] != value[i])
-                    {
-                        m_Dirty = true;
-                        break;
-                    }
+                    dirty = true;
+                    break;
                 }
             }
         }
-        if (m_Dirty == true)
+        if (dirty == true)
         {
             m_Value.clear();
             m_Value.append(value);
+            shader->setShaderVar(m_ID, m_Value);
         }
     }
 
@@ -78,52 +96,59 @@ public:
 
 private:
     he::PrimitiveList<mat44> m_Value;
-    bool m_Dirty;
     uint32 m_ID;
     he::FixedString m_Name;
 };
 
 template<>
-class ShaderUniform<const he::gfx::Texture2D*, eShaderUniformType_Texture2D> : public IShaderUniform
+class ShaderUniform<uint32, eShaderUniformType_Texture2D> : public IShaderUniform
 {
 public:
     ShaderUniform(const he::FixedString& name, const uint32 id, const he::gfx::Texture2D* defaultValue)
-        : m_Dirty(true)
-        , m_Value(defaultValue)
-        , m_Name(name)
+        : m_Value(0)
         , m_ID(id)
+        , m_Name(name)
     {
-        if (nullptr != m_Value)
+        if (defaultValue != nullptr)
         {
-            defaultValue->instantiate();
+            m_Value = defaultValue->getID();
         }
     }
+    
     ~ShaderUniform()
     {
-        if (nullptr != m_Value)
+    }
+    
+    void init(Shader* const shader)
+    {
+        shader->setSampler2D(m_ID, m_Value);
+    }
+    
+    void set(Shader* const shader, const he::ObjectHandle handle)
+    {
+        if (handle != ObjectHandle::unassigned)
         {
-            m_Value->release();
+            set(shader, TextureFactory::getInstance()->get(handle));
+        }
+        else
+        {
+            set(shader, nullptr);
         }
     }
-
-    void push(Shader* const shader)
+    void set(Shader* const shader, const he::gfx::Texture2D* const value)
     {
-        if (m_Dirty)
+        if (value != nullptr)
         {
-            shader->setShaderVar(m_ID, m_Value);
-            m_Dirty = false;
-        }
-    }
-    void set(const he::gfx::Texture2D* const value)
-    {
-        if (m_Value != value)
-        {
-            if (nullptr != m_Value)
+            if (m_Value != value->getID())
             {
-                m_Value->release();
+                m_Value = value->getID();
+                shader->setSampler2D(m_ID, m_Value);
             }
-            m_Value = value;
-            m_Value->instantiate();
+        }
+        else
+        {
+            m_Value = 0; // Fallback needed?
+            shader->setSampler2D(m_ID, m_Value);
         }
     }
 
@@ -135,53 +160,59 @@ public:
     EShaderUniformType getType() const { return eShaderUniformType_Texture2D; }
 
 private:
-    const he::gfx::Texture2D* m_Value;
-    bool m_Dirty;
+    uint32 m_Value;
     uint32 m_ID;
     he::FixedString m_Name;
 };
 
 template<>
-class ShaderUniform<const he::gfx::TextureCube*, eShaderUniformType_TextureCube> : public IShaderUniform
+class ShaderUniform<uint32, eShaderUniformType_TextureCube> : public IShaderUniform
 {
 public:
     ShaderUniform(const he::FixedString& name, const uint32 id, const he::gfx::TextureCube* defaultValue)
-        : m_Dirty(true)
-        , m_Value(defaultValue)
-        , m_Name(name)
+        : m_Value(0)
         , m_ID(id)
+        , m_Name(name)
     {
-        if (nullptr != m_Value)
+        if (defaultValue != nullptr)
         {
-            defaultValue->instantiate();
+            m_Value = defaultValue->getID();
         }
     }
     ~ShaderUniform()
     {
-        if (nullptr != m_Value)
+    }
+    
+    void init(Shader* const shader)
+    {
+        shader->setSamplerCube(m_ID, m_Value);
+    }
+    
+    void set(Shader* const shader, const he::ObjectHandle handle)
+    {
+        if (handle != ObjectHandle::unassigned)
         {
-            m_Value->release();
+            set(shader, TextureCubeFactory::getInstance()->get(handle));
+        }
+        else
+        {
+            set(shader, nullptr);
         }
     }
-
-    void push(Shader* const shader)
+    void set(Shader* const shader, const he::gfx::TextureCube* const value)
     {
-        if (m_Dirty)
+        if (value != nullptr)
         {
-            shader->setShaderVar(m_ID, m_Value);
-            m_Dirty = false;
-        }
-    }
-    void set(const he::gfx::TextureCube* const value)
-    {
-        if (m_Value != value)
-        {
-            if (nullptr != m_Value)
+            if (m_Value != value->getID())
             {
-                m_Value->release();
+                m_Value = value->getID();
+                shader->setSamplerCube(m_ID, m_Value);
             }
-            m_Value = value;
-            m_Value->instantiate();
+        }
+        else
+        {
+            m_Value = 0; // Fallback needed?
+            shader->setSamplerCube(m_ID, m_Value);
         }
     }
 
@@ -193,8 +224,7 @@ public:
     EShaderUniformType getType() const { return eShaderUniformType_TextureCube; }
 
 private:
-    const he::gfx::TextureCube* m_Value;
-    bool m_Dirty;
+    uint32 m_Value;
     uint32 m_ID;
     he::FixedString m_Name;
 };

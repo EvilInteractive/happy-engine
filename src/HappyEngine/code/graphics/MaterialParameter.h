@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -22,25 +22,15 @@
 #define _HE_MaterialParameter_H_
 #pragma once
 
+#include "ShaderEnums.h"
+
 namespace he {
 namespace gfx {
-
+class Texture2D;
+class TextureCube;
 class MaterialParameter
 {
 public:
-    MaterialParameter();
-    ~MaterialParameter();
-
-    float getFloat() const;
-    const vec2& getFloat2() const;
-    const vec3& getFloat3() const;
-    const vec4& getFloat4() const;
-    int32 getInt() const;
-    const FixedString& getFixedString() const;
-    ObjectHandle getObjectHandle() const;
-
-private:
-    ShaderUniformID m_ID;
     enum EType
     {
         eType_Invalid,
@@ -49,25 +39,55 @@ private:
         eType_Float3,
         eType_Float4,
         eType_Int,
-        eType_FixedString,
-        eType_ObjectHandle,
-    } m_Type;
+        eType_Texture2D,
+        eType_TextureCube,
+    };
+    const char* typeToString(const EType type) const;
+    
+    MaterialParameter();
+    ~MaterialParameter();
+    MaterialParameter& operator=(const MaterialParameter&);
+    
+    void init(const ShaderUniformID id, const EType type);
+    
+    ShaderUniformID getID() const { return m_ID; }
+    EType getType() const { return m_Type; }
+
+    float getFloat() const;
+    const vec2& getFloat2() const;
+    const vec3& getFloat3() const;
+    const vec4& getFloat4() const;
+    int32 getInt() const;
+    ObjectHandle getTexture2D() const;
+    ObjectHandle getTextureCube() const;
+    
+    void setFloat(const float data);
+    void setFloat2(const vec2& data);
+    void setFloat3(const vec3& data);
+    void setFloat4(const vec4& data);
+    void setInt32(const int32 data);
+    void setTexture2D(const Texture2D* const data);
+    void setTextureCube(const TextureCube* const data);
+
+private:
+    ShaderUniformID m_ID;
+    EType m_Type;
     union Data
     {
         float m_Float[4];
         int32 m_Int;
-        char* m_FixedString;
         uint32 m_Handle;
     } m_Data;
-
-    HE_COMPILE_ASSERT(sizeof(uint32) == sizeof(ObjectHandle), "ObjectHandle does not have the same size as a uint32!");
-    HE_COMPILE_ASSERT(sizeof(char*) == sizeof(FixedString), "FixedString does not have the same size as a char*!");
-
-    const char* typeToString(const EType type) const;
-
-    //Disable default copy constructor and default assignment operator
+    
+    void instantiate();
+    void release();
+    
+    HE_COMPILE_ASSERT(sizeof(vec2) == sizeof(float) * 2, "Vec2 does not have the same size as a float*2!");
+    HE_COMPILE_ASSERT(sizeof(vec3) == sizeof(float) * 3, "Vec3 does not have the same size as a float*3!");
+    HE_COMPILE_ASSERT(sizeof(vec4) == sizeof(float) * 4, "Vec4 does not have the same size as a float*4!");
+    
+    // disabled
     MaterialParameter(const MaterialParameter&);
-    MaterialParameter& operator=(const MaterialParameter&);
 };
 
 } } //end namespace

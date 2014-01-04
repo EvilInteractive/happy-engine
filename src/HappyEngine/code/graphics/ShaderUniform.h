@@ -35,7 +35,7 @@ class IShaderUniform
 {
 public:
     virtual ~IShaderUniform() {}
-    virtual void push(Shader* const shader) = 0;
+    virtual void init(Shader* const shader) = 0;
     virtual const he::FixedString& getName() const = 0;
     virtual EShaderUniformType getType() const = 0;
 };
@@ -53,8 +53,8 @@ typedef details::ShaderUniform<vec3, eShaderUniformType_Float3> ShaderUniformVec
 typedef details::ShaderUniform<vec4, eShaderUniformType_Float4> ShaderUniformVec4;
 typedef details::ShaderUniform<mat44, eShaderUniformType_Mat44> ShaderUniformMat44;
 typedef details::ShaderUniform<he::PrimitiveList<mat44>, eShaderUniformType_Mat44Array> ShaderUniformMat44Array;
-typedef details::ShaderUniform<const Texture2D*, eShaderUniformType_Texture2D> ShaderUniformTexture2D;
-typedef details::ShaderUniform<const TextureCube*, eShaderUniformType_TextureCube> ShaderUniformTextureCube;
+typedef details::ShaderUniform<uint32, eShaderUniformType_Texture2D> ShaderUniformTexture2D;
+typedef details::ShaderUniform<uint32, eShaderUniformType_TextureCube> ShaderUniformTextureCube;
 
 namespace details {
 
@@ -64,16 +64,15 @@ class ShaderUniform : public IShaderUniform
 public:
     ShaderUniform(const he::FixedString& name, const uint32 id, const T& defaultValue);
 
-    void push(Shader* const shader);
-    void set(const T& value);
+    void init(Shader* const shader);
+    void set(Shader* const shader, const T& value);
 
-    const he::FixedString& getName() const;
+    const he::FixedString& getName() const { return m_Name; }
 
     EShaderUniformType getType() const { return TType; }
     
 private:
     T m_Value;
-    bool m_Dirty;
     uint32 m_ID;
     he::FixedString m_Name;
 };

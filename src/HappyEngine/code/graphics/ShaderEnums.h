@@ -22,9 +22,19 @@
 #define _HE_ShaderEnums_H_
 #pragma once
 
+#include "BufferLayout.h"
+
 namespace he {
 namespace gfx {
-
+    
+struct ShaderUniformID
+{
+    const static size_t Unassigned;
+    size_t m_ID;
+    
+    ShaderUniformID(): m_ID(Unassigned) {}
+};
+    
 enum EShaderUniformUsage
 {   // Only add to the back, or you will corrupt save files!
     eShaderUniformUsage_Invalid,
@@ -45,6 +55,7 @@ enum EShaderAttributePropertyUsage
     eShaderAttributePropertyUsage_BoneIndices,
     eShaderAttributePropertyUsage_BoneWeights
 };
+EShaderAttributePropertyUsage bufferElementUsageToShaderAttribUsage(const BufferElement::Usage usage);
 
 enum EShaderObjectPropertyUsage
 {   // Only add to the back, or you will corrupt save files!

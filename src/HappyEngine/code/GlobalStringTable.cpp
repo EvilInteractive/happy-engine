@@ -49,5 +49,10 @@ he::FixedString GlobalStringTable::add( const char* const str, const int length 
     m_HashMap.insert(myStr);
     return FixedString(myStr);
 }
-
+    
+bool GlobalStringTable::contains( const char* const handle )
+{
+    return m_HashMap.find(handle) != m_HashMap.cend();
+}
+    
 } //end namespace

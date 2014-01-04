@@ -23,24 +23,15 @@
 
 #include "ShaderLayout.h"
 #include "Resource.h"
+#include "ShaderEnums.h"
 
 namespace he {
 namespace gfx {
 
 class Shader;
-class Texture2D;
-class TextureCube;
 typedef ResourceFactory<Shader> ShaderFactory;
 
 class IShaderUniform;
-
-struct ShaderUniformID
-{
-    const static size_t Unassigned;
-    size_t m_ID;
-
-    ShaderUniformID(): m_ID(Unassigned) {}
-};
 
 class Shader : public Resource<Shader>
 {
@@ -63,6 +54,7 @@ public:
     // Getters
     ShaderUniformID getUniformID(const he::FixedString& name) const;
     IShaderUniform* getUniform(const ShaderUniformID id) const;
+    const he::PrimitiveList<IShaderUniform*>& getUniforms() const { return m_Uniforms; }
     const ShaderLayout& getShaderLayout() const { return m_Layout; }
     
     // Setters
@@ -74,8 +66,8 @@ public:
     void setShaderVar(uint32 id, const vec4& vec) const;
     void setShaderVar(uint32 id, const mat44& matrix) const;
     void setShaderVar(uint32 id, const he::PrimitiveList<mat44>& matrixArray) const;
-    void setShaderVar(uint32 id, const gfx::Texture2D* tex2D) const;
-    void setShaderVar(uint32 id, const gfx::TextureCube* texCube) const;
+    void setSampler2D(uint32 id, const uint32 samplerID) const;
+    void setSamplerCube(uint32 id, const uint32 samplerID) const;
     
 private:
     uint32 m_Id;

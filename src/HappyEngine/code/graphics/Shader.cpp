@@ -23,8 +23,6 @@
 #include "ShaderUniform.h"
 #include "ShaderUniformFactory.h"
 
-#include "Texture2D.h"
-#include "TextureCube.h"
 #include "ExternalError.h"
 
 #include "GlobalStringTable.h"
@@ -75,7 +73,7 @@ namespace
         glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
         if (validateStatus == GL_FALSE)
         {
-            const uint32 BUFFER_SIZE(512);
+            const he::uint32 BUFFER_SIZE(512);
             char buffer[BUFFER_SIZE];
             he_memset(buffer, 0, BUFFER_SIZE);
             GLsizei length(0);
@@ -103,6 +101,12 @@ Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 
 Shader::~Shader()
 {
+    size_t unitformCount(m_Uniforms.size());
+    for (size_t i(0); i < unitformCount; ++i)
+    {
+        ShaderUniformFactory::destroy(m_Uniforms[i]);
+    }
+    
     glDetachShader(m_Id, m_VsId);
     glDetachShader(m_Id, m_FsId);
 
@@ -269,6 +273,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
             }
             if (nullptr != uniform)
             {
+                uniform->init(this);
                 m_Uniforms.add(uniform);
             }
         }
@@ -331,15 +336,15 @@ void Shader::setShaderVar(uint32 id, const he::PrimitiveList<mat44>& matrixArray
     HE_ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");
     glUniformMatrix4fv(id, static_cast<uint32>(matrixArray.size()), GL_FALSE, matrixArray[0].toFloatArray());
 }
-void Shader::setShaderVar(uint32 id, const gfx::Texture2D* tex2D) const
+void Shader::setSampler2D(uint32 id, const uint32 sampler) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    GL::heBindTexture2D(id, tex2D->getID());
+    GL::heBindTexture2D(id, sampler);
 }
-void Shader::setShaderVar( uint32 id, const gfx::TextureCube* texCube ) const
+void Shader::setSamplerCube( uint32 id, const uint32 sampler ) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    GL::heBindTextureCube(id, texCube->getID());
+    GL::heBindTextureCube(id, sampler);
 }
 
 ShaderUniformID Shader::getUniformID( const he::FixedString& name ) const

@@ -57,6 +57,7 @@ public:
     virtual ~GlobalStringTable();
 
     FixedString add(const char* const str, const int len = -1);
+    bool contains(const char* const handle);
 
 private:
     Map m_HashMap;

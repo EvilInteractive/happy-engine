@@ -20,108 +20,25 @@
 #include "HappyPCH.h" 
 #include "Material.h"
 
-#include "Drawable.h"
-#include "LightManager.h"
-#include "AmbientLight.h"
-#include "DirectionalLight.h"
 #include "Shader.h"
-#include "StructuredVisitor.h"
-#include "ICamera.h"
-#include "Scene.h"
-#include "ModelMesh.h"
-#include "DrawContext.h"
-
-namespace
-{
-    void applyShaderVar(he::gfx::Shader* const shader, he::gfx::ShaderVar* const var, 
-        const he::gfx::Drawable* const drawable, const he::gfx::ICamera* const camera)
-    {
-        switch (var->getType())
-        {      
-        case he::gfx::ShaderVarType_User:
-            {
-                var->assignData(shader);
-            } break;
-        case he::gfx::ShaderVarType_WorldViewProjection: 
-            {
-                shader->setShaderVar(var->getId(), camera->getViewProjection() * drawable->getWorldMatrix()); 
-            } break;
-        case he::gfx::ShaderVarType_ViewProjection: 
-            {
-                shader->setShaderVar(var->getId(), camera->getViewProjection()); 
-            } break;
-        case he::gfx::ShaderVarType_World: 
-            {
-                shader->setShaderVar(var->getId(), camera->getView() * drawable->getWorldMatrix()); 
-            } break;
-        case he::gfx::ShaderVarType_WorldView: 
-            {
-                shader->setShaderVar(var->getId(), camera->getView() * drawable->getWorldMatrix()); 
-            } break;
-        case he::gfx::ShaderVarType_View: 
-            {
-                shader->setShaderVar(var->getId(), camera->getView()); 
-            } break;
-        case he::gfx::ShaderVarType_BoneTransforms: 
-            {
-                HE_NOT_IMPLEMENTED
-                    //shader->setShaderVar(var->getId(), drawable->getModelMesh()->getBoneTransforms()); 
-            } break;
-        case he::gfx::ShaderVarType_WorldPosition: 
-            {
-                he::vec3 worldPos;
-                drawable->getWorldMatrix().getTranslationComponent(worldPos);
-                shader->setShaderVar(var->getId(), worldPos); 
-            } break;
-
-        case he::gfx::ShaderVarType_AmbientColor: 
-            {
-                shader->setShaderVar(var->getId(), he::vec4(drawable->getScene()->getLightManager()->getAmbientLight()->color, drawable->getScene()->getLightManager()->getAmbientLight()->multiplier)); 
-            } break;
-        case he::gfx::ShaderVarType_DirectionalColor: 
-            {
-                shader->setShaderVar(var->getId(), he::vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
-            } break;
-        case he::gfx::ShaderVarType_DirectionalDirection: 
-            {
-                shader->setShaderVar(var->getId(), (camera->getView() * he::vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
-            } break;
-        case he::gfx::ShaderVarType_NearFar: 
-            {
-                shader->setShaderVar(var->getId(), he::vec2(camera->getNearClip(), camera->getFarClip())); 
-            } break;
-
-        default: 
-            {
-                LOG(he::LogType_ProgrammerAssert, "unknown shaderVartype when preparing for draw");
-            } break;
-        }
-    }
-}
+#include "MaterialInstance.h"
+#include "ShaderUniform.h"
 
 namespace he {
 namespace gfx {
 
 Material::Material()
     : m_Flags(0)
+    , m_BlendEquation(BlendEquation_Add)
     , m_SourceBlend(BlendFunc_One)
     , m_DestBlend(BlendFunc_Zero)
-    , m_BlendEquation(BlendEquation_Add)
 {
 }
 
 Material::~Material()
 {
-    m_ShaderCommonVars.forEach([](ShaderVar* const var)
-    {
-        delete var;
-    });
     for (size_t i(0); i < eShaderType_MAX; ++i)
     {
-        m_ShaderSpecificVars[i].forEach([](ShaderVar* const var)
-        {
-            delete var;
-        });
         if (m_Shader[i] != nullptr)
         {
             m_Shader[i]->release();
@@ -129,29 +46,41 @@ Material::~Material()
         }
     }
 }
-
-void Material::registerCommonVar( ShaderVar* const var )
+    
+MaterialInstance* Material::createMaterialInstance() const
 {
-    m_ShaderCommonVars.add(var);
+    MaterialInstance* instance(NEW MaterialInstance(this));
+    return instance;
+}
+    
+void Material::registerCommonVar( const ShaderUniformID id, const IShaderUniform* const var )
+{
+    MaterialParameter param;
+    
+    switch (var->getType())
+    {
+        case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", var->getName().c_str()); break;
+        case eShaderUniformType_Int:
+            param.init(id, MaterialParameter::eType_Int);
+            param.setInt32(checked_cast<ShaderUniformInt*>(var)->getValue());
+            break;
+        case eShaderUniformType_UInt,
+        case eShaderUniformType_Float,
+        case eShaderUniformType_Float2,
+        case eShaderUniformType_Float3,
+        case eShaderUniformType_Float4,
+        case eShaderUniformType_Mat44,
+        case eShaderUniformType_Mat44Array,
+        case eShaderUniformType_Texture1D,
+        case eShaderUniformType_Texture2D,
+        case eShaderUniformType_TextureCube,
+    }
+    m_ShaderCommonVars.add(param);
 }
 
-void Material::registerSpecificVar( const EShaderType type, ShaderVar* const var )
+void Material::registerSpecificVar( const EShaderType type, const ShaderUniformID id, const IShaderUniform* const var )
 {
     m_ShaderSpecificVars[type].add(var);
-}
-
-ShaderVar* Material::getVar( const he::FixedString& var )
-{
-    he::PrimitiveList<ShaderVar*>::const_iterator it(m_ShaderCommonVars.cbegin());
-    for (; it != m_ShaderCommonVars.cend(); ++it)
-    {
-        if ((*it)->getName() == var)
-        {          
-            return *it;
-        }
-    }
-    HE_ERROR("Unable to find var: %s", var.c_str());
-    return nullptr;
 }
 
 void Material::setNormalShader( Shader* const shader )
@@ -175,61 +104,13 @@ void Material::setInstancedShader( Shader* const shader, const BufferLayout& /*i
     m_Shader[eShaderType_Instanced] = shader;
     //m_InstanceLayout = instancingLayout;
 }
-
-void Material::applyNormal( const DrawContext& context ) const
+ 
+Shader* Material::bindShader(const EShaderType type) const
 {
-    HE_ASSERT(m_Shader[eShaderType_Normal] != nullptr, "Trying to apply material %s as a normal shader, but it is not!");
-    applyShader(eShaderType_Normal, context);
-    applyMesh(eShaderType_Normal, context);
-}
-
-void Material::applySkinned( const DrawContext& context ) const
-{
-    HE_ASSERT(m_Shader[eShaderType_Skinned] != nullptr, "Trying to apply material %s as a skinned shader, but it is not!");
-    applyShader(eShaderType_Skinned, context);
-    applyMesh(eShaderType_Skinned, context);
-}
-
-void Material::applyInstanced( const DrawContext& context ) const
-{
-    HE_ASSERT(m_Shader[eShaderType_Instanced] != nullptr, "Trying to apply material %s as a instanced shader, but it is not!");
-    applyShader(eShaderType_Instanced, context);
-    applyMesh(eShaderType_Instanced, context);
-}
-
-void Material::applyShader( const EShaderType type, const DrawContext& context ) const
-{
-    if (checkFlag(eMaterialFlags_Blended))
-    {
-        GL::heBlendEquation(m_BlendEquation);
-        GL::heBlendFunc(m_SourceBlend, m_DestBlend);
-    }
-    GL::heSetDepthRead(checkFlag(eMaterialFlags_DepthRead));
-    GL::heSetDepthWrite(checkFlag(eMaterialFlags_DepthWrite));
-
-    GL::heSetCullFace(checkFlag(eMaterialFlags_CullFrontFace));
-
     Shader* const shader(m_Shader[type]);
+    HE_ASSERT(m_Shader[type] != nullptr, "Trying to apply material %s with type %d but I do not have this type!", getName().c_str(), type);
     shader->bind();
-    m_ShaderCommonVars.forEach(std::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
-    m_ShaderSpecificVars[type].forEach(std::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
-}
-
-void Material::applyMesh( const EShaderType type, const DrawContext& context ) const
-{
-    const ModelMesh* const mesh(context.m_CurrentDrawable->getModelMesh());
-    const MaterialLayout& materialLayout(*context.m_CurrentDrawable->getMaterialLayout());
-    const MaterialLayout::layout& elements(materialLayout.m_Layout[type]);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBOID());
-    std::for_each(elements.cbegin(), elements.cend(), [&](const details::MaterialLayoutElement& e)
-    {
-        glVertexAttribPointer(e.m_ElementIndex, e.m_Components, type, GL_FALSE, 
-            e.m_Stride, BUFFER_OFFSET(e.m_ByteOffset)); 
-        glEnableVertexAttribArray(e.m_ElementIndex);
-    });
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getVBOIndexID());
+    return shader;
 }
 
 void Material::setIsBlended( bool isBlended, BlendEquation equation/* = BlendEquation_Add*/, 
@@ -249,7 +130,7 @@ void Material::setIsBlended( bool isBlended, BlendEquation equation/* = BlendEqu
     }
 }
 
-void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout )
+void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout ) const
 {
     const BufferLayout::layout& meshElements(bufferLayout.getElements());
     const size_t meshElementCount(meshElements.size());
@@ -267,7 +148,7 @@ void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, Materi
             for (size_t i(0); i < meshElementCount; ++i)
             {
                 const BufferElement& meshElement(meshElements[i]);
-                if (meshElement.getUsage() == e.getUsage())
+                if (bufferElementUsageToShaderAttribUsage(meshElement.getUsage()) == e.getUsage())
                 {
                     details::MaterialLayoutElement matEl;
                     GLint components(1);

@@ -43,6 +43,7 @@ public:
 
     // Static
     static FixedString fromString(const char* const str, const int len = -1);
+    static FixedString fromHandle(const char* const handle);
 
 private:
     const char* m_Handle;

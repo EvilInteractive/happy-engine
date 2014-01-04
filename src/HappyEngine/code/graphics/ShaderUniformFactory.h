@@ -32,6 +32,7 @@ class ShaderUniformFactory
 {
 public:
     static IShaderUniform* create(const EShaderUniformType type, const he::FixedString& name, const uint32 id);
+    static void destroy(IShaderUniform* const uniform);
 };
 
 } } //end namespace

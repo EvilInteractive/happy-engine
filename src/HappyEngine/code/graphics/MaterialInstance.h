@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,60 +16,61 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2011/09/30
-//Major change: 2013/04/28
+//Created: 2013/12/27
 
-#ifndef _HE_MATERIAL_H_
-#define _HE_MATERIAL_H_
+#ifndef _HE_MaterialInstance_H_
+#define _HE_MaterialInstance_H_
 #pragma once
 
-#include "Resource.h"
 #include "MaterialEnums.h"
 #include "MaterialParameter.h"
 
 namespace he {
 namespace gfx {
-
-class IShaderUniform;
-class Shader;
-class MaterialInstance;
+struct DrawContext;
+class Material;
 class BufferLayout;
-
-class Material : public Resource<Material>
+class MaterialInstance
 {
-    friend class MaterialInstance;
 public:
-    Material();
-    ~Material();
+    explicit MaterialInstance(const Material* const parent);
+    ~MaterialInstance();
     
-    void registerCommonVar(const ShaderUniformID id, const IShaderUniform* const var);
-    void registerSpecificVar(const EShaderType type, const ShaderUniformID id, const IShaderUniform* const var);
-
-    void setNormalShader(Shader* const shader);
-    void setSkinnedShader(Shader* const shader);
-    void setInstancedShader(Shader* const shader, const BufferLayout& instancingLayout);
+    void applyNormal(const DrawContext& context) const;
+    void applySkinned(const DrawContext& context) const;
+    void applyInstanced(const DrawContext& context) const;
     
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
                       BlendFunc sourceBlend  = BlendFunc_One,
                       BlendFunc destBlend    = BlendFunc_Zero);
     void setNoPost(const bool noPost) { noPost? raiseFlag(eMaterialFlags_NoPost) : clearFlag(eMaterialFlags_NoPost); }
     
-    void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
+    bool isBlended() const { return checkFlag(eMaterialFlags_Blended); }
+    BlendEquation getBlendEquation() const { return m_BlendEquation; }
+    BlendFunc getSourceBlend() const { return m_SourceBlend; }
+    BlendFunc getDestBlend() const { return m_DestBlend; }
+    bool noPost() const { return checkFlag(eMaterialFlags_NoPost); }
     
     void setDepthWriteEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthWrite) : clearFlag(eMaterialFlags_DepthWrite); }
     void setDepthReadEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthRead) : clearFlag(eMaterialFlags_DepthRead); }
     
-    MaterialInstance* createMaterialInstance() const;
+    void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
     
-private:
-    Shader* bindShader(const EShaderType type) const;
     void calculateMaterialLayout(const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout) const;
-    
+
+private:
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }
     HE_FORCEINLINE void raiseFlag(const EMaterialFlags flag) { m_Flags |= flag; }
     HE_FORCEINLINE void clearFlag(const EMaterialFlags flag) { m_Flags &= ~flag; }
     
-    Shader* m_Shader[eShaderType_MAX];
+    void init();
+    
+    void applyShader(const EShaderType type, const DrawContext& context) const;
+    void applyMesh(const EShaderType type, const DrawContext& context) const;
+    
+    void setLoaded(ELoadResult result);
+    
+    const Material* m_Material;
     
     uint8 m_Flags;
     
@@ -79,9 +80,9 @@ private:
     he::ObjectList<MaterialParameter> m_ShaderCommonVars;
     he::ObjectList<MaterialParameter> m_ShaderSpecificVars[eShaderType_MAX];
 
-    // Disabled
-    Material(const Material* other);
-    Material* operator=(const Material* other);
+    //Disable default copy constructor and default assignment operator
+    MaterialInstance(const MaterialInstance&);
+    MaterialInstance& operator=(const MaterialInstance&);
 };
 
 } } //end namespace

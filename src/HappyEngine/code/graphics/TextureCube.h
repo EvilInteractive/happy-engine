@@ -28,6 +28,9 @@
 namespace he {
 namespace gfx {
     
+class TextureCube;
+    
+typedef ResourceFactory<TextureCube> TextureCubeFactory;
 
 class TextureCube : public Resource<TextureCube>
 {
