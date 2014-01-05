@@ -75,21 +75,30 @@ ContentManager::ContentManager():
 
 ContentManager::~ContentManager()
 {
+}
+
+void ContentManager::destroy()
+{
     if (m_ParticleQuad != nullptr)
         m_ParticleQuad->release();
     if (m_FullscreenQuad != nullptr)
         m_FullscreenQuad->release();
-    
+
     // All content should be gone when getting here
     // loaders perform last garbage collect
     delete m_MaterialLoader;
+    m_MaterialLoader = nullptr;
     delete m_ShaderLoader;
+    m_ShaderLoader = nullptr;
     delete m_PhysicsShapeLoader;
+    m_PhysicsShapeLoader = nullptr;
     delete m_FontLoader;
+    m_FontLoader = nullptr;
     delete m_ModelLoader;
+    m_ModelLoader = nullptr;
     delete m_TextureLoader;
+    m_TextureLoader = nullptr;
 }
-
 
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {

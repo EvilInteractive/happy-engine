@@ -33,7 +33,6 @@ TextureCube::TextureCube()
 , m_FilterType(TextureFilterType_None)
 , m_WrapType(TextureWrapType_Repeat)
 , m_TextureFormat(TextureFormat_Compressed_RGBA8_DXT5)
-, m_IsLoadDone(false)
 {
 
 }
@@ -109,32 +108,6 @@ void TextureCube::setCompressedData( uint32 width, uint32 height, const Face& fa
         //Data
         glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mipLevel, details::getInternalTextureFormat(m_TextureFormat), 
             width, height, 0, imageSizeInBytes, data);
-    }
-}
-
-void TextureCube::setLoadFinished()
-{
-    m_CallbackMutex.lock(FILE_AND_LINE);
-    m_IsLoadDone = true;
-    Loaded();
-    Loaded.clear();
-    m_CallbackMutex.unlock();
-}
-
-void TextureCube::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
-{
-    TextureCube* _this(const_cast<TextureCube*>(this));
-    _this->m_CallbackMutex.lock(FILE_AND_LINE);
-    if (m_IsLoadDone)
-    {
-        _this->m_CallbackMutex.unlock();
-        callback();
-    }
-    else
-    {
-        eventCallback0<void> handler(callback);
-        _this->Loaded += handler;
-        _this->m_CallbackMutex.unlock();
     }
 }
 

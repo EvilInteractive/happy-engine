@@ -36,8 +36,8 @@ public:
     InstancingManager();
     virtual ~InstancingManager();
 
-    void createController(const he::String& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
-    void createController(const he::String& id, bool dynamic, const he::String& materialAsset, const he::String& modelAsset);
+    void createController(const he::String& id, bool dynamic, const ObjectHandle& meshHandle, const ObjectHandle& material);
+    void createController(const he::String& id, bool dynamic, const he::String& materialAsset, const he::String& modelAsset, const he::String& mesh);
     InstancingController* getController(const he::String& id);
 
 private:

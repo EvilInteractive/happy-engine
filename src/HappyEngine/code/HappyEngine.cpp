@@ -85,6 +85,7 @@ void HappyEngine::cleanup()
     m_Gui = nullptr;
     delete m_PluginLoader;
     m_PluginLoader = nullptr;
+    m_ContentManager->destroy();
     delete m_ContentManager;
     m_ContentManager = nullptr;
     delete m_SoundEngine;

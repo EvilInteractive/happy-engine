@@ -46,23 +46,14 @@ public:
     ModelMesh* getMesh(const uint32 index) const;
     ModelMesh* instantiateMesh(uint32 index) const;
     ModelMesh* instantiateMesh(const he::String& name) const;
+    ModelMesh* tryInstantiateMesh(const he::String& name) const;
     Model* instantiateMeshesWithPrefix(const he::String& prefix) const;
 
     he::PrimitiveList<ModelMesh*>::const_iterator cbegin() const;
     he::PrimitiveList<ModelMesh*>::const_iterator cend() const;
 
-    void callbackOnceIfLoaded(const boost::function<void()>& callback);
-
-    bool isLoaded() const;
-    void setLoaded();
-
 private:
-
-    event0<void> m_LoadedCallback;
-    he::Mutex m_LoadedMutex;
-
     he::PrimitiveList<ModelMesh*> m_Meshes;
-    bool m_IsLoaded;
 
     //Disable default copy constructor and default assignment operator
     Model(const Model&);

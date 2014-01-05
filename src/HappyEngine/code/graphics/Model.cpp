@@ -26,10 +26,9 @@
 namespace he {
 namespace gfx {
     
-Model::Model(): m_IsLoaded(false)
+Model::Model()
 {
 }
-
 
 Model::~Model()
 {
@@ -81,6 +80,13 @@ ModelMesh* Model::instantiateMesh(uint32 index) const
 
 ModelMesh* Model::instantiateMesh( const he::String& name ) const
 {
+    ModelMesh* const value(tryInstantiateMesh(name));
+    HE_CONDITIONAL_ERROR(value == nullptr, "Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());
+    return value;
+}
+
+ModelMesh* Model::tryInstantiateMesh( const he::String& name ) const
+{
     he::PrimitiveList<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* pMesh)
     {
         return pMesh->getName() == name;
@@ -92,7 +98,6 @@ ModelMesh* Model::instantiateMesh( const he::String& name ) const
         mesh->instantiate();
         return mesh;
     }
-    HE_ERROR("Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());
     return nullptr;
 }
 
@@ -118,35 +123,6 @@ he::PrimitiveList<ModelMesh*>::const_iterator Model::cbegin() const
 he::PrimitiveList<ModelMesh*>::const_iterator Model::cend() const
 {
     return m_Meshes.cend();
-}
-
-bool Model::isLoaded() const
-{
-    return m_IsLoaded;
-}
-void Model::setLoaded()
-{
-    m_IsLoaded = true;
-    m_LoadedMutex.lock(FILE_AND_LINE);
-    m_LoadedCallback();
-    m_LoadedCallback.clear();
-    m_LoadedMutex.unlock();
-}
-
-void Model::callbackOnceIfLoaded( const boost::function<void()>& callback )
-{
-    m_LoadedMutex.lock(FILE_AND_LINE);
-    if (isLoaded())
-    {
-        m_LoadedMutex.unlock();
-        callback();
-    }
-    else
-    {
-        eventCallback0<void> handler(callback);
-        m_LoadedCallback += handler;
-        m_LoadedMutex.unlock();
-    }
 }
 
 } } //end namespace

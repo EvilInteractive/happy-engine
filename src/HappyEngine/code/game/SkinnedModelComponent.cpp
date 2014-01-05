@@ -37,8 +37,7 @@ SkinnedModelComponent::SkinnedModelComponent(): m_ModelMesh(nullptr), m_Parent(n
 
 SkinnedModelComponent::~SkinnedModelComponent()
 {
-    if (m_ModelMesh != nullptr)
-        m_ModelMesh->release();
+    setModelMesh(he::ObjectHandle::unassigned);
     if (m_Material != nullptr)
         m_Material->release();
 }
@@ -62,15 +61,19 @@ void SkinnedModelComponent::setModelMesh( const ObjectHandle& modelHandle )
 {
     if (m_ModelMesh != nullptr)
     {
-        m_ModelMesh->cancelLoadCallback(this);
-        m_ModelMesh->release();
+        gfx::ModelMesh* const oldMesh(ResourceFactory<gfx::ModelMesh>::getInstance()->get(m_ModelMesh->getHandle()));
+        oldMesh->cancelLoadCallback(this);
+        oldMesh->release();
     }
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
-    m_ModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
+    gfx::ModelMesh* const newMesh(ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle));
+    m_ModelMesh = newMesh;
     m_BoneTransform.clear();
     m_Bones.clear();
-
-    ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(this, boost::bind(&SkinnedModelComponent::modelLoadedCallback, this));
+    if (newMesh != nullptr)
+    {
+        newMesh->instantiate();
+        newMesh->callbackOnceIfLoaded(this, boost::bind(&SkinnedModelComponent::modelLoadedCallback, this));
+    }
 }
 void SkinnedModelComponent::modelLoadedCallback()
 {

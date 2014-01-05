@@ -53,7 +53,6 @@ public:
     void setCompressedData(uint32 width, uint32 height, const Face& face, 
         const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
 
-    void setLoadFinished();
     bool isInitialized() const { return m_Id != UINT32_MAX; }
 
     void generateMipMaps() const;
@@ -66,13 +65,7 @@ public:
     TextureFilterType getFilterType() const { return m_FilterType; }
     bool HasMipMaps() const { return m_HasMipMaps; }
 
-    void callbackOnceIfLoaded(const boost::function<void()>& callback) const;
-
 private:
-    he::Mutex m_CallbackMutex;
-    event0<void> Loaded;
-    bool m_IsLoadDone;
-   
     uint32 m_Id;
     uint32 m_Width, m_Height;
     TextureFormat m_TextureFormat;

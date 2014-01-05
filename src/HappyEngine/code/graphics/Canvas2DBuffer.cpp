@@ -68,7 +68,7 @@ void Canvas2DBuffer::init(GLContext* context, const vec2& size)
 
     texture->init(TextureWrapType_Clamp, TextureFilterType_Linear, TextureFormat_RGBA8, false);
     texture->setData(static_cast<uint32>(size.x), static_cast<uint32>(size.y), nullptr, TextureBufferLayout_RGBA, TextureBufferType_Byte, 0);
-    texture->setLoadFinished();
+    texture->setLoaded(eLoadResult_Success);
 
     // FBO & RB
     glGenFramebuffers(1, &m_FrameBufferId);

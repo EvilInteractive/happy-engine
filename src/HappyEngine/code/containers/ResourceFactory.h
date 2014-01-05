@@ -27,8 +27,7 @@
 
 namespace he {
    
-template<typename T>
-class Resource;
+class IResource;
 
 class IResourceFactory
 {
@@ -37,6 +36,7 @@ public:
     virtual bool isAlive(const ObjectHandle& handle) const = 0;
     virtual void instantiate(const ObjectHandle& handle) = 0;
     virtual void release(const ObjectHandle& handle) = 0;
+    virtual IResource* getResource(const ObjectHandle& handle) = 0;
 };
 
 template<typename T>
@@ -59,6 +59,11 @@ public:
     void init(size_t startSize, size_t increaseSize, const he::String& displayName)
     {
         ObjectFactory<T>::init(startSize, increaseSize, displayName);
+    }
+
+    IResource* getResource(const ObjectHandle& handle) 
+    {
+        return get(handle);
     }
 
     //////////////////////////////////////////////////////////////////////////

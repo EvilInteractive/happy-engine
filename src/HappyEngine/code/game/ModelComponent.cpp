@@ -73,11 +73,12 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
     he::ct::ContentManager* contentManager(CONTENT);
 
     ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
-    m_Material = he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle);
-    const gfx::BufferLayout& layout(m_Material->getCompatibleVertexLayout());
-
-    m_ModelMesh = contentManager->asyncLoadModelMesh(modelAsset, meshName, layout);
-    m_ModelMesh->callbackOnceIfLoaded(this, [&](const ELoadResult result)
+    gfx::Material* newMaterial(he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle));
+    const gfx::BufferLayout& layout(newMaterial->getCompatibleVertexLayout());
+    
+#error still not working need to be able to release newMesh from callbacks! -- might need to hold onto the pointer :(
+    gfx::ModelMesh* const newMesh(contentManager->asyncLoadModelMesh(modelAsset, meshName, layout));
+    newMesh->callbackOnceIfLoaded(this, [this, newMesh, materialAsset](const ELoadResult /*result*/)
     {
         bool reactivate(false);
         if (m_IsAttached)
@@ -87,6 +88,13 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
         }
         unloadModelMeshAndMaterial();
 
+        m_ModelMesh = newMesh;
+        m_ModelMesh->instantiate();
+
+        he::ct::ContentManager* contentManager(CONTENT);
+        ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
+        m_Material = he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle);
+
         if (reactivate == true)
         {
             activate();
@@ -94,6 +102,9 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 
         OnModelMeshLoaded();
     });
+
+    newMaterial->release();
+    newMesh->release();
 }
 
 void ModelComponent::unloadModelMeshAndMaterial()

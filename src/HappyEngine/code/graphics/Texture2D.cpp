@@ -29,7 +29,6 @@ Texture2D::Texture2D():
     m_Id(UINT32_MAX), 
     m_Width(0), 
     m_Height(0), 
-    m_IsLoadDone(false),
     m_TextureFormat(TextureFormat_Compressed_RGBA8_DXT5),
     m_WrapType(TextureWrapType_Repeat), 
     m_FilterType(TextureFilterType_None),
@@ -125,15 +124,6 @@ void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data,
     }
 }
 
-void Texture2D::setLoadFinished()
-{
-    m_CallbackMutex.lock(FILE_AND_LINE);
-    m_IsLoadDone = true;
-    Loaded();
-    Loaded.clear();
-    m_CallbackMutex.unlock();
-}
-
 void Texture2D::generateMipMaps() const
 {
     HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
@@ -143,23 +133,5 @@ void Texture2D::generateMipMaps() const
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 }
-
-void Texture2D::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
-{
-    Texture2D* _this(const_cast<Texture2D*>(this));
-    _this->m_CallbackMutex.lock(FILE_AND_LINE);
-    if (m_IsLoadDone)
-    {
-        _this->m_CallbackMutex.unlock();
-        callback();
-    }
-    else
-    {
-        eventCallback0<void> handler(callback);
-        _this->Loaded += handler;
-        _this->m_CallbackMutex.unlock();
-    }
-}
-
 
 } } //end namespace

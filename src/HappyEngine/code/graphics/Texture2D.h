@@ -49,9 +49,6 @@ public:
 
     void setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
     
-    void setLoadFinished();
-    bool isLoaded() const { return m_IsLoadDone; }
-
     void generateMipMaps() const;
 
     uint32 getID() const { return m_Id; }
@@ -62,13 +59,8 @@ public:
     TextureFilterType getFilterType() const { return m_FilterType; }
     bool HasMipMaps() const { return m_HasMipMaps; } 
         
-    void callbackOnceIfLoaded(const boost::function<void()>& callback) const;
-
 private:
-
-
-    he::Mutex m_CallbackMutex;
-    event0<void> Loaded;
+    uint32 m_Id;
 
     uint32 m_Width, m_Height;
 
@@ -76,10 +68,6 @@ private:
     TextureWrapType m_WrapType;
     TextureFilterType m_FilterType;
     bool m_HasMipMaps;
-
-    uint32 m_Id;
-    
-    bool m_IsLoadDone;
 
     //Disable default copy constructor and default assignment operator
     Texture2D(const Texture2D&);

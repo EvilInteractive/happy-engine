@@ -64,9 +64,7 @@ struct PickingData
 
 class ModelMesh : public Resource<ModelMesh>
 {
-public:
-    typedef std::function<void(const ELoadResult result)> LoadCallback;
-    
+public:    
     ModelMesh();
     virtual ~ModelMesh();
 
@@ -74,7 +72,6 @@ public:
     void setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound);
     void setIndices(const void* const indices, const uint32 num, const IndexStride type, const MeshUsage usage);
     void setBones(const he::ObjectList<Bone>& boneList);
-    void setLoaded(const ELoadResult resukt);
 
     // Getters
     inline const he::ObjectList<Bone>& getBones() const { return m_BoneList; }
@@ -96,14 +93,8 @@ public:
     inline uint32 getIndexType() const { return m_IndexType; }
     inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
 
-    inline bool isLoaded() const { return m_IsLoaded; }
-
     inline const Bound& getBound() const { return m_Bound; }
-
-    // Events
-    void callbackOnceIfLoaded(const void* const id, const LoadCallback& callback);
-    void cancelLoadCallback(const void* const id);
-
+    
 private:
     
     void initVAO(GLContext* context);
@@ -115,8 +106,6 @@ private:
         vec4 boneId;
         vec4 boneWeight;
     };
-
-    he::Mutex m_LoadMutex;
 
     VaoID m_VaoID[MAX_VERTEX_ARRAY_OBJECTS];
     VaoID m_VaoShadowID[MAX_VERTEX_ARRAY_OBJECTS];
@@ -130,7 +119,6 @@ private:
     uint32 m_IndexType;
 
     bool m_isVisible;
-    ELoadResult m_IsLoaded;
 
     Bound m_Bound;
     PickingData m_PickingData;
@@ -142,8 +130,6 @@ private:
     eventCallback1<void, GLContext*> m_ContextCreatedHandler;
     eventCallback1<void, GLContext*> m_ContextRemovedHandler;
     
-    he::ObjectList<std::pair<const void*, LoadCallback>> m_LoadCallbacks;
-
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);
     ModelMesh& operator=(const ModelMesh&);

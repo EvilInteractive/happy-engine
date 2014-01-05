@@ -49,7 +49,7 @@ public:
     /* CONSTRUCTOR - DESTRUCTOR */
     ModelLoader();
     virtual ~ModelLoader();
-    
+        
     /* GENERAL */
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
@@ -67,12 +67,13 @@ private:
     struct ModelLoadData
     {
     public:
-        ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false) {}
+        ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false), dataLoaded(false) {}
         he::String path;
         gfx::BufferLayout vertexLayout;
         ObjectHandle modelHandle;
         models::IModelLoader* loader;
         bool savePickingData;
+        bool dataLoaded;
     };
 
     bool getModelLoader(ModelLoadData& data);
