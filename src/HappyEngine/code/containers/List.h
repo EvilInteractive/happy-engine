@@ -97,6 +97,10 @@ private:
 
     T* m_Buffer;
 
+#ifdef _DEBUG
+    mutable bool m_IsTraversing;
+#endif
+
     //Disable default copy constructor and default assignment operator
     List(const List&);
     List& operator=(const List&);
@@ -123,6 +127,9 @@ public:
 template<typename T, typename Creator> inline
 he::List<T, Creator>::List(const size_t capacity): m_Size(0), m_Capacity(capacity), 
     m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
+#ifdef _DEBUG
+    , m_IsTraversing(false)
+#endif
 {
     Creator::createArray(m_Buffer, m_Capacity);
 }
@@ -162,6 +169,7 @@ void he::List<T, Creator>::append( const List<T, Creator>& list )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::insert( const T& element, const size_t index )
 {
+    HE_ASSERT(!m_IsTraversing, "Inserting element into list, but we are currently traversing the list! Bad things will happen.");
     HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to insert an element already in this list without a copy");
     if (m_Size == m_Capacity)
     {
@@ -174,6 +182,7 @@ void he::List<T, Creator>::insert( const T& element, const size_t index )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::insert( T&& element, const size_t index )
 {
+    HE_ASSERT(!m_IsTraversing, "Inserting element into list, but we are currently traversing the list! Bad things will happen.");
     HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to insert an element already in this list without a copy");
     if (m_Size == m_Capacity)
         reserve(m_Capacity + CAPACITY_INCREMENT);
@@ -199,6 +208,7 @@ void he::List<T, Creator>::reserve( const size_t capacity )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::resize( const size_t size )
 {
+    HE_ASSERT(!m_IsTraversing || m_Size <= size, "Resizing list, but we are currently traversing the list! Bad things will happen.");
     if (m_Capacity < size)
         reserve(size);
     m_Size = size;
@@ -215,6 +225,7 @@ void he::List<T, Creator>::trim()
 template<typename T, typename Creator>
 void he::List<T, Creator>::pop()
 {
+    HE_ASSERT(!m_IsTraversing, "Popping element from list, but we are currently traversing the list! Bad things will happen.");
     HE_IF_ASSERT(m_Size > 0, "Index out of bounds! cannot pop an item of the list when there are not items!")
     {
         --m_Size;
@@ -224,6 +235,7 @@ void he::List<T, Creator>::pop()
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::remove( const T& element )
 {
+    HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     size_t index(0);
     if (find(element, index))
     {
@@ -233,6 +245,7 @@ void he::List<T, Creator>::remove( const T& element )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::removeAt( const size_t index )
 {
+    HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     HE_IF_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size)
     {
         m_Buffer[index] = back();
@@ -242,6 +255,7 @@ void he::List<T, Creator>::removeAt( const size_t index )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::orderedRemove( const T& element )
 {
+    HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     size_t index(0);
     if (find(element, index))
     {
@@ -251,6 +265,7 @@ void he::List<T, Creator>::orderedRemove( const T& element )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::orderedRemoveAt( const size_t index )
 {
+    HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     HE_IF_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size)
     {
         he_memmove(m_Buffer + index, m_Buffer + index + 1, (m_Size - index - 1) * sizeof(T));
@@ -260,6 +275,7 @@ void he::List<T, Creator>::orderedRemoveAt( const size_t index )
 template<typename T, typename Creator>
 void he::List<T, Creator>::clear()
 {
+    HE_ASSERT(!m_IsTraversing, "Clearing list, but we are currently traversing the list! Bad things will happen.");
     m_Size = 0;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -360,6 +376,7 @@ bool he::List<T, Creator>::internalBinFind( const size_t begin, const size_t end
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::sort( const Sorter& sorter )
 {
+    HE_ASSERT(!m_IsTraversing, "Sorting list, but we are currently traversing the list! Bad things will happen.");
     if (m_Size < 2) return; // already sorted
     internalSort(0, static_cast<int>(m_Size - 1), sorter);
 }
@@ -442,37 +459,61 @@ const T& he::List<T, Creator>::operator[]( const size_t index ) const
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func ) const
 {    
+#ifdef _DEBUG
+    m_IsTraversing = true;
+#endif
     const_iterator it(cbegin());
     const_iterator end(cend());
     for (; it != end; ++it)
         func(*it);
+#ifdef _DEBUG
+    m_IsTraversing = false;
+#endif
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
 {    
+#ifdef _DEBUG
+    m_IsTraversing = true;
+#endif
     iterator it(begin());
     iterator endIt(end());
     for (; it != endIt; ++it)
         func(*it);
+#ifdef _DEBUG
+    m_IsTraversing = false;
+#endif
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& func ) const
 {    
+#ifdef _DEBUG
+    m_IsTraversing = true;
+#endif
     const_iterator it(cend());
     const_iterator end(cbegin());
     for (; it != end; --it)
         func(*(it - 1));
+#ifdef _DEBUG
+    m_IsTraversing = false;
+#endif
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::rForEach( const boost::function1<void, T&>& func )
 {    
+#ifdef _DEBUG
+    m_IsTraversing = true;
+#endif
     iterator it(end());
     iterator end(begin());
     for (; it != end; --it)
         func(*(it - 1));
+#ifdef _DEBUG
+    m_IsTraversing = false;
+#endif
 }
 
 

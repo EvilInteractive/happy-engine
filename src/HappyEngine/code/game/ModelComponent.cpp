@@ -38,6 +38,7 @@ namespace ge {
     
 ModelComponent::ModelComponent()
     : m_ModelMesh(nullptr)
+    , m_NewModelMesh(nullptr)
     , m_Parent(nullptr)
     , m_Material(nullptr)
     , m_IsAttached(false)
@@ -75,10 +76,15 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
     ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
     gfx::Material* newMaterial(he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle));
     const gfx::BufferLayout& layout(newMaterial->getCompatibleVertexLayout());
+
+    if (m_NewModelMesh != nullptr)
+    {
+        m_NewModelMesh->cancelLoadCallback(this);
+        m_NewModelMesh->release();
+    }
     
-#error still not working need to be able to release newMesh from callbacks! -- might need to hold onto the pointer :(
-    gfx::ModelMesh* const newMesh(contentManager->asyncLoadModelMesh(modelAsset, meshName, layout));
-    newMesh->callbackOnceIfLoaded(this, [this, newMesh, materialAsset](const ELoadResult /*result*/)
+    m_NewModelMesh = contentManager->asyncLoadModelMesh(modelAsset, meshName, layout);
+    m_NewModelMesh->callbackOnceIfLoaded(this, [this, materialAsset](const ELoadResult /*result*/)
     {
         bool reactivate(false);
         if (m_IsAttached)
@@ -86,10 +92,13 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
             deactivate();
             reactivate = true;
         }
+
+        gfx::ModelMesh* const newMesh(m_NewModelMesh);
+        m_NewModelMesh = nullptr;
+
         unloadModelMeshAndMaterial();
 
         m_ModelMesh = newMesh;
-        m_ModelMesh->instantiate();
 
         he::ct::ContentManager* contentManager(CONTENT);
         ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
@@ -104,12 +113,17 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
     });
 
     newMaterial->release();
-    newMesh->release();
 }
 
 void ModelComponent::unloadModelMeshAndMaterial()
 {
     HE_ASSERT(m_IsAttached == false && isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
+    if (m_NewModelMesh != nullptr)
+    {
+        m_NewModelMesh->cancelLoadCallback(this);
+        m_NewModelMesh->release();
+        m_NewModelMesh = nullptr;
+    }
     if (m_ModelMesh != nullptr)
     {
         m_ModelMesh->cancelLoadCallback(this);
@@ -131,13 +145,9 @@ void ModelComponent::activate()
     HE_IF_ASSERT(m_Parent != nullptr, "Activating ModelComponent without a parent is not possible!")
     {
         m_IsAttached = true;
-        if (m_ModelMesh != nullptr)
+        if (m_ModelMesh != nullptr && isAttachedToScene() == false)
         {
-            m_ModelMesh->callbackOnceIfLoaded(this, [this](const ELoadResult result)
-            {
-                if (result == eLoadResult_Success && m_IsAttached == true && isAttachedToScene() == false)
-                    m_Parent->getScene()->attachToScene(this);
-            });
+            attachToScene(m_Parent->getScene());
         }
     }
 }
@@ -149,7 +159,7 @@ void ModelComponent::deactivate()
         m_IsAttached = false;
         if (isAttachedToScene())
         {
-            m_Parent->getScene()->detachFromScene(this);
+            detachFromScene();
         }
     }
 }

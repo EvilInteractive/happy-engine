@@ -82,6 +82,7 @@ void DefaultSingleDrawable::detachFromScene()
     {
         m_Scene->detachFromScene(this);
         m_Scene = nullptr;
+        nodeReevaluated();
     }
 }
 
@@ -91,6 +92,7 @@ void DefaultSingleDrawable::attachToScene( Scene* scene )
     {
         m_Scene = scene;
         m_Scene->attachToScene(this);
+        nodeReevaluated();
     }
 }
 

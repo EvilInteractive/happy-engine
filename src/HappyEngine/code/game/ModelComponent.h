@@ -76,6 +76,7 @@ private:
     bool m_IsAttached;
 
     gfx::ModelMesh* m_ModelMesh;
+    gfx::ModelMesh* m_NewModelMesh; // Will be fixed with the NewMaterialSystem
     const gfx::Material* m_Material;
 
     he::String m_MaterialAsset;
