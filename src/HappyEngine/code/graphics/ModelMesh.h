@@ -64,7 +64,7 @@ struct PickingData
 
 class ModelMesh : public Resource<ModelMesh>
 {
-public:
+public:    
     ModelMesh();
     virtual ~ModelMesh();
 
@@ -92,8 +92,7 @@ public:
     inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
 
     inline const Bound& getBound() const { return m_Bound; }
-
-
+    
 private:
     struct ShadowSkinnedVertex
     {
@@ -112,7 +111,6 @@ private:
     uint32 m_IndexType;
 
     bool m_isVisible;
-    bool m_IsLoaded;
 
     Bound m_Bound;
     PickingData m_PickingData;

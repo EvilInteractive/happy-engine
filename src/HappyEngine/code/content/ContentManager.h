@@ -24,6 +24,7 @@
 #include "Material.h"
 
 namespace he {
+    
 namespace gfx {
     class Model;
     class ModelMesh;
@@ -48,6 +49,8 @@ public:
     
     void tick(float dTime);
     void glThreadInvoke();  //needed for all of the gl operations
+
+    void destroy();
 
     gfx::Model* asyncLoadModel(const he::String& path);
     gfx::ModelMesh* asyncLoadModelMesh(const he::String& modelPath, const he::String& meshName);

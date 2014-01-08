@@ -45,13 +45,11 @@ TextureLoader::TextureLoader(): m_GCTimer(GC_TIME), m_TextureLoadQueue(10, 10, "
 {
 }
 
-
 TextureLoader::~TextureLoader()
 {
     FACTORY_2D->garbageCollect();
     FACTORY_CUBE->garbageCollect();
 }
-
 
 inline void handleILError(const he::String& file)
 {
@@ -75,20 +73,17 @@ bool TextureLoader::loadTick()
         TextureLoadData data;
         if (m_TextureLoadQueue.pop(data))
         {
+			bool success(false);
             if (data.m_Path[0] != '_')
             {
-                if (loadData(data))
-                {
-                    m_TextureInvokeQueue.push(data);
-                }
+            	success = loadData(data);
             }
             else
             {
-                if (makeData(data))
-                {
-                    m_TextureInvokeQueue.push(data);
-                }
+                success = makeData(data);
             }
+            data.m_DataLoaded = success;
+            m_TextureInvokeQueue.push(data);
         }
         return true;
     }
@@ -102,7 +97,18 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
         TextureLoadData data;
         if (m_TextureInvokeQueue.pop(data))
         {
-            createTexture(data);
+            bool succes(false);
+            if (data.m_DataLoaded)
+            {
+                succes = createTexture(data);
+            }
+
+            if (data.m_Tex.type == gfx::Texture2D::s_ObjectType)
+                FACTORY_2D->get(data.m_Tex)->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
+            else if (data.m_Tex.type == gfx::TextureCube::s_ObjectType)
+                FACTORY_CUBE->get(data.m_Tex)->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
+            else
+                LOG(LogType_ProgrammerAssert, "Unsupported object type id! (%d)", data.m_Tex.type);
         }
     }
 }
@@ -158,9 +164,10 @@ const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
 
         makeData(data);
 
-        createTexture(data);
-
-        return tex2DFactory->get(handle);
+        const bool succes(createTexture(data));
+        gfx::Texture2D* const tex(tex2DFactory->get(handle));
+        tex->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
+        return tex;
     }
 }
 const gfx::Texture2D* TextureLoader::asyncLoadTexture2D(const he::String& path)
@@ -200,10 +207,17 @@ he::ObjectHandle TextureLoader::loadTexture( const he::String& path, IResourceFa
         data.m_Path = path;
         data.m_Tex = handle;
 
+        bool succes(true);
         if (loadData(data))
         {
-            createTexture(data);
+            succes = createTexture(data);
         }
+        else
+        {
+            succes = false;
+        }
+        IResource* resource(factory->getResource(handle));
+        resource->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
     }
     return handle;
 }
@@ -284,7 +298,6 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
         ilDeleteImage(data.m_IlImageId);
     }
 
-    tex2D->setLoaded();
     HE_INFO("Texture2D create completed: %s", data.m_Path.c_str());
     return succes;
 }
@@ -332,7 +345,6 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
         ilDeleteImage(data.m_IlImageId);
     }
 
-    texCube->setLoaded();
     HE_INFO("TextureCube create completed: %s", data.m_Path.c_str());
     return succes;
 }

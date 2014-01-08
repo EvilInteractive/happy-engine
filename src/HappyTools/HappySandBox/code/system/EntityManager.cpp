@@ -105,7 +105,7 @@ he::ge::Entity* EntityManager::createEntity()
     ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
         entityMan->createComponent(he::HEFS::strModelComponent)));
     newEntity->addComponent(modelComp);
-    modelComp->loadModelMeshAndMaterial("testSceneBas.material", "box.binobj");    
+    modelComp->loadModelMeshAndMaterial("testSceneBas.material", "box.binobj", "M_Box");    
 
     he::vec3 translation(camera->getLook() * 10.0f);
     newEntity->setLocalTranslate(camera->getPosition() + translation);

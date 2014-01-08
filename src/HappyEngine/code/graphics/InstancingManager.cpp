@@ -38,15 +38,15 @@ InstancingManager::~InstancingManager()
     });
 }
 
-void InstancingManager::createController( const he::String& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material )
+void InstancingManager::createController( const he::String& id, bool dynamic, const ObjectHandle& meshHandle, const ObjectHandle& material )
 {
-    InstancingController* pController(NEW InstancingController(id, dynamic, modelHandle, material));
+    InstancingController* pController(NEW InstancingController(id, dynamic, meshHandle, material));
     m_Controllers[id] = pController;
 }
 
-void InstancingManager::createController( const he::String& id, bool dynamic, const he::String& materialAsset, const he::String& modelAsset )
+void InstancingManager::createController( const he::String& id, bool dynamic, const he::String& materialAsset, const he::String& modelAsset, const he::String& mesh )
 {
-    InstancingController* pController(NEW InstancingController(id, dynamic, materialAsset, modelAsset));
+    InstancingController* pController(NEW InstancingController(id, dynamic, materialAsset, modelAsset, mesh));
     m_Controllers[id] = pController;
 }
 

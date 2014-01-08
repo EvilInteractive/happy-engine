@@ -43,18 +43,18 @@ public:
     /// Model
     void addMesh(const ObjectHandle& handle);
     size_t getNumMeshes() const;
-
-    ModelMesh* instantiateMesh(const uint32 index) const;
-    ModelMesh* instantiateMesh(const he::String& name) const;
     ModelMesh* getMesh(const uint32 index) const;
-    ModelMesh* getMesh(const he::String& name) const;
+    ModelMesh* instantiateMesh(uint32 index) const;
+    ModelMesh* instantiateMesh(const he::String& name) const;
 
+
+    ModelMesh* tryInstantiateMesh(const he::String& name) const;
     Model* instantiateMeshesWithPrefix(const he::String& prefix) const;
 
     he::PrimitiveList<ModelMesh*>::const_iterator cbegin() const;
     he::PrimitiveList<ModelMesh*>::const_iterator cend() const;
-    
-private:   
+
+private:
     he::PrimitiveList<ModelMesh*> m_Meshes;
 
     //Disable default copy constructor and default assignment operator

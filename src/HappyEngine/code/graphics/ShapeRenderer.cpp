@@ -92,7 +92,7 @@ void ShapeRenderer::createBillboardQuad()
     m_BillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, true);
     m_BillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_BillboardQuad->setName("ShapeRenderer-BillboardQuad");
-    m_BillboardQuad->setLoaded();
+    m_BillboardQuad->setLoaded(eLoadResult_Success);
 }
 
 void ShapeRenderer::createAABB()
@@ -133,7 +133,7 @@ void ShapeRenderer::createAABB()
     m_AABB->setVertices(vertices, 8, gfx::MeshUsage_Static, true);
     m_AABB->setIndices(indices, 24, IndexStride_Byte, gfx::MeshUsage_Static);
     m_AABB->setName("ShapeRenderer-AABB");
-    m_AABB->setLoaded();
+    m_AABB->setLoaded(eLoadResult_Success);
 }
 
 /* GENERAL */

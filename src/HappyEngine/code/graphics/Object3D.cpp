@@ -88,7 +88,7 @@ void Object3D::setWorldMatrixDirty(const uint8 cause)
     if ( (m_WorldMatrixDirty & cause) != cause)
     {
         m_WorldMatrixDirty |= cause;
-        m_Childs.forEach([&cause](IObject3D* obj)
+        m_Childs.forEach([cause](IObject3D* obj)
         {
             obj->setWorldMatrixDirty(cause);
         });

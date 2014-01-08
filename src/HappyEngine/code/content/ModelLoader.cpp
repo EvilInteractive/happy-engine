@@ -55,8 +55,9 @@ bool ModelLoader::loadTick()
     if (m_ModelLoadQueue.empty() == false)
     {
         ModelLoadData data;
-        if (m_ModelLoadQueue.pop(data) && loadModel(data))
+        if (m_ModelLoadQueue.pop(data))
         {
+            data.dataLoaded = loadModel(data);
             m_ModelInvokeQueue.push(data);
         }
         return true;
@@ -71,7 +72,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
         ModelLoadData data;
         if (m_ModelInvokeQueue.pop(data))
         {
-            createModel(data);
+            createModel(data);           
         }
     }
 }
@@ -95,7 +96,7 @@ bool ModelLoader::loadModel( ModelLoadData& data )
 bool ModelLoader::createModel( ModelLoadData& data )
 {
     m_WaitListMutex.lock(FILE_AND_LINE);
-
+    bool success(data.dataLoaded);
     gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
     uint32 notLoadedMeshes(model->getNumMeshes());
     for (uint32 i = 0; i < data.loader->getNumMeshes(); ++i)
@@ -104,12 +105,7 @@ bool ModelLoader::createModel( ModelLoadData& data )
         gfx::ModelMesh* mesh(nullptr);
         if (notLoadedMeshes > 0)
         {
-            for (uint32 iNotLoaded = 0; iNotLoaded < notLoadedMeshes; ++iNotLoaded)
-            {
-                mesh = model->instantiateMesh(meshName);
-                if (mesh != nullptr)
-                    break;
-            }
+            mesh = model->tryInstantiateMesh(meshName);
         }
         if (mesh == nullptr)
         {
@@ -128,12 +124,34 @@ bool ModelLoader::createModel( ModelLoadData& data )
             mesh->createPickingData(data.loader->getVertices(i), data.loader->getNumVertices(i), data.loader->getVertexLayout(), 
                 data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i));
         }
-        mesh->setLoaded();
+        mesh->setLoaded(eLoadResult_Success);
 
         mesh->release();
     }
+    
+    bool foundUnloaded(false);
+    for (uint32 i(0); i < notLoadedMeshes; ++i)
+    {
+        gfx::ModelMesh* mesh(model->getMesh(i));
+        if (mesh->isLoaded() == false)
+        {
+            HE_ERROR("  %s", model->getMesh(i)->getName().c_str());
+            mesh->setLoaded(eLoadResult_Failed);
+            foundUnloaded = true;
+        }
+    }
+    if (foundUnloaded)
+    {
+        const size_t meshCount(model->getNumMeshes());
+        HE_ERROR("Found model '%s' with unloaded mesh(es), mesh dump:", data.path.c_str());
+        for (size_t i(0); i < meshCount; ++i)
+        {
+            HE_ERROR(" %s -- '%s'", model->getMesh(i)->isLoaded() == true? "LOADED" : "*UNLOADED*", model->getMesh(i)->getName().c_str());
+        }
+    }
+    
     HE_INFO("Model create completed: %s", data.path.c_str());
-    model->setLoaded();
+    model->setLoaded(success? eLoadResult_Success : eLoadResult_Failed);
     m_WaitListMutex.unlock();
 
     model->release();
@@ -180,6 +198,7 @@ gfx::Model* ModelLoader::asyncLoadModel(const he::String& path, const bool saveP
 }
 gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const he::String& path, const he::String& meshName, const bool savePickingData )
 {
+    HE_ASSERT(meshName.empty() == false, "Loading mesh with empty name?");
     ObjectHandle modelHandle;
     if (isModelLoaded(path, modelHandle)) // if model is loading/loaded
     {
@@ -203,12 +222,13 @@ gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const he::String& path, const h
         {
             if (model->getNumMeshes() > 0) // model is partially loaded
             {
-                mesh = model->instantiateMesh(meshName); // try get
+                mesh = model->tryInstantiateMesh(meshName); // try get
             }
             if (mesh == nullptr) // not loaded yet -> add new empty mesh
             {
                 ObjectHandle handle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
                 mesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(handle);
+                mesh->setName(meshName);
                 model->addMesh(handle); // to be loaded
             }
         }

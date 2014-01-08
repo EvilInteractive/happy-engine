@@ -45,7 +45,14 @@ enum IntersectResult
     IntersectResult_Intersecting,
     IntersectResult_Outside
 };
-
+    
+enum ELoadResult
+{
+    eLoadResult_Unknown,
+    eLoadResult_Success,
+    eLoadResult_Failed
+};
+    
 namespace net {
 typedef RakNet::BitStream NetworkStream;
 typedef RakNet::RakNetGUID NetworkID;

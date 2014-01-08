@@ -226,7 +226,8 @@ ShaderLoader::ShaderLoader()
 
 ShaderLoader::~ShaderLoader()
 {
-    ResourceFactory<gfx::Shader>::getInstance()->garbageCollect();
+    ResourceFactory<gfx::Shader>* factory(ResourceFactory<gfx::Shader>::getInstance());
+    factory->garbageCollect();
 }
 
 he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)

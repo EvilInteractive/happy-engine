@@ -66,7 +66,7 @@ public:
     TextureFilterType getFilterType() const { return m_FilterType; }
     bool HasMipMaps() const { return m_HasMipMaps; }
 
-private:   
+private:
     uint32 m_Id;
     uint32 m_Width, m_Height;
     TextureFormat m_TextureFormat;

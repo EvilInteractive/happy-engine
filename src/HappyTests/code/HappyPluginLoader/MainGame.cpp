@@ -83,7 +83,7 @@ void MainGame::init()
     entityMan->init();
 
     m_PluginLoader = NEW he::pl::PluginLoader();
-    m_Plugin = m_PluginLoader->loadPlugin(he::Path(""), "libHappyPluginTest");
+    m_Plugin = m_PluginLoader->loadPlugin(he::Path(""), "HappyPluginTest");
     if (m_Plugin != nullptr)
     {
         m_Plugin->init(m_Window, he::RectF(0, 0, 1.0f, 1.0f));

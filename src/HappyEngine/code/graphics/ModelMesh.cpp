@@ -28,8 +28,7 @@ namespace gfx {
 #pragma warning(disable:4355) // use of this in initializer list
 ModelMesh::ModelMesh(): 
     m_NumVertices(0), 
-    m_NumIndices(0), 
-    m_IsLoaded(false), 
+    m_NumIndices(0),
     m_isVisible(true),
     m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_DrawMode(MeshDrawMode_Triangles),

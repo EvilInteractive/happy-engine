@@ -79,25 +79,35 @@ ContentManager::ContentManager():
 
 ContentManager::~ContentManager()
 {
+}
+
+void ContentManager::destroy()
+{
     m_LoadThreadRunning = false;
     m_LoadThread->join();
     delete m_LoadThread;
+	m_LoadThread = nullptr;
 
     if (m_ParticleQuad != nullptr)
         m_ParticleQuad->release();
     if (m_FullscreenQuad != nullptr)
         m_FullscreenQuad->release();
-    
+
     // All content should be gone when getting here
     // loaders perform last garbage collect
     delete m_MaterialLoader;
+    m_MaterialLoader = nullptr;
     delete m_ShaderLoader;
+    m_ShaderLoader = nullptr;
     delete m_PhysicsShapeLoader;
+    m_PhysicsShapeLoader = nullptr;
     delete m_FontLoader;
+    m_FontLoader = nullptr;
     delete m_ModelLoader;
+    m_ModelLoader = nullptr;
     delete m_TextureLoader;
+    m_TextureLoader = nullptr;
 }
-
 
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {
@@ -336,7 +346,7 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         m_FullscreenQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
         m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
-        m_FullscreenQuad->setLoaded();
+        m_FullscreenQuad->setLoaded(eLoadResult_Success);
     }
 
     ResourceFactory<ModelMesh>::getInstance()->instantiate(m_FullscreenQuad->getHandle());
@@ -375,7 +385,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         m_ParticleQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
         m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
-        m_ParticleQuad->setLoaded();
+        m_ParticleQuad->setLoaded(eLoadResult_Success);
     }
 
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_ParticleQuad->getHandle());

@@ -83,13 +83,14 @@ private:
         const static int MAX_CUBE_FACES = 6;
 
         TextureLoadData(): m_Path(""), m_Faces(0), m_TextureFormat(gfx::TextureFormat_RGBA8),
-            m_IlImageId(0), m_IsILimage(false), m_Color(0.0f, 0.0f, 0.0f, 0.0f), m_Tex(ObjectHandle::unassigned)
+            m_IlImageId(0), m_IsILimage(false), m_Color(0.0f, 0.0f, 0.0f, 0.0f), 
+            m_Tex(ObjectHandle::unassigned), m_DataLoaded(false)
         {
         }
         TextureLoadData(const TextureLoadData& other): 
             m_Path(other.m_Path), m_Faces(other.m_Faces), m_TextureFormat(other.m_TextureFormat),
             m_IlImageId(other.m_IlImageId), m_IsILimage(other.m_IsILimage), 
-            m_Color(other.m_Color), m_Tex(other.m_Tex)
+            m_Color(other.m_Color), m_Tex(other.m_Tex), m_DataLoaded(other.m_DataLoaded)
         {
             for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
             {
@@ -111,6 +112,7 @@ private:
             m_IsILimage = other.m_IsILimage;
             m_Color = other.m_Color;
             m_Tex = other.m_Tex;
+            m_DataLoaded = other.m_DataLoaded;
 
             return *this;
         }
@@ -124,6 +126,7 @@ private:
         bool m_IsILimage;
         Color m_Color;
         ObjectHandle m_Tex;
+        bool m_DataLoaded;
     };
     
     bool loadData(TextureLoadData& data);

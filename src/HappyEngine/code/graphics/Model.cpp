@@ -30,7 +30,6 @@ Model::Model()
 {
 }
 
-
 Model::~Model()
 {
     m_Meshes.forEach([&](ModelMesh* const mesh)
@@ -65,30 +64,31 @@ size_t Model::getNumMeshes() const
 {
     return m_Meshes.size();
 }
-ModelMesh* Model::instantiateMesh(const uint32 index) const
+    
+    
+ModelMesh* Model::getMesh(const uint32 index) const
 {
-    ModelMesh* const mesh(getMesh(index));
-    mesh->instantiate();
+    HE_ASSERT(index < m_Meshes.size(), "Model::getMesh: index out of range: %d", index);
+    ModelMesh* mesh(m_Meshes[index]);
     return mesh;
 }
-
-ModelMesh* Model::getMesh( const uint32 index ) const
+    
+ModelMesh* Model::instantiateMesh(uint32 index) const
 {
     HE_ASSERT(index < m_Meshes.size(), "Model::instantiateMesh: index out of range: %d", index);
-    ModelMesh* const mesh(m_Meshes[index]);
+    ModelMesh* mesh(m_Meshes[index]);
+    mesh->instantiate();
     return mesh;
 }
 
 ModelMesh* Model::instantiateMesh( const he::String& name ) const
 {
-    ModelMesh* const mesh(getMesh(name));
-    if (mesh)
-    {
-        mesh->instantiate();
-    }
-    return mesh;
+    ModelMesh* const value(tryInstantiateMesh(name));
+    HE_CONDITIONAL_ERROR(value == nullptr, "Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());
+    return value;
 }
-ModelMesh* Model::getMesh( const he::String& name ) const
+
+ModelMesh* Model::tryInstantiateMesh( const he::String& name ) const
 {
     he::PrimitiveList<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* const mesh)
     {
@@ -97,10 +97,10 @@ ModelMesh* Model::getMesh( const he::String& name ) const
 
     if (it != cend())
     {
-        ModelMesh* const mesh(*it);
+        ModelMesh* mesh(*it);
+        mesh->instantiate();
         return mesh;
     }
-    HE_ERROR("Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());
     return nullptr;
 }
 

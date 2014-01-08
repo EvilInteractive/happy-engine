@@ -80,7 +80,7 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 
 void ModelComponent::unloadModelMeshAndMaterial()
 {
-    HE_ASSERT(m_IsAttached == false, "Trying to unload model while stil attached to the scene!");
+    HE_ASSERT(m_IsAttached == false && isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
     m_Drawable->setModelMesh(nullptr);
 }
 
@@ -121,7 +121,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
 {
     if (EntityComponent::setProperty(inProperty) == false)
     {
-        const he::FixedString name(inProperty->getName());
+        /*const he::FixedString name(inProperty->getName());
         if (name == HEFS::strModel)
         {
             m_ModelAsset = inProperty->get<he::String>();
@@ -139,7 +139,7 @@ bool ModelComponent::setProperty( const Property* const inProperty )
                 loadModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
             }
             return true;
-        }
+        }*/
     }
     return false;
 }

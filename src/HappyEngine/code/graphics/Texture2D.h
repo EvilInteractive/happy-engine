@@ -48,7 +48,6 @@ public:
         const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel = 0);
 
     void setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
-
     void generateMipMaps() const;
 
     uint32 getID() const { return m_Id; }
@@ -61,7 +60,7 @@ public:
         
 private:
     uint32 m_Id;
-    
+
     uint32 m_Width, m_Height;
 
     TextureFormat m_TextureFormat;    

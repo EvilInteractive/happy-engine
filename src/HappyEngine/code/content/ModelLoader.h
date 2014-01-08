@@ -49,7 +49,7 @@ public:
     /* CONSTRUCTOR - DESTRUCTOR */
     ModelLoader();
     virtual ~ModelLoader();
-    
+        
     /* GENERAL */
     void tick(float dTime);
     bool loadTick();
@@ -68,11 +68,12 @@ private:
     struct ModelLoadData
     {
     public:
-        ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false) {}
+        ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false), dataLoaded(false) {}
         he::String path;
         ObjectHandle modelHandle;
         models::IModelLoader* loader;
         bool savePickingData;
+        bool dataLoaded;
     };
 
     bool getModelLoader(ModelLoadData& data);

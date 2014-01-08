@@ -41,7 +41,7 @@ namespace gfx {
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
 #pragma warning(disable:4355) // use of this in initializer list
-InstancingController::InstancingController(const he::String& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
+InstancingController::InstancingController(const he::String& name, bool dynamic, const ObjectHandle& meshHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
@@ -55,12 +55,12 @@ InstancingController::InstancingController(const he::String& name, bool dynamic,
     m_InstancingLayout = BufferLayout(m_Material->getCompatibleInstancingLayout());
     m_CpuBuffer = details::InstancingBuffer(m_Material->getCompatibleInstancingLayout().getSize(), 32);
 
-    ResourceFactory<ModelMesh>::getInstance()->instantiate(modelHandle);
-    m_ModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(modelHandle);
-    ResourceFactory<ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&InstancingController::init, this));
+    m_ModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(meshHandle);
+    m_ModelMesh->instantiate();
+    m_ModelMesh->callbackOnceIfLoaded(this, boost::bind(&InstancingController::init, this));
 }
 
-InstancingController::InstancingController( const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset ):
+InstancingController::InstancingController( const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset, const he::String& mesh ):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
@@ -73,12 +73,18 @@ InstancingController::InstancingController( const he::String& name, bool dynamic
         m_InstancingLayout = BufferLayout(m_Material->getCompatibleInstancingLayout());
         m_CpuBuffer = details::InstancingBuffer(m_Material->getCompatibleInstancingLayout().getSize(), 32);
 
-        Model* model = CONTENT->asyncLoadModel(modelAsset, m_Material->getCompatibleVertexLayout());
-        model->callbackOnceIfLoaded([model, this]()
+        m_ModelMesh = CONTENT->asyncLoadModelMesh(modelAsset, mesh, m_Material->getCompatibleVertexLayout());
+        m_ModelMesh->callbackOnceIfLoaded(this, [this](const ELoadResult result)
         {
-            m_ModelMesh = model->instantiateMesh(0);
-            model->release();
-            this->init();
+            if (result == eLoadResult_Success)
+            {
+                this->init();
+            }
+            else
+            {
+                m_ModelMesh->release();
+                m_ModelMesh = nullptr;
+            }
         });
 }
 
@@ -87,19 +93,29 @@ InstancingController::InstancingController( const he::String& name, bool dynamic
 
 InstancingController::~InstancingController()
 {
-    GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
-    GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
-    const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
-    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
-    {
-        destroyVao(context);
-    });
-    glDeleteBuffers(1, &m_GpuBuffer);
-    m_ModelMesh->release();
-    m_Material->release();
-    GAME->removeFromTickList(this);
     if (isAttachedToScene())
         detachFromScene();
+
+    if (m_ModelMesh != nullptr)
+    {
+        GAME->removeFromTickList(this);
+
+        GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
+        GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
+        const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
+        std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+        {
+            destroyVao(context);
+        });
+        glDeleteBuffers(1, &m_GpuBuffer);
+
+        m_ModelMesh->cancelLoadCallback(this);
+        m_ModelMesh->release();
+    }
+    if (m_Material != nullptr)
+    {
+        m_Material->release();
+    }
 }
 
 

@@ -103,7 +103,7 @@ void SkyBox::load( const he::String& asset )
     cube->init(layout, MeshDrawMode_Triangles);
     cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
     cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);
-    cube->setLoaded();
+    cube->setLoaded((eLoadResult_Success);
     m_Drawable->setModelMesh(cube);
     cube->release();
 
