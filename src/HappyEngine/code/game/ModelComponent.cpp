@@ -80,8 +80,9 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 
 void ModelComponent::unloadModelMeshAndMaterial()
 {
-    HE_ASSERT(m_IsAttached == false && isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
+    HE_ASSERT(isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
     m_Drawable->setModelMesh(nullptr);
+    m_Drawable->setMaterial(nullptr);
 }
 
 void ModelComponent::activate()

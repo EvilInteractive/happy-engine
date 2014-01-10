@@ -86,7 +86,7 @@ void ContentManager::destroy()
     m_LoadThreadRunning = false;
     m_LoadThread->join();
     delete m_LoadThread;
-	m_LoadThread = nullptr;
+    m_LoadThread = nullptr;
 
     if (m_ParticleQuad != nullptr)
         m_ParticleQuad->release();
