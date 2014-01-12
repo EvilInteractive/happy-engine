@@ -63,7 +63,7 @@ public:
 
     IResource* getResource(const ObjectHandle handle) 
     {
-        return get(handle);
+        return ObjectFactory<T>::get(handle);
     }
 
     //////////////////////////////////////////////////////////////////////////
