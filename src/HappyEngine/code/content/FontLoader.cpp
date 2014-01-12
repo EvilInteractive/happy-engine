@@ -32,7 +32,7 @@ namespace ct {
 FontLoader::FontLoader()
 {
     const FT_Error error(FT_Init_FreeType(&m_FTLibrary));
-    HE_ASSERT(error == false,"Error creating freetype library!"); error;
+    HE_ASSERT(error == false,"Error creating freetype library!");;
 }
 
 FontLoader::~FontLoader()
@@ -91,7 +91,7 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
         gui::Font* const font(fontFactory->get(handle));
         font->setName(assetName);
         font->init(m_FTLibrary, face, size, options);
-        font->setLoaded();
+        font->setLoaded(eLoadResult_Success);
 
         m_AssetContainer.addAsset(assetName, handle);
 

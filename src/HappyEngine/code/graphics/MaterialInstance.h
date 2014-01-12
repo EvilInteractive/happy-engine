@@ -36,6 +36,8 @@ public:
     explicit MaterialInstance(const Material* const parent);
     ~MaterialInstance();
     
+    MaterialParameter* getParameter(const FixedString& name) const;
+    
     void applyNormal(const DrawContext& context) const;
     void applySkinned(const DrawContext& context) const;
     void applyInstanced(const DrawContext& context) const;
@@ -77,8 +79,7 @@ private:
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
     
-    he::ObjectList<MaterialParameter> m_ShaderCommonVars;
-    he::ObjectList<MaterialParameter> m_ShaderSpecificVars[eShaderType_MAX];
+    he::ObjectList<MaterialParameter> m_Parameters;
 
     //Disable default copy constructor and default assignment operator
     MaterialInstance(const MaterialInstance&);

@@ -210,35 +210,30 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
         if (reader.open(path) == false)
         {
             HE_ERROR("Error loading material: %s, Could not open file!", path.str().c_str());
+            material->setLoaded(eLoadResult_Failed);
             return material;
         }
         else
-        {     
-            const gfx::RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
-            
+        {
             MaterialDesc desc;
             desc.visit(&reader);
-
-            if (desc.m_Shader.empty() == false)
-            {
-                gfx::Shader* const shader(CONTENT->asyncLoadShader(desc.m_Shader));
-                material->setNormalShader(shader);
-                shader->callbackOnceIfLoaded([material](Resource<gfx::Shader>* const shaderResource)
-                {
-                    gfx::Shader* const shader(checked_cast<gfx::Shader*>(shaderResource));
-                    const he::PrimitiveList<IShaderUniform*>& shader->getUniforms()
-                    material->setLoaded();
-                });
-            }
-            else
-            {
-                HE_ERROR("Material %s has no shader!", path.str().c_str());
-            }
+            
             material->setIsBlended(desc.m_IsBlended, desc.m_BlendEquation, desc.m_SourceBlend, desc.m_DestBlend);
             material->setNoPost(desc.m_NoPost);
             material->setCullFrontFace(desc.m_CullFrontFace);
             material->setDepthReadEnabled(desc.m_DepthRead);
             material->setDepthWriteEnabled(desc.m_DepthWrite);
+            if (desc.m_Shader.empty() == false)
+            {
+                gfx::Shader* const shader(CONTENT->asyncLoadShader(desc.m_Shader));
+                material->setNormalShader(shader);
+                material->init();
+            }
+            else
+            {
+                material->setLoaded(eLoadResult_Failed);
+                HE_ERROR("Material %s has no shader!", path.str().c_str());
+            }
         }
         return material;
     }

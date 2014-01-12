@@ -37,8 +37,8 @@ namespace he {
 namespace ge {
     
 ModelComponent::ModelComponent()
-    : m_Drawable(NEW gfx::Drawable())
-    , m_Parent(nullptr)
+    : m_Parent(nullptr)
+    , m_Drawable(NEW gfx::Drawable())
 {
 }
 
@@ -60,8 +60,9 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 {
     he::ct::ContentManager* const contentManager(CONTENT);
 
-    he::gfx::MaterialInstance* materialInstance(contentManager->loadMaterial(materialAsset));
-    m_Drawable->setMaterial(materialInstance);
+    he::gfx::Material* material(contentManager->loadMaterial(materialAsset));
+    m_Drawable->setMaterial(material);
+    material->release();
 
     he::gfx::Model* const model(contentManager->asyncLoadModel(modelAsset));
     model->callbackOnceIfLoaded([&, model, meshName](Resource<gfx::Model>* const loadedModel)

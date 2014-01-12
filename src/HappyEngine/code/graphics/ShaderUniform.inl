@@ -86,6 +86,8 @@ public:
             shader->setShaderVar(m_ID, m_Value);
         }
     }
+    
+    const he::PrimitiveList<mat44>& getValue() const { return m_Value; }
 
     const he::FixedString& getName() const
     {
@@ -151,6 +153,8 @@ public:
             shader->setSampler2D(m_ID, m_Value);
         }
     }
+    
+    const uint32& getValue() const { return m_Value; }
 
     const he::FixedString& getName() const
     {
@@ -215,7 +219,9 @@ public:
             shader->setSamplerCube(m_ID, m_Value);
         }
     }
-
+    
+    const uint32& getValue() const { return m_Value; }
+    
     const he::FixedString& getName() const
     {
         return m_Name;

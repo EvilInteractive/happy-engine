@@ -29,10 +29,14 @@ namespace gfx {
     
 struct ShaderUniformID
 {
-    const static size_t Unassigned;
-    size_t m_ID;
+    const static uint32 Unassigned;
+    uint32 m_ID;
     
     ShaderUniformID(): m_ID(Unassigned) {}
+    explicit ShaderUniformID(const uint32 value): m_ID(value) {}
+    
+    HE_FORCEINLINE uint32 getValue() const { return m_ID; }
+    HE_FORCEINLINE void setValue(const uint32 value) { m_ID = value; }
 };
     
 enum EShaderUniformUsage

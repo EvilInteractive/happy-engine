@@ -68,8 +68,9 @@ public:
     void set(Shader* const shader, const T& value);
 
     const he::FixedString& getName() const { return m_Name; }
-
     EShaderUniformType getType() const { return TType; }
+    
+    const T& getValue() const { return m_Value; }
     
 private:
     T m_Value;

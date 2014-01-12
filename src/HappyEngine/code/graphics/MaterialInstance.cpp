@@ -55,14 +55,14 @@ MaterialInstance::MaterialInstance(const Material* const material)
     : m_Material(material)
 {
     m_Material->instantiate();
-    m_Material->callbackOnceIfLoaded(this, [](const ELoadResult result)
+    m_Material->callbackOnceIfLoaded(this, [this](const ELoadResult result)
     {
         if (result == eLoadResult_Success)
             init();
         setLoaded(result);
     });
 }
-
+    
 void MaterialInstance::init()
 {
     // Copy everything from parent material
@@ -71,12 +71,64 @@ void MaterialInstance::init()
     m_SourceBlend = m_Material->m_SourceBlend;
     m_DestBlend = m_Material->m_DestBlend;
     
-    m_ShaderCommonVars.clear();
-    m_ShaderCommonVars.append(m_Material->m_ShaderCommonVars);
-    for (size_t i(0); i < eShaderType_MAX; ++i)
+    m_Parameters.clear();
+    
+    EShaderType type(eShaderType_Normal);
+    
+    Shader* const shader(m_Material->getShader(type));
+    const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
+    const size_t count(uniforms.size());
+    for (size_t i(0); i < count; ++i)
     {
-        m_ShaderSpecificVars[i].clear();
-        m_ShaderSpecificVars[i].append(m_Material->m_ShaderSpecificVars[i]);
+        IShaderUniform* const uniform(uniforms[i]);
+        
+        MaterialParameter param;
+        const ShaderUniformID id(checked_numcast<uint32>(i));
+        
+        switch (uniform->getType())
+        {
+            case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
+            case eShaderUniformType_Int:
+                param.init(id, MaterialParameter::eType_Int);
+                param.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
+                break;
+            case eShaderUniformType_UInt:
+                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                break;
+            case eShaderUniformType_Float:
+                param.init(id, MaterialParameter::eType_Float);
+                param.setFloat(checked_cast<ShaderUniformFloat*>(uniform)->getValue());
+                break;
+            case eShaderUniformType_Float2:
+                param.init(id, MaterialParameter::eType_Float2);
+                param.setFloat2(checked_cast<ShaderUniformVec2*>(uniform)->getValue());
+                break;
+            case eShaderUniformType_Float3:
+                param.init(id, MaterialParameter::eType_Float3);
+                param.setFloat3(checked_cast<ShaderUniformVec3*>(uniform)->getValue());
+                break;
+            case eShaderUniformType_Float4:
+                param.init(id, MaterialParameter::eType_Float4);
+                param.setFloat4(checked_cast<ShaderUniformVec4*>(uniform)->getValue());
+                break;
+            case eShaderUniformType_Mat44:
+                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                break;
+            case eShaderUniformType_Mat44Array:
+                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                break;
+            case eShaderUniformType_Texture1D:
+                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;                break;
+            case eShaderUniformType_Texture2D:
+                param.init(id, MaterialParameter::eType_Texture2D);
+                //param.setTexture2D(m_Material->getDefaultTexture2D(uniform->getName()));
+                break;
+            case eShaderUniformType_TextureCube:
+                param.init(id, MaterialParameter::eType_TextureCube);
+                //param.setTextureCube(m_Material->getDefaultTextureCube(uniform->getName()));
+                break;
+        }
+        m_Parameters.add(param);
     }
 }
     
@@ -124,8 +176,7 @@ void MaterialInstance::applyShader( const EShaderType type, const DrawContext& c
     
     Shader* shader(m_Material->bindShader(type));
     
-    m_ShaderCommonVars.forEach(std::bind(::applyShaderVar, shader, _1));
-    m_ShaderSpecificVars[type].forEach(std::bind(::applyShaderVar, shader, _1));
+    m_Parameters.forEach(std::bind(::applyShaderVar, shader, _1));
 }
 
 void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& context ) const

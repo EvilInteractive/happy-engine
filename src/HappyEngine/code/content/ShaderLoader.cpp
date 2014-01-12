@@ -256,9 +256,9 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
         if (settings.lightingSettings.enableNormalMap)
             defines.insert("NORMALMAP");
 
-        shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
+        const bool result(shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs));
         m_AssetContainer.addAsset(key, shader->getHandle());
-        shader->setLoaded();
+        shader->setLoaded(result? eLoadResult_Success : eLoadResult_Failed);
         return shader;
     }
 }

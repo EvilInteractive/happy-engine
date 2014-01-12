@@ -69,7 +69,7 @@ ObjectHandle PhysicsShapeLoader::loadConvex(const he::String& path)
             px::PhysicsConvexMesh* mesh(CV_FACTORY->get(handle));
             mesh->setName(path);
             mesh->load(stream);
-            mesh->setLoaded();
+            mesh->setLoaded(eLoadResult_Success);
             visitor.close();
             m_ConvexAssetContainer.addAsset(path, handle);
             return handle;
@@ -106,7 +106,7 @@ ObjectHandle PhysicsShapeLoader::loadConcave(const he::String& path)
             px::PhysicsConcaveMesh* mesh(CC_FACTORY->get(handle));
             mesh->setName(path);
             mesh->load(stream);
-            mesh->setLoaded();
+            mesh->setLoaded(eLoadResult_Success);
 
             visitor.close();
 

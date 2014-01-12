@@ -103,12 +103,12 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
                 succes = createTexture(data);
             }
 
-            if (data.m_Tex.type == gfx::Texture2D::s_ObjectType)
+            if (data.m_Tex.getType() == gfx::Texture2D::s_ObjectType)
                 FACTORY_2D->get(data.m_Tex)->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
-            else if (data.m_Tex.type == gfx::TextureCube::s_ObjectType)
+            else if (data.m_Tex.getType() == gfx::TextureCube::s_ObjectType)
                 FACTORY_CUBE->get(data.m_Tex)->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
             else
-                LOG(LogType_ProgrammerAssert, "Unsupported object type id! (%d)", data.m_Tex.type);
+                LOG(LogType_ProgrammerAssert, "Unsupported object type id! (%d)", data.m_Tex.getType());
         }
     }
 }

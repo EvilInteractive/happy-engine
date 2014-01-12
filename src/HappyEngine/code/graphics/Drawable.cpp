@@ -24,6 +24,7 @@
 
 #include "ModelMesh.h"
 #include "Material.h"
+#include "MaterialInstance.h"
 #include "Scene.h"
 
 namespace he {
@@ -66,12 +67,13 @@ void Drawable::setMaterial( Material* const material )
 {
     if (m_Material != nullptr)
     {
-        m_Material->release();
+        delete m_Material;
+        m_Material = nullptr;
     }
-    m_Material = material;
-    if (m_Material != nullptr)
+    if (material != nullptr)
     {
-        m_Material->instantiate();
+        m_Material = material->createMaterialInstance();
+        m_Material->init(eShaderType_Normal);
         updateMaterialLayout(m_ModelMesh, m_Material);
     }
 }

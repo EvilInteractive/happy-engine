@@ -41,6 +41,7 @@ Material::~Material()
     {
         if (m_Shader[i] != nullptr)
         {
+            m_Shader[i]->cancelLoadCallback(this);
             m_Shader[i]->release();
             m_Shader[i] = nullptr;
         }
@@ -53,34 +54,54 @@ MaterialInstance* Material::createMaterialInstance() const
     return instance;
 }
     
-void Material::registerCommonVar( const ShaderUniformID id, const IShaderUniform* const var )
+void Material::init()
 {
-    MaterialParameter param;
-    
-    switch (var->getType())
+    HE_ASSERT(isLoaded() == false, "Material is already loaded and cannot be inited again!");
+    for (size_t i(0); i < eShaderType_MAX; ++i)
     {
-        case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", var->getName().c_str()); break;
-        case eShaderUniformType_Int:
-            param.init(id, MaterialParameter::eType_Int);
-            param.setInt32(checked_cast<ShaderUniformInt*>(var)->getValue());
-            break;
-        case eShaderUniformType_UInt,
-        case eShaderUniformType_Float,
-        case eShaderUniformType_Float2,
-        case eShaderUniformType_Float3,
-        case eShaderUniformType_Float4,
-        case eShaderUniformType_Mat44,
-        case eShaderUniformType_Mat44Array,
-        case eShaderUniformType_Texture1D,
-        case eShaderUniformType_Texture2D,
-        case eShaderUniformType_TextureCube,
+        Shader* const shader(m_Shader[i]);
+        if (shader != nullptr)
+        {
+            shader->callbackOnceIfLoaded(this, [this, shader](const ELoadResult result)
+            {
+                if (result == eLoadResult_Success)
+                {
+                    bool loadCompleted(true);
+                    for (size_t i(0); i < eShaderType_MAX; ++i)
+                    {
+                        if (m_Shader[i] != nullptr)
+                        {
+                            if (m_Shader[i]->isLoaded() == false)
+                            {
+                                loadCompleted = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (loadCompleted)
+                    {
+                        setLoaded(eLoadResult_Success);
+                    }
+                }
+                else
+                {
+                    // Shader load failed, fail load material
+                    for (size_t i(0); i < eShaderType_MAX; ++i)
+                    {
+                        Shader* const cancelShader(m_Shader[i]);
+                        if (cancelShader != nullptr && cancelShader != shader)
+                        {
+                            if (cancelShader->isLoaded() == false)
+                            {
+                                cancelShader->cancelLoadCallback(this);
+                            }
+                        }
+                    }
+                    setLoaded(eLoadResult_Failed);
+                }
+            });
+        }
     }
-    m_ShaderCommonVars.add(param);
-}
-
-void Material::registerSpecificVar( const EShaderType type, const ShaderUniformID id, const IShaderUniform* const var )
-{
-    m_ShaderSpecificVars[type].add(var);
 }
 
 void Material::setNormalShader( Shader* const shader )

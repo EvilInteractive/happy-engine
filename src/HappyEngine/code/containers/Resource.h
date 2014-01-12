@@ -42,8 +42,8 @@ public:
     virtual bool canBeGarbageCollected() const = 0;
 
     virtual inline bool isLoaded() const = 0;
-    virtual void callbackOnceIfLoaded(const void* const id, const LoadCallback& callback) = 0;
-    virtual void cancelLoadCallback(const void* const id) = 0;
+    virtual void callbackOnceIfLoaded(const void* const id, const LoadCallback& callback) const = 0;
+    virtual void cancelLoadCallback(const void* const id) const = 0;
     virtual void setLoaded(const ELoadResult resukt) = 0;
 };
 
@@ -83,16 +83,16 @@ public:
     }
 
     bool isLoaded() const { return m_IsLoaded == eLoadResult_Success; }
-    void callbackOnceIfLoaded(const void* const id, const LoadCallback& callback);
-    void cancelLoadCallback(const void* const id);
-    void setLoaded(const ELoadResult resukt);
+    void callbackOnceIfLoaded(const void* const id, const LoadCallback& callback) const;
+    void cancelLoadCallback(const void* const id) const;
+    void setLoaded(const ELoadResult result);
 
 private:
     ELoadResult m_IsLoaded;
-    he::Mutex m_LoadMutex;
+    mutable he::Mutex m_LoadMutex;
 
     he::String m_Name;
-    he::ObjectList<std::pair<const void*, LoadCallback>> m_LoadCallbacks;
+    mutable he::ObjectList<std::pair<const void*, LoadCallback>> m_LoadCallbacks;
 
     // disabled assignment operator
     Resource& operator=(const Resource&);
@@ -114,7 +114,7 @@ void he::Resource<T>::setLoaded( const ELoadResult result )
 }
 
 template<typename T>
-void he::Resource<T>::callbackOnceIfLoaded( const void* const id, const LoadCallback& callback )
+void he::Resource<T>::callbackOnceIfLoaded( const void* const id, const LoadCallback& callback ) const
 {
     m_LoadMutex.lock(FILE_AND_LINE);
     if (m_IsLoaded != eLoadResult_Unknown)
@@ -130,7 +130,7 @@ void he::Resource<T>::callbackOnceIfLoaded( const void* const id, const LoadCall
 }
 
 template<typename T>
-void he::Resource<T>::cancelLoadCallback( const void* const id )
+void he::Resource<T>::cancelLoadCallback( const void* const id ) const
 {
     m_LoadMutex.lock(FILE_AND_LINE);
     if (m_LoadCallbacks.empty() == false)

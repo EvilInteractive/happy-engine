@@ -30,6 +30,7 @@ namespace he {
 namespace gfx {
 class ModelMesh;
 class Material;
+class MaterialInstance;
 class MaterialLayout;
 class Scene;
 class CullOctreeNode;
@@ -90,7 +91,7 @@ private:
 #endif
     
     ModelMesh* m_ModelMesh;
-    Material* m_Material;
+    MaterialInstance* m_Material;
     MaterialLayout* m_MaterialLayout;
 
     Scene* m_Scene;

@@ -42,12 +42,13 @@ public:
     Material();
     ~Material();
     
-    void registerCommonVar(const ShaderUniformID id, const IShaderUniform* const var);
-    void registerSpecificVar(const EShaderType type, const ShaderUniformID id, const IShaderUniform* const var);
+    void init();
 
     void setNormalShader(Shader* const shader);
     void setSkinnedShader(Shader* const shader);
     void setInstancedShader(Shader* const shader, const BufferLayout& instancingLayout);
+    
+    Shader* getShader(const EShaderType type) const { return m_Shader[type]; }
     
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
                       BlendFunc sourceBlend  = BlendFunc_One,
@@ -75,9 +76,6 @@ private:
     
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
-    
-    he::ObjectList<MaterialParameter> m_ShaderCommonVars;
-    he::ObjectList<MaterialParameter> m_ShaderSpecificVars[eShaderType_MAX];
 
     // Disabled
     Material(const Material* other);
