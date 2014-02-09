@@ -284,7 +284,7 @@ void GL::init()
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_SCISSOR_TEST);
 
-#if defined(DEBUG) || defined(_DEBUG)
+#ifdef HE_DEBUG
 	// no worky on AMD/ATI
    /* if (glewGetContext()->__GLEW_ARB_debug_output)
     {

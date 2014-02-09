@@ -199,7 +199,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
 
     glLinkProgram(m_Id);
 
-    #ifdef _DEBUG
+    #ifdef HE_DEBUG
     std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
     {
         HE_ASSERT(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()) == (GLint)e.getElementIndex(), 

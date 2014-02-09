@@ -32,7 +32,7 @@ public:
     Mutex();
     ~Mutex();
 
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     void lock(const char* file, int line);
     bool tryLock(const char* file, int line);
 #else
@@ -48,7 +48,7 @@ private:
     pthread_mutex_t m_Internal;
 #endif
 
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     const char* m_File;
     int m_Line;
     ThreadID m_Thread;

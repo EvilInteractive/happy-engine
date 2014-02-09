@@ -22,11 +22,11 @@
 //////////////////////////////////////////////////////////////////////////
 ///    check mem
 //////////////////////////////////////////////////////////////////////////
-#if DEBUG || _DEBUG
-    #if GCC || LLVM
-        #define he_checkmem()
-    #else
+#ifdef HE_DEBUG
+    #ifdef _MSC_VER
         #define he_checkmem() _ASSERT_EXPR(_CrtCheckMemory() == TRUE, _CRT_WIDE("Heap check failed! Memcorruption detected"))
+    #else
+        #define he_checkmem()
     #endif
 #else
     #define he_checkmem()
@@ -35,13 +35,13 @@
 //////////////////////////////////////////////////////////////////////////
 ///    malloc
 //////////////////////////////////////////////////////////////////////////
-#if GCC || LLVM
-#define he_malloc_dbg(size, file, line) malloc(size)
-#else
+#ifdef _MSC_VER
 #define he_malloc_dbg(size, file, line) _malloc_dbg(size, _NORMAL_BLOCK, file, line)
+#else
+#define he_malloc_dbg(size, file, line) malloc(size)
 #endif
 
-#if DEBUG || _DEBUG
+#ifdef HE_DEBUG
     #define he_malloc(size) he_malloc_dbg(size, __FILE__, __LINE__)
 #else
     #define he_malloc(size) malloc(size)
@@ -50,8 +50,8 @@
 //////////////////////////////////////////////////////////////////////////
 ///    calloc -> inits to 0
 //////////////////////////////////////////////////////////////////////////
-#if DEBUG || _DEBUG
-    #if GCC || LLVM
+#ifdef HE_DEBUG
+    #ifndef _MSC_VER
         #define he_calloc(num,size) calloc(num,size)
     #else
         #define he_calloc(num,size) _calloc_dbg(num, size, _NORMAL_BLOCK, __FILE__, __LINE__)
@@ -63,8 +63,8 @@
 //////////////////////////////////////////////////////////////////////////
 ///    free
 //////////////////////////////////////////////////////////////////////////
-#if DEBUG || _DEBUG
-    #if GCC || LLVM
+#ifdef HE_DEBUG
+    #ifndef _MSC_VER
         #define he_free(mem) free(mem)
     #else
         #define he_free(mem) _free_dbg(mem, _NORMAL_BLOCK)
@@ -76,8 +76,8 @@
 //////////////////////////////////////////////////////////////////////////
 ///    aligned malloc
 //////////////////////////////////////////////////////////////////////////
-#if DEBUG || _DEBUG
-    #if GCC || LLVM
+#ifdef HE_DEBUG
+    #ifndef _MSC_VER
         #define he_aligned_malloc(size, alignment)  ([](unsigned int s, unsigned int a)  -> void* \
         { \
         void* p; \
@@ -88,7 +88,7 @@
         #define he_aligned_malloc(size, alignment) _aligned_malloc_dbg(size, alignment, __FILE__, __LINE__)
     #endif
 #else
-    #if GCC || LLVM
+    #ifndef _MSC_VER
         #define he_aligned_malloc(size, alignment)  ([](unsigned int s, unsigned int a) -> void* \
         { \
             void* p; \
@@ -105,14 +105,14 @@
 //////////////////////////////////////////////////////////////////////////
 ///    aligned free
 //////////////////////////////////////////////////////////////////////////
-#if DEBUG || _DEBUG
-    #if GCC || LLVM
+#ifdef HE_DEBUG
+    #ifndef _MSC_VER
         #define he_aligned_free(mem) free(mem)
     #else
         #define he_aligned_free(mem) _aligned_free_dbg(mem)
     #endif
 #else
-    #if GCC || LLVM
+    #ifndef _MSC_VER
         #define he_aligned_free(mem) free(mem)
     #else
         #define he_aligned_free(mem) _aligned_free(mem)
@@ -138,8 +138,8 @@
 //////////////////////////////////////////////////////////////////////////
 ///    realloc
 //////////////////////////////////////////////////////////////////////////
-#if DEBUG || _DEBUG
-    #if GCC || LLVM
+#ifdef HE_DEBUG
+    #ifndef _MSC_VER
         #define he_realloc(mem, newsize) realloc(mem, newsize)
     #else
         #define he_realloc(mem, newsize) _realloc_dbg(mem, newsize, _NORMAL_BLOCK, __FILE__, __LINE__)
@@ -151,8 +151,8 @@
 //////////////////////////////////////////////////////////////////////////
 ///    aligned realloc
 //////////////////////////////////////////////////////////////////////////
-#if DEBUG || _DEBUG
-    #if GCC || LLVM
+#ifdef HE_DEBUG
+    #ifndef _MSC_VER
         #define he_aligned_realloc(memory, oldsize, newsize, alignment) ([](void* mem, unsigned int oSize, unsigned int nSize, unsigned int al) -> void* \
                 { \
                     void* temp = he_aligned_malloc(nSize, al); \
@@ -164,7 +164,7 @@
         #define he_aligned_realloc(mem, oldsize, newsize, alignment) _aligned_realloc_dbg(mem, newsize, alignment, __FILE__, __LINE__)
     #endif
 #else
-    #if GCC || LLVM
+    #ifndef _MSC_VER
         #define he_aligned_realloc(memory, oldsize, newsize, alignment) ([](void* mem, unsigned int oSize, unsigned int nSize, unsigned int al) -> void* \
                     { \
                         void* temp = he_aligned_malloc(nSize, al); \

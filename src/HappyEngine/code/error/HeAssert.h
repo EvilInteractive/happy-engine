@@ -33,7 +33,7 @@ enum AssertType
     AssertType_Art
 };
 
-#if _DEBUG || TEST
+#ifdef HE_DEBUG
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
 #endif
@@ -42,7 +42,7 @@ static int s_scope = 0;
 
 } } } //end namespace
 
-#if _DEBUG || TEST
+#ifdef HE_DEBUG
 #define HE_ASSERT(isOk, message, ...) if (!(isOk)) LOG(he::LogType_ProgrammerAssert, message, ##__VA_ARGS__)
 #define HE_IF_ASSERT(isOk, message, ...) if (!(isOk)) { LOG(he::LogType_ProgrammerAssert, message, ##__VA_ARGS__); } else 
 #define HE_ART_ASSERT(isOk, message, ...) if (!(isOk)) LOG(he::LogType_ArtAssert, message, ##__VA_ARGS__)

@@ -24,7 +24,7 @@
 #pragma message("-------------------------------------------------\n")
 
 #ifndef NDEBUG
-#define _DEBUG 1
+#define HE_DEBUG 1
 #endif
 
 #ifdef HE_WINDOWS
@@ -32,7 +32,7 @@
 #else
 #define __HE_FUNCTION__ __PRETTY_FUNCTION__
 #endif
-#ifdef _DEBUG
+#ifdef HE_DEBUG
 #define FILE_AND_LINE __FILE__, __LINE__
 #else
 #define FILE_AND_LINE
@@ -115,7 +115,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HappyInfo.h"
 #include "HeAssert.h"
 
-#ifdef _DEBUG
+#ifdef HE_DEBUG
 #pragma warning(disable:4389) // '==' signed/unsigned mismatch
 template<typename To, typename From>
 inline To checked_numcast(const From value)

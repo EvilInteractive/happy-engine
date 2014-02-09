@@ -71,7 +71,7 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
         {
             typeString = "Programmer Assert"; 
             consoleType = CMSG_TYPE_ERROR;
-#ifdef _DEBUG
+#ifdef HE_DEBUG
             he::err::details::happyAssert(err::details::AssertType_Code, file, func, line, buff);
 #endif
 #ifdef HE_WINDOWS
@@ -82,7 +82,7 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
         {
             typeString = "Art Assert"; 
             consoleType = CMSG_TYPE_ERROR;
-#ifdef _DEBUG
+#ifdef HE_DEBUG
             he::err::details::happyAssert(err::details::AssertType_Art, file, func, line, buff);
 #endif
 #ifdef HE_WINDOWS

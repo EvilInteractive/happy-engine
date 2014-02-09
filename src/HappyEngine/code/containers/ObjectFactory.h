@@ -100,7 +100,7 @@ public:
 
     virtual ~ObjectFactory()
     {
-#ifdef _DEBUG
+#ifdef HE_DEBUG
         size_t leakCounter(0);
         for (ObjectHandle::IndexType i(0); i < m_Pool.size(); ++i)
         {

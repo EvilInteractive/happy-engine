@@ -51,7 +51,7 @@ JSObject* JSObject::create(Awesomium::WebView* const webView, const he::String& 
     // wait some time for the awesomium process to
     // finish with the object
     // needed for slow/heavy debug start-up
-    #if DEBUG || _DEBUG
+    #ifdef HE_DEBUG
     uint8 tries(10);
     const size_t waitTime(1000);
 
