@@ -2,6 +2,8 @@
 addFilter(CODE_SRCS src/content code/content/
             AssetContainer.h
             ContentManager.cpp                  ContentManager.h
+            Resource.h
+            ResourceFactory.h
         )
     
 addFilter(CODE_SRCS src/content/model code/content/
