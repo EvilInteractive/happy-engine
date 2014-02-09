@@ -37,7 +37,8 @@ struct MaterialDesc
 {
     MaterialDesc();
 
-    he::String m_Shader; // Path to shader desc file, later this should be a resource ID
+    he::String m_FragmentShader;
+    he::String m_VertexShader;
     bool m_IsBlended;
     bool m_NoPost;
     bool m_CullFrontFace;

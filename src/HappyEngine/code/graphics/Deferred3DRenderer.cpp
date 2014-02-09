@@ -283,7 +283,7 @@ void Deferred3DRenderer::render()
         context.m_Camera = camera;
         m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&context](Drawable* d)
         {
-            context.m_CurrentDrawable = d;
+            context.m_CurrentDrawable = d->getModelMesh();
             d->getMaterial()->apply(context);
             d->getModelMesh()->draw();
         });

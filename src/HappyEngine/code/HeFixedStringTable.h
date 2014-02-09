@@ -125,6 +125,8 @@ DEF_FS(DepthWrite);
 DEF_FS(BlendEquation);
 DEF_FS(SourceBlend);
 DEF_FS(DestBlend);
+DEF_FS(FragmentShader);
+DEF_FS(VertexShader);
 
 //////////////////////////////////////////////////////////////////////////
 // Config

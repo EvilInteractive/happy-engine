@@ -59,7 +59,7 @@ public:
     
     void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
     
-    void calculateMaterialLayout(const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout) const;
+    void calculateMaterialLayout(const BufferLayout& bufferLayout) const;
 
 private:
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }
@@ -71,16 +71,15 @@ private:
     void applyShader(const EShaderType type, const DrawContext& context) const;
     void applyMesh(const EShaderType type, const DrawContext& context) const;
 
-    const Material* m_Material;
-    
+    EShaderType m_Type;
     uint8 m_Flags;
-    
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
-    
+    const Material* m_Material;
+    MaterialLayout m_Layout;
+
     he::ObjectList<MaterialParameter> m_Parameters;
 
-    EShaderType m_Type;
 
     //Disable default copy constructor and default assignment operator
     MaterialInstance(const MaterialInstance&);

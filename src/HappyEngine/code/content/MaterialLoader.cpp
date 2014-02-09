@@ -154,7 +154,8 @@ namespace he {
 namespace ct {
 
 MaterialDesc::MaterialDesc()
-    : m_Shader("")
+    : m_FragmentShader("")
+    , m_VertexShader("")
     , m_IsBlended(false)
     , m_NoPost(false)
     , m_CullFrontFace(false)
@@ -169,7 +170,8 @@ MaterialDesc::MaterialDesc()
 
 void MaterialDesc::visit( he::io::StructuredVisitor* const visitor )
 {
-    visitor->visit(HEFS::strShader, m_Shader);
+    visitor->visit(HEFS::strFragmentShader, m_FragmentShader);
+    visitor->visit(HEFS::strVertexShader, m_VertexShader);
     visitor->visit(HEFS::strIsBlended, m_IsBlended);
     visitor->visit(HEFS::strNoPost, m_NoPost);
     visitor->visit(HEFS::strCullFrontFace, m_CullFrontFace);
@@ -223,9 +225,10 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
             material->setCullFrontFace(desc.m_CullFrontFace);
             material->setDepthReadEnabled(desc.m_DepthRead);
             material->setDepthWriteEnabled(desc.m_DepthWrite);
-            if (desc.m_Shader.empty() == false)
+            if (desc.m_FragmentShader.empty() == false && desc.m_VertexShader.empty() == false)
             {
-                gfx::Shader* const shader(CONTENT->asyncLoadShader(desc.m_Shader));
+                he::ObjectList<he::String> shaderOutputs; // check this... seems like it can be automatic
+                gfx::Shader* const shader(CONTENT->loadShader(desc.m_VertexShader, desc.m_FragmentShader, shaderOutputs));
                 material->setNormalShader(shader);
                 material->init();
             }

@@ -26,16 +26,18 @@ namespace he {
 namespace gfx {
 
 class ICamera;
+class ModelMesh;
+class MaterialInstance;
 
 struct DrawContext
 {
     DrawContext()
         : m_Camera(nullptr)
-        , m_CurrentDrawable(nullptr)
+        , m_CurrentMesh(nullptr)
     {}
 
     ICamera* m_Camera;
-    Drawable* m_CurrentDrawable;
+    ModelMesh* m_CurrentMesh;
 };
 
 } } //end namespace

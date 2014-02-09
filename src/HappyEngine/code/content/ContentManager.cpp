@@ -213,9 +213,9 @@ gui::Font* ContentManager::getDefaultFont(uint16 size)
 }
 
 //////////////////////////////////////////////////////////////////////////
-he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
+he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const he::ObjectList<he::String>& outputs)
 {
-    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
+    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, outputs);
 }
 
 //////////////////////////////////////////////////////////////////////////

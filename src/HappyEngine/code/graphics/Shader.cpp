@@ -113,15 +113,15 @@ Shader::~Shader()
     glDeleteProgram(m_Id);
 }
 
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath)
 {
-    return initFromFile(vsPath, fsPath, shaderLayout, std::set<he::String>(), he::ObjectList<he::String>());
+    return initFromFile(vsPath, fsPath, std::set<he::String>(), he::ObjectList<he::String>());
 }
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>& outputs)
 {
-    return initFromFile(vsPath, fsPath, shaderLayout, std::set<he::String>(), outputs);
+    return initFromFile(vsPath, fsPath, std::set<he::String>(), outputs);
 }
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
 {
     HE_ASSERT(m_Id != -1, "no need to init twice");
 
@@ -155,19 +155,19 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     return initFromMem(strVS, strFS, shaderLayout, vsPath, fsPath, defines, outputs);
 }
 
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName)
 {
-    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<he::String>(), he::ObjectList<he::String>());
+    return initFromMem(vs, fs, debugVertName, debugFragName, std::set<he::String>(), he::ObjectList<he::String>());
 }
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName , const he::ObjectList<he::String>& outputs)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName , const he::ObjectList<he::String>& outputs)
 {
-    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<he::String>(), outputs);
+    return initFromMem(vs, fs, debugVertName, debugFragName, std::set<he::String>(), outputs);
 }
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
 {
     bool succes = true;
 
-    setName(debugFragName);
+    setName(debugVertName+"/"+debugFragName);
 
     m_VertShaderName = debugVertName;
     m_FragShaderName = debugFragName;

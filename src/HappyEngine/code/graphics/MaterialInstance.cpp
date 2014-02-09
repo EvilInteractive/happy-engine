@@ -167,9 +167,8 @@ void MaterialInstance::applyShader( const EShaderType type, const DrawContext& c
 
 void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& context ) const
 {
-    const ModelMesh* const mesh(context.m_CurrentDrawable->getModelMesh());
-    const MaterialLayout& materialLayout(*context.m_CurrentDrawable->getMaterialLayout());
-    const MaterialLayout::layout& elements(materialLayout.m_Layout[type]);
+    const ModelMesh* const mesh(context.m_CurrentMesh);
+    const MaterialLayout::layout& elements(m_Layout.m_Layout[type]);
     
     glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBOID());
     elements.forEach([type](const details::MaterialLayoutElement& e)
@@ -182,9 +181,9 @@ void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& con
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getVBOIndexID());
 }
 
-void MaterialInstance::calculateMaterialLayout( const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout ) const
+void MaterialInstance::calculateMaterialLayout(const BufferLayout& bufferLayout) const
 {
-    m_Material->calculateMaterialLayout(bufferLayout, outMaterialLayout);
+    m_Material->calculateMaterialLayout(bufferLayout, m_Layout);
 }
     
 } } //end namespace

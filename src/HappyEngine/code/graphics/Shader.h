@@ -40,13 +40,13 @@ public:
     virtual ~Shader();
 
     // Init
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout);
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath);
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>& outputs);
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
     
-    bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName);
-    bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>& outputs);
-    bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
+    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName);
+    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>& outputs);
+    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
 
     // Use
     void bind();
