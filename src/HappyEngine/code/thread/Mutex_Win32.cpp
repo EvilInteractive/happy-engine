@@ -36,7 +36,7 @@ Mutex::~Mutex()
     DeleteCriticalSection(&m_Internal);
 }
 
-#ifdef _DEBUG
+#ifdef HE_DEBUG
 void Mutex::lock( const char* file, int line )
 {
     EnterCriticalSection(&m_Internal);

@@ -150,7 +150,7 @@ void Console::processCommand(const he::String& command)
     he::String s(command);
 
     // remove spaces
-    #if !GCC
+    #ifdef _MSC_VER
     s.erase(std::remove_if(s.begin(), s.end(), isspace), s.end());
     #else // !FIX! will be fixed when work on linux resumed
     #error What if GCC?

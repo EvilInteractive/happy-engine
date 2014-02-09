@@ -51,7 +51,7 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
             "Debug", "Skip", "Ignore"));
         if (result == HappyMessageBox::Button_Button1)
         {
-            #ifndef GCC
+            #ifdef _MSC_VER
             __debugbreak();
             #else
             __builtin_trap();
