@@ -86,6 +86,16 @@ DEF_FS(UniformType);
 DEF_FS(VariableType);
 DEF_FS(DefaultValue);
 DEF_FS(Uniforms);
+// Occlus barrel distort
+DEF_FS(inPosition);
+DEF_FS(preDistortMap);
+DEF_FS(hmdWarpParam);
+DEF_FS(lensCenter);
+DEF_FS(screenCenter);
+DEF_FS(scale);
+DEF_FS(scaleIn);
+DEF_FS(tcTransform);
+
 
 //////////////////////////////////////////////////////////////////////////
 // Material

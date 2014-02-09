@@ -196,7 +196,7 @@ void PhysicsEngine::startSimulation()
 {
     m_Timer = 0.0f;
     m_Simulate = true;
-    //m_PhysXThread = he::Thread(boost::bind(&PhysicsEngine::physXThread, this));
+    //m_PhysXThread = he::Thread(std::bind(&PhysicsEngine::physXThread, this));
 }
 void PhysicsEngine::stopSimulation()
 {

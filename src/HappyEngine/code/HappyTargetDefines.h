@@ -24,4 +24,8 @@
 
 //#define HE_USE_OCTREE
 
+#ifdef _DEBUG
+#define HE_USE_THREADTICKETS
+#endif
+
 #endif

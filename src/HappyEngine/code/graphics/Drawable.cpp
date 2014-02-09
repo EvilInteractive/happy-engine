@@ -46,11 +46,14 @@ Drawable::Drawable()
 
 Drawable::~Drawable()
 {
+    setModelMesh(nullptr);
+    setMaterial(nullptr);
     delete m_MaterialLayout;
 }
 
 void Drawable::setModelMesh( ModelMesh* const mesh )
 {
+    cancelLoad();
     if (m_ModelMesh != nullptr)
     {
         m_ModelMesh->release();
@@ -58,13 +61,15 @@ void Drawable::setModelMesh( ModelMesh* const mesh )
     m_ModelMesh = mesh;
     if (m_ModelMesh != nullptr)
     {
+        raiseFlag(eDrawableFlags_NeedsBoundUpdate);
         m_ModelMesh->instantiate();
         updateMaterialLayout(m_ModelMesh, m_Material);
     }
 }
 
-void Drawable::setMaterial( Material* const material )
+void Drawable::setMaterial(const Material* const material )
 {
+    cancelLoad();
     if (m_Material != nullptr)
     {
         delete m_Material;
@@ -72,13 +77,21 @@ void Drawable::setMaterial( Material* const material )
     }
     if (material != nullptr)
     {
-        m_Material = material->createMaterialInstance();
-        m_Material->init(eShaderType_Normal);
+        m_Material = material->createMaterialInstance(eShaderType_Normal);
         updateMaterialLayout(m_ModelMesh, m_Material);
     }
 }
 
-void Drawable::updateMaterialLayout(ModelMesh* const mesh, Material* const material)
+void Drawable::cancelLoad()
+{
+    if (m_ModelMesh != nullptr)
+        m_ModelMesh->cancelLoadCallback(this);
+    if (m_Material != nullptr)
+        m_Material->cancelLoadCallback(this);
+    clearFlag(eDrawableFlags_IsLoaded);
+}
+
+void Drawable::updateMaterialLayout(ModelMesh* const mesh, MaterialInstance* const material)
 {
     if (m_ModelMesh == mesh && m_Material == material) // Threading recall check
     {
@@ -89,15 +102,17 @@ void Drawable::updateMaterialLayout(ModelMesh* const mesh, Material* const mater
                 if (m_Material->isLoaded())
                 {
                     m_Material->calculateMaterialLayout(m_ModelMesh->getVertexLayout(), *m_MaterialLayout);
+                    raiseFlag(eDrawableFlags_IsLoaded);
+                    reevaluate();
                 }
                 else
                 {
-                    m_Material->callbackOnceIfLoaded(boost::bind(&Drawable::updateMaterialLayout, this, mesh, material));
+                    m_Material->callbackOnceIfLoaded(this, std::bind(&Drawable::updateMaterialLayout, this, mesh, material));
                 }
             }
             else
             {
-                m_ModelMesh->callbackOnceIfLoaded(boost::bind(&Drawable::updateMaterialLayout, this, mesh, material));
+                m_ModelMesh->callbackOnceIfLoaded(this, std::bind(&Drawable::updateMaterialLayout, this, mesh, material));
             }
         }
     }
@@ -115,33 +130,9 @@ void Drawable::detachFromScene()
 void Drawable::attachToScene( Scene* scene )
 {
     HE_IF_ASSERT(isAttachedToScene() == false, "Object already attached to scene")
-    HE_IF_ASSERT(m_ModelMesh != nullptr, "Drawable does not have a mesh when being attached to the scene!")
-    HE_IF_ASSERT(m_Material != nullptr, "Drawable does not have a material when being attached to the scene!")
     {
         m_Scene = scene;
-        internalAttachToScene(scene);
-    }
-}
-
-void Drawable::internalAttachToScene( Scene* const scene )
-{
-    if (m_Scene == scene) // Threading recall check
-    {
-        if (m_ModelMesh->isLoaded())
-        {
-            if (m_Material->isLoaded())
-            {
-                m_Scene->attachToScene(this);
-            }
-            else
-            {
-                m_Material->callbackOnceIfLoaded(boost::bind(&Drawable::internalAttachToScene, this, scene));
-            }
-        }
-        else
-        {
-            m_ModelMesh->callbackOnceIfLoaded(boost::bind(&Drawable::internalAttachToScene, this, scene));
-        }
+        m_Scene->attachToScene(this);
     }
 }
 
@@ -166,6 +157,11 @@ void Drawable::setWorldMatrixDirty( const uint8 cause )
 {
     Object3D::setWorldMatrixDirty(cause);
     raiseFlag(eDrawableFlags_NeedsBoundUpdate);
+    reevaluate();
+}
+
+void Drawable::reevaluate()
+{
     if (checkFlag(eDrawableFlags_NeedsSceneReevaluate) == false && isAttachedToScene())
     {
         raiseFlag(eDrawableFlags_NeedsSceneReevaluate);

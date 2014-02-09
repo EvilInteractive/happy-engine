@@ -29,7 +29,7 @@ namespace he {
 namespace gfx {
 
 class ModelMesh;
-class Material;
+class MaterialInstance;
 
 class PointLight : public Drawable, public Light
 {
@@ -40,8 +40,6 @@ private:
     mutable vec2 m_ScaledAttenuation;
 
     ModelMesh* m_LightVolume;
-    ModelMesh* m_Model;
-    Material* m_Material;
 
 protected:
     virtual void calculateWorldMatrix(); // override Object3D
@@ -65,14 +63,8 @@ public:
     const vec3& getColor() const;
     
     const ModelMesh* getLightVolume() const;
-    
-    virtual bool getCastsShadow() const { return false; }
-
-    virtual const Material* getMaterial() const;
-    virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Point; }
-    virtual bool isSleeping() const { return true; } 
 };
 
 } } //end namespace

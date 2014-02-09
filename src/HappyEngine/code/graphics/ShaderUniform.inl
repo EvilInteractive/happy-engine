@@ -27,7 +27,7 @@ namespace details {
     
 template<typename T, EShaderUniformType TType>
 ShaderUniform<T, TType>::ShaderUniform(const he::FixedString& name, const uint32 id, const T& defaultValue)
-: m_Value(id)
+: m_Value(defaultValue)
 , m_ID(id)
 , m_Name(name)
 {

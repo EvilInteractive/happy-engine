@@ -56,8 +56,10 @@
 #endif
 
 
-#define CONCAT(a, b) a##b
+#define CONCAT(a, b) _CONCAT(a, b)
+#define _CONCAT(a, b) a##b
 #define STR(a) #a
+#define EVAL(a) a
 
 /*
 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
@@ -78,7 +80,6 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include <set>
 #include <atomic>
 
-#include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/any.hpp>
 #include <boost/function.hpp>
@@ -120,7 +121,6 @@ To minimize the possibility of data corruption when exporting a class with __dec
 
 #include "thread/Thread.h"
 #include "thread/Mutex.h"
-
 
 #include "Logger.h"
 #include "HappyInfo.h"
@@ -166,6 +166,7 @@ inline To checked_cast(From value)
 #include "GLContext.h"
 
 #include "List.h"
+#include "thread/ThreadTicket.h"
 #include "FixedSizeList.h"
 
 #include "ObjectFactory.h"

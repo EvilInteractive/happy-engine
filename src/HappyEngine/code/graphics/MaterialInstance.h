@@ -24,23 +24,24 @@
 
 #include "MaterialEnums.h"
 #include "MaterialParameter.h"
+#include "AsyncLoadable.h"
 
 namespace he {
 namespace gfx {
 struct DrawContext;
 class Material;
 class BufferLayout;
-class MaterialInstance
+class MaterialInstance : public AsyncLoadable
 {
 public:
-    explicit MaterialInstance(const Material* const parent);
+    MaterialInstance(const Material* const parent, const EShaderType type);
     ~MaterialInstance();
-    
+
+    const Material* getParent() const { return m_Material; }
+
     MaterialParameter* getParameter(const FixedString& name) const;
     
-    void applyNormal(const DrawContext& context) const;
-    void applySkinned(const DrawContext& context) const;
-    void applyInstanced(const DrawContext& context) const;
+    void apply(const DrawContext& context) const;
     
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
                       BlendFunc sourceBlend  = BlendFunc_One,
@@ -64,14 +65,12 @@ private:
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }
     HE_FORCEINLINE void raiseFlag(const EMaterialFlags flag) { m_Flags |= flag; }
     HE_FORCEINLINE void clearFlag(const EMaterialFlags flag) { m_Flags &= ~flag; }
-    
+
     void init();
-    
+
     void applyShader(const EShaderType type, const DrawContext& context) const;
     void applyMesh(const EShaderType type, const DrawContext& context) const;
-    
-    void setLoaded(ELoadResult result);
-    
+
     const Material* m_Material;
     
     uint8 m_Flags;
@@ -80,6 +79,8 @@ private:
     BlendFunc m_SourceBlend, m_DestBlend;
     
     he::ObjectList<MaterialParameter> m_Parameters;
+
+    EShaderType m_Type;
 
     //Disable default copy constructor and default assignment operator
     MaterialInstance(const MaterialInstance&);

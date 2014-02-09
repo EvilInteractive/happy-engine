@@ -67,7 +67,10 @@ void DrawListContainer::insert( Drawable* drawable )
     BlendFilter blend;
     getContainerIndex(drawable, blend);
 #ifdef HE_USE_OCTREE
-    m_DrawList[blend]->insert(drawable);
+    if (drawable->calculateBound())
+    {
+        m_DrawList[blend]->insert(drawable);
+    }
 #else
     HE_IF_ASSERT(m_DrawList[blend].contains(drawable) == false, "Drawable already attached")
         m_DrawList[blend].add(drawable);
@@ -94,7 +97,7 @@ void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const bo
 #else
     std::for_each(m_DrawList[blend].cbegin(), m_DrawList[blend].cend(), [camera, drawFunc](Drawable* drawable)
     {
-        if (camera->intersect(drawable->getBound()) != IntersectResult_Outside)
+        if (drawable->canDraw() && camera->intersect(drawable->getBound()) != IntersectResult_Outside)
             drawFunc(drawable);
     });
 #endif
@@ -118,12 +121,14 @@ void DrawListContainer::prepareForRendering()
     {
         m_Dynamics.forEach([&](Drawable* drawable)
         {
-            BlendFilter blend;
-            getContainerIndex(drawable, blend);
-            drawable->calculateBound();
+            if (drawable->calculateBound())
+            {
 #ifdef HE_USE_OCTREE
-            m_DrawList[blend]->reevaluate(drawable);
+                BlendFilter blend;
+                getContainerIndex(drawable, blend);
+                m_DrawList[blend]->reevaluate(drawable);
 #endif
+            }
             drawable->nodeReevaluated();
         });
         m_Dynamics.clear();

@@ -118,6 +118,7 @@ void ContentManager::tick(float dTime) //checks for new load operations, if true
 
 void ContentManager::loadTick()
 {
+    CLAIM_THREAD(he::eThreadTicket_Content);
     while (m_LoadThreadRunning)
     {
         bool sleep(true);

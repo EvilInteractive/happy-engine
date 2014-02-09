@@ -25,7 +25,15 @@ namespace he {
 
 mat44::mat44(): m_Matrix(physx::PxVec4(1.0f, 1.0f, 1.0f, 1.0f))
 {
+}mat44::mat44(const mat44& mat): m_Matrix(other.m_Matrix)
+{
 }
+mat44& operator=(const mat44& other)
+{
+    m_Matrix = other.m_Matrix;
+    return *this;
+}
+
 mat44::mat44(const physx::PxMat44& mat): m_Matrix(mat)
 {
 }

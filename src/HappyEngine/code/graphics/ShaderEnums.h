@@ -29,11 +29,14 @@ namespace gfx {
     
 struct ShaderUniformID
 {
-    const static uint32 Unassigned;
+    const static ShaderUniformID Unassigned;
     uint32 m_ID;
     
-    ShaderUniformID(): m_ID(Unassigned) {}
+    ShaderUniformID(): m_ID(UINT32_MAX) {}
     explicit ShaderUniformID(const uint32 value): m_ID(value) {}
+
+    bool operator==(const ShaderUniformID other) const { return m_ID == other.m_ID; }
+    bool operator!=(const ShaderUniformID other) const { return m_ID != other.m_ID; }
     
     HE_FORCEINLINE uint32 getValue() const { return m_ID; }
     HE_FORCEINLINE void setValue(const uint32 value) { m_ID = value; }

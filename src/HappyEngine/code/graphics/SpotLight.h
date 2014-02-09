@@ -46,8 +46,6 @@ private:
     float m_CosCutoff;
 
     ModelMesh* m_LightVolume;
-    ModelMesh* m_Model;
-    Material* m_Material;
 
     ShadowResolution m_ShadowResolution;
     Texture2D* m_ShadowMap;
@@ -91,11 +89,6 @@ public:
     void prepareShadowCamera();
 
     const ModelMesh* getLightVolume() const;
-
-    virtual bool getCastsShadow() const { return false; }
-    
-    virtual const Material* getMaterial() const;
-    virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Spot; }
 

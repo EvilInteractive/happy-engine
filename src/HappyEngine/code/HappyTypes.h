@@ -48,7 +48,7 @@ enum IntersectResult
     
 enum ELoadResult
 {
-    eLoadResult_Unknown,
+    eLoadResult_Unloaded,
     eLoadResult_Success,
     eLoadResult_Failed
 };

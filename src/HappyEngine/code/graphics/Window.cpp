@@ -30,6 +30,7 @@
 #include "ContentManager.h"
 #include "OculusRiftBinding.h"
 #include "ModelMesh.h"
+#include "ShaderUniform.h"
 
 #include "OpenGL.h"
 #include "SDL2/SDL.h"
@@ -74,7 +75,7 @@ struct Window::OculusRiftBarrelDistorter
     Shader* m_Shader;
     ModelMesh* m_Quad;
 
-    uint32 m_Params[eShaderParams_MAX];
+    ShaderUniformID m_Params[eShaderParams_MAX];
 };
 
 void Window::OculusRiftBarrelDistorter::init(const uint32 width, const uint32 height)
@@ -85,20 +86,27 @@ void Window::OculusRiftBarrelDistorter::init(const uint32 width, const uint32 he
     m_Shader = shaderFactory->get(shaderFactory->create());
 
     ShaderLayout shaderLayout;
-    shaderLayout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
+    shaderLayout.addAttribute(ShaderLayoutAttribute(HEFS::strinPosition, eShaderAttributePropertyUsage_Position));
 
     const he::String& folder(CONTENT->getShaderFolderPath().str());
 
     m_Shader->initFromFile(folder + "shared/postShaderQuad.vert", 
         folder + "post/vrbarreldistort.frag", shaderLayout);
 
-    m_Params[eShaderParams_Texture] = m_Shader->getShaderSamplerId("preDistortMap"); 
-    m_Params[eShaderParams_HmdWarpParam] = m_Shader->getShaderVarId("hmdWarpParam"); 
-    m_Params[eShaderParams_LensCenter] = m_Shader->getShaderVarId("lensCenter"); 
-    m_Params[eShaderParams_ScreenCenter] = m_Shader->getShaderVarId("screenCenter"); 
-    m_Params[eShaderParams_Scale] = m_Shader->getShaderVarId("scale"); 
-    m_Params[eShaderParams_ScaleIn] = m_Shader->getShaderVarId("scaleIn"); 
-    m_Params[eShaderParams_TcTransform] = m_Shader->getShaderVarId("tcTransform"); 
+    m_Params[eShaderParams_Texture] = m_Shader->getUniformID(HEFS::strpreDistortMap);
+    HE_ASSERT(m_Params[eShaderParams_Texture] != ShaderUniformID::Unassigned, "Could not find preDistortMap in OVR barrel distorter!");
+    m_Params[eShaderParams_HmdWarpParam] = m_Shader->getUniformID(HEFS::strhmdWarpParam);
+    HE_ASSERT(m_Params[eShaderParams_HmdWarpParam] != ShaderUniformID::Unassigned, "Could not find hmdWarpParam in OVR barrel distorter!");
+    m_Params[eShaderParams_LensCenter] = m_Shader->getUniformID(HEFS::strlensCenter);
+    HE_ASSERT(m_Params[eShaderParams_LensCenter] != ShaderUniformID::Unassigned, "Could not find lensCenter in OVR barrel distorter!");
+    m_Params[eShaderParams_ScreenCenter] = m_Shader->getUniformID(HEFS::strscreenCenter);
+    HE_ASSERT(m_Params[eShaderParams_ScreenCenter] != ShaderUniformID::Unassigned, "Could not find screenCenter in OVR barrel distorter!");
+    m_Params[eShaderParams_Scale] = m_Shader->getUniformID(HEFS::strscale);
+    HE_ASSERT(m_Params[eShaderParams_Scale] != ShaderUniformID::Unassigned, "Could not find scale in OVR barrel distorter!");
+    m_Params[eShaderParams_ScaleIn] = m_Shader->getUniformID(HEFS::strscaleIn);
+    HE_ASSERT(m_Params[eShaderParams_ScaleIn] != ShaderUniformID::Unassigned, "Could not find scaleIn in OVR barrel distorter!");
+    m_Params[eShaderParams_TcTransform] = m_Shader->getUniformID(HEFS::strtcTransform);
+    HE_ASSERT(m_Params[eShaderParams_TcTransform] != ShaderUniformID::Unassigned, "Could not find tcTransform in OVR barrel distorter!");
 
 
     TextureFactory* const textureFactory(TextureFactory::getInstance());
@@ -138,9 +146,9 @@ void Window::OculusRiftBarrelDistorter::setupEye( io ::OculusRiftDevice* const d
     GL::heSetViewport(viewport);
 
     const float distShift(device->getDistortionShift());
-    m_Shader->setShaderVar(m_Params[eShaderParams_LensCenter], vec2(0.25f + eye * 0.25f + (0.5f + distShift * -eye * 0.5f) * 0.5f, 0.5f));
-    m_Shader->setShaderVar(m_Params[eShaderParams_ScreenCenter], vec2(0.5f + eye * 0.25f, 0.5f));
-    m_Shader->setShaderVar(m_Params[eShaderParams_TcTransform], vec4(0.25f + eye * 0.25f, 0.0f, 0.5f, 1.0f));
+    checked_cast<ShaderUniformVec2*>(m_Shader->getUniform(m_Params[eShaderParams_LensCenter]))->set(m_Shader, vec2(0.25f + eye * 0.25f + (0.5f + distShift * -eye * 0.5f) * 0.5f, 0.5f));
+    checked_cast<ShaderUniformVec2*>(m_Shader->getUniform(m_Params[eShaderParams_ScreenCenter]))->set(m_Shader, vec2(0.5f + eye * 0.25f, 0.5f));
+    checked_cast<ShaderUniformVec4*>(m_Shader->getUniform(m_Params[eShaderParams_TcTransform]))->set(m_Shader, vec4(0.25f + eye * 0.25f, 0.0f, 0.5f, 1.0f));
 }
 
 void Window::OculusRiftBarrelDistorter::distort(const uint32 width, const uint32 height)
@@ -154,15 +162,15 @@ void Window::OculusRiftBarrelDistorter::distort(const uint32 width, const uint32
     GL::heSetCullFace(false);
 
     m_Shader->bind();
-    m_Shader->setShaderVar(m_Params[eShaderParams_Texture], m_PreBarrelDistort);
-    m_Shader->setShaderVar(m_Params[eShaderParams_HmdWarpParam], device->getWarpParams());
+    checked_cast<ShaderUniformTexture2D*>(m_Shader->getUniform(m_Params[eShaderParams_Texture]))->set(m_Shader, m_PreBarrelDistort);
+    checked_cast<ShaderUniformVec4*>(m_Shader->getUniform(m_Params[eShaderParams_HmdWarpParam]))->set(m_Shader, device->getWarpParams());
 
     RectI viewport(0, 0, width / 2, height);
 
     const float aspectRatio(viewport.width / static_cast<float>(viewport.height));
     const float scale(1.0f / device->getDistortionScale());
-    m_Shader->setShaderVar(m_Params[eShaderParams_Scale], vec2(0.5f / 2.0f * scale, (1.0f / 2.0f) * scale * aspectRatio));
-    m_Shader->setShaderVar(m_Params[eShaderParams_ScaleIn], vec2(2.0f / 0.5f, (2.0f / 1.0f) / aspectRatio));
+    checked_cast<ShaderUniformVec2*>(m_Shader->getUniform(m_Params[eShaderParams_Scale]))->set(m_Shader, vec2(0.5f / 2.0f * scale, (1.0f / 2.0f) * scale * aspectRatio));
+    checked_cast<ShaderUniformVec2*>(m_Shader->getUniform(m_Params[eShaderParams_ScaleIn]))->set(m_Shader, vec2(2.0f / 0.5f, (2.0f / 1.0f) / aspectRatio));
     
     setupEye(device, viewport, -1);
     GL::heBindVao(m_Quad->getVertexArraysID());

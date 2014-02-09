@@ -60,7 +60,7 @@ public:
     void setDepthWriteEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthWrite) : clearFlag(eMaterialFlags_DepthWrite); }
     void setDepthReadEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthRead) : clearFlag(eMaterialFlags_DepthRead); }
     
-    MaterialInstance* createMaterialInstance() const;
+    MaterialInstance* createMaterialInstance(const EShaderType type) const;
     
 private:
     Shader* bindShader(const EShaderType type) const;

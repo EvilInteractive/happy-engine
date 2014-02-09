@@ -26,6 +26,7 @@
 #include "Shader.h"
 #include "Texture2D.h"
 #include "Material.h"
+#include "MaterialInstance.h"
 #include "TextureCube.h"
 
 #include "Entity.h"
@@ -103,21 +104,21 @@ void SkyBox::load( const he::String& asset )
     cube->init(layout, MeshDrawMode_Triangles);
     cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
     cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);
-    cube->setLoaded((eLoadResult_Success);
+    cube->setLoaded(eLoadResult_Success);
     m_Drawable->setModelMesh(cube);
     cube->release();
 
-    Material* const material(he::ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/sky.material")));
+    Material* const material(CONTENT->loadMaterial("engine/sky.material"));
     m_Drawable->setMaterial(material);
-
-    ShaderUserVar<const TextureCube*>* cubeMap(checked_cast<ShaderUserVar<const gfx::TextureCube*>*>(material->getVar(HEFS::strcubeMap)));
-    if (cubeMap != nullptr)
-    {
-        const TextureCube* cube(CONTENT->asyncLoadTextureCube(asset));
-        cubeMap->setData(cube);
-    }
     material->release();
 
+    MaterialParameter* const cubeMap(m_Drawable->getMaterial()->getParameter(HEFS::strcubeMap));
+    if (cubeMap)
+    {
+        const TextureCube* cube(CONTENT->asyncLoadTextureCube(asset));
+        cubeMap->setTextureCube(cube);
+        cube->release();
+    }
 }
 
 } } //end namespace

@@ -42,18 +42,22 @@ class HAPPY_ENTRY Drawable: public he::Object3D
         eDrawableFlags_None = 0,
         eDrawableFlags_CastShadow = 1 << 0,
         eDrawableFlags_NeedsSceneReevaluate = 1 << 1,
-        eDrawableFlags_NeedsBoundUpdate = 1 << 2
+        eDrawableFlags_NeedsBoundUpdate = 1 << 2,
+        eDrawableFlags_IsLoaded = 1 << 3,
+        eDrawableFlags_IsVisible = 1 << 4
     };
 public:
     Drawable();
     virtual ~Drawable();
 
     void setModelMesh(ModelMesh* const mesh);
-    void setMaterial(Material* const material);
+    void setMaterial(const Material* const material);
 
     HE_FORCEINLINE ModelMesh* const getModelMesh() const { return m_ModelMesh; }
-    HE_FORCEINLINE Material* const getMaterial() const { return m_Material; }
+    HE_FORCEINLINE MaterialInstance* const getMaterial() const { return m_Material; }
     HE_FORCEINLINE MaterialLayout* getMaterialLayout() const { return m_MaterialLayout; }
+
+    bool canDraw() const { return checkFlag(eDrawableFlags_IsLoaded | eDrawableFlags_IsLoaded); }
 
     bool getCastsShadow() const { return checkFlag(eDrawableFlags_CastShadow); }
     void setCastsShadow(const bool castShadow) { castShadow? raiseFlag(eDrawableFlags_CastShadow) : clearFlag(eDrawableFlags_CastShadow); }
@@ -78,12 +82,14 @@ protected:
     void setWorldMatrixDirty(const uint8 cause);
 
 private:
-    HE_FORCEINLINE bool checkFlag(const EDrawableFlags flag) const { return (m_Flags & flag) != 0; }
-    HE_FORCEINLINE void raiseFlag(const EDrawableFlags flag) { m_Flags |= flag; }
-    HE_FORCEINLINE void clearFlag(const EDrawableFlags flag) { m_Flags &= ~flag; }
+    HE_FORCEINLINE bool checkFlag(const int flag) const { return (m_Flags & flag) == flag; }
+    HE_FORCEINLINE void raiseFlag(const int flag) { m_Flags |= flag; }
+    HE_FORCEINLINE void clearFlag(const int flag) { m_Flags &= ~flag; }
 
-    void updateMaterialLayout(ModelMesh* const mesh, Material* const material);
-    void internalAttachToScene(Scene* const scene);
+    void updateMaterialLayout(ModelMesh* const mesh, MaterialInstance* const material);
+
+    void cancelLoad();
+    void reevaluate();
 
     Bound m_Bound;
 #ifdef HE_USE_OCTREE

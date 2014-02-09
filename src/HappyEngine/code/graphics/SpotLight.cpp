@@ -41,30 +41,26 @@ SpotLight::SpotLight()
     , m_ScaledAttenuation(MIN_BEGIN_ATTENUATION, 10.0f)
     , m_Color(1.0f, 1.0f, 1.0f)
     , m_CosCutoff(0.5f)
-    , m_Material(nullptr)
-    , m_Model(nullptr)
     , m_LightVolume(nullptr)
     , m_ShadowResolution(ShadowResolution_None)
     , m_ShadowMap(nullptr)
     , m_ShadowLensDirty(true)
     , m_ShadowLookDirty(true)
 {
-    m_Material = ResourceFactory<Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
-    //m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight"); //HACK: wrong volume
+    //m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight"); //HACK: wrong volume
     m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight"); //HACK: wrong volume
+    setModelMesh(m_LightVolume);
+    setMaterial(CONTENT->loadMaterial("engine/light/debuglight.material"));
 
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
-    m_Model = m_LightVolume;
+    setCastsShadow(false);
 }
 
 SpotLight::~SpotLight()
-{   
-    if (m_Model != nullptr)
-        m_Model->release();
+{
     if (m_LightVolume != nullptr)
         m_LightVolume->release();
-    if (m_Material != nullptr)
-        m_Material->release();
+    setModelMesh(nullptr);
+    setMaterial(nullptr);
     if (m_ShadowMap != nullptr)
         m_ShadowMap->release();
 }
@@ -147,15 +143,6 @@ const ModelMesh* SpotLight::getLightVolume() const
 {
     return m_LightVolume;
 }
-const Material* SpotLight::getMaterial() const
-{
-    return m_Material;
-}
-const ModelMesh* SpotLight::getModelMesh() const
-{
-    return m_Model;
-}
-
 float SpotLight::getFov() const
 {
     return acosf(m_CosCutoff) * 2.0f;

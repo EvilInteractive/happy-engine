@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "StaticDataManager.h"
+#include "ThreadTicket.h"
 #include "ResourceFactory.h"
 #include "Texture2D.h"
 #include "TextureCube.h"
@@ -59,6 +60,7 @@ void StaticDataManager::init()
 #ifdef USE_WEB
     Awesomium::WebCore::Initialize(Awesomium::WebConfig());
 #endif
+    he::ThreadTicketManager::sdmInit();
     he::Path msbbox(he::Path::getFullDataPath().append("gui/messageBox.html"));
     he::HappyMessageBox::init(msbbox.str().c_str(), 1024, 512);
     he::HappyEngine::sdmInit();
@@ -127,6 +129,7 @@ void StaticDataManager::destroy()
     tools::Logger::sdmDestroy();
     he::HappyEngine::sdmDestroy();
     he::HappyMessageBox::destroy();
+    he::ThreadTicketManager::destroy();
 #ifdef USE_WEB
     Awesomium::WebCore::Shutdown();
 #endif

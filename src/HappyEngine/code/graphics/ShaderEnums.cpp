@@ -22,7 +22,9 @@
 
 namespace he {
 namespace gfx {
-    
+
+const ShaderUniformID ShaderUniformID::Unassigned;
+
 EShaderAttributePropertyUsage bufferElementUsageToShaderAttribUsage(const BufferElement::Usage usage)
 {
     EShaderAttributePropertyUsage result(eShaderAttributePropertyUsage_Invalid);

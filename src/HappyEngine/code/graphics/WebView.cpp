@@ -66,7 +66,7 @@ WebView::WebView(gfx::View* view, const RectF& viewportPercent, bool enableUserI
     m_Size(-1, -1),
     m_View(view),
     m_ViewportPercent(viewportPercent),
-    m_ViewResizedHandler(boost::bind(&WebView::onViewResized, this)),
+    m_ViewResizedHandler(std::bind(&WebView::onViewResized, this)),
     m_Buffer(nullptr),
     m_WebListener(nullptr),
     m_HasFocus(false)

@@ -66,7 +66,7 @@ View::View():
     m_ViewportPercentage(0, 0, 1, 1),
     m_UsePercentage(true),
     m_Window(nullptr),
-    m_WindowResizedCallback(boost::bind(&View::resize, this, _1, _2)),
+    m_WindowResizedCallback(std::bind(&View::resize, this, std::placeholders::_1, std::placeholders::_2)),
     m_PostProcesser(nullptr),
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 

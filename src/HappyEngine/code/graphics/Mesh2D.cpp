@@ -31,8 +31,8 @@ namespace gfx {
 Mesh2D::Mesh2D(bool staticDraw) :  
     m_Polygon(NEW Polygon()),
     m_WorldMatrix(mat44::Identity),
-    m_ContextCreatedHandler(boost::bind(&Mesh2D::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&Mesh2D::destroyVao, this, _1)),
+    m_ContextCreatedHandler(std::bind(&Mesh2D::initVao, this, std::placeholders::_1)),
+    m_ContextRemovedHandler(std::bind(&Mesh2D::destroyVao, this, std::placeholders::_1)),
     m_StaticDraw(staticDraw),
     m_HasBuffer(false)
 {

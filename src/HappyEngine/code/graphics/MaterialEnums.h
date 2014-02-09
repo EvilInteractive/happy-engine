@@ -31,7 +31,8 @@ namespace gfx {
         eShaderType_Skinned,
         eShaderType_Instanced,
         
-        eShaderType_MAX
+        eShaderType_Unknown,
+        eShaderType_MAX = eShaderType_Unknown
     };
     
     namespace details

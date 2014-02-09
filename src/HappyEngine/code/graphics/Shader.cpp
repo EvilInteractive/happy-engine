@@ -92,8 +92,6 @@ namespace he {
 namespace gfx {
 
 uint32 Shader::s_CurrentBoundShader = 0;
-const size_t ShaderUniformID::Unassigned(SIZE_T_MAX);
-
 
 Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 {

@@ -48,9 +48,9 @@ Material::~Material()
     }
 }
     
-MaterialInstance* Material::createMaterialInstance() const
+MaterialInstance* Material::createMaterialInstance(const EShaderType type) const
 {
-    MaterialInstance* instance(NEW MaterialInstance(this));
+    MaterialInstance* instance(NEW MaterialInstance(this, type));
     return instance;
 }
     

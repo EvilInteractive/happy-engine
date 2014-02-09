@@ -39,6 +39,7 @@ namespace ge {
 ModelComponent::ModelComponent()
     : m_Parent(nullptr)
     , m_Drawable(NEW gfx::Drawable())
+    , m_LoadingDesc(nullptr)
 {
 }
 
@@ -60,28 +61,51 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 {
     he::ct::ContentManager* const contentManager(CONTENT);
 
-    he::gfx::Material* material(contentManager->loadMaterial(materialAsset));
-    m_Drawable->setMaterial(material);
-    material->release();
-
-    he::gfx::Model* const model(contentManager->asyncLoadModel(modelAsset));
-    model->callbackOnceIfLoaded([&, model, meshName](Resource<gfx::Model>* const loadedModel)
+    if (m_LoadingDesc != nullptr)
     {
-        if (model == loadedModel)
+        gfx::Material* const material(m_LoadingDesc->m_Material);
+        if (material != nullptr)
         {
-            if (meshName.empty())
-                m_Drawable->setModelMesh(model->getMesh(0));
-            else
-                m_Drawable->setModelMesh(model->getMesh(meshName));
-            OnModelMeshLoaded();
+            material->release();
         }
-        model->release();        
+        gfx::ModelMesh* const mesh(m_LoadingDesc->m_Mesh);
+        if (mesh != nullptr)
+        {
+            mesh->cancelLoadCallback(this);
+            mesh->release();
+        }
+    }
+    else
+    {
+        m_LoadingDesc = NEW LoadDesc();
+    }
+
+    he::gfx::Material* const material(contentManager->loadMaterial(materialAsset));
+    m_LoadingDesc->m_Material = material;
+
+    he::gfx::ModelMesh* const mesh(contentManager->asyncLoadModelMesh(modelAsset, meshName));
+    m_LoadingDesc->m_Mesh = mesh;
+    mesh->callbackOnceIfLoaded(this, [this](const ELoadResult result)
+    {
+        // If loading fails, clear the mesh and material
+        // This is always done because it is more efficient to reset the drawable first
+        m_Drawable->setMaterial(nullptr);
+        m_Drawable->setModelMesh(nullptr);
+        if (result == eLoadResult_Success)
+        {
+            m_Drawable->setModelMesh(m_LoadingDesc->m_Mesh);
+            m_Drawable->setMaterial(m_LoadingDesc->m_Material);
+        }
+        m_LoadingDesc->m_Mesh->release();
+        m_LoadingDesc->m_Material->release();
+        delete m_LoadingDesc;
+        m_LoadingDesc = nullptr;
     });
 }
 
 void ModelComponent::unloadModelMeshAndMaterial()
 {
-    HE_ASSERT(isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
+    HE_ASSERT(m_Drawable->isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
     m_Drawable->setModelMesh(nullptr);
     m_Drawable->setMaterial(nullptr);
 }

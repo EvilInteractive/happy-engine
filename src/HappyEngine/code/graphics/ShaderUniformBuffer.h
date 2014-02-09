@@ -32,7 +32,8 @@ namespace gfx {
 #define UNIFORM_VEC2_VEC2(var1, var2) vec2 var1; vec2 var2;
 #define UNIFORM_VEC2_FLOAT_FLOAT(var1, var2, var3) vec2 var1; float var2; float var3;
 #define UNIFORM_FLOAT_FLOAT_FLOAT_FLOAT(var1, var2, var3, var4) vec2 var1; float var2; float var3; float var4;
-#define UNIFORM_STRUCT_END(name) }; HE_COMPILE_ASSERT(sizeof(name) % 16 == 0, CONCAT(CONCAT("Uniform struct ", EVALUATE(STR(name))), " is not 16byte aligned!"));
+#define UNIFORM_STRUCT_END(name) }; HE_COMPILE_ASSERT(sizeof(name) % 16 == 0, "Uniform struct '" STR(name) "' is not 16byte aligned!");
+// EVAL(CONCAT(CONCAT("Uniform struct ", STR(name)), " is not 16byte aligned!"))
 
 template<typename T>
 class SharedUniformBuffer
@@ -40,7 +41,7 @@ class SharedUniformBuffer
 public:
     SharedUniformBuffer(): m_BufferId(UINT32_MAX), m_GlBuffer(0)
     {
-        HE_COMPILE_ASSERT(sizeof(T) % 16 == 0, CONCAT(CONCAT("Uniform struct ", STR(T)), " is not 16byte aligned!"));
+        HE_COMPILE_ASSERT(sizeof(T) % 16 == 0, "Uniform struct is not 16byte aligned!");
     }
     ~SharedUniformBuffer()
     {

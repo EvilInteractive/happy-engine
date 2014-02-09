@@ -35,7 +35,7 @@ namespace gfx {
 /* CONSTRUCTOR - DESTRUCTOR */
 Canvas2DRendererCairo::Canvas2DRendererCairo() : m_HandleDrawCalls(true)
 {
-    m_DrawThread.startThread(boost::bind(&Canvas2DRendererCairo::handleDrawCalls, this), "CairoDrawThread");
+    m_DrawThread.startThread(std::bind(&Canvas2DRendererCairo::handleDrawCalls, this), "CairoDrawThread");
 }
 
 Canvas2DRendererCairo::~Canvas2DRendererCairo()
@@ -201,7 +201,7 @@ void Canvas2DRendererCairo::setLineWidth(float width)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_set_line_width,
         sData->m_CairoPaint,
         static_cast<double>(width)));
@@ -220,7 +220,7 @@ void Canvas2DRendererCairo::setColor(const Color& col)
     if (col.a() == 1.0f)
     {
         sData->m_DrawCalls.push(
-            boost::bind(
+            std::bind(
             &cairo_set_source_rgb,
             sData->m_CairoPaint,
             static_cast<double>(col.r()),
@@ -230,7 +230,7 @@ void Canvas2DRendererCairo::setColor(const Color& col)
     else
     {
         sData->m_DrawCalls.push(
-            boost::bind(
+            std::bind(
             &cairo_set_source_rgba,
             sData->m_CairoPaint,
             static_cast<double>(col.r()),
@@ -250,7 +250,7 @@ void Canvas2DRendererCairo::setLineCap(gui::LINE_CAP cap)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_set_line_cap,
         sData->m_CairoPaint,
         static_cast<cairo_line_cap_t>(cap)));
@@ -266,7 +266,7 @@ void Canvas2DRendererCairo::setLineJoin(gui::LINE_JOIN join)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_set_line_join,
         sData->m_CairoPaint,
         static_cast<cairo_line_join_t>(join)));
@@ -284,23 +284,23 @@ void Canvas2DRendererCairo::clear()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_save,
         sData->m_CairoPaint));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_set_operator,
         sData->m_CairoPaint,
         CAIRO_OPERATOR_CLEAR));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_paint,
         sData->m_CairoPaint));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_restore,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -315,7 +315,7 @@ void Canvas2DRendererCairo::moveTo(const vec2& pos)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_move_to,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
@@ -332,7 +332,7 @@ void Canvas2DRendererCairo::lineTo(const vec2& pos)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_line_to,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
@@ -352,7 +352,7 @@ void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_rectangle,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
@@ -371,7 +371,7 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadSta
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_arc,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
@@ -391,7 +391,7 @@ void Canvas2DRendererCairo::curveTo(const vec2& controlP1, const vec2& controlP2
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_curve_to,
         sData->m_CairoPaint,
         static_cast<double>(controlP1.x),
@@ -412,7 +412,7 @@ void Canvas2DRendererCairo::newPath()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_new_path,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -427,7 +427,7 @@ void Canvas2DRendererCairo::closePath()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_close_path,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -443,7 +443,7 @@ void Canvas2DRendererCairo::text(const gui::Text& text, const vec2& pos)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &Canvas2DRendererCairo::_text,
         this,
         text,
@@ -462,7 +462,7 @@ void Canvas2DRendererCairo::stroke()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_stroke_preserve,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -477,7 +477,7 @@ void Canvas2DRendererCairo::fill()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_fill_preserve,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -601,14 +601,14 @@ void Canvas2DRendererCairo::transformY()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_scale,
         sData->m_CairoPaint,
         1.0,
         -1.0));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_translate,
         sData->m_CairoPaint,
         0.0,

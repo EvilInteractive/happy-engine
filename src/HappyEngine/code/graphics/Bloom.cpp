@@ -41,7 +41,7 @@ Bloom::Bloom(): m_DownSamples(4),
                 m_DownSampleShader(nullptr), 
                 m_DownSampleBrightPassShader(nullptr),
                 m_Mesh(nullptr), m_Hdr(true),
-                m_ViewportSizeChangedHandler(boost::bind(&Bloom::resize, this)),
+                m_ViewportSizeChangedHandler(std::bind(&Bloom::resize, this)),
                 m_View(nullptr),
                 m_ToneMapBuffer(nullptr)
 {

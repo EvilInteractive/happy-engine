@@ -88,7 +88,6 @@ void Scene::doReevalute( Drawable* drawable )
 
 void Scene::attachToScene( Drawable* drawable )
 {
-    drawable->calculateBound();
     m_DrawList.insert(drawable);
 }
 

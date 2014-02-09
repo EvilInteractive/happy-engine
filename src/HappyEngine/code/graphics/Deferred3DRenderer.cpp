@@ -90,7 +90,7 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 
     m_NormalDepthTexture = target->getTextureTarget(1);
 
-    eventCallback0<void> viewportSizeChangedHandler(boost::bind(&Deferred3DRenderer::onViewResized, this));
+    eventCallback0<void> viewportSizeChangedHandler(std::bind(&Deferred3DRenderer::onViewResized, this));
     m_View->ViewportSizeChanged += viewportSizeChangedHandler;
 
     compileShaders();
@@ -284,8 +284,8 @@ void Deferred3DRenderer::render()
         m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&context](Drawable* d)
         {
             context.m_CurrentDrawable = d;
-            d->getMaterial->applyNormal(context);
-            d->draw();
+            d->getMaterial()->apply(context);
+            d->getModelMesh()->draw();
         });
 
 

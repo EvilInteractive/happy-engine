@@ -29,21 +29,21 @@
 
 namespace
 {
-    void applyShaderVar(he::gfx::Shader* const shader, he::gfx::MaterialParameter* const var)
+    void applyShaderVar(he::gfx::Shader* const shader, const he::gfx::MaterialParameter& var)
     {
-        he::gfx::IShaderUniform* uniform(shader->getUniform(var->getID()));
+        he::gfx::IShaderUniform* uniform(shader->getUniform(var.getID()));
         HE_ASSERT(uniform != nullptr, "Could not find corresponding shader uniform when trying to set materialparam!");
-        switch (var->getType())
+        switch (var.getType())
         {
-            case he::gfx::MaterialParameter::eType_Float: checked_cast<he::gfx::ShaderUniformFloat*>(uniform)->set(shader, var->getFloat()); break;
-            case he::gfx::MaterialParameter::eType_Float2: checked_cast<he::gfx::ShaderUniformVec2*>(uniform)->set(shader, var->getFloat2()); break;
-            case he::gfx::MaterialParameter::eType_Float3: checked_cast<he::gfx::ShaderUniformVec3*>(uniform)->set(shader, var->getFloat3()); break;
-            case he::gfx::MaterialParameter::eType_Float4: checked_cast<he::gfx::ShaderUniformVec4*>(uniform)->set(shader, var->getFloat4()); break;
-            case he::gfx::MaterialParameter::eType_Int: checked_cast<he::gfx::ShaderUniformInt*>(uniform)->set(shader, var->getInt()); break;
-            case he::gfx::MaterialParameter::eType_Texture2D: checked_cast<he::gfx::ShaderUniformTexture2D*>(uniform)->set(shader, var->getTexture2D()); break;
-            case he::gfx::MaterialParameter::eType_TextureCube: checked_cast<he::gfx::ShaderUniformTextureCube*>(uniform)->set(shader, var->getTextureCube()); break;
+            case he::gfx::MaterialParameter::eType_Float: checked_cast<he::gfx::ShaderUniformFloat*>(uniform)->set(shader, var.getFloat()); break;
+            case he::gfx::MaterialParameter::eType_Float2: checked_cast<he::gfx::ShaderUniformVec2*>(uniform)->set(shader, var.getFloat2()); break;
+            case he::gfx::MaterialParameter::eType_Float3: checked_cast<he::gfx::ShaderUniformVec3*>(uniform)->set(shader, var.getFloat3()); break;
+            case he::gfx::MaterialParameter::eType_Float4: checked_cast<he::gfx::ShaderUniformVec4*>(uniform)->set(shader, var.getFloat4()); break;
+            case he::gfx::MaterialParameter::eType_Int: checked_cast<he::gfx::ShaderUniformInt*>(uniform)->set(shader, var.getInt()); break;
+            case he::gfx::MaterialParameter::eType_Texture2D: checked_cast<he::gfx::ShaderUniformTexture2D*>(uniform)->set(shader, var.getTexture2D()); break;
+            case he::gfx::MaterialParameter::eType_TextureCube: checked_cast<he::gfx::ShaderUniformTextureCube*>(uniform)->set(shader, var.getTextureCube()); break;
             case he::gfx::MaterialParameter::eType_Invalid: LOG(he::LogType_ProgrammerAssert, "Trying to set invalid material parameter!"); break;
-            default: LOG(he::LogType_ProgrammerAssert, "Trying to set unknown material parameter type, %s", var->typeToString(var->getType())); break;
+            default: LOG(he::LogType_ProgrammerAssert, "Trying to set unknown material parameter type, %s", var.typeToString(var.getType())); break;
         }
     }
 }
@@ -51,18 +51,21 @@ namespace
 namespace he {
 namespace gfx {
 
-MaterialInstance::MaterialInstance(const Material* const material)
+MaterialInstance::MaterialInstance(const Material* const material, const EShaderType type)
     : m_Material(material)
+    , m_Type(type)
 {
     m_Material->instantiate();
     m_Material->callbackOnceIfLoaded(this, [this](const ELoadResult result)
     {
         if (result == eLoadResult_Success)
+        {
             init();
+        }
         setLoaded(result);
     });
 }
-    
+
 void MaterialInstance::init()
 {
     // Copy everything from parent material
@@ -73,9 +76,7 @@ void MaterialInstance::init()
     
     m_Parameters.clear();
     
-    EShaderType type(eShaderType_Normal);
-    
-    Shader* const shader(m_Material->getShader(type));
+    Shader* const shader(m_Material->getShader(m_Type));
     const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
     const size_t count(uniforms.size());
     for (size_t i(0); i < count; ++i)
@@ -118,7 +119,7 @@ void MaterialInstance::init()
                 LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
                 break;
             case eShaderUniformType_Texture1D:
-                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;                break;
+                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
             case eShaderUniformType_Texture2D:
                 param.init(id, MaterialParameter::eType_Texture2D);
                 //param.setTexture2D(m_Material->getDefaultTexture2D(uniform->getName()));
@@ -131,37 +132,22 @@ void MaterialInstance::init()
         m_Parameters.add(param);
     }
 }
-    
-void MaterialInstance::setLoaded(ELoadResult result)
-{
-    // do callbacks
-    result;
-}
-    
+
 MaterialInstance::~MaterialInstance()
 {
     m_Material->cancelLoadCallback(this);
     m_Material->release();
 }
     
-void MaterialInstance::applyNormal( const DrawContext& context ) const
+void MaterialInstance::apply( const DrawContext& context ) const
 {
-    applyShader(eShaderType_Normal, context);
-    applyMesh(eShaderType_Normal, context);
+    HE_IF_ASSERT(m_Type != eShaderType_Unknown, "You forgot to init this material instance! without the init we cannot draw this!")
+    {
+        applyShader(m_Type, context);
+        applyMesh(m_Type, context);
+    }
 }
 
-void MaterialInstance::applySkinned( const DrawContext& context ) const
-{
-    applyShader(eShaderType_Skinned, context);
-    applyMesh(eShaderType_Skinned, context);
-}
-
-void MaterialInstance::applyInstanced( const DrawContext& context ) const
-{
-    applyShader(eShaderType_Instanced, context);
-    applyMesh(eShaderType_Instanced, context);
-}
-    
 void MaterialInstance::applyShader( const EShaderType type, const DrawContext& context ) const
 {
     if (checkFlag(eMaterialFlags_Blended))
@@ -175,8 +161,8 @@ void MaterialInstance::applyShader( const EShaderType type, const DrawContext& c
     GL::heSetCullFace(checkFlag(eMaterialFlags_CullFrontFace));
     
     Shader* shader(m_Material->bindShader(type));
-    
-    m_Parameters.forEach(std::bind(::applyShaderVar, shader, _1));
+
+    m_Parameters.forEach(std::bind(::applyShaderVar, shader, std::placeholders::_1));
 }
 
 void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& context ) const
@@ -186,7 +172,7 @@ void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& con
     const MaterialLayout::layout& elements(materialLayout.m_Layout[type]);
     
     glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBOID());
-    std::for_each(elements.cbegin(), elements.cend(), [&](const details::MaterialLayoutElement& e)
+    elements.forEach([type](const details::MaterialLayoutElement& e)
     {
         glVertexAttribPointer(e.m_ElementIndex, e.m_Components, type, GL_FALSE,
                               e.m_Stride, BUFFER_OFFSET(e.m_ByteOffset));

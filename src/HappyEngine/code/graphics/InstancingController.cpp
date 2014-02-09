@@ -44,8 +44,8 @@ namespace gfx {
 InstancingController::InstancingController(const he::String& name, bool dynamic, const ObjectHandle& meshHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
-    m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1)), m_AttachedToScene(false)
+    m_ContextCreatedHandler(std::bind(&InstancingController::initVao, this, std::placeholders::_1)),
+    m_ContextRemovedHandler(std::bind(&InstancingController::destroyVao, this, std::placeholders::_1)), m_AttachedToScene(false)
 {
     he_memset(m_Vao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
     he_memset(m_ShadowVao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
@@ -57,14 +57,14 @@ InstancingController::InstancingController(const he::String& name, bool dynamic,
 
     m_ModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(meshHandle);
     m_ModelMesh->instantiate();
-    m_ModelMesh->callbackOnceIfLoaded(this, boost::bind(&InstancingController::init, this));
+    m_ModelMesh->callbackOnceIfLoaded(this, std::bind(&InstancingController::init, this));
 }
 
 InstancingController::InstancingController( const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset, const he::String& mesh ):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
-    m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1)), m_AttachedToScene(false)
+    m_ContextCreatedHandler(std::bind(&InstancingController::initVao, this, std::placeholders::_1)),
+    m_ContextRemovedHandler(std::bind(&InstancingController::destroyVao, this, std::placeholders::_1)), m_AttachedToScene(false)
 {
         he_memset(m_Vao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
         he_memset(m_ShadowVao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));

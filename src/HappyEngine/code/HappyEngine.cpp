@@ -105,6 +105,7 @@ void HappyEngine::init(const int subengines, const he::Path& dataPath)
 {
     Path::init(dataPath);
     StaticDataManager::init();
+    CLAIM_THREAD(eThreadTicket_Main);
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
@@ -207,7 +208,7 @@ void HappyEngine::start(ge::Game* game)
     
     if (m_SubEngines & SubEngine_Audio)
     {
-        m_AudioThread.startThread(boost::bind(&HappyEngine::audioLoop, this), "Audio Thread");
+        m_AudioThread.startThread(std::bind(&HappyEngine::audioLoop, this), "Audio Thread");
     }
 
     m_PrevTime = boost::chrono::high_resolution_clock::now();

@@ -35,6 +35,13 @@ namespace ge {
 struct EntityComponentDesc;   
 class HAPPY_ENTRY ModelComponent : public EntityComponent
 {
+    struct LoadDesc
+    {
+        LoadDesc(): m_Mesh(nullptr), m_Material(nullptr) {}
+        gfx::ModelMesh* m_Mesh;
+        gfx::Material* m_Material;
+    };
+
 public:
     ModelComponent();
     virtual ~ModelComponent();
@@ -70,6 +77,8 @@ protected:
 
 private:
     gfx::Drawable* m_Drawable;
+
+    LoadDesc* m_LoadingDesc;
     
     he::String m_MaterialAsset;
     he::String m_ModelAsset;
