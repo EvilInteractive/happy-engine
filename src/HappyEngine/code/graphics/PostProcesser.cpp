@@ -241,8 +241,8 @@ void PostProcesser::draw()
             vec2((float)m_View->getViewport().width, (float)m_View->getViewport().height));
     }
 
-    GL::heBindVao(m_Quad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_Quad->getNumIndices(), m_Quad->getIndexType(), 0);
+    GL::heBindVao(m_Quad->getVertexArraysID());            
+    glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
     PROFILER_END();
 }
 

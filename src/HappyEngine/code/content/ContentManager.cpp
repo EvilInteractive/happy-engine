@@ -168,7 +168,7 @@ const gfx::Texture2D* ContentManager::asyncMakeTexture2D(const Color& color)
 {
     return m_TextureLoader->asyncMakeTexture2D(color);
 }
-const gfx::TextureCube* ContentManager::asyncMakeTextureCube( const Color& color )
+const gfx::TextureCube* ContentManager::asyncMakeTextureCube( const Color& /*color*/ )
 {
     HE_NOT_IMPLEMENTED;
     return nullptr;
@@ -185,7 +185,7 @@ const gfx::Texture2D* ContentManager::makeTexture2D(const Color& color)
 {
     return m_TextureLoader->makeTexture2D(color);
 }
-const gfx::TextureCube* ContentManager::makeTextureCube( const Color& color )
+const gfx::TextureCube* ContentManager::makeTextureCube( const Color& /*color*/ )
 {
     HE_NOT_IMPLEMENTED;
     return nullptr;

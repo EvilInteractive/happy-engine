@@ -23,10 +23,6 @@
 #pragma message("-- HappyEngine: Compiling precompiled headers. --")
 #pragma message("-------------------------------------------------\n")
 
-#ifndef NDEBUG
-#define HE_DEBUG 1
-#endif
-
 #ifdef HE_WINDOWS
 #define __HE_FUNCTION__ __FUNCTION__
 #else
@@ -56,8 +52,8 @@
 #endif
 
 
-#define CONCAT(a, b) _CONCAT(a, b)
-#define _CONCAT(a, b) a##b
+#define CONCAT(a, b) CONCAT2(a, b)
+#define CONCAT2(a, b) a##b
 #define STR(a) #a
 #define EVAL(a) a
 

@@ -210,4 +210,9 @@ void ModelMesh::destroyPickingData()
     m_PickingData.m_Indices = nullptr;
 }
 
+void ModelMesh::draw()
+{
+    glDrawElements(m_DrawMode, m_NumIndices, m_IndexType, 0);
+}
+
 } } //end namespace

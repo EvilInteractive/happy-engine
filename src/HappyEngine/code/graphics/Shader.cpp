@@ -152,7 +152,7 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     }
     // <-----------------------------------------------
 
-    return initFromMem(strVS, strFS, shaderLayout, vsPath, fsPath, defines, outputs);
+    return initFromMem(strVS, strFS, vsPath, fsPath, defines, outputs);
 }
 
 bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName)

@@ -62,7 +62,7 @@ public:
     gfx::Material* load(const he::Path& path);
     
 private:
-    AssetContainer<ObjectHandle, he::Path> m_AssetContainer;
+    AssetContainer<ObjectHandle> m_AssetContainer;
     
     //Disable default copy constructor and default assignment operator
     MaterialLoader(const MaterialLoader&);

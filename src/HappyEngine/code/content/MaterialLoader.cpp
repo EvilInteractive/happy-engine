@@ -195,16 +195,16 @@ MaterialLoader::~MaterialLoader()
 gfx::Material* MaterialLoader::load(const he::Path& path)
 {
     ResourceFactory<gfx::Material>* factory(ResourceFactory<gfx::Material>::getInstance());
-    if (m_AssetContainer.isAssetPresent(path) && factory->isAlive(m_AssetContainer.getAsset(path)))
+    if (m_AssetContainer.isAssetPresent(path.str()) && factory->isAlive(m_AssetContainer.getAsset(path.str())))
     {
-        const ObjectHandle material(m_AssetContainer.getAsset(path));
+        const ObjectHandle material(m_AssetContainer.getAsset(path.str()));
         factory->instantiate(material);
         return factory->get(material);
     }
     else
     {
         gfx::Material* const material(factory->get(factory->create()));
-        m_AssetContainer.addAsset(path, material->getHandle());
+        m_AssetContainer.addAsset(path.str(), material->getHandle());
         material->setName(path.getFileName());
 
         io::JsonFileReader reader;
