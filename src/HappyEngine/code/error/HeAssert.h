@@ -38,8 +38,6 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
 #endif
 
-static int s_scope = 0;
-
 } } } //end namespace
 
 #if _DEBUG || TEST
