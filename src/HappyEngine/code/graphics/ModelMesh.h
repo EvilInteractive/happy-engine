@@ -92,6 +92,8 @@ public:
     inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
 
     inline const Bound& getBound() const { return m_Bound; }
+
+    void draw();
     
 private:
     struct ShadowSkinnedVertex

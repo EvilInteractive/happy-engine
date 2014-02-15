@@ -36,8 +36,8 @@ struct DrawContext
         , m_CurrentMesh(nullptr)
     {}
 
-    ICamera* m_Camera;
-    ModelMesh* m_CurrentMesh;
+    const ICamera* m_Camera;
+    const ModelMesh* m_CurrentMesh;
 };
 
 } } //end namespace

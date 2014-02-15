@@ -37,6 +37,7 @@ enum EThreadTicket
 struct ThreadTicket
 {
     ThreadTicket();
+    ~ThreadTicket();
     ThreadID m_Owner;
     const char* m_Name;
     const char* m_File;

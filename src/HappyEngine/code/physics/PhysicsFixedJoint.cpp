@@ -37,7 +37,7 @@ PhysicsFixedJoint::PhysicsFixedJoint(const PhysicsActor* actor0, const mat44& lo
         actor0 != nullptr ? actor0->getInternalActor() : nullptr, physx::PxTransform(localAttach0.getPhyicsMatrix()),
         actor1 != nullptr ? actor1->getInternalActor() : nullptr, physx::PxTransform(localAttach1.getPhyicsMatrix()));
 
-#if DEBUG || _DEBUG
+#ifdef HE_DEBUG
     m_Joint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
 #endif
 }

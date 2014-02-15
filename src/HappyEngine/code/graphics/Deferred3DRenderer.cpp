@@ -47,14 +47,18 @@
 
 #include "Texture2D.h"
 #include "ModelMesh.h"
+#include "MaterialInstance.h"
 #include "Canvas2D.h"
 #include "GlobalSettings.h"
+
+#include "Drawable.h"
+#include "DrawContext.h"
 
 namespace he {
 namespace gfx {
     
 Deferred3DRenderer::Deferred3DRenderer(): 
-            m_pQuad(nullptr), 
+            m_Quad(nullptr), 
             m_ShowDebugTextures(false),
             m_PointLightShader(nullptr),
             m_SpotLightShader(nullptr),
@@ -104,7 +108,7 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
     m_CollectionRenderTarget->setDepthTarget(target->getDepthBuffer());
     m_CollectionRenderTarget->init();
     
-    m_pQuad = CONTENT->getFullscreenQuad();
+    m_Quad = CONTENT->getFullscreenQuad();
 }
 
 
@@ -116,7 +120,7 @@ Deferred3DRenderer::~Deferred3DRenderer()
     delete m_CollectionRenderTarget;
     delete m_SharedShaderData.sharedBuffer;
     
-    m_pQuad->release();
+    m_Quad->release();
 
     if (m_PointLightShader != nullptr)
         m_PointLightShader->release();    
@@ -283,7 +287,7 @@ void Deferred3DRenderer::render()
         context.m_Camera = camera;
         m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&context](Drawable* d)
         {
-            context.m_CurrentDrawable = d->getModelMesh();
+            context.m_CurrentMesh = d->getModelMesh();
             d->getMaterial()->apply(context);
             d->getModelMesh()->draw();
         });
@@ -346,8 +350,8 @@ void Deferred3DRenderer::postAmbDirIllLight()
         m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_SGTexture);
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalDepthMap,   m_NormalDepthTexture);
 
-    GL::heBindVao(m_pQuad->getVertexArraysID());       
-    glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+    m_AmbDirIllMaterial->apply(context);
+    m_Quad->draw();
 }
 void Deferred3DRenderer::postPointLights()
 {
@@ -397,8 +401,11 @@ void Deferred3DRenderer::postPointLights()
 
             m_PointLightShader->setShaderVar(m_PointLightData.wvp, camera.getViewProjection() * light->getWorldMatrix());
 
-            GL::heBindVao(light->getLightVolume()->getVertexArraysID());
-            glDrawElements(GL_TRIANGLES, light->getLightVolume()->getNumIndices(), light->getLightVolume()->getIndexType(), 0);
+            const gfx::ModelMesh* volume(light->getLightVolume());
+            DrawContext context;
+            context.m_CurrentMesh = volume;
+            m_PointLightMaterial->apply(context);
+            volume->draw();
         }
     });
     GL::heSetCullFace(false);
@@ -502,8 +509,10 @@ void Deferred3DRenderer::postSpotLights()
                 }
 
                 const gfx::ModelMesh* volume(light->getLightVolume());
-                GL::heBindVao(volume->getVertexArraysID());
-                glDrawElements(GL_TRIANGLES, volume->getNumIndices(), volume->getIndexType(), 0);
+                DrawContext context;
+                context.m_CurrentMesh = volume;
+                m_PointLightMaterial->apply(context);
+                volume->draw();
             }
         }
         if (shadowLights == false)

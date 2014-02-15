@@ -34,7 +34,7 @@ public:
     virtual ~AsyncLoadable();
 
     bool isLoaded() const { return m_IsLoaded == eLoadResult_Success; }
-    bool getLoadResult() const { return m_IsLoaded; }
+    ELoadResult getLoadResult() const { return m_IsLoaded; }
     void callbackOnceIfLoaded(const void* const id, const LoadCallback& callback) const;
     void cancelLoadCallback(const void* const id) const;
     void setLoaded(const ELoadResult result);

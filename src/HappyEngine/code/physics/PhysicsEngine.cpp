@@ -47,14 +47,14 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr)
                             , m_ControllerManager(nullptr), m_Timer(0.0f)
 {
     bool memDebug(false);
-    #if _DEBUG || DEBUG
+    #ifdef HE_DEBUG
         memDebug = true;
     #endif
     
     m_PhysXFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *m_Allocator, *m_ErrorCallback);
     HE_ASSERT(m_PhysXFoundation != nullptr, "Loading physx foundation unsuccessful");
 
-    #if DEBUG || _DEBUG
+    #ifdef HE_DEBUG
     m_PxProfileZoneManager = &physx::PxProfileZoneManager::createProfileZoneManager(m_PhysXFoundation);
     HE_ASSERT(m_PxProfileZoneManager != nullptr, "Loading physx profileZoneManager unsuccessful");
     #endif
@@ -72,7 +72,7 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr)
 #ifdef HE_WINDOWS
     if (m_PhysXSDK->getPvdConnectionManager() != nullptr)
     {
-        //#if _DEBUG || DEBUG
+        //#ifdef HE_DEBUG
         HE_INFO("connecting to PVD");
         physx::PxVisualDebuggerConnectionFlags connectionFlags(physx::PxVisualDebuggerExt::getAllConnectionFlags());
         m_VisualDebuggerConnection = physx::PxVisualDebuggerExt::createConnection(m_PhysXSDK->getPvdConnectionManager(), 
@@ -146,7 +146,7 @@ void PhysicsEngine::createScene()
     m_Scene = m_PhysXSDK->createScene(sceneDesc);
     HE_ASSERT(m_Scene != nullptr, "createScene failed!");
 
-#if DEBUG || _DEBUG
+#ifdef HE_DEBUG
     m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.0f);
     m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LIMITS, 1.0f);
 #endif

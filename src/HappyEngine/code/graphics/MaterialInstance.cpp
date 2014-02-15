@@ -151,7 +151,7 @@ void MaterialInstance::apply( const DrawContext& context ) const
     }
 }
 
-void MaterialInstance::applyShader( const EShaderType type, const DrawContext& context ) const
+void MaterialInstance::applyShader( const EShaderType type, const DrawContext& /*context*/ ) const
 {
     if (checkFlag(eMaterialFlags_Blended))
     {

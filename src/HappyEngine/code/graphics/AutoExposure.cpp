@@ -131,7 +131,7 @@ void AutoExposure::calculate( const Texture2D* hdrMap)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Quad->getVBOIndexID());
 
-    glDrawElements(GL_TRIANGLES, m_Quad->getNumIndices(), m_Quad->getIndexType(), 0);
+    m_Quad->draw();
 }
 
 const Texture2D* AutoExposure::getLuminanceMap() const

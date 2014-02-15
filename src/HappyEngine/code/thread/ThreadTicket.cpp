@@ -31,6 +31,11 @@ ThreadTicket::ThreadTicket()
 
 }
 
+ThreadTicket::~ThreadTicket()
+{
+
+}
+
 ThreadTicketManager::ThreadTicketManager()
 {
 

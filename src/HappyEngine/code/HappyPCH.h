@@ -23,16 +23,12 @@
 #pragma message("-- HappyEngine: Compiling precompiled headers. --")
 #pragma message("-------------------------------------------------\n")
 
-#ifndef NDEBUG
-#define _DEBUG 1
-#endif
-
 #ifdef HE_WINDOWS
 #define __HE_FUNCTION__ __FUNCTION__
 #else
 #define __HE_FUNCTION__ __PRETTY_FUNCTION__
 #endif
-#ifdef _DEBUG
+#ifdef HE_DEBUG
 #define FILE_AND_LINE __FILE__, __LINE__
 #else
 #define FILE_AND_LINE
@@ -56,8 +52,8 @@
 #endif
 
 
-#define CONCAT(a, b) _CONCAT(a, b)
-#define _CONCAT(a, b) a##b
+#define CONCAT(a, b) CONCAT2(a, b)
+#define CONCAT2(a, b) a##b
 #define STR(a) #a
 #define EVAL(a) a
 
@@ -126,7 +122,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HappyInfo.h"
 #include "HeAssert.h"
 
-#ifdef _DEBUG
+#ifdef HE_DEBUG
 #pragma warning(disable:4389) // '==' signed/unsigned mismatch
 template<typename To, typename From>
 inline To checked_numcast(const From value)

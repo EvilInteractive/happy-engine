@@ -61,7 +61,7 @@ class HappyPhysicsAllocator : public physx::PxAllocatorCallback
 {
     void* allocate(size_t size, const char*, const char* file, int line)
     {
-        #if !GCC && !LLVM && (DEBUG || _DEBUG)
+        #if defined(HE_DEBUG) && defined(_MSC_VER)
         return _aligned_malloc_dbg(size, 16, file, line);
         #else
         file; line;

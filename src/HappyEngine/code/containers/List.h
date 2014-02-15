@@ -97,7 +97,7 @@ private:
 
     T* m_Buffer;
 
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     mutable bool m_IsTraversing;
 #endif
 
@@ -127,7 +127,7 @@ public:
 template<typename T, typename Creator> inline
 he::List<T, Creator>::List(const size_t capacity): m_Size(0), m_Capacity(capacity), 
     m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     , m_IsTraversing(false)
 #endif
 {
@@ -459,14 +459,14 @@ const T& he::List<T, Creator>::operator[]( const size_t index ) const
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func ) const
 {    
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = true;
 #endif
     const_iterator it(cbegin());
     const_iterator end(cend());
     for (; it != end; ++it)
         func(*it);
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = false;
 #endif
 }
@@ -474,14 +474,14 @@ void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
 {    
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = true;
 #endif
     iterator it(begin());
     iterator endIt(end());
     for (; it != endIt; ++it)
         func(*it);
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = false;
 #endif
 }
@@ -489,14 +489,14 @@ void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& func ) const
 {    
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = true;
 #endif
     const_iterator it(cend());
     const_iterator end(cbegin());
     for (; it != end; --it)
         func(*(it - 1));
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = false;
 #endif
 }
@@ -504,14 +504,14 @@ void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& fun
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::rForEach( const boost::function1<void, T&>& func )
 {    
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = true;
 #endif
     iterator it(end());
     iterator end(begin());
     for (; it != end; --it)
         func(*(it - 1));
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     m_IsTraversing = false;
 #endif
 }

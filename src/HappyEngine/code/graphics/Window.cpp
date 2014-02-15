@@ -62,7 +62,7 @@ struct Window::OculusRiftBarrelDistorter
         , m_Material(nullptr)
         , m_Quad(nullptr)
     {
-        he_memset(m_Params, 0, sizeof(uint32) * eShaderParams_MAX);
+        he_memset(m_Params, 0, sizeof(MaterialParameter*) * eShaderParams_MAX);
     }
 
     void init(const uint32 width, const uint32 height);
@@ -102,7 +102,6 @@ void Window::OculusRiftBarrelDistorter::init(const uint32 width, const uint32 he
     HE_ASSERT(m_Params[eShaderParams_ScaleIn] != nullptr, "Could not find scaleIn in OVR barrel distorter!");
     m_Params[eShaderParams_TcTransform] = m_Material->getParameter(HEFS::strtcTransform);
     HE_ASSERT(m_Params[eShaderParams_TcTransform] != nullptr, "Could not find tcTransform in OVR barrel distorter!");
-
 
     TextureFactory* const textureFactory(TextureFactory::getInstance());
     m_PreBarrelDistort = textureFactory->get(textureFactory->create());
@@ -151,12 +150,7 @@ void Window::OculusRiftBarrelDistorter::setupEye( io ::OculusRiftDevice* const d
 void Window::OculusRiftBarrelDistorter::distort(const uint32 width, const uint32 height)
 {
     io::OculusRiftBinding* const oculusBinding(CONTROLS->getOculusRiftBinding());
-    io ::OculusRiftDevice* const device(oculusBinding->getDevice(0));
-
-    GL::heBlendEnabled(false);
-    GL::heSetDepthWrite(false);
-    GL::heSetDepthRead(false);
-    GL::heSetCullFace(false);
+    io::OculusRiftDevice* const device(oculusBinding->getDevice(0));
 
     m_Params[eShaderParams_Texture]->setTexture2D(m_PreBarrelDistort);
     m_Params[eShaderParams_HmdWarpParam]->setFloat4(device->getWarpParams());
@@ -238,7 +232,7 @@ bool Window::create()
     
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-#ifdef _DEBUG
+#ifdef HE_DEBUG
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);

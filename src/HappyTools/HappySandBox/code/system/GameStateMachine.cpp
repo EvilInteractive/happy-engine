@@ -14,7 +14,7 @@
 
 #include <Game.h>
 
-#if defined(DEBUG) || defined(_DEBUG)
+#ifdef HE_DEBUG
 #define DEBUG_GAMESTATEMACHINE
 #endif
 

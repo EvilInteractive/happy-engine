@@ -243,7 +243,7 @@ void Bloom::render( const Texture2D* texture, const Texture2D* lumMap )
         m_DownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, lumMap);
     }
     GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
-    glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
+    m_Mesh->draw();
 
     //DownSample further
     m_DownSampleShader->bind();
@@ -253,7 +253,7 @@ void Bloom::render( const Texture2D* texture, const Texture2D* lumMap )
         m_DownSampleShader->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
         GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][fboId]->getWidth(), (int)m_Texture[0][fboId]->getHeight()));
 
-        glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
+        m_Quad->draw();
     }
 
     //Blur
