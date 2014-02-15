@@ -52,8 +52,11 @@ namespace he {
 namespace gfx {
 
 MaterialInstance::MaterialInstance(const Material* const material, const EShaderType type)
-    : m_Material(material)
-    , m_Type(type)
+    : m_Type(type)
+    , m_Flags(0)
+    , m_BlendEquation(BlendEquation_Add)
+    , m_SourceBlend(BlendFunc_Zero), m_DestBlend(BlendFunc_One)
+    , m_Material(material)
 {
     m_Material->instantiate();
     m_Material->callbackOnceIfLoaded(this, [this](const ELoadResult result)
@@ -181,7 +184,7 @@ void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& con
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getVBOIndexID());
 }
 
-void MaterialInstance::calculateMaterialLayout(const BufferLayout& bufferLayout) const
+void MaterialInstance::calculateMaterialLayout(const BufferLayout& bufferLayout)
 {
     m_Material->calculateMaterialLayout(bufferLayout, m_Layout);
 }

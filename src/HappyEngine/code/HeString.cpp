@@ -23,4 +23,15 @@
 
 namespace he {
 
+void toLower(char* const buff)
+{
+    char* chr(buff);
+    while(*chr)
+    {
+        char& c(*chr);
+        c = tolower(c);
+        ++chr;
+    }
+}
+
 } //end namespace

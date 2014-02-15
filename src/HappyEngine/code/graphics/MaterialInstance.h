@@ -59,7 +59,7 @@ public:
     
     void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
     
-    void calculateMaterialLayout(const BufferLayout& bufferLayout) const;
+    void calculateMaterialLayout(const BufferLayout& bufferLayout);
 
 private:
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }

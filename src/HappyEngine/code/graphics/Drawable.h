@@ -55,7 +55,6 @@ public:
 
     HE_FORCEINLINE ModelMesh* const getModelMesh() const { return m_ModelMesh; }
     HE_FORCEINLINE MaterialInstance* const getMaterial() const { return m_Material; }
-    HE_FORCEINLINE MaterialLayout* getMaterialLayout() const { return m_MaterialLayout; }
 
     bool canDraw() const { return checkFlag(eDrawableFlags_IsLoaded | eDrawableFlags_IsLoaded); }
 
@@ -98,7 +97,6 @@ private:
     
     ModelMesh* m_ModelMesh;
     MaterialInstance* m_Material;
-    MaterialLayout* m_MaterialLayout;
 
     Scene* m_Scene;
     uint8 m_Flags;

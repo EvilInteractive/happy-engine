@@ -152,7 +152,7 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     }
     // <-----------------------------------------------
 
-    return initFromMem(strVS, strFS, shaderLayout, vsPath, fsPath, defines, outputs);
+    return initFromMem(strVS, strFS, vsPath, fsPath, defines, outputs);
 }
 
 bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName)
@@ -201,23 +201,55 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
 
     succes &= validateProgram(m_Id);
 
-    const ShaderLayout::AttributeLayoutList& layout(shaderLayout.getAttributes());
-    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutAttribute& e)
+    bind();
+
+    GlobalStringTable* const stringTable(GlobalStringTable::getInstance());
+
+    GLint attribCount(-1);
+    glGetProgramiv( m_Id, GL_ACTIVE_ATTRIBUTES, &attribCount );
+    for (GLint i(0); i < attribCount; ++i)
     {
-        const GLint loc(glGetAttribLocation(m_Id, e.getName().c_str()));
-        if (loc != -1)
+        GLint nameLen(-1);
+        GLint size(0);
+        GLenum type(GL_ZERO);
+        GLchar name[100];
+        glGetActiveAttrib(m_Id, i, 99, &nameLen, &size, &type, name);
+        name[nameLen] = '\0';
+        const GLuint location(glGetAttribLocation( m_Id, name ));
+        if (location != -1)
         {
-            ShaderLayoutAttribute el(e);
-            el.setElementIndex(checked_numcast<uint32>(loc));
+            const FixedString fixedName(stringTable->add(name, nameLen));
+
+            he::toLower(name);
+
+            EShaderAttributePropertyUsage usage(eShaderAttributePropertyUsage_Invalid);
+            if (strstr(name, "pos") >= 0)
+                usage = eShaderAttributePropertyUsage_Position;
+            else if (strstr(name, "tex") >= 0)
+                usage = eShaderAttributePropertyUsage_TextureCoordiante;
+            else if (strstr(name, "nor") >= 0)
+                usage = eShaderAttributePropertyUsage_Normal;
+            else if (strstr(name, "tan") >= 0)
+                usage = eShaderAttributePropertyUsage_Tangent;
+            else if (strstr(name, "col") >= 0)
+                usage = eShaderAttributePropertyUsage_Color;
+            else if (strstr(name, "ind") >= 0)
+                usage = eShaderAttributePropertyUsage_BoneIndices;
+            else if (strstr(name, "wei") >= 0)
+                usage = eShaderAttributePropertyUsage_BoneWeights;
+            else
+            {
+                LOG(he::LogType_ProgrammerAssert, "Could not deduce shader attribute usage from name '%s'", fixedName.c_str());
+            }
+
+            const ShaderLayoutAttribute el(fixedName, usage, location);
             m_Layout.addAttribute(el);
         }
         else
         {
-            LOG(LogType_ProgrammerAssert, "Could not bind shader attribute: %s to shader: %s", e.getName().c_str(), debugVertName.c_str());
+            LOG(he::LogType_ProgrammerAssert, "Could not bind shader attribute: %s to shader: %s", name, debugVertName.c_str());
         }
-    });
-
-    bind();
+    }
 
     GLint unitformCount(-1);
     glGetProgramiv( m_Id, GL_ACTIVE_UNIFORMS, &unitformCount ); 
@@ -226,9 +258,8 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
         GLint nameLen(-1);
         GLint num(1);
         GLenum type(GL_ZERO);
-        char name[100];
-        glGetActiveUniform( m_Id, i, sizeof(name) - 1,
-            &nameLen, &num, &type, name );
+        GLchar name[100];
+        glGetActiveUniform( m_Id, i, 99, &nameLen, &num, &type, name );
         name[nameLen] = '\0'; // Add null terminator
         const GLuint location(glGetUniformLocation( m_Id, name ));
         size_t samplers(0);

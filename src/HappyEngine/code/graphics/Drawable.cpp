@@ -34,7 +34,6 @@ Drawable::Drawable()
     : m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
     , m_ModelMesh(nullptr)
     , m_Material(nullptr)
-    , m_MaterialLayout(NEW MaterialLayout())
     , m_Scene(nullptr)
     , m_Flags(eDrawableFlags_None)
 #ifdef HE_USE_OCTREE
@@ -48,7 +47,6 @@ Drawable::~Drawable()
 {
     setModelMesh(nullptr);
     setMaterial(nullptr);
-    delete m_MaterialLayout;
 }
 
 void Drawable::setModelMesh( ModelMesh* const mesh )
@@ -101,7 +99,7 @@ void Drawable::updateMaterialLayout(ModelMesh* const mesh, MaterialInstance* con
             {
                 if (m_Material->isLoaded())
                 {
-                    m_Material->calculateMaterialLayout(m_ModelMesh->getVertexLayout(), *m_MaterialLayout);
+                    m_Material->calculateMaterialLayout(m_ModelMesh->getVertexLayout());
                     raiseFlag(eDrawableFlags_IsLoaded);
                     reevaluate();
                 }

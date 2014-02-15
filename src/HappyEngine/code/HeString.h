@@ -28,6 +28,8 @@ namespace he {
 
 typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> > String;
 
+void toLower(char* const buff);
+
 } //end namespace
 
 #endif
