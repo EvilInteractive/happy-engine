@@ -39,6 +39,7 @@ namespace
             case he::gfx::MaterialParameter::eType_Float2: checked_cast<he::gfx::ShaderUniformVec2*>(uniform)->set(shader, var.getFloat2()); break;
             case he::gfx::MaterialParameter::eType_Float3: checked_cast<he::gfx::ShaderUniformVec3*>(uniform)->set(shader, var.getFloat3()); break;
             case he::gfx::MaterialParameter::eType_Float4: checked_cast<he::gfx::ShaderUniformVec4*>(uniform)->set(shader, var.getFloat4()); break;
+            case he::gfx::MaterialParameter::eType_Float44: checked_cast<he::gfx::ShaderUniformMat44*>(uniform)->set(shader, var.getFloat44()); break;
             case he::gfx::MaterialParameter::eType_Int: checked_cast<he::gfx::ShaderUniformInt*>(uniform)->set(shader, var.getInt()); break;
             case he::gfx::MaterialParameter::eType_Texture2D: checked_cast<he::gfx::ShaderUniformTexture2D*>(uniform)->set(shader, var.getTexture2D()); break;
             case he::gfx::MaterialParameter::eType_TextureCube: checked_cast<he::gfx::ShaderUniformTextureCube*>(uniform)->set(shader, var.getTextureCube()); break;
@@ -94,8 +95,8 @@ void MaterialInstance::init()
             case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
             case eShaderUniformType_Int:
                 param.init(id, MaterialParameter::eType_Int);
-                param.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
                 break;
+                param.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
             case eShaderUniformType_UInt:
                 LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
                 break;
@@ -116,7 +117,8 @@ void MaterialInstance::init()
                 param.setFloat4(checked_cast<ShaderUniformVec4*>(uniform)->getValue());
                 break;
             case eShaderUniformType_Mat44:
-                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                param.init(id, MaterialParameter::eType_Float44);
+                param.setFloat44(checked_cast<ShaderUniformMat44*>(uniform)->getValue());
                 break;
             case eShaderUniformType_Mat44Array:
                 LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;

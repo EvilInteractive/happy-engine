@@ -45,7 +45,7 @@ public:
         Usage_BoneIDs,
         Usage_BoneWeights,
         Usage_Instancing,
-        Usage_Other
+        Usage_Color
     };
     BufferElement();
     BufferElement(const Type type, const Usage usage, const uint32 size, const uint32 byteOffset);

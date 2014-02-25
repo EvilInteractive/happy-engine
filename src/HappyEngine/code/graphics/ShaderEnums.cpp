@@ -36,10 +36,7 @@ EShaderAttributePropertyUsage bufferElementUsageToShaderAttribUsage(const Buffer
         case BufferElement::Usage_Tangent: result = eShaderAttributePropertyUsage_Tangent; break;
         case BufferElement::Usage_BoneIDs: result = eShaderAttributePropertyUsage_BoneIndices; break;
         case BufferElement::Usage_BoneWeights: result = eShaderAttributePropertyUsage_BoneWeights; break;
-            
-        case BufferElement::Usage_Instancing:
-        case BufferElement::Usage_Other:
-            break;
+        case BufferElement::Usage_Color: result = eShaderAttributePropertyUsage_Color; break;
             
         default: LOG(LogType_ProgrammerAssert, "Unknown bufferelement usage when converting to attrib usage: %d", usage); break;
     }

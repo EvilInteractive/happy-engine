@@ -27,22 +27,55 @@ namespace he {
 namespace gfx {
 
 MaterialParameter::MaterialParameter()
-    : m_Type(eType_Invalid)
+    : m_ID(ShaderUniformID::Unassigned), m_Type(eType_Invalid)
 {
     he_memset(&m_Data, 0, sizeof(Data));
 }
      
 MaterialParameter& MaterialParameter::operator=(const MaterialParameter& other)
 {
-    m_ID = other.m_ID;
-    m_Type = other.m_Type;
-    he_memcpy(&m_Data, &other.m_Data, sizeof(Data));
-    instantiate();
+    if (this != &other)
+    {
+        m_ID = other.m_ID;
+        if (other.m_Type != eType_Float44)
+        {
+            if (m_Type == eType_Float44) // If it was a mat44
+                he_free(m_Data.m_Matrix);
+            he_memcpy(&m_Data, &other.m_Data, sizeof(Data));
+        }
+        else
+        {
+            if (m_Type != eType_Float44)
+                m_Data.m_Matrix = static_cast<float*>(he_malloc(sizeof(float) * 4 * 4));
+            he_memcpy(m_Data.m_Matrix, other.m_Data.m_Matrix, sizeof(sizeof(float) * 4 * 4));
+        }
+        m_Type = other.m_Type;
+
+        instantiate();
+    }
+    return *this;
+}
+
+MaterialParameter& MaterialParameter::operator=(MaterialParameter&& other)
+{
+    if (this != &other)
+    {
+        m_ID = other.m_ID;
+        if (m_Type == eType_Float44) // if it was a float44, cleanup
+            he_free(m_Data.m_Matrix);
+        m_Type = other.m_Type;
+        he_memcpy(&m_Data, &other.m_Data, sizeof(Data));
+
+        other.m_Data.m_Matrix = nullptr;
+        other.m_Type = eType_Invalid; // for safety and to make sure no cleanup happens
+    }
     return *this;
 }
 
 MaterialParameter::~MaterialParameter()
 {
+    if (m_Type == eType_Float44)
+        he_free(m_Data.m_Matrix);
     release();
 }
     
@@ -52,6 +85,8 @@ void MaterialParameter::init(const ShaderUniformID id, const EType type)
     HE_ASSERT(type != eType_Invalid, "Initializing materialparam with ivalid type!");
     m_ID = id;
     m_Type = type;
+    if (m_Type == eType_Float44)
+        m_Data.m_Matrix = static_cast<float*>(he_malloc(sizeof(float) * 4 * 4));
 }
     
 void MaterialParameter::instantiate()
@@ -131,6 +166,14 @@ void MaterialParameter::setFloat4(const vec4& data)
     HE_IF_ASSERT(m_Type == eType_Float4 || m_Type == eType_Invalid, "Trying to set a Float4 to a material parameter but its type is %s", typeToString(m_Type))
     {
         he_memcpy(m_Data.m_Float, &data, sizeof(float) * 4);
+    }
+}
+
+void MaterialParameter::setFloat44(const mat44& data)
+{
+    HE_IF_ASSERT(m_Type == eType_Float44 || m_Type == eType_Invalid, "Trying to set a Float44 to a material parameter but its type is %s", typeToString(m_Type))
+    {
+        he_memcpy(m_Data.m_Matrix, &data, sizeof(float) * 4 * 4);
     }
 }
     
@@ -214,6 +257,12 @@ const vec4& MaterialParameter::getFloat4() const
     return *reinterpret_cast<const vec4*>(m_Data.m_Float); // Sorry we are missing unrestricted union feature of c++11
 }
 
+const mat44&MaterialParameter::getFloat44() const
+{
+    HE_ASSERT(m_Type == eType_Float44, "Trying to get a Float44 from a material parameter while it is actually a %s", typeToString(m_Type));
+    return *reinterpret_cast<const mat44*>(m_Data.m_Matrix);
+}
+
 he::int32 MaterialParameter::getInt() const
 {
     HE_ASSERT(m_Type == eType_Int, "Trying to get a Int from a material parameter while it is actually a %s", typeToString(m_Type));
@@ -242,6 +291,7 @@ const char* MaterialParameter::typeToString( const EType type ) const
     case eType_Float2: result = "Float2"; break;
     case eType_Float3: result = "Float3"; break;
     case eType_Float4: result = "Float4"; break;
+    case eType_Float44: result = "Float44"; break;
     case eType_Int: result = "Int"; break;
     case eType_Texture2D: result = "Texture2D"; break;
     case eType_TextureCube: result = "TextureCube"; break;

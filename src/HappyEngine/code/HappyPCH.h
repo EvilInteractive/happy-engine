@@ -34,6 +34,12 @@
 #define FILE_AND_LINE
 #endif
 
+#ifdef HE_DEBUG
+#define _DEBUG 1
+#else
+#define NDEBUG 1
+#endif
+
 #ifdef HE_WINDOWS
     #ifdef HappyEngine_EXPORTS
         #define HAPPY_ENTRY __declspec(dllexport)

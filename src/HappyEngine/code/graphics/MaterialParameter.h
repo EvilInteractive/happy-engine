@@ -38,6 +38,7 @@ public:
         eType_Float2,
         eType_Float3,
         eType_Float4,
+        eType_Float44,
         eType_Int,
         eType_Texture2D,
         eType_TextureCube,
@@ -46,7 +47,8 @@ public:
     
     MaterialParameter();
     ~MaterialParameter();
-    MaterialParameter& operator=(const MaterialParameter&);
+    MaterialParameter& operator=(const MaterialParameter& other);
+    MaterialParameter& operator=(MaterialParameter&& other);
     
     void init(const ShaderUniformID id, const EType type);
     
@@ -57,6 +59,7 @@ public:
     const vec2& getFloat2() const;
     const vec3& getFloat3() const;
     const vec4& getFloat4() const;
+    const mat44& getFloat44() const;
     int32 getInt() const;
     ObjectHandle getTexture2D() const;
     ObjectHandle getTextureCube() const;
@@ -65,6 +68,7 @@ public:
     void setFloat2(const vec2& data);
     void setFloat3(const vec3& data);
     void setFloat4(const vec4& data);
+    void setFloat44(const mat44& data);
     void setInt32(const int32 data);
     void setTexture2D(const Texture2D* const data);
     void setTextureCube(const TextureCube* const data);
@@ -75,6 +79,7 @@ private:
     union Data
     {
         float m_Float[4];
+        float* m_Matrix;
         int32 m_Int;
         uint32 m_Handle;
     } m_Data;
@@ -85,6 +90,7 @@ private:
     HE_COMPILE_ASSERT(sizeof(vec2) == sizeof(float) * 2, "Vec2 does not have the same size as a float*2!");
     HE_COMPILE_ASSERT(sizeof(vec3) == sizeof(float) * 3, "Vec3 does not have the same size as a float*3!");
     HE_COMPILE_ASSERT(sizeof(vec4) == sizeof(float) * 4, "Vec4 does not have the same size as a float*4!");
+    HE_COMPILE_ASSERT(sizeof(mat44) == sizeof(float) * 4 * 4, "Mat44 does not have the same size as a float*4*4!");
     
     // disabled
     MaterialParameter(const MaterialParameter&);

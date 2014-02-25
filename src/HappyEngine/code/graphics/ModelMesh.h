@@ -112,8 +112,6 @@ private:
     BufferLayout m_VertexLayout;
     uint32 m_IndexType;
 
-    bool m_isVisible;
-
     Bound m_Bound;
     PickingData m_PickingData;
 

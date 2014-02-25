@@ -1,0 +1,12 @@
+{
+    "VertexShader" : "2D/simpleShader.vert",
+    "FragmentShader" : "2D/simpleShader.frag",
+    "IsBlended" : false,
+    "NoPost" : false,
+    "CullFrontFace" : false,
+    "DepthRead" : false,
+    "DepthWrite" : false,
+    "BlendEquation" : "Add",
+    "SourceBlend" : "One",
+    "DestBlend" : "Zero"
+}

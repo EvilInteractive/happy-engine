@@ -339,7 +339,7 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+    m_TextureQuad->draw();
 }
 void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
                                     const vec2& size)
@@ -383,8 +383,7 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
         GL::heSetDepthWrite(false);
     
         GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-        GL::heBindVao(m_TextureQuad->getVertexArraysID());
-        glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+        m_TextureQuad->draw();
     }
 }
 
@@ -441,9 +440,8 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
 
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
-    
-    GL::heBindVao(m_TextureQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+
+    m_TextureQuad->draw();
 }
 
 void Canvas2DRendererGL::blitImage3D( const Texture2D* tex2D, const gfx::ICamera* const camera )
@@ -474,8 +472,7 @@ void Canvas2DRendererGL::blitImage3D( const Texture2D* tex2D, const gfx::ICamera
 
     GL::heSetCullFace(true);
 
-    GL::heBindVao(m_TextureQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+    m_TextureQuad->draw();
 
     GL::heSetCullFace(false);
 }
@@ -501,8 +498,7 @@ void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)
     if (!shape->hasBuffer())
         shape->createBuffer(true);
 
-    GL::heBindVao(shape->getBufferID());
-    glDrawElements(GL_LINE_LOOP, (GLsizei)shape->getIndices().size(), GL_UNSIGNED_INT, 0);
+    shape->draw();
 }
 
 void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
@@ -526,8 +522,7 @@ void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
     if (!shape->hasBuffer())
         shape->createBuffer(false);
 
-    GL::heBindVao(shape->getBufferID());
-    glDrawElements(GL_TRIANGLES, (GLsizei)shape->getIndices().size(), GL_UNSIGNED_INT, 0);
+    shape->draw();
 }
 
 void Canvas2DRendererGL::strokeRect(const RectI& rect)
@@ -555,6 +550,7 @@ void Canvas2DRendererGL::strokeRect(const RectI& rect)
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y + rect.height)));
     m_DynamicShapeMesh->createBuffer(true);
 
+    m_DynamicShapeMesh->draw();
     GL::heBindVao(m_DynamicShapeMesh->getBufferID());
     glDrawElements(GL_LINE_LOOP, (GLsizei)m_DynamicShapeMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
 }
@@ -578,7 +574,7 @@ void Canvas2DRendererGL::fillRect(const RectI& rect)
     s_ColorEffect->setDepth(0.5f);
 
     m_DynamicShapeMesh->clear();
-     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y)));
+    m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y)));
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x) + rect.width, static_cast<float>(rect.y)));
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x) + rect.width, static_cast<float>(rect.y + rect.height)));
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y + rect.height)));
@@ -620,27 +616,6 @@ void Canvas2DRendererGL::init()
 {
     HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     m_Size = m_CanvasBuffer->m_Size;
-
-    if (s_ColorEffect == nullptr)
-    {
-        s_ColorEffect = NEW Simple2DEffect();
-        s_ColorEffect->load();
-    }
-    if (s_TextureEffect == nullptr)
-    {
-        s_TextureEffect = NEW Simple2DTextureEffect();
-        s_TextureEffect->load();
-    }
-    if (s_FontEffect == nullptr)
-    {
-        s_FontEffect = NEW Simple2DFontEffect();
-        s_FontEffect->load();
-    }
-    if (s_NinePatchEffect == nullptr)
-    {
-        s_NinePatchEffect = NEW NinePatchEffect();
-        s_NinePatchEffect->load();
-    }
 
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_Size.x, 0.0f, m_Size.y, 0.0f, 1.0f);
 
@@ -694,7 +669,7 @@ void Canvas2DRendererGL::init()
     BufferLayout vLayout;
     vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
     vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
-    vLayout.addElement(BufferElement(BufferElement::Type_Vec4, BufferElement::Usage_Other, 16, 16));
+    vLayout.addElement(BufferElement(BufferElement::Type_Vec4, BufferElement::Usage_Color, 16, 16));
 
     m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
     m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
@@ -703,6 +678,28 @@ void Canvas2DRendererGL::init()
     m_DynamicFontMesh->setLoaded(eLoadResult_Success);
 
     m_DynamicShapeMesh = NEW Mesh2D(false);
+
+
+    if (s_ColorEffect == nullptr)
+    {
+        s_ColorEffect = NEW Simple2DEffect();
+        s_ColorEffect->load();
+    }
+    if (s_TextureEffect == nullptr)
+    {
+        s_TextureEffect = NEW Simple2DTextureEffect();
+        s_TextureEffect->load();
+    }
+    if (s_FontEffect == nullptr)
+    {
+        s_FontEffect = NEW Simple2DFontEffect();
+        s_FontEffect->load();
+    }
+    if (s_NinePatchEffect == nullptr)
+    {
+        s_NinePatchEffect = NEW NinePatchEffect();
+        s_NinePatchEffect->load();
+    }
 }
 
 } } //end namespace

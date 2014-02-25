@@ -29,7 +29,6 @@ namespace gfx {
 ModelMesh::ModelMesh(): 
     m_NumVertices(0), 
     m_NumIndices(0),
-    m_isVisible(true),
     m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_DrawMode(MeshDrawMode_Triangles),
     m_IndexVboID(UINT32_MAX),
@@ -58,75 +57,6 @@ void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
         glGenBuffers(1, &m_VertexVboID);
     }
 }
-
-/*void ModelMesh::initVAO()
-{
-    const BufferLayout::layout& elements(m_VertexLayout.getElements());
-    //////////////////////////////////////////////////////////////////////////
-    ///                             Normal                                 ///
-    //////////////////////////////////////////////////////////////////////////
-    const uint32 contextID(context->getID());
-    HE_IF_ASSERT(m_VaoID[contextID] == UINT32_MAX, "vao already inited?")
-    {
-        glGenVertexArrays(1, m_VaoID + contextID);
-        GL::heBindVao(m_VaoID[contextID]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
-
-        std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
-        {
-            GLint components = 1;
-            GLenum type = 0;
-            GL::getGLTypesFromBufferElement(e, components, type);
-            glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, m_VertexLayout.getSize(), 
-                BUFFER_OFFSET(e.getByteOffset())); 
-            glEnableVertexAttribArray(e.getElementIndex());
-        });
-    }
-    //////////////////////////////////////////////////////////////////////////
-    ///                             Shadow                                 ///
-    //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_VaoShadowID[contextID] == UINT32_MAX, "shadow vao already inited?")
-    {
-        uint32 posOffset = UINT32_MAX;
-        uint32 boneIdOffset = UINT32_MAX;
-        uint32 boneWeightOffset = UINT32_MAX;
-        std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
-        {
-            if (e.getUsage() == gfx::BufferElement::Usage_Position)
-            {
-                posOffset = e.getByteOffset();
-            }
-            else if (e.getUsage() == gfx::BufferElement::Usage_BoneIDs)
-            {
-                boneIdOffset = e.getByteOffset();
-            }
-            else if (e.getUsage() == gfx::BufferElement::Usage_BoneWeights)
-            {
-                boneWeightOffset = e.getByteOffset();
-            }
-        });
-
-        glGenVertexArrays(1, m_VaoShadowID + contextID);
-        GL::heBindVao(m_VaoShadowID[contextID]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
-        if (boneIdOffset == UINT32_MAX)
-        {
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(posOffset)); 
-            glEnableVertexAttribArray(0);
-        }
-        else
-        {
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(posOffset)); 
-            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(boneIdOffset)); 
-            glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(boneWeightOffset)); 
-            glEnableVertexAttribArray(0);
-            glEnableVertexAttribArray(1);
-            glEnableVertexAttribArray(2);
-        }
-    }
-}*/
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
 void ModelMesh::setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound)
