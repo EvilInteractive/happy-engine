@@ -39,8 +39,8 @@ namespace hs {
 #pragma warning(disable:4355) // this in constructor
 /* CONSTRUCTOR - DESTRUCTOR */
 EntityManager::EntityManager() 
-    : m_EntityCreatedCallback(boost::bind(&EntityManager::onEntityCreated, this, _1))
-    , m_EntityDestroyedCallback(boost::bind(&EntityManager::onEntityDestroyed, this, _1))
+    : m_EntityCreatedCallback(std::bind(&EntityManager::onEntityCreated, this, std::placeholders::_1))
+    , m_EntityDestroyedCallback(std::bind(&EntityManager::onEntityDestroyed, this, std::placeholders::_1))
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->init();

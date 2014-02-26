@@ -100,7 +100,7 @@ void Sandbox::init()
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("Happy Sandbox");
-    he::eventCallback0<void> quitHandler(boost::bind(&Sandbox::quit, this));
+    he::eventCallback0<void> quitHandler(std::bind(&Sandbox::quit, this));
     m_Window->Closed += quitHandler;
     m_Window->create();
     

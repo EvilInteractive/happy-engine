@@ -127,10 +127,10 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
                 4 * w * h,
                 sizeof(unsigned char))));
 
-            _cairo_surface* surf(
+            cairo_surface_t* surf(
                 cairo_image_surface_create_for_data(rBuff, CAIRO_FORMAT_ARGB32, w, h, 4 * w));
 
-            _cairo* cp(cairo_create(surf));
+            cairo_t* cp(cairo_create(surf));
 
             data->m_RenderBuffer = rBuff;
             data->m_CairoPaint = cp;
@@ -152,10 +152,10 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
             4 * w * h,
             sizeof(unsigned char))));
 
-        _cairo_surface* surf(
+        cairo_surface_t* surf(
             cairo_image_surface_create_for_data(rBuff, CAIRO_FORMAT_ARGB32, w, h, 4 * w));
 
-        _cairo* cp(cairo_create(surf));
+        cairo_t* cp(cairo_create(surf));
 
         SpriteData* data(NEW SpriteData(
                 id, size,
@@ -202,7 +202,7 @@ void Canvas2DRendererCairo::setLineWidth(float width)
 
     sData->m_DrawCalls.push(
         std::bind(
-        &cairo_set_line_width,
+        ::cairo_set_line_width,
         sData->m_CairoPaint,
         static_cast<double>(width)));
 
@@ -372,7 +372,7 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadSta
 
     sData->m_DrawCalls.push(
         std::bind(
-        &cairo_arc,
+        ::cairo_arc,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
         static_cast<double>(pos.y),

@@ -20,7 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "StaticDataManager.h"
-#include "ThreadTicket.h"
+#include "thread/ThreadTicket.h"
 #include "ResourceFactory.h"
 #include "Texture2D.h"
 #include "TextureCube.h"
@@ -92,7 +92,9 @@ void StaticDataManager::init()
     gfx::SceneFactory::sdmInit();
     gfx::WindowFactory::sdmInit();
     gfx::LightFactory::sdmInit();
+#ifdef HE_USE_OCTREE
     gfx::CullOctreeNodeFactory::sdmInit();
+#endif
     ct::ShaderGeneratorVariableFactory::sdmInit();
     tools::MaterialGeneratorNodeFactory::sdmInit();
     ge::PickingManager::sdmInit();
@@ -107,7 +109,9 @@ void StaticDataManager::destroy()
     ge::PickingManager::sdmDestroy();
     tools::MaterialGeneratorNodeFactory::sdmDestroy();
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
+#ifdef HE_USE_OCTREE
     gfx::CullOctreeNodeFactory::sdmDestroy();
+#endif
     gfx::LightFactory::sdmDestroy();
     ResourceFactory<gui::Font>::sdmDestroy();
     ResourceFactory<gfx::Material>::sdmDestroy();
@@ -129,7 +133,7 @@ void StaticDataManager::destroy()
     tools::Logger::sdmDestroy();
     he::HappyEngine::sdmDestroy();
     he::HappyMessageBox::destroy();
-    he::ThreadTicketManager::destroy();
+    he::ThreadTicketManager::sdmDestroy();
 #ifdef USE_WEB
     Awesomium::WebCore::Shutdown();
 #endif

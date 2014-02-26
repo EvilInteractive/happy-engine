@@ -29,7 +29,7 @@ void toLower(char* const buff)
     while(*chr)
     {
         char& c(*chr);
-        c = tolower(c);
+        c = static_cast<char>(tolower(c));
         ++chr;
     }
 }

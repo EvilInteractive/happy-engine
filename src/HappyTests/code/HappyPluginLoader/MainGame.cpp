@@ -74,7 +74,7 @@ void MainGame::init()
     m_Window->setWindowTitle("lHappyPluginTest");
     m_Window->setFullscreen(false);
     m_Window->setOculusRiftEnabled(oculus);
-    he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
+    he::eventCallback0<void> quitHandler(std::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create();
 

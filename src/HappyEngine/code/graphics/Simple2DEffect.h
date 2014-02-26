@@ -25,6 +25,8 @@
 namespace he {
 namespace gfx {
 
+struct DrawContext;
+class BufferLayout;
 class MaterialInstance;
 class MaterialParameter;
 
