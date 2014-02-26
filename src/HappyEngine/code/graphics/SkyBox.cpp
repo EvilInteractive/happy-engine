@@ -112,11 +112,11 @@ void SkyBox::load( const he::String& asset )
     m_Drawable->setMaterial(material);
     material->release();
 
-    MaterialParameter* const cubeMap(m_Drawable->getMaterial()->getParameter(HEFS::strcubeMap));
-    if (cubeMap)
+    const int8 cubeMap(m_Drawable->getMaterial()->findParameter(HEFS::strcubeMap));
+    if (cubeMap >= 0)
     {
         const TextureCube* cube(CONTENT->asyncLoadTextureCube(asset));
-        cubeMap->setTextureCube(cube);
+        m_Drawable->getMaterial()->getParameter(cubeMap).setTextureCube(cube);
         cube->release();
     }
 }
