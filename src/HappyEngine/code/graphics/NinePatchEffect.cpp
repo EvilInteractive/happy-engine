@@ -17,60 +17,55 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 27/11/2012
-
 #include "HappyPCH.h" 
-
 #include "NinePatchEffect.h"
+
 #include "ContentManager.h"
-#include "Shader.h"
+#include "Material.h"
+#include "MaterialInstance.h"
+#include "MaterialParameter.h"
 
 namespace he {
 namespace gfx {
 
-NinePatchEffect::NinePatchEffect() : m_Shader(nullptr)
+NinePatchEffect::NinePatchEffect()
+    : m_Material(nullptr)
+    , m_WVP(-1)
+    , m_DiffTex(-1)
+    , m_Center(-1)
+    , m_Size(-1)
+    , m_OrigSize(-1)
+    , m_Depth(-1)
+    , m_BlendColor(-1)
 {
 }
 
 
 NinePatchEffect::~NinePatchEffect()
 {
-    if (m_Shader != nullptr)
-        m_Shader->release();
+    delete m_Material;
 }
 
-void NinePatchEffect::load()
+void NinePatchEffect::init(const BufferLayout& layout)
 {
-    using namespace he;
-    using namespace gfx;
+    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    m_Material = mat->createMaterialInstance(eShaderType_Normal);
+    m_Material->calculateMaterialLayout(layout);
 
-    ShaderLayout layout;
-    layout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
-    layout.addAttribute(ShaderLayoutAttribute(1, "inTexCoord"));
+    m_WVP = m_Material->findParameter(HEFS::strmatWVP);
+    m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);
+    m_Center = m_Material->findParameter(HEFS::strcenter);
+    m_Size = m_Material->findParameter(HEFS::strsize);
+    m_OrigSize = m_Material->findParameter(HEFS::stroriginalSize);
+    m_Depth = m_Material->findParameter(HEFS::strdepth);
+    m_BlendColor = m_Material->findParameter(HEFS::strblendColor);
 
-    m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<he::String> shaderOutputs;
-    shaderOutputs.add("outColor");
-    const he::String& folder(CONTENT->getShaderFolderPath().str());
-    const bool compiled = m_Shader->initFromFile(folder + "2D/ninepatchshader.vert", 
-                                           folder + "2D/ninepatchshader.frag", layout, shaderOutputs);
-    HE_ASSERT(compiled, ""); compiled;
-
-    m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
-    m_ShaderDiffTexPos = m_Shader->getShaderSamplerId("diffuseMap");
-    m_ShaderCenterPos = m_Shader->getShaderVarId("center");
-    m_ShaderSizePos = m_Shader->getShaderVarId("size");
-    m_ShaderOrigSizePos = m_Shader->getShaderVarId("originalSize");
-    m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
-    m_ShaderBlendColor = m_Shader->getShaderVarId("blendColor");
-
-    m_Shader->bind();
-    mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
-    m_Shader->setShaderVar(m_ShaderWVPPos, MatWVP);
+    setWorldMatrix(mat44::Identity);
 }
 
-void NinePatchEffect::begin() const
+void NinePatchEffect::begin(const DrawContext& context) const
 {
-    m_Shader->bind();
+    m_Material->apply(context);
 }
 
 void NinePatchEffect::end() const
@@ -79,37 +74,37 @@ void NinePatchEffect::end() const
 
 void NinePatchEffect::setWorldMatrix(const he::mat44& mat) const
 {
-    m_Shader->setShaderVar(m_ShaderWVPPos, mat);
+    m_Material->getParameter(m_WVP).setFloat44(mat);
 }
 
 void NinePatchEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const
 {
-    m_Shader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
+    m_Material->getParameter(m_DiffTex).setTexture2D(diffuseMap);
 }
 
 void NinePatchEffect::setCenter(const RectF& center) const
 {
-    m_Shader->setShaderVar(m_ShaderCenterPos, vec4(center.x,center.y,center.width,center.height));
+    m_Material->getParameter(m_Center).setFloat4(vec4(center.x,center.y,center.width,center.height));
 }
 
 void NinePatchEffect::setSize(const vec2& size) const
 {
-    m_Shader->setShaderVar(m_ShaderSizePos, size);
+    m_Material->getParameter(m_Size).setFloat2(size);
 }
 
 void NinePatchEffect::setOriginalSize(const vec2& origSize) const
 {
-    m_Shader->setShaderVar(m_ShaderOrigSizePos, origSize);
+    m_Material->getParameter(m_OrigSize).setFloat2(origSize);
 }
 
 void NinePatchEffect::setDepth(float depth) const
 {
-    m_Shader->setShaderVar(m_ShaderDepthPos, depth);
+    m_Material->getParameter(m_Depth).setFloat(depth);
 }
 
 void NinePatchEffect::setBlendColor( const Color& color ) const
 {
-    m_Shader->setShaderVar(m_ShaderBlendColor, color.rgba());
+    m_Material->getParameter(m_BlendColor).setFloat4(color.rgba());
 }
 
 } } //end namespace

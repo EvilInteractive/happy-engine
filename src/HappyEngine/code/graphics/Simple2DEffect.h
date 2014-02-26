@@ -48,9 +48,9 @@ private:
 
     MaterialInstance* m_Material;
 
-    MaterialParameter* m_WVP;
-    MaterialParameter* m_Color;
-    MaterialParameter* m_Depth;
+    int8 m_WVP;
+    int8 m_Color;
+    int8 m_Depth;
 
     //Disable default copy constructor and default assignment operator
     Simple2DEffect(const Simple2DEffect&);

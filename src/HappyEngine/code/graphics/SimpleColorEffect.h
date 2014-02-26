@@ -25,7 +25,10 @@
 namespace he {
 namespace gfx {
 
-class Shader;
+struct DrawContext;
+class BufferLayout;
+class MaterialInstance;
+class MaterialParameter;
 
 class SimpleColorEffect
 {
@@ -33,11 +36,11 @@ public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
     SimpleColorEffect();
-    virtual ~SimpleColorEffect();
+    ~SimpleColorEffect();
 
     /* GENERAL */
-    void load();
-    void begin() const;
+    void init(const BufferLayout& layout);
+    void begin(const he::gfx::DrawContext& context) const;
     void end() const;
 
     /* SETTERS */
@@ -48,11 +51,11 @@ public:
 private:
 
     /* DATAMEMBERS */
-    Shader* m_Shader;
+    MaterialInstance* m_Material;
 
-    uint32 m_ShaderVPPos;
-    uint32 m_ShaderWPos;
-    uint32 m_ShaderColorPos;
+    int8 m_ViewProj;
+    int8 m_World;
+    int8 m_Color;
 
     /* DEFAULT COPY & ASSIGNMENT */
     SimpleColorEffect(const SimpleColorEffect&);

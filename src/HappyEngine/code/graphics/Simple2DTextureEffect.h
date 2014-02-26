@@ -24,17 +24,21 @@
 
 namespace he {
 namespace gfx {
-class Shader;
+
 class Texture2D;
+struct DrawContext;
+class BufferLayout;
+class MaterialInstance;
+class MaterialParameter;
 
 class Simple2DTextureEffect
 {
 public:
     Simple2DTextureEffect();
-    virtual ~Simple2DTextureEffect();
+    ~Simple2DTextureEffect();
 
-    void load();
-    void begin() const;
+    void init(const BufferLayout& layout);
+    void begin(const he::gfx::DrawContext& context) const;
     void end() const;
 
     void setWorldMatrix(const he::mat44& mat) const;
@@ -45,14 +49,14 @@ public:
     void setDepth(float depth) const;
 
 private:
-    gfx::Shader* m_Shader;
+    MaterialInstance* m_Material;
 
-    uint32 m_ShaderWVPPos;
-    uint32 m_ShaderDiffTexPos;
-    uint32 m_ShaderAlphaPos;
-    uint32 m_ShaderTCOffsetPos;
-    uint32 m_ShaderTCScalePos;
-    uint32 m_ShaderDepthPos;
+    int8 m_WVP;
+    int8 m_DiffTex;
+    int8 m_Alpha;
+    int8 m_TcOffset;
+    int8 m_TcScale;
+    int8 m_Depth;
 
     //Disable default copy constructor and default assignment operator
     Simple2DTextureEffect(const Simple2DTextureEffect&);

@@ -28,7 +28,11 @@
 namespace he {
 namespace gfx {
 
-Simple2DEffect::Simple2DEffect() : m_Material(nullptr), m_WVP(nullptr), m_Color(nullptr), m_Depth(nullptr)
+Simple2DEffect::Simple2DEffect() 
+    : m_Material(nullptr)
+    , m_WVP(-1)
+    , m_Color(-1)
+    , m_Depth(-1)
 { 
 }
 
@@ -44,13 +48,13 @@ void Simple2DEffect::init(const BufferLayout& layout)
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
 
-    m_WVP = m_Material->getParameter(HEFS::strmatWVP);
-    m_Color = m_Material->getParameter(HEFS::strcolor);
-    m_Depth = m_Material->getParameter(HEFS::strdepth);
+    m_WVP = m_Material->findParameter(HEFS::strmatWVP);
+    m_Color = m_Material->findParameter(HEFS::strcolor);
+    m_Depth = m_Material->findParameter(HEFS::strdepth);
 
-    m_WVP->setFloat44(mat44::Identity);
-    m_Color->setFloat4(vec4(1.0f,1.0f,1.0f,1.0f));
-    m_Depth->setFloat(0.0f);
+    setWorldMatrix(mat44::Identity);
+    setColor(Color(1.0f,1.0f,1.0f,1.0f));
+    setDepth(0.0f);
 }
 
 void Simple2DEffect::begin(const DrawContext& context) const
@@ -64,17 +68,17 @@ void Simple2DEffect::end() const
 
 void Simple2DEffect::setColor(const Color& color) const
 {
-    m_Color->setFloat4(color.rgba());
+    m_Material->getParameter(m_Color).setFloat4(color.rgba());
 }
 
 void Simple2DEffect::setWorldMatrix(const he::mat44 &mat) const
 {
-    m_WVP->setFloat44(mat);
+    m_Material->getParameter(m_WVP).setFloat44(mat);
 }
 
 void Simple2DEffect::setDepth(float depth) const
 {
-    m_Depth->setFloat(depth);
+    m_Material->getParameter(m_Depth).setFloat(depth);
 }
 
 } } //end namespace

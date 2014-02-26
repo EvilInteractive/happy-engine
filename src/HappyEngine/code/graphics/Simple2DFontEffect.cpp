@@ -17,55 +17,47 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 07/05/2012
-
 #include "HappyPCH.h" 
-
 #include "Simple2DFontEffect.h"
-#include "ContentManager.h"
 
-#include "Shader.h"
+#include "ContentManager.h"
+#include "Material.h"
+#include "MaterialInstance.h"
+#include "MaterialParameter.h"
 
 namespace he {
 namespace gfx {
 
 Simple2DFontEffect::Simple2DFontEffect() 
-    : m_Shader(nullptr)
-    , m_ShaderWVPPos(UINT32_MAX)
-    , m_ShaderDiffTexPos(UINT32_MAX)
-    , m_ShaderBlendColorPos(UINT32_MAX)
+    : m_Material(nullptr)
+    , m_WVP(-1)
+    , m_DiffTex(-1)
+    , m_BlendColor(-1)
 {
 }
 
 
 Simple2DFontEffect::~Simple2DFontEffect()
 {
-    if (m_Shader != nullptr)
-        m_Shader->release();
+    delete m_Material;
 }
 
-void Simple2DFontEffect::load()
+void Simple2DFontEffect::init(const BufferLayout& layout)
 {
-    ShaderLayout layout;
-    layout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
-    layout.addAttribute(ShaderLayoutAttribute(1, "inTexCoord"));
-    layout.addAttribute(ShaderLayoutAttribute(2, "inColor"));
+    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    m_Material = mat->createMaterialInstance(eShaderType_Normal);
+    m_Material->calculateMaterialLayout(layout);
 
-    m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<he::String> shaderOutputs;
-    shaderOutputs.add("outColor");
-    const he::String& folder(CONTENT->getShaderFolderPath().str());
-    const bool compiled = m_Shader->initFromFile(folder + "2D/simple2DFontShader.vert", 
-                                                 folder + "2D/simple2DFontShader.frag", layout, shaderOutputs);
-    HE_ASSERT(compiled, ""); compiled;
+    setWorldMatrix(mat44::Identity);
+    m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);
+    m_BlendColor = m_Material->findParameter(HEFS::strblendColor);
 
-    m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
-    m_ShaderDiffTexPos = m_Shader->getShaderSamplerId("diffuseMap");
-    m_ShaderBlendColorPos = m_Shader->getShaderVarId("blendColor");
+    setWorldMatrix(mat44::Identity);
 }
 
-void Simple2DFontEffect::begin() const
+void Simple2DFontEffect::begin(const DrawContext& context) const
 {
-    m_Shader->bind();
+    m_Material->apply(context);
 }
 
 void Simple2DFontEffect::end() const
@@ -74,17 +66,17 @@ void Simple2DFontEffect::end() const
 
 void Simple2DFontEffect::setWorldMatrix(const he::mat44& mat) const
 {
-    m_Shader->setShaderVar(m_ShaderWVPPos, mat);
+    m_Material->getParameter(m_WVP).setFloat44(mat);
 }
 
 void Simple2DFontEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const
 {
-    m_Shader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
+    m_Material->getParameter(m_DiffTex).setTexture2D(diffuseMap);
 }
 
 void Simple2DFontEffect::setBlendColor( const Color& col ) const
 {
-    m_Shader->setShaderVar(m_ShaderBlendColorPos, col.rgba());
+    m_Material->getParameter(m_BlendColor).setFloat4(col.rgba());
 }
 
 } } //end namespace

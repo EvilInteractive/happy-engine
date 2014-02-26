@@ -17,58 +17,50 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 06/11/2011
-
 #include "HappyPCH.h" 
-
 #include "SimpleColorEffect.h"
 
 #include "ContentManager.h"
-
-#include "Shader.h"
+#include "Material.h"
+#include "MaterialInstance.h"
+#include "MaterialParameter.h"
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-SimpleColorEffect::SimpleColorEffect() : m_Shader(nullptr)
+SimpleColorEffect::SimpleColorEffect()
+    : m_Material(nullptr)
+    , m_ViewProj(-1)
+    , m_World(-1)
+    , m_Color(-1)
 {
 }
 
 SimpleColorEffect::~SimpleColorEffect()
 {
-    if (m_Shader != nullptr)
-        m_Shader->release();
+    delete m_Material;
 }
 
 /* GENERAL */
-void SimpleColorEffect::load()
+void SimpleColorEffect::init(const BufferLayout& layout)
 {
-    ShaderLayout layout;
-    layout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
+    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    m_Material = mat->createMaterialInstance(eShaderType_Normal);
+    m_Material->calculateMaterialLayout(layout);
 
-    m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
+    m_ViewProj = m_Material->findParameter(HEFS::strmatVP);
+    m_World = m_Material->findParameter(HEFS::strmatW);
+    m_Color = m_Material->findParameter(HEFS::strcolor);
 
-    he::ObjectList<he::String> shaderOutputs;
-    shaderOutputs.add("outColor");
-
-    const he::String& folder(CONTENT->getShaderFolderPath().str());
-    const bool shaderInit(m_Shader->initFromFile(folder + "2D/simpleShader.vert", 
-                                            folder + "2D/simpleShader.frag", layout, shaderOutputs));
-    HE_ASSERT(shaderInit == true, "simpleShader init failed"); shaderInit;
-
-    m_ShaderVPPos = m_Shader->getShaderVarId("matVP");
-    m_ShaderWPos = m_Shader->getShaderVarId("matW");
-    m_ShaderColorPos = m_Shader->getShaderVarId("color");
-
-    m_Shader->bind();
-    m_Shader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
-    mat44 MatWVP;// = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
-    m_Shader->setShaderVar(m_ShaderVPPos, MatWVP);
+    setViewProjection(mat44::Identity);
+    setWorld(mat44::Identity);
+    setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-void SimpleColorEffect::begin() const
+void SimpleColorEffect::begin(const DrawContext& context) const
 {
-    m_Shader->bind();
+    m_Material->apply(context);
 }
 
 void SimpleColorEffect::end() const
@@ -78,17 +70,17 @@ void SimpleColorEffect::end() const
 /* SETTERS */
 void SimpleColorEffect::setViewProjection(const mat44& mat)
 {
-    m_Shader->setShaderVar(m_ShaderVPPos, mat);
+    m_Material->getParameter(m_ViewProj).setFloat44(mat);
 }
 
 void SimpleColorEffect::setWorld(const mat44& mat)
 {
-    m_Shader->setShaderVar(m_ShaderWPos, mat);
+    m_Material->getParameter(m_World).setFloat44(mat);
 }
 
 void SimpleColorEffect::setColor(const Color& color)
 {
-    m_Shader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
+    m_Material->getParameter(m_Color).setFloat4(color.rgba());
 }
 
 } } //end namespace

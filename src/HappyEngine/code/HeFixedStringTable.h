@@ -134,6 +134,16 @@ DEF_FS(VertexShader);
 DEF_FS(matWVP);
 DEF_FS(color);
 DEF_FS(depth);
+DEF_FS(matVP);
+DEF_FS(matW);
+DEF_FS(diffuseMap);
+DEF_FS(inAlpha);
+DEF_FS(texCoordOffset);
+DEF_FS(texCoordScale);
+DEF_FS(center);
+DEF_FS(size);
+DEF_FS(originalSize);
+DEF_FS(blendColor);
 
 //////////////////////////////////////////////////////////////////////////
 // Config

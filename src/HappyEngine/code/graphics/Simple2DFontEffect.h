@@ -24,17 +24,21 @@
 
 namespace he {
 namespace gfx {
+
 class Texture2D;
-class Shader;
+struct DrawContext;
+class BufferLayout;
+class MaterialInstance;
+class MaterialParameter;
 
 class Simple2DFontEffect
 {
 public:
     Simple2DFontEffect();
-    virtual ~Simple2DFontEffect();
+    ~Simple2DFontEffect();
 
-    void load();
-    void begin() const;
+    void init(const BufferLayout& layout);
+    void begin(const he::gfx::DrawContext& context) const;
     void end() const;
 
     void setWorldMatrix(const he::mat44& mat) const;
@@ -42,11 +46,11 @@ public:
     void setBlendColor(const Color& col) const;
 
 private:
-    gfx::Shader* m_Shader;
+    MaterialInstance* m_Material;
 
-    uint32 m_ShaderWVPPos;
-    uint32 m_ShaderDiffTexPos;
-    uint32 m_ShaderBlendColorPos;
+    int8 m_WVP;
+    int8 m_DiffTex;
+    int8 m_BlendColor;
 
     //Disable default copy constructor and default assignment operator
     Simple2DFontEffect(const Simple2DFontEffect&);
