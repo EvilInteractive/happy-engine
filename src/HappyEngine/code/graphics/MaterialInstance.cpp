@@ -135,6 +135,7 @@ void MaterialInstance::init()
                 break;
         }
         m_Parameters.add(param);
+        m_ParameterNames.add(uniform->getName());
     }
 }
 
@@ -190,5 +191,37 @@ void MaterialInstance::calculateMaterialLayout(const BufferLayout& bufferLayout)
 {
     m_Material->calculateMaterialLayout(bufferLayout, m_Layout);
 }
-    
+
+he::int8 MaterialInstance::findParameter( const FixedString& name ) const
+{
+    size_t index;
+    if (m_ParameterNames.find(name, index))
+    {
+        return checked_numcast<int8>(index);
+    }
+    else
+    {
+        LOG(LogType_ProgrammerAssert, "Could not find parameter with name %s in material %s!", name.c_str(), m_Material->getName().c_str());
+        return -1;
+    }
+}
+
+MaterialParameter& MaterialInstance::getParameter( const int8 index )
+{
+    return m_Parameters[index];
+}
+
+void MaterialInstance::setIsBlended( bool isBlended, BlendEquation equation /*= BlendEquation_Add*/, BlendFunc sourceBlend /*= BlendFunc_One*/, BlendFunc destBlend /*= BlendFunc_Zero*/ )
+{
+    if (isBlended)
+        raiseFlag(eMaterialFlags_Blended);
+    else
+        clearFlag(eMaterialFlags_Blended);
+    m_BlendEquation = equation;
+    m_SourceBlend = sourceBlend;
+    m_DestBlend = destBlend;
+}
+
+
+
 } } //end namespace

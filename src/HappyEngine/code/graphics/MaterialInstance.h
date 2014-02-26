@@ -39,7 +39,8 @@ public:
 
     const Material* getParent() const { return m_Material; }
 
-    MaterialParameter* getParameter(const FixedString& name) const;
+    int8 findParameter(const FixedString& name) const;
+    MaterialParameter& getParameter(const int8 index);
     
     void apply(const DrawContext& context) const;
     
@@ -71,14 +72,17 @@ private:
     void applyShader(const EShaderType type, const DrawContext& context) const;
     void applyMesh(const EShaderType type, const DrawContext& context) const;
 
-    EShaderType m_Type;
+    EShaderType m_Type : 8;
     uint8 m_Flags;
-    BlendEquation m_BlendEquation;
-    BlendFunc m_SourceBlend, m_DestBlend;
+    BlendEquation m_BlendEquation : 16;
+    BlendFunc m_SourceBlend : 16;
+    BlendFunc m_DestBlend : 16;
     const Material* m_Material;
     MaterialLayout m_Layout;
 
-    he::ObjectList<MaterialParameter> m_Parameters;
+    // Split for cache friendliness
+    he::ObjectList<MaterialParameter> m_Parameters;     // Hot
+    he::ObjectList<he::FixedString> m_ParameterNames;   // Cold
 
 
     //Disable default copy constructor and default assignment operator
