@@ -19,7 +19,7 @@
 #define _HE_CONTENT_MANAGER_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "RenderSettings.h"
 #include "Material.h"
 

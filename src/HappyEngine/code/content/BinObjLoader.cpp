@@ -22,7 +22,7 @@
 #include "BinObjLoader.h"
 
 #include "BinaryFileVisitor.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "Model.h"
 #include "Bone.h"
 #include "ModelMesh.h"
@@ -160,14 +160,14 @@ bool BinObjLoader::read(const he::String& path, bool allowByteIndices)
     stream.close();
 
     HE_ASSERT(m_VertexLayout.getSize() == 0, "vertexlayout not empty!");
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, 12, 0));
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_TextureCoordinate, 8, 12));
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Normal, 12, 20));
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Tangent, 12, 32));
+    m_VertexLayout.addElement(gfx::VertexElement(gfx::eShaderAttribute_Position, gfx::eShaderAttributeType_Float, gfx::eShaderAttributeTypeComponents_3, 0));
+    m_VertexLayout.addElement(gfx::VertexElement(gfx::eShaderAttribute_TextureCoordiante, gfx::eShaderAttributeType_Float, gfx::eShaderAttributeTypeComponents_2, 12));
+    m_VertexLayout.addElement(gfx::VertexElement(gfx::eShaderAttribute_Normal, gfx::eShaderAttributeType_Float, gfx::eShaderAttributeTypeComponents_3, 20));
+    m_VertexLayout.addElement(gfx::VertexElement(gfx::eShaderAttribute_Tangent, gfx::eShaderAttributeType_Float, gfx::eShaderAttributeTypeComponents_3, 32));
     if (m_BoneData.size() > 0)
     {
-        m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_IVec4, gfx::BufferElement::Usage_BoneIDs, 4 * gfx::Bone::MAX_BONEWEIGHTS, 44));
-        m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Float, gfx::BufferElement::Usage_BoneWeights, 4 * gfx::Bone::MAX_BONEWEIGHTS, 44 + 4 * gfx::Bone::MAX_BONEWEIGHTS));
+        m_VertexLayout.addElement(gfx::VertexElement(gfx::eShaderAttribute_BoneIndices, gfx::eShaderAttributeType_Int32, gfx::eShaderAttributeTypeComponents_4, 44));
+        m_VertexLayout.addElement(gfx::VertexElement(gfx::eShaderAttribute_BoneWeights, gfx::eShaderAttributeType_Float, gfx::eShaderAttributeTypeComponents_4, 44 + 4 * gfx::Bone::MAX_BONEWEIGHTS));
     }
 
     return true;
@@ -182,19 +182,19 @@ void BinObjLoader::fill()
     int boneOff = -1;
     int weightOff = -1;
 
-    std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const gfx::BufferElement& element)
+    std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const gfx::VertexElement& element)
     {
-        if (element.getUsage() == gfx::BufferElement::Usage_Position)
+        if (element.getAttribute() == gfx::eShaderAttribute_Position)
             pOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_TextureCoordinate)
+        else if (element.getAttribute() == gfx::eShaderAttribute_TextureCoordiante)
             tOff = element.getByteOffset(); 
-        else if (element.getUsage() == gfx::BufferElement::Usage_Normal)
+        else if (element.getAttribute() == gfx::eShaderAttribute_Normal)
             nOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_Tangent)
+        else if (element.getAttribute() == gfx::eShaderAttribute_Tangent)
             tanOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_BoneIDs)
+        else if (element.getAttribute() == gfx::eShaderAttribute_BoneIndices)
             boneOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_BoneWeights)
+        else if (element.getAttribute() == gfx::eShaderAttribute_BoneWeights)
             weightOff = element.getByteOffset();
     });
     

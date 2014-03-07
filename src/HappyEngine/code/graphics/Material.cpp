@@ -118,7 +118,7 @@ void Material::setSkinnedShader( Shader* const shader )
     m_Shader[eShaderType_Skinned] = shader;
 }
 
-void Material::setInstancedShader( Shader* const shader, const BufferLayout& /*instancingLayout*/ )
+void Material::setInstancedShader( Shader* const shader, const VertexLayout& /*instancingLayout*/ )
 {
     shader->instantiate();
     HE_ASSERT(m_Shader[eShaderType_Instanced] == nullptr, "Instanced shader already initialized!");
@@ -151,9 +151,9 @@ void Material::setIsBlended( bool isBlended, BlendEquation equation/* = BlendEqu
     }
 }
 
-void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout ) const
+void Material::calculateMaterialLayout( const VertexLayout& bufferLayout, MaterialLayout& outMaterialLayout ) const
 {
-    const BufferLayout::layout& meshElements(bufferLayout.getElements());
+    const VertexLayout::layout& meshElements(bufferLayout.getElements());
     const size_t meshElementCount(meshElements.size());
     const size_t stride(bufferLayout.getSize());
     
@@ -171,13 +171,13 @@ void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, Materi
         {
             for (size_t i(0); i < meshElementCount; ++i)
             {
-                const BufferElement& meshElement(meshElements[i]);
-                if (bufferElementUsageToShaderAttribUsage(meshElement.getUsage()) == e.getUsage())
+                const VertexElement& meshElement(meshElements[i]);
+                if (bufferElementUsageToShaderAttribUsage(meshElement.getAttribute()) == e.getUsage())
                 {
                     details::MaterialLayoutElement matEl;
                     GLint components(1);
                     GLenum type(0);
-                    GL::getGLTypesFromBufferElement(meshElement, components, type);
+                    GL::getGLTypesFromVertexElement(meshElement, components, type);
 
                     matEl.m_ElementIndex = checked_numcast<uint16>(e.getElementIndex());
                     matEl.m_Components = checked_numcast<uint8>(components);

@@ -30,7 +30,7 @@ namespace he {
 namespace gfx {
 struct DrawContext;
 class Material;
-class BufferLayout;
+class VertexLayout;
 class MaterialInstance : public AsyncLoadable
 {
 public:
@@ -61,7 +61,7 @@ public:
     
     void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
     
-    void calculateMaterialLayout(const BufferLayout& bufferLayout);
+    void calculateMaterialLayout(const VertexLayout& bufferLayout);
 
 private:
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }

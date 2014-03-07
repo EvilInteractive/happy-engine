@@ -22,7 +22,7 @@
 #define _HE_ShaderLayout_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "ShaderEnums.h"
 
 namespace he {
@@ -31,19 +31,19 @@ namespace gfx {
 class ShaderLayoutAttribute
 {
 public:
-    ShaderLayoutAttribute(): m_ElementIndex(UINT32_MAX), m_Usage(eShaderAttributePropertyUsage_Invalid), m_Name(HEFS::strError) {}
-    ShaderLayoutAttribute(const he::FixedString& nameInShader, const EShaderAttributePropertyUsage usage, const uint32 index);
+    ShaderLayoutAttribute(): m_ElementIndex(UINT32_MAX), m_Usage(eShaderAttribute_Invalid), m_Name(HEFS::strError) {}
+    ShaderLayoutAttribute(const he::FixedString& nameInShader, const EShaderAttribute usage, const uint32 index);
     ~ShaderLayoutAttribute() {}
     //default copy constructor and assignment operator are fine
 
 
     uint32 getElementIndex() const { return m_ElementIndex; }
     const he::FixedString& getName() const { return m_Name; }
-    const EShaderAttributePropertyUsage getUsage() const { return m_Usage; }
+    const EShaderAttribute getUsage() const { return m_Usage; }
 
 private:
     uint32 m_ElementIndex;
-    EShaderAttributePropertyUsage m_Usage;
+    EShaderAttribute m_Usage;
     he::FixedString m_Name;
 };
 

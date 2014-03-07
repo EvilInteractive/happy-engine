@@ -47,7 +47,7 @@ ModelMesh::~ModelMesh()
     destroyPickingData();
 }
 
-void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
+void ModelMesh::init(const VertexLayout& vertexLayout, MeshDrawMode mode)
 {
     HE_IF_ASSERT(m_VertexVboID == UINT32_MAX, "Only init ModelMesh once!")
     {
@@ -66,9 +66,9 @@ void ModelMesh::setVertices(const void* const vertices, const uint32 num, const 
     if (calcBound == true)
     {
         uint32 posOffset = UINT32_MAX;
-        std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const BufferElement& e)
+        std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const VertexElement& e)
         {
-            if (e.getUsage() == gfx::BufferElement::Usage_Position)
+            if (e.getAttribute() == gfx::eShaderAttribute_Position)
             {
                 posOffset = e.getByteOffset();
             }
@@ -103,7 +103,7 @@ void ModelMesh::setBones( const he::ObjectList<Bone>& boneList )
     m_BoneList.append(boneList);
 }
 
-void ModelMesh::createPickingData(const void* const vertices, const size_t vertexCount, const BufferLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride)
+void ModelMesh::createPickingData(const void* const vertices, const size_t vertexCount, const VertexLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride)
 {
     HE_IF_ASSERT(m_PickingData.m_Vertices == nullptr && m_PickingData.m_Indices == nullptr, "Picking data already initialized!")
     {
@@ -114,9 +114,9 @@ void ModelMesh::createPickingData(const void* const vertices, const size_t verte
         he_memcpy(m_PickingData.m_Indices, indices, indexStride * indexCount);
 
         uint32 posOffset(UINT32_MAX);
-        std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const BufferElement& e)
+        std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const VertexElement& e)
         {
-            if (e.getUsage() == gfx::BufferElement::Usage_Position)
+            if (e.getAttribute() == gfx::eShaderAttribute_Position)
             {
                 posOffset = e.getByteOffset();
             }

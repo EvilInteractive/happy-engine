@@ -45,7 +45,7 @@ Simple2DTextureEffect::~Simple2DTextureEffect()
     delete m_Material;
 }
 
-void Simple2DTextureEffect::init(const BufferLayout& layout)
+void Simple2DTextureEffect::init(const VertexLayout& layout)
 {
     Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);

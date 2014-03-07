@@ -81,7 +81,7 @@ enum BlendEquation
     BlendEquation_Unassigned      =     0xffff
 };
 
-class BufferElement;
+class VertexElement;
 class GLContext;
 class GL
 {
@@ -95,7 +95,7 @@ public:
     // Misc
     static void heSetViewport(const RectI& viewport);
     static const RectI& heGetViewport();
-    static void getGLTypesFromBufferElement(const BufferElement& element, GLint& components, GLenum& type);
+    static void getGLTypesFromVertexElement(const VertexElement& element, GLint& components, GLenum& type);
     static int getMaxMultiSamples();
 
     // Clear

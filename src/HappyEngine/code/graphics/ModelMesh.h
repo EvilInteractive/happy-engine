@@ -22,7 +22,7 @@
 #define _HE_MODELMESH_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "Bone.h"
 
 #include "Resource.h"
@@ -68,7 +68,7 @@ public:
     ModelMesh();
     virtual ~ModelMesh();
 
-    void init(const BufferLayout& vertexLayout, MeshDrawMode mode);
+    void init(const VertexLayout& vertexLayout, MeshDrawMode mode);
     void setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound);
     void setIndices(const void* const indices, const uint32 num, const IndexStride type, const MeshUsage usage);
     void setBones(const he::ObjectList<Bone>& boneList);
@@ -80,7 +80,7 @@ public:
     inline uint32 getVBOIndexID() const { return m_IndexVboID; }
     inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }
 
-    void createPickingData(const void* const vertices, const size_t vertexCount, const BufferLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
+    void createPickingData(const void* const vertices, const size_t vertexCount, const VertexLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
     void destroyPickingData();
     const PickingData& getPickingData() const { return m_PickingData; }
     bool hasPickingData() const { return m_PickingData.m_Vertices != nullptr; }
@@ -89,7 +89,7 @@ public:
     inline uint32 getNumIndices() const { return m_NumIndices; }
 
     inline uint32 getIndexType() const { return m_IndexType; }
-    inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
+    inline const VertexLayout& getVertexLayout() const { return m_VertexLayout; }
 
     inline const Bound& getBound() const { return m_Bound; }
 
@@ -109,7 +109,7 @@ private:
     uint32 m_NumVertices;
     uint32 m_NumIndices;
 
-    BufferLayout m_VertexLayout;
+    VertexLayout m_VertexLayout;
     uint32 m_IndexType;
 
     Bound m_Bound;

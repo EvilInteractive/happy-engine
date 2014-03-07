@@ -42,7 +42,7 @@ BillboardEffect::~BillboardEffect()
     delete m_Material;
 }
 
-void BillboardEffect::init(const BufferLayout& layout)
+void BillboardEffect::init(const VertexLayout& layout)
 {
     Material* mat(CONTENT->loadMaterial("engine/2D/billboard.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);

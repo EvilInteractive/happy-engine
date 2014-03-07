@@ -27,7 +27,7 @@ namespace gfx {
 
 class Texture2D;
 struct DrawContext;
-class BufferLayout;
+class VertexLayout;
 class MaterialInstance;
 class MaterialParameter;
 
@@ -37,7 +37,7 @@ public:
     NinePatchEffect();
     ~NinePatchEffect();
 
-    void init(const BufferLayout& layout);
+    void init(const VertexLayout& layout);
     void begin(const he::gfx::DrawContext& context) const;
     void end() const;
 

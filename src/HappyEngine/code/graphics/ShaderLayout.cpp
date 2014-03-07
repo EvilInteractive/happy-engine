@@ -24,7 +24,7 @@
 namespace he {
 namespace gfx {
 
-ShaderLayoutAttribute::ShaderLayoutAttribute(const he::FixedString& nameInShader, const EShaderAttributePropertyUsage usage, const uint32 index)
+ShaderLayoutAttribute::ShaderLayoutAttribute(const he::FixedString& nameInShader, const EShaderAttribute usage, const uint32 index)
     : m_ElementIndex(index)
     , m_Usage(usage)
     , m_Name(nameInShader)

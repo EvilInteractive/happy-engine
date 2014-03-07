@@ -25,7 +25,7 @@
 #include "SlotPContainer.h"
 
 #include "Drawable.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "InstancingBuffer.h"
 #include "Bound.h"
 #include "ITickable.h"

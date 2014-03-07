@@ -22,7 +22,7 @@
 #define _HE_ShaderEnums_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 
 namespace he {
 namespace gfx {
@@ -51,18 +51,34 @@ enum EShaderUniformUsage
 
 };
 
-enum EShaderAttributePropertyUsage
-{   // Only add to the back, or you will corrupt save files!
-    eShaderAttributePropertyUsage_Invalid,
-    eShaderAttributePropertyUsage_Position,
-    eShaderAttributePropertyUsage_TextureCoordiante,
-    eShaderAttributePropertyUsage_Normal,
-    eShaderAttributePropertyUsage_Tangent,
-    eShaderAttributePropertyUsage_Color,
-    eShaderAttributePropertyUsage_BoneIndices,
-    eShaderAttributePropertyUsage_BoneWeights
+enum EShaderAttributeType
+{
+    eShaderAttributeType_Float = GL_FLOAT,
+    eShaderAttributeType_Int32 = GL_INT,
+    eShaderAttributeType_UInt32 = GL_UNSIGNED_INT
 };
-EShaderAttributePropertyUsage bufferElementUsageToShaderAttribUsage(const BufferElement::Usage usage);
+
+enum EShaderAttributeTypeComponents
+{
+    eShaderAttributeTypeComponents_1 = 1,
+    eShaderAttributeTypeComponents_2 = 2,
+    eShaderAttributeTypeComponents_3 = 3,
+    eShaderAttributeTypeComponents_4 = 4
+};
+
+size_t getShaderAttributeSize(const EShaderAttributeType type, const EShaderAttributeTypeComponents components);
+
+enum EShaderAttribute
+{
+    eShaderAttribute_Invalid = -1,
+    eShaderAttribute_Position,
+    eShaderAttribute_TextureCoordiante,
+    eShaderAttribute_Normal,
+    eShaderAttribute_Tangent,
+    eShaderAttribute_Color,
+    eShaderAttribute_BoneIndices,
+    eShaderAttribute_BoneWeights
+};
 
 enum EShaderObjectPropertyUsage
 {   // Only add to the back, or you will corrupt save files!

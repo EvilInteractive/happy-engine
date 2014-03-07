@@ -26,7 +26,7 @@
 #include "Shader.h"
 #include "IRenderer.h"
 #include "DrawListContainer.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "IDrawable2D.h"
 
 namespace he {

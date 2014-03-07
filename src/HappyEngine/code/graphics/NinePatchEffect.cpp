@@ -46,7 +46,7 @@ NinePatchEffect::~NinePatchEffect()
     delete m_Material;
 }
 
-void NinePatchEffect::init(const BufferLayout& layout)
+void NinePatchEffect::init(const VertexLayout& layout)
 {
     Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);

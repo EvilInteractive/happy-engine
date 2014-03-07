@@ -87,7 +87,7 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     ///                          LOAD SHADERS                              ///
     //////////////////////////////////////////////////////////////////////////
     ShaderLayout shaderLayout;
-    shaderLayout.addAttribute(ShaderLayoutAttribute("inPosition", BufferElement::Usage_Position));
+    shaderLayout.addAttribute(ShaderLayoutAttribute("inPosition", eShaderAttribute_Position));
 
     he::ObjectList<he::String> shaderOutputs;
     shaderOutputs.add("outColor");

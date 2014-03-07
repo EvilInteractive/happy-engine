@@ -24,7 +24,7 @@
 
 #include "Bone.h"
 #include "IModelLoader.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 
 namespace he {
 namespace ct {
@@ -80,7 +80,7 @@ public:
     gfx::IndexStride getIndexStride(uint32 mesh) const;
     size_t getNumIndices(uint32 mesh) const;
 
-    const gfx::BufferLayout& getVertexLayout() const { return m_VertexLayout; }
+    const gfx::VertexLayout& getVertexLayout() const { return m_VertexLayout; }
 
 
 private:
@@ -98,7 +98,7 @@ private:
     he::PrimitiveList<uint32> m_NumIndices;
     he::PrimitiveList<gfx::IndexStride> m_IndexStride;
 
-    gfx::BufferLayout m_VertexLayout;
+    gfx::VertexLayout m_VertexLayout;
 
     //Disable default copy constructor and default assignment operator
     BinObjLoader(const BinObjLoader&);

@@ -23,7 +23,7 @@
 #pragma once
 
 #include "ModelMesh.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 
 namespace he {
 namespace gfx {

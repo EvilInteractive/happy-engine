@@ -624,9 +624,9 @@ void Canvas2DRendererGL::init()
         s_TextureQuadHandle = modelMeshFactory->create();
         ModelMesh* const mesh(modelMeshFactory->get(s_TextureQuadHandle));
 
-        BufferLayout vLayout;
-        vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
-        vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
+        VertexLayout vLayout;
+        vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_Position, 8, 0));
+        vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_TextureCoordiante, 8, 8));
 
         he::ObjectList<VertexPosTex2D> vertices(4);
         vertices.add(
@@ -665,10 +665,10 @@ void Canvas2DRendererGL::init()
 
     m_DynamicFontMesh = modelMeshFactory->get(modelMeshFactory->create());
 
-    BufferLayout vLayout;
-    vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
-    vLayout.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
-    vLayout.addElement(BufferElement(BufferElement::Type_Vec4, BufferElement::Usage_Color, 16, 16));
+    VertexLayout vLayout;
+    vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_Position, 8, 0));
+    vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_TextureCoordiante, 8, 8));
+    vLayout.addElement(VertexElement(VertexElement::Type_Vec4, VertexElement::Usage_Color, 16, 16));
 
     m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
     m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
@@ -692,7 +692,7 @@ void Canvas2DRendererGL::init()
     if (s_FontEffect == nullptr)
     {
         s_FontEffect = NEW Simple2DFontEffect();
-        s_FontEffect->load();
+        s_FontEffect->init(m_DynamicFontMesh->getVertexLayout());
     }
     if (s_NinePatchEffect == nullptr)
     {

@@ -26,7 +26,7 @@ namespace he {
 namespace gfx {
 
 struct DrawContext;
-class BufferLayout;
+class VertexLayout;
 class MaterialInstance;
 class MaterialParameter;
 
@@ -39,7 +39,7 @@ public:
     ~SimpleColorEffect();
 
     /* GENERAL */
-    void init(const BufferLayout& layout);
+    void init(const VertexLayout& layout);
     void begin(const he::gfx::DrawContext& context) const;
     void end() const;
 

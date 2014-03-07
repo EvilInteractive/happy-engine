@@ -33,7 +33,7 @@ namespace gfx {
 class IShaderUniform;
 class Shader;
 class MaterialInstance;
-class BufferLayout;
+class VertexLayout;
 
 class Material : public Resource<Material>
 {
@@ -46,7 +46,7 @@ public:
 
     void setNormalShader(Shader* const shader);
     void setSkinnedShader(Shader* const shader);
-    void setInstancedShader(Shader* const shader, const BufferLayout& instancingLayout);
+    void setInstancedShader(Shader* const shader, const VertexLayout& instancingLayout);
     
     Shader* getShader(const EShaderType type) const { return m_Shader[type]; }
     
@@ -64,7 +64,7 @@ public:
     
 private:
     Shader* bindShader(const EShaderType type) const;
-    void calculateMaterialLayout(const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout) const;
+    void calculateMaterialLayout(const VertexLayout& bufferLayout, MaterialLayout& outMaterialLayout) const;
     
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }
     HE_FORCEINLINE void raiseFlag(const EMaterialFlags flag) { m_Flags |= flag; }

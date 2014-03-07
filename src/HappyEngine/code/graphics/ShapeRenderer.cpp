@@ -61,9 +61,9 @@ ShapeRenderer::~ShapeRenderer()
 
 void ShapeRenderer::createBillboardQuad()
 {
-    BufferLayout vertexLayoutBillboard;
-    vertexLayoutBillboard.addElement(BufferElement(BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    vertexLayoutBillboard.addElement(BufferElement(BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
+    VertexLayout vertexLayoutBillboard;
+    vertexLayoutBillboard.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, eShaderAttribute_Position, 12, 0));
+    vertexLayoutBillboard.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_TextureCoordiante, 8, 12));
 
     m_BillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_BillboardQuad->init(vertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
@@ -97,8 +97,8 @@ void ShapeRenderer::createBillboardQuad()
 
 void ShapeRenderer::createAABB()
 {
-    BufferLayout vertexLayoutBillboard;
-    vertexLayoutBillboard.addElement(BufferElement(BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    VertexLayout vertexLayoutBillboard;
+    vertexLayoutBillboard.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, eShaderAttribute_Position, 12, 0));
 
     m_AABB = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_AABB->init(vertexLayoutBillboard, gfx::MeshDrawMode_Lines);

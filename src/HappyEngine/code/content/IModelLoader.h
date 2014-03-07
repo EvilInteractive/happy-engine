@@ -24,7 +24,7 @@
 namespace he {
 namespace gfx {
     struct Bone;
-    class BufferLayout;
+    class VertexLayout;
     ENUM(IndexStride, uint8);
 }
 namespace ct {
@@ -49,7 +49,7 @@ public:
     virtual gfx::IndexStride getIndexStride(uint32 mesh) const = 0;
     virtual size_t getNumIndices(uint32 mesh) const = 0;
 
-    virtual const gfx::BufferLayout& getVertexLayout() const = 0;
+    virtual const gfx::VertexLayout& getVertexLayout() const = 0;
 };
 
 } } } //end namespace

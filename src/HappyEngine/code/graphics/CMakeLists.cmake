@@ -14,6 +14,7 @@ addFilter(CODE_SRCS src/graphics code/graphics/
             Texture2D.cpp                       Texture2D.h
             TextureCube.cpp                     TextureCube.h
             Vertex.cpp                          Vertex.h
+            VertexLayout.cpp                    VertexLayout.h
         )
                             
 addFilter(CODE_SRCS src/graphics/gui code/graphics/

@@ -25,22 +25,21 @@ namespace gfx {
 
 const ShaderUniformID ShaderUniformID::Unassigned;
 
-EShaderAttributePropertyUsage bufferElementUsageToShaderAttribUsage(const BufferElement::Usage usage)
+
+
+size_t getShaderAttributeSize( const EShaderAttributeType type, const EShaderAttributeTypeComponents components )
 {
-    EShaderAttributePropertyUsage result(eShaderAttributePropertyUsage_Invalid);
-    switch (usage)
+    size_t typeSize(4);
+    switch (type)
     {
-        case BufferElement::Usage_Position: result = eShaderAttributePropertyUsage_Position; break;
-        case BufferElement::Usage_TextureCoordinate: result = eShaderAttributePropertyUsage_TextureCoordiante; break;
-        case BufferElement::Usage_Normal: result = eShaderAttributePropertyUsage_Normal; break;
-        case BufferElement::Usage_Tangent: result = eShaderAttributePropertyUsage_Tangent; break;
-        case BufferElement::Usage_BoneIDs: result = eShaderAttributePropertyUsage_BoneIndices; break;
-        case BufferElement::Usage_BoneWeights: result = eShaderAttributePropertyUsage_BoneWeights; break;
-        case BufferElement::Usage_Color: result = eShaderAttributePropertyUsage_Color; break;
-            
-        default: LOG(LogType_ProgrammerAssert, "Unknown bufferelement usage when converting to attrib usage: %d", usage); break;
+    case eShaderAttributeType_Float:
+    case eShaderAttributeType_Int32:
+    case eShaderAttributeType_UInt32: 
+        typeSize = 4; break;
+    default:
+        LOG(LogType_ProgrammerAssert, "Unknown EShaderAttributeType when getting size! %d", type);
     }
-    return result;
+    return typeSize * components;
 }
-    
+
 } } //end namespace

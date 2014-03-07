@@ -27,7 +27,7 @@ namespace gfx {
 
 class AmbientLight;
 class DirectionalLight;
-class BufferLayout;
+class VertexLayout;
 
 class SpotLight;
 class PointLight;
@@ -58,7 +58,7 @@ public:
     void removeAllLights();
     void remove(const ObjectHandle& light);
 
-    static const BufferLayout& getVertexLayoutLightVolume();
+    static const VertexLayout& getVertexLayoutLightVolume();
 
 private:
     Scene* m_Scene;

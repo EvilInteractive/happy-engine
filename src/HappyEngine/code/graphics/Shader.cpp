@@ -222,21 +222,21 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
 
             he::toLower(name);
 
-            EShaderAttributePropertyUsage usage(eShaderAttributePropertyUsage_Invalid);
+            EShaderAttribute usage(eShaderAttribute_Invalid);
             if (strstr(name, "pos") >= 0)
-                usage = eShaderAttributePropertyUsage_Position;
+                usage = eShaderAttribute_Position;
             else if (strstr(name, "tex") >= 0)
-                usage = eShaderAttributePropertyUsage_TextureCoordiante;
+                usage = eShaderAttribute_TextureCoordiante;
             else if (strstr(name, "nor") >= 0)
-                usage = eShaderAttributePropertyUsage_Normal;
+                usage = eShaderAttribute_Normal;
             else if (strstr(name, "tan") >= 0)
-                usage = eShaderAttributePropertyUsage_Tangent;
+                usage = eShaderAttribute_Tangent;
             else if (strstr(name, "col") >= 0)
-                usage = eShaderAttributePropertyUsage_Color;
+                usage = eShaderAttribute_Color;
             else if (strstr(name, "ind") >= 0)
-                usage = eShaderAttributePropertyUsage_BoneIndices;
+                usage = eShaderAttribute_BoneIndices;
             else if (strstr(name, "wei") >= 0)
-                usage = eShaderAttributePropertyUsage_BoneWeights;
+                usage = eShaderAttribute_BoneWeights;
             else
             {
                 LOG(he::LogType_ProgrammerAssert, "Could not deduce shader attribute usage from name '%s'", fixedName.c_str());

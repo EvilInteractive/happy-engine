@@ -23,7 +23,7 @@
 
 #include "Deferred3DRenderer.h"
 #include "Renderer2D.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "Vertex.h"
 
 #include "LightManager.h"
@@ -154,7 +154,7 @@ void Deferred3DRenderer::compileShaders()
     m_AmbDirIllShader  =  factory->get(factory->create());
 
     ShaderLayout shaderLayout;
-    shaderLayout.addAttribute(ShaderLayoutAttribute("inPosition", BufferElement::Usage_Position));
+    shaderLayout.addAttribute(ShaderLayoutAttribute("inPosition", eShaderAttribute_Position));
 
     //////////////////////////////////////////////////////////////////////////
     ///                                 Load                               ///

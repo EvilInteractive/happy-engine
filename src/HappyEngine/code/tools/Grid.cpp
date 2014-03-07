@@ -23,7 +23,7 @@
 #include "Grid.h"
 
 #include "Vertex.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "ShapeRenderer.h"
 
 #include "ModelMesh.h"
@@ -35,8 +35,10 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
                                                             m_Color(Color(0.8f,0.8f,0.8f,1.0f)),
                                                             m_Color2(Color(1.0f,1.0f,1.0f,1.0f))
 {
-    gfx::BufferLayout layout;
-    layout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, 12, 0));
+    gfx::VertexLayout layout;
+    layout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_Position, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_3, 0));
 
     he::ObjectList<gfx::VertexPos> vertices;
     he::PrimitiveList<uint32> indices;

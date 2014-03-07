@@ -26,7 +26,7 @@
 #pragma once
 
 #include "Model.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "AssetContainer.h"
 #include "ThreadSafeQueueMP1C.h"
 

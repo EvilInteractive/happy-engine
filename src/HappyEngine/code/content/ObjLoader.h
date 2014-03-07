@@ -22,7 +22,7 @@
 #define _HE_OBJ_LOADER_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "IModelLoader.h"
 
 namespace he {
@@ -60,7 +60,7 @@ public:
     virtual gfx::IndexStride getIndexStride(uint32 mesh) const;
     virtual size_t getNumIndices(uint32 mesh) const;
 
-    const gfx::BufferLayout& getVertexLayout() const { return m_VertexLayout; }
+    const gfx::VertexLayout& getVertexLayout() const { return m_VertexLayout; }
 
 private:
     struct Range
@@ -96,7 +96,7 @@ private:
     he::PrimitiveList<uint32> m_IndicesUInt;
 
     void* m_Vertices;
-    gfx::BufferLayout m_VertexLayout;
+    gfx::VertexLayout m_VertexLayout;
 
     size_t m_NumVertices;
     he::PrimitiveList<uint32> m_NumIndices;

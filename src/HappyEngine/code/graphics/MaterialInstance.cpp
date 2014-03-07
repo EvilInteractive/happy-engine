@@ -202,7 +202,7 @@ void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& con
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getVBOIndexID());
 }
 
-void MaterialInstance::calculateMaterialLayout(const BufferLayout& bufferLayout)
+void MaterialInstance::calculateMaterialLayout(const VertexLayout& bufferLayout)
 {
     m_Material->calculateMaterialLayout(bufferLayout, m_Layout);
 }

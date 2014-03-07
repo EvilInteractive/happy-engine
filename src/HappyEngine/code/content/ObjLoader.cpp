@@ -140,10 +140,18 @@ bool ObjLoader::read(const he::String& path)
 
 
     HE_ASSERT(m_VertexLayout.getSize() == 0, "vertexlayout not empty!");
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, 12, 0));
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_TextureCoordinate, 8, 12));
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Normal, 12, 20));
-    m_VertexLayout.addElement(gfx::BufferElement(gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Tangent, 12, 32));
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_Position, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_3, 0));
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_TextureCoordiante, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_2, 12));
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_Normal, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_3, 20));
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_Tangent, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_3, 32));
 
     return true;
 }
@@ -282,15 +290,15 @@ void ObjLoader::fill(void* pVertexData) const
     int nOff = -1;
     int tanOff = -1;
 
-    m_VertexLayout.getElements().forEach([&](const gfx::BufferElement& element)
+    m_VertexLayout.getElements().forEach([&](const gfx::VertexElement& element)
     {
-        if (element.getUsage() == gfx::BufferElement::Usage_Position)
+        if (element.getAttribute() == gfx::eShaderAttribute_Position)
             pOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_TextureCoordinate)
+        else if (element.getAttribute() == gfx::eShaderAttribute_TextureCoordiante)
             tOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_Normal)
+        else if (element.getAttribute() == gfx::eShaderAttribute_Normal)
             nOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_Tangent)
+        else if (element.getAttribute() == gfx::eShaderAttribute_Tangent)
             tanOff = element.getByteOffset();
     });
 

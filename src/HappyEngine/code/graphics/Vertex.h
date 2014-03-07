@@ -22,7 +22,7 @@
 #include "vec4.h"
 #include "vec3.h"
 #include "vec2.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 
 namespace he {
 namespace gfx {
