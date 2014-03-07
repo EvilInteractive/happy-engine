@@ -77,4 +77,3 @@ void ThreadTicketManager::check(const size_t id, const char* file, int line)
 
 } //end namespace
 
-#endif

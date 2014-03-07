@@ -161,6 +161,9 @@ void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, Materi
     {
         MaterialLayout::layout& elements(outMaterialLayout.m_Layout[t]);
         elements.clear();
+        
+        if (m_Shader[t] == nullptr) // If we have a shader of this type
+            continue;
 
         const ShaderLayout::AttributeLayoutList& shaderElements(m_Shader[t]->getShaderLayout().getAttributes());
 

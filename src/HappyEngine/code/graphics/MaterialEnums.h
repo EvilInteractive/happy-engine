@@ -30,6 +30,11 @@ namespace gfx {
         eShaderType_Normal,
         eShaderType_Skinned,
         eShaderType_Instanced,
+
+        eShaderType_SHADOW,
+        eShaderType_NormalShadow = eShaderType_SHADOW,
+        eShaderType_SkinnedShadow,
+        eShaderType_InstancedShadow,
         
         eShaderType_Unknown,
         eShaderType_MAX = eShaderType_Unknown

@@ -47,15 +47,7 @@ public:
 private:
     RenderTarget* m_RenderTarget;
         
-    Material* m_MatSingle;
-    Material* m_MatSkinned;
-    Material* m_MatInstanced;
-    
     ShadowResolution m_Resolution;
-
-    he::PrimitiveList<Drawable*> m_SingleDrawables;
-    he::PrimitiveList<Drawable*> m_SkinnedDrawables;
-    he::PrimitiveList<Drawable*> m_InstancedDrawables;
 
     //Disable default copy constructor and default assignment operator
     ShadowCasterSpotLight(const ShadowCasterSpotLight&);

@@ -79,6 +79,7 @@ void MaterialInstance::init()
     m_DestBlend = m_Material->m_DestBlend;
     
     m_Parameters.clear();
+    m_ParameterNames.clear();
     
     Shader* const shader(m_Material->getShader(m_Type));
     const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
@@ -154,16 +155,30 @@ void MaterialInstance::apply( const DrawContext& context ) const
     }
 }
 
+void MaterialInstance::applyShadow( const DrawContext& context ) const
+{
+    HE_IF_ASSERT(m_Type != eShaderType_Unknown, "You forgot to init this material instance! without the init we cannot draw this!")
+    {
+        const EShaderType type(static_cast<EShaderType>(m_Type + eShaderType_SHADOW));
+        applyShader(type, context);
+        applyMesh(type, context);
+    }
+}
+
 void MaterialInstance::applyShader( const EShaderType type, const DrawContext& /*context*/ ) const
 {
     if (checkFlag(eMaterialFlags_Blended))
     {
+        GL::heBlendEnabled(true);
         GL::heBlendEquation(m_BlendEquation);
         GL::heBlendFunc(m_SourceBlend, m_DestBlend);
     }
+    else
+    {
+        GL::heBlendEnabled(false);
+    }
     GL::heSetDepthRead(checkFlag(eMaterialFlags_DepthRead));
     GL::heSetDepthWrite(checkFlag(eMaterialFlags_DepthWrite));
-    
     GL::heSetCullFace(checkFlag(eMaterialFlags_CullFrontFace));
     
     Shader* shader(m_Material->bindShader(type));
@@ -177,9 +192,9 @@ void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& con
     const MaterialLayout::layout& elements(m_Layout.m_Layout[type]);
     
     glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBOID());
-    elements.forEach([type](const details::MaterialLayoutElement& e)
+    elements.forEach([](const details::MaterialLayoutElement& e)
     {
-        glVertexAttribPointer(e.m_ElementIndex, e.m_Components, type, GL_FALSE,
+        glVertexAttribPointer(e.m_ElementIndex, e.m_Components, e.m_Type, GL_FALSE,
                               e.m_Stride, BUFFER_OFFSET(e.m_ByteOffset));
         glEnableVertexAttribArray(e.m_ElementIndex);
     });
@@ -221,6 +236,7 @@ void MaterialInstance::setIsBlended( bool isBlended, BlendEquation equation /*= 
     m_SourceBlend = sourceBlend;
     m_DestBlend = destBlend;
 }
+
 
 
 

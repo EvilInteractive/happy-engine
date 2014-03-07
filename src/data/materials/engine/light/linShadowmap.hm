@@ -1,0 +1,12 @@
+{
+    "VertexShader" : "shadow/preShadowShader.vert",
+    "FragmentShader" : "shadow/preShadowShader.frag",
+    "IsBlended" : false,
+    "NoPost" : false,
+    "CullFrontFace" : false,
+    "DepthRead" : false,
+    "DepthWrite" : false,
+    "BlendEquation" : "Add",
+    "SourceBlend" : "One",
+    "DestBlend" : "Zero"
+}

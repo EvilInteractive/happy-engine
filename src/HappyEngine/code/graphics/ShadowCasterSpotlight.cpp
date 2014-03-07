@@ -18,41 +18,33 @@
 //Author:  Bastian Damman
 //Created: 13/10/2012
 #include "HappyPCH.h" 
-
 #include "ShadowCasterSpotlight.h"
 
+#include "CameraPerspective.h"
+#include "ContentManager.h"
+#include "Drawable.h"
+#include "DrawContext.h"
 #include "GraphicsEngine.h"
 #include "InstancingManager.h"
-#include "ContentManager.h"
-#include "ShaderVar.h"
-#include "View.h"
-#include "Scene.h"
-#include "Window.h"
+#include "MaterialInstance.h"
 #include "RenderTarget.h"
-#include "CameraPerspective.h"
+#include "Scene.h"
 #include "SpotLight.h"
+#include "Texture2D.h"
+#include "View.h"
+#include "Window.h"
 
 namespace he {
 namespace gfx {
 
 ShadowCasterSpotLight::ShadowCasterSpotLight()
-    : m_MatInstanced(nullptr)
-    , m_MatSingle(nullptr)
-    , m_MatSkinned(nullptr)
-    , m_RenderTarget(nullptr)
+    : m_RenderTarget(nullptr)
 {
 }
 
 
 ShadowCasterSpotLight::~ShadowCasterSpotLight()
 {
-    if (m_MatSingle != nullptr)
-        m_MatSingle->release();
-    if (m_MatSkinned != nullptr)
-        m_MatSkinned->release();
-    if (m_MatInstanced != nullptr)
-        m_MatInstanced->release();
-
     delete m_RenderTarget;
 }
 
@@ -60,8 +52,10 @@ void ShadowCasterSpotLight::init(ShadowResolution shadowSize)
 {
     m_Resolution = shadowSize;
 
-    m_RenderTarget = NEW RenderTarget(GRAPHICS->getContexts()[0]);
-    uint16 size(GRAPHICS->getShadowMapSize(shadowSize));
+    he::gfx::GraphicsEngine* const gfxEngine(GRAPHICS);
+
+    m_RenderTarget = NEW RenderTarget(gfxEngine->getContexts()[0]); // TODO: change 0 with something better!
+    const uint16 size(gfxEngine->getShadowMapSize(shadowSize));
     m_RenderTarget->setSize(size, size);
     m_RenderTarget->setDepthTarget();
 
@@ -74,11 +68,6 @@ void ShadowCasterSpotLight::init(ShadowResolution shadowSize)
     dummyTexture->release();
 
     m_RenderTarget->init();
-
-    ResourceFactory<Material>* matFactory(ResourceFactory<Material>::getInstance());
-    m_MatSingle = matFactory->get(CONTENT->loadMaterial("engine/light/linShadowmap.material"));
-    m_MatSkinned = matFactory->get(CONTENT->loadMaterial("engine/light/linShadowmapSkinned.material"));
-    m_MatInstanced = matFactory->get(CONTENT->loadMaterial("engine/light/linShadowmapInstanced.material"));
 }
 
 void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
@@ -90,25 +79,6 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
     light->prepareShadowCamera();
     const ICamera* cam(&light->getShadowCamera());
       
-    // Cull
-    {
-        m_SingleDrawables.clear();
-        m_InstancedDrawables.clear();
-        m_SkinnedDrawables.clear();
-        scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, cam, [&](Drawable* drawable)
-        {
-            if (drawable->getCastsShadow() == true)
-            {
-                if (drawable->isSkinned())
-                    m_SkinnedDrawables.add(drawable);
-                else if (drawable->isSingle())
-                    m_SingleDrawables.add(drawable);
-                else
-                    m_InstancedDrawables.add(drawable);
-            }
-        });
-    }
-
     // Prepare drawing
     m_RenderTarget->switchTextureTarget(0, light->getShadowMap());
     m_RenderTarget->prepareForRendering();
@@ -123,30 +93,17 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
         GL::heSetDepthWrite(true);
         GL::heSetDepthRead(true);
 
-        if (m_InstancedDrawables.empty() == false)
+        DrawContext context;
+        context.m_Camera = cam;
+        scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, cam, [&context](Drawable* drawable)
         {
-            m_InstancedDrawables.forEach([&](Drawable* drawable)
+            if (drawable->getCastsShadow() == true)
             {
-                m_MatInstanced->apply(static_cast<InstancedDrawable*>(drawable), cam);
-                drawable->drawShadow();
-            });
-        }
-        if (m_SingleDrawables.empty() == false)
-        {
-            m_SingleDrawables.forEach([&](Drawable* drawable)
-            {
-                m_MatSingle->apply(static_cast<SingleDrawable*>(drawable), cam);
-                drawable->drawShadow();
-            });
-        }
-        if (m_SkinnedDrawables.empty() == false)
-        {
-            m_SkinnedDrawables.forEach([&](Drawable* drawable)
-            {
-                m_MatSkinned->apply(static_cast<SkinnedDrawable*>(drawable), cam);
-                drawable->drawShadow();
-            });
-        }
+                context.m_CurrentMesh = drawable->getModelMesh();
+                drawable->getMaterial()->applyShadow(context);
+                drawable->getModelMesh()->draw();
+            }
+        });
     }
 }
 

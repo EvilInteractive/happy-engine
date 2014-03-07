@@ -43,6 +43,7 @@ public:
     MaterialParameter& getParameter(const int8 index);
     
     void apply(const DrawContext& context) const;
+    void applyShadow(const DrawContext& context) const;
     
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
                       BlendFunc sourceBlend  = BlendFunc_One,

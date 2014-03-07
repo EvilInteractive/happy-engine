@@ -212,9 +212,8 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         GL::heSetDepthWrite(false);
     
         GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-        //GL::heBindVao(m_DynamicFontMesh->getVertexArraysID());
 
-        glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
+        m_DynamicFontMesh->draw();
     }
 }
 float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, 
