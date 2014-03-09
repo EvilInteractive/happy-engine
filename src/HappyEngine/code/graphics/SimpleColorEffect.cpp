@@ -58,13 +58,9 @@ void SimpleColorEffect::init(const VertexLayout& layout)
     setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-void SimpleColorEffect::begin(const DrawContext& context) const
+void SimpleColorEffect::qpply(const DrawContext& context) const
 {
     m_Material->apply(context);
-}
-
-void SimpleColorEffect::end() const
-{
 }
 
 /* SETTERS */

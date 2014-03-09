@@ -57,13 +57,9 @@ void Simple2DEffect::init(const VertexLayout& layout)
     setDepth(0.0f);
 }
 
-void Simple2DEffect::begin(const DrawContext& context) const
+void Simple2DEffect::qpply(const DrawContext& context) const
 {
     m_Material->apply(context);
-}
-
-void Simple2DEffect::end() const
-{
 }
 
 void Simple2DEffect::setColor(const Color& color) const

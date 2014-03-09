@@ -100,7 +100,7 @@ void SkyBox::load( const he::String& asset )
     indices.add(7); indices.add(6); indices.add(2);
 
     VertexLayout layout;
-    layout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, eShaderAttribute_Position, sizeof(vec3), 0));
+    layout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
     cube->init(layout, MeshDrawMode_Triangles);
     cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
     cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);

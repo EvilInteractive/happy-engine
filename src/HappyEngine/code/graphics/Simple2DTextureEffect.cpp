@@ -61,13 +61,9 @@ void Simple2DTextureEffect::init(const VertexLayout& layout)
     setWorldMatrix(mat44::Identity);
 }
 
-void Simple2DTextureEffect::begin(const DrawContext& context) const
+void Simple2DTextureEffect::qpply(const DrawContext& context) const
 {
     m_Material->apply(context);
-}
-
-void Simple2DTextureEffect::end() const
-{
 }
 
 void Simple2DTextureEffect::setWorldMatrix(const he::mat44& mat) const

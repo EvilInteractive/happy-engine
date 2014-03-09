@@ -22,14 +22,16 @@
 #define _HE_MESH2D_H_
 #pragma once
 
+#include "VertexLayout.h"
+
 namespace he {
 class Polygon;
 namespace gfx {
 
 class HAPPY_ENTRY Mesh2D
 {
+    static VertexLayout s_VertexLayout;
 public:
-
     /* CONSTRUCTOR - DESTRUCTOR */
     explicit Mesh2D(bool staticDraw = false);
     ~Mesh2D();
@@ -45,12 +47,17 @@ public:
     /* GETTERS */
     inline uint32 getVBOID() const { return m_VertexVboID; }
     inline uint32 getVBOIndexID() const { return m_IndexVboID; }
+    const VertexLayout& getVertexLayout() const { return s_VertexLayout; }
 
     const he::PrimitiveList<vec2>& getVertices() const;
     const he::PrimitiveList<uint32>& getIndices() const;
     bool hasBuffer() const { return m_HasBuffer; }
 
     void draw();
+
+    /* SDM */
+    void sdmInit();
+    void sdmShutdown();
 
 private:
     /* DATAMEMBERS */

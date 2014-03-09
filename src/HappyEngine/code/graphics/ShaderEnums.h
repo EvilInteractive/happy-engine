@@ -22,8 +22,6 @@
 #define _HE_ShaderEnums_H_
 #pragma once
 
-#include "VertexLayout.h"
-
 namespace he {
 namespace gfx {
     
@@ -82,7 +80,7 @@ enum EShaderAttribute
 
 enum EShaderObjectPropertyUsage
 {   // Only add to the back, or you will corrupt save files!
-    eShaderObjectPropertyUsage_Invalid,
+    eShaderObjectPropertyUsage_Invalid = -1,
     eShaderObjectPropertyUsage_WorldViewProjection,
     eShaderObjectPropertyUsage_World,
     eShaderObjectPropertyUsage_WorldView,
@@ -92,7 +90,7 @@ enum EShaderObjectPropertyUsage
 
 enum EShaderGlobalPropertyUsage
 {   // Only add to the back, or you will corrupt save files!
-    eShaderGlobalPropertyUsage_Invalid,
+    eShaderGlobalPropertyUsage_Invalid = -1,
     eShaderGlobalPropertyUsage_ViewProjection,
     eShaderGlobalPropertyUsage_View,
     eShaderGlobalPropertyUsage_AmbientColor,
@@ -102,7 +100,7 @@ enum EShaderGlobalPropertyUsage
 };
 
 ENUM(EShaderUniformType, uint8)
-{   // Only add to the back, or you will corrupt save files!
+{
     eShaderUniformType_Invalid,
     eShaderUniformType_Int,
     eShaderUniformType_UInt,

@@ -27,7 +27,9 @@
 namespace he {
 namespace gfx {
 
-Mesh2D::Mesh2D(bool staticDraw) :  
+VertexLayout Mesh2D::s_VertexLayout;
+
+Mesh2D::Mesh2D(bool staticDraw) :
     m_Polygon(NEW Polygon()),
     m_StaticDraw(staticDraw),
     m_HasBuffer(false),
@@ -110,6 +112,16 @@ const he::PrimitiveList<uint32>& Mesh2D::getIndices() const
 void Mesh2D::draw()
 {
     glDrawElements(GL_TRIANGLES, m_Polygon->getIndexCount(), GL_UNSIGNED_INT, 0);
+}
+
+void Mesh2D::sdmInit()
+{
+    s_VertexLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+}
+
+void Mesh2D::sdmShutdown()
+{
+
 }
 
 

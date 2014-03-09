@@ -34,19 +34,13 @@
 #include "Sprite.h"
 #include "Mesh2D.h"
 #include "ICamera.h"
+#include "DrawContext.h"
 
 namespace he {
 namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
-/* STATIC */
-Simple2DEffect* Canvas2DRendererGL::s_ColorEffect = nullptr;
-Simple2DTextureEffect* Canvas2DRendererGL::s_TextureEffect = nullptr;
-Simple2DFontEffect* Canvas2DRendererGL::s_FontEffect = nullptr;
-NinePatchEffect* Canvas2DRendererGL::s_NinePatchEffect = nullptr;
-ObjectHandle Canvas2DRendererGL::s_TextureQuadHandle = ObjectHandle::unassigned;
-uint16 Canvas2DRendererGL::s_Renderers = 0;
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Canvas2DRendererGL::Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* glContext) :
@@ -56,26 +50,25 @@ Canvas2DRendererGL::Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* 
     m_Context(glContext),
     m_DynamicFontMesh(nullptr),
     m_TextureQuad(nullptr),
-    m_DynamicShapeMesh(nullptr)
+    m_DynamicShapeMesh(nullptr),
+    m_TextureQuad(nullptr),
+    m_TextureEffectQuad(nullptr),
+    m_ColorEffectShape(nullptr),
+    m_FontEffectDynFont(nullptr),
+    m_NinePatchEffectQuad(nullptr)
 {
-    ++s_Renderers;
 }
 
 Canvas2DRendererGL::~Canvas2DRendererGL()
 {
-    --s_Renderers;
-
     m_TextureQuad->release();
     m_DynamicFontMesh->release();
     delete m_DynamicShapeMesh;
 
-    if (s_Renderers == 0)
-    {
-        delete s_TextureEffect;
-        delete s_ColorEffect;
-        delete s_FontEffect;
-        delete s_NinePatchEffect;
-    }
+    delete m_TextureEffectQuad;
+    delete m_ColorEffectShape;
+    delete m_FontEffectDynFont;
+    delete m_NinePatchEffectQuad;
 }
 
 /* GENERAL */
@@ -198,21 +191,14 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 
         m_DynamicFontMesh->setVertices(&m_CharVertexBuffer[0], m_CharVertexBuffer.size(), MeshUsage_Stream, false);
         m_DynamicFontMesh->setIndices(&m_CharIndexBuffer[0], m_CharIndexBuffer.size(), IndexStride_UInt, MeshUsage_Stream);
-    
-        s_FontEffect->begin();
-        s_FontEffect->setDiffuseMap(tex2D);
-        s_FontEffect->setBlendColor(m_Color);
-        s_FontEffect->setWorldMatrix(m_OrthographicMatrix * mat44::createTranslation(offset));
-    
-        GL::heBlendEnabled(true);
-        GL::heBlendEquation(BlendEquation_Add);
-        GL::heBlendFuncSeperate(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha, BlendFunc_One, BlendFunc_One);
 
-        GL::heSetDepthRead(false);
-        GL::heSetDepthWrite(false);
-    
+        m_FontEffectDynFont->setDiffuseMap(tex2D);
+        m_FontEffectDynFont->setBlendColor(m_Color);
+        m_FontEffectDynFont->setWorldMatrix(m_OrthographicMatrix * mat44::createTranslation(offset));
+
         GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
+        m_FontEffectDynFont->apply();
         m_DynamicFontMesh->draw();
     }
 }
@@ -320,14 +306,13 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     }
 
     mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
-    
-    s_TextureEffect->begin();
-    s_TextureEffect->setWorldMatrix(m_OrthographicMatrix * world);
-    s_TextureEffect->setDiffuseMap(tex2D);
-    s_TextureEffect->setAlpha(m_Color.a());
-    s_TextureEffect->setTCOffset(tcOffset);
-    s_TextureEffect->setTCScale(tcScale);
-    s_TextureEffect->setDepth(0.5f);
+
+    m_TextureEffectQuad->setWorldMatrix(m_OrthographicMatrix * world);
+    m_TextureEffectQuad->setDiffuseMap(tex2D);
+    m_TextureEffectQuad->setAlpha(m_Color.a());
+    m_TextureEffectQuad->setTCOffset(tcOffset);
+    m_TextureEffectQuad->setTCScale(tcScale);
+    m_TextureEffectQuad->setDepth(0.5f);
 
     GL::heBlendEnabled(true);
     GL::heBlendEquation(BlendEquation_Add);
@@ -337,7 +322,11 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     GL::heSetDepthWrite(false);
     
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-    GL::heBindVao(m_TextureQuad->getVertexArraysID());
+
+    DrawContext context;
+    context.m_VBO = m_TextureQuad->getVBOID();
+    context.m_IBO = m_TextureQuad->getVBOIndexID();
+    m_TextureEffectQuad->apply(context);
     m_TextureQuad->draw();
 }
 void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
@@ -365,14 +354,14 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
 
         mat44 world(mat44::createTranslation(vec3(pos.x + s.x/2, pos.y + s.y/2, 0.0f)) * mat44::createScale(s.x, s.y, 1.0f));
     
-        s_NinePatchEffect->begin();
-        s_NinePatchEffect->setWorldMatrix(m_OrthographicMatrix * world);
-        s_NinePatchEffect->setCenter(c);
-        s_NinePatchEffect->setSize(s);
-        s_NinePatchEffect->setOriginalSize(sprite->getSize());
-        s_NinePatchEffect->setDiffuseMap(sprite->getRenderTexture());
-        s_NinePatchEffect->setDepth(0.5f);
-        s_NinePatchEffect->setBlendColor(m_Color);
+        m_NinePatchEffectQuad->begin();
+        m_NinePatchEffectQuad->setWorldMatrix(m_OrthographicMatrix * world);
+        m_NinePatchEffectQuad->setCenter(c);
+        m_NinePatchEffectQuad->setSize(s);
+        m_NinePatchEffectQuad->setOriginalSize(sprite->getSize());
+        m_NinePatchEffectQuad->setDiffuseMap(sprite->getRenderTexture());
+        m_NinePatchEffectQuad->setDepth(0.5f);
+        m_NinePatchEffectQuad->setBlendColor(m_Color);
 
         GL::heBlendEnabled(true);
         GL::heBlendEquation(BlendEquation_Add);
@@ -420,13 +409,13 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
 
     mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
     
-    s_TextureEffect->begin();
-    s_TextureEffect->setWorldMatrix(m_OrthographicMatrix * world);
-    s_TextureEffect->setDiffuseMap(tex2D);
-    s_TextureEffect->setAlpha(1.0f);
-    s_TextureEffect->setTCOffset(tcOffset);
-    s_TextureEffect->setTCScale(tcScale);
-    s_TextureEffect->setDepth(0.5f);
+    m_TextureEffectQuad->begin();
+    m_TextureEffectQuad->setWorldMatrix(m_OrthographicMatrix * world);
+    m_TextureEffectQuad->setDiffuseMap(tex2D);
+    m_TextureEffectQuad->setAlpha(1.0f);
+    m_TextureEffectQuad->setTCOffset(tcOffset);
+    m_TextureEffectQuad->setTCScale(tcScale);
+    m_TextureEffectQuad->setDepth(0.5f);
 
     if (useBlending)
     {
@@ -454,13 +443,13 @@ void Canvas2DRendererGL::blitImage3D( const Texture2D* tex2D, const gfx::ICamera
     const vec3 position(camera->getPosition() + camera->getLook() * 6.0f); // 6 meters in front of camera
     const mat44 world(mat44::createTranslation(position) * mat44::createBillboard(camera));
 
-    s_TextureEffect->begin();
-    s_TextureEffect->setWorldMatrix(camera->getViewProjection() * mat44::createTranslation(position) * mat44::createBillboard(camera) * mat44::createScale(vec3(8.0f, 8.0f / aspect, 1.0f)));
-    s_TextureEffect->setDiffuseMap(tex2D);
-    s_TextureEffect->setAlpha(1.0f);
-    s_TextureEffect->setTCOffset(tcOffset);
-    s_TextureEffect->setTCScale(tcScale);
-    s_TextureEffect->setDepth(0.5f);
+    m_TextureEffectQuad->begin();
+    m_TextureEffectQuad->setWorldMatrix(camera->getViewProjection() * mat44::createTranslation(position) * mat44::createBillboard(camera) * mat44::createScale(vec3(8.0f, 8.0f / aspect, 1.0f)));
+    m_TextureEffectQuad->setDiffuseMap(tex2D);
+    m_TextureEffectQuad->setAlpha(1.0f);
+    m_TextureEffectQuad->setTCOffset(tcOffset);
+    m_TextureEffectQuad->setTCScale(tcScale);
+    m_TextureEffectQuad->setDepth(0.5f);
 
     GL::heBlendEnabled(true);
     GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
@@ -489,10 +478,10 @@ void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)
 
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
-    s_ColorEffect->begin();
-    s_ColorEffect->setColor(m_Color);
-    s_ColorEffect->setWorldMatrix(m_OrthographicMatrix);
-    s_ColorEffect->setDepth(0.5f);
+    m_ColorEffectShape->begin();
+    m_ColorEffectShape->setColor(m_Color);
+    m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
+    m_ColorEffectShape->setDepth(0.5f);
 
     if (!shape->hasBuffer())
         shape->createBuffer(true);
@@ -513,10 +502,10 @@ void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
 
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
-    s_ColorEffect->begin();
-    s_ColorEffect->setColor(m_Color);
-    s_ColorEffect->setWorldMatrix(m_OrthographicMatrix);
-    s_ColorEffect->setDepth(0.5f);
+    m_ColorEffectShape->begin();
+    m_ColorEffectShape->setColor(m_Color);
+    m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
+    m_ColorEffectShape->setDepth(0.5f);
 
     if (!shape->hasBuffer())
         shape->createBuffer(false);
@@ -537,10 +526,10 @@ void Canvas2DRendererGL::strokeRect(const RectI& rect)
 
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
-    s_ColorEffect->begin();
-    s_ColorEffect->setColor(m_Color);
-    s_ColorEffect->setWorldMatrix(m_OrthographicMatrix);
-    s_ColorEffect->setDepth(0.5f);
+    m_ColorEffectShape->begin();
+    m_ColorEffectShape->setColor(m_Color);
+    m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
+    m_ColorEffectShape->setDepth(0.5f);
 
     m_DynamicShapeMesh->clear();
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y)));
@@ -567,10 +556,10 @@ void Canvas2DRendererGL::fillRect(const RectI& rect)
 
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
-    s_ColorEffect->begin();
-    s_ColorEffect->setColor(m_Color);
-    s_ColorEffect->setWorldMatrix(m_OrthographicMatrix);
-    s_ColorEffect->setDepth(0.5f);
+    m_ColorEffectShape->begin();
+    m_ColorEffectShape->setColor(m_Color);
+    m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
+    m_ColorEffectShape->setDepth(0.5f);
 
     m_DynamicShapeMesh->clear();
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y)));
@@ -596,17 +585,20 @@ void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
 
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
-    s_ColorEffect->begin();
-    s_ColorEffect->setColor(m_Color);
-    s_ColorEffect->setWorldMatrix(m_OrthographicMatrix);
-    s_ColorEffect->setDepth(0.5f);
+    m_ColorEffectShape->begin();
+    m_ColorEffectShape->setColor(m_Color);
+    m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
+    m_ColorEffectShape->setDepth(0.5f);
 
     m_DynamicShapeMesh->clear();
     m_DynamicShapeMesh->addVertex(p1);
     m_DynamicShapeMesh->addVertex(p2);
     m_DynamicShapeMesh->createBuffer(true);
 
-    GL::heBindVao(m_DynamicShapeMesh->getBufferID());
+    DrawContext context;
+    context.m_VBO = m_DynamicShapeMesh->getVBOID();
+    context.m_IBO = m_DynamicShapeMesh->getVBOIndexID();
+    m_ColorEffectShape->apply(context);
     glDrawElements(GL_LINE_LOOP, (GLsizei)m_DynamicShapeMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
 }
 
@@ -619,56 +611,46 @@ void Canvas2DRendererGL::init()
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_Size.x, 0.0f, m_Size.y, 0.0f, 1.0f);
 
     ResourceFactory<ModelMesh>* const modelMeshFactory(ResourceFactory<ModelMesh>::getInstance());
-    if (s_TextureQuadHandle == ObjectHandle::unassigned)
-    {
-        s_TextureQuadHandle = modelMeshFactory->create();
-        ModelMesh* const mesh(modelMeshFactory->get(s_TextureQuadHandle));
+    ObjectHandle modelHandle(modelMeshFactory->create());
+    m_TextureQuad = modelMeshFactory->get(modelHandle);
 
-        VertexLayout vLayout;
-        vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_Position, 8, 0));
-        vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_TextureCoordiante, 8, 8));
+    VertexLayout vLayout;
+    vLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+    vLayout.addElement(VertexElement(eShaderAttribute_TextureCoordiante, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 8));
 
-        he::ObjectList<VertexPosTex2D> vertices(4);
-        vertices.add(
-            VertexPosTex2D(vec2(-0.5f, 0.5f),
-            vec2(0, 0)));
+    he::ObjectList<VertexPosTex2D> vertices(4);
+    vertices.add(
+        VertexPosTex2D(vec2(-0.5f, 0.5f),
+        vec2(0, 0)));
 
-        vertices.add(
-            VertexPosTex2D(vec2(0.5f, 0.5f),
-            vec2(1, 0)));
+    vertices.add(
+        VertexPosTex2D(vec2(0.5f, 0.5f),
+        vec2(1, 0)));
 
-        vertices.add(
-            VertexPosTex2D(vec2(-0.5f, -0.5f),
-            vec2(0, 1)));
+    vertices.add(
+        VertexPosTex2D(vec2(-0.5f, -0.5f),
+        vec2(0, 1)));
 
-        vertices.add(
-            VertexPosTex2D(vec2(0.5f, -0.5f),
-            vec2(1, 1)));
+    vertices.add(
+        VertexPosTex2D(vec2(0.5f, -0.5f),
+        vec2(1, 1)));
 
-        he::PrimitiveList<uint8> indices(6);
-        indices.add(0); indices.add(1); indices.add(2);
-        indices.add(1); indices.add(3); indices.add(2);
+    he::PrimitiveList<uint8> indices(6);
+    indices.add(0); indices.add(1); indices.add(2);
+    indices.add(1); indices.add(3); indices.add(2);
 
-        mesh->init(vLayout, MeshDrawMode_Triangles);
-        mesh->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
-        mesh->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
-        mesh->setName("Canvas2DRendererGL-TextureQuad");
-        mesh->setLoaded(eLoadResult_Success);
-
-        m_TextureQuad = mesh;
-    }
-    else
-    {
-        modelMeshFactory->instantiate(s_TextureQuadHandle);
-        m_TextureQuad = modelMeshFactory->get(s_TextureQuadHandle);
-    }
+    m_TextureQuad->init(vLayout, MeshDrawMode_Triangles);
+    m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
+    m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_TextureQuad->setName("Canvas2DRendererGL-TextureQuad");
+    m_TextureQuad->setLoaded(eLoadResult_Success);
 
     m_DynamicFontMesh = modelMeshFactory->get(modelMeshFactory->create());
 
     VertexLayout vLayout;
-    vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_Position, 8, 0));
-    vLayout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, eShaderAttribute_TextureCoordiante, 8, 8));
-    vLayout.addElement(VertexElement(VertexElement::Type_Vec4, VertexElement::Usage_Color, 16, 16));
+    vLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+    vLayout.addElement(VertexElement(eShaderAttribute_TextureCoordiante, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 8));
+    vLayout.addElement(VertexElement(eShaderAttribute_Color, eShaderAttributeType_Float, eShaderAttributeTypeComponents_4, 16));
 
     m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
     m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
@@ -679,25 +661,25 @@ void Canvas2DRendererGL::init()
     m_DynamicShapeMesh = NEW Mesh2D(false);
 
 
-    if (s_ColorEffect == nullptr)
+    if (m_ColorEffectShape == nullptr)
     {
-        s_ColorEffect = NEW Simple2DEffect();
-        s_ColorEffect->load();
+        m_ColorEffectShape = NEW Simple2DEffect();
+        m_ColorEffectShape->init(m_DynamicShapeMesh->getVertexLayout());
     }
-    if (s_TextureEffect == nullptr)
+    if (m_TextureEffectQuad == nullptr)
     {
-        s_TextureEffect = NEW Simple2DTextureEffect();
-        s_TextureEffect->load();
+        m_TextureEffectQuad = NEW Simple2DTextureEffect();
+        m_TextureEffectQuad->init(m_TextureQuad->getVertexLayout());
     }
-    if (s_FontEffect == nullptr)
+    if (m_FontEffectDynFont == nullptr)
     {
-        s_FontEffect = NEW Simple2DFontEffect();
-        s_FontEffect->init(m_DynamicFontMesh->getVertexLayout());
+        m_FontEffectDynFont = NEW Simple2DFontEffect();
+        m_FontEffectDynFont->init(m_DynamicFontMesh->getVertexLayout());
     }
-    if (s_NinePatchEffect == nullptr)
+    if (m_NinePatchEffectQuad == nullptr)
     {
-        s_NinePatchEffect = NEW NinePatchEffect();
-        s_NinePatchEffect->load();
+        m_NinePatchEffectQuad = NEW NinePatchEffect();
+        m_NinePatchEffectQuad->init(m_TextureQuad->getVertexLayout());
     }
 }
 

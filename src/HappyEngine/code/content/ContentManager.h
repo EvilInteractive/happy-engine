@@ -58,6 +58,7 @@ public:
     gfx::ModelMesh* loadModelMesh(const he::String& modelPath, const he::String& meshName);
     gfx::ModelMesh* getFullscreenQuad();
     gfx::ModelMesh* getParticleQuad();
+    gfx::ModelMesh* getCenteredUnitQuad();
 
     const gfx::Texture2D* asyncLoadTexture2D(const he::String& path);
     const gfx::TextureCube* asyncLoadTextureCube(const he::String& path);

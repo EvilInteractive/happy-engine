@@ -156,7 +156,8 @@ void Window::OculusRiftBarrelDistorter::distort(const uint32 width, const uint32
     m_Material->getParameter(m_Params[eShaderParams_ScaleIn]).setFloat2(vec2(2.0f / 0.5f, (2.0f / 1.0f) / aspectRatio));
     
     DrawContext context;
-    context.m_CurrentMesh = m_Quad;
+    context.m_VBO = m_Quad->getVBOID();
+    context.m_IBO = m_Quad->getVBOIndexID();
 
     setupEye(device, viewport, -1);
     m_Material->apply(context);

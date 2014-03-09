@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 2014/03/09
 
 #ifndef _HE_DrawContext_H_
 #define _HE_DrawContext_H_
@@ -37,7 +37,8 @@ struct DrawContext
     {}
 
     const ICamera* m_Camera;
-    const ModelMesh* m_CurrentMesh;
+    uint32 m_VBO;
+    uint32 m_IBO;
 };
 
 } } //end namespace

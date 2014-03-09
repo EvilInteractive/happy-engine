@@ -23,7 +23,7 @@
 namespace he {
 namespace gfx {
 
-class VertexElement
+class BufferElement
 {
 public:
     enum Type
@@ -36,46 +36,34 @@ public:
         Type_IVec4,
         Type_UInt,
     };
-    enum Usage
-    {
-        Usage_Position,
-        Usage_TextureCoordinate,
-        Usage_Normal,
-        Usage_Tangent,
-        Usage_BoneIDs,
-        Usage_BoneWeights,
-        Usage_Instancing,
-        Usage_Color
-    };
-    VertexElement();
-    VertexElement(const Type type, const Usage usage, const uint32 size, const uint32 byteOffset);
-    virtual ~VertexElement() {}
+
+    BufferElement();
+    BufferElement(const Type type, const uint32 size, const uint32 byteOffset);
+    ~BufferElement() {}
     //default copy constructor and assignment operator are fine
 
     uint32 getSize() const; 
     uint32 getByteOffset() const; 
     Type getType() const;
-    Usage getAttribute() const;
 
 private:
     Type m_Type;
-    Usage m_Usage;
     uint32 m_Size;
     uint32 m_ByteOffset;
 };
 
-class VertexLayout
+class BufferLayout
 {
 public:
-    typedef he::ObjectList<VertexElement> layout;
+    typedef he::ObjectList<BufferElement> layout;
 
-    VertexLayout();
-    VertexLayout(const VertexLayout& other);
-    VertexLayout& operator=(const VertexLayout& other);
-    virtual ~VertexLayout();
+    BufferLayout();
+    BufferLayout(const BufferLayout& other);
+    BufferLayout& operator=(const BufferLayout& other);
+    virtual ~BufferLayout();
 
 
-    void addElement(const VertexElement& element);
+    void addElement(const BufferElement& element);
 
     const layout& getElements() const;
     uint32 getSize() const;

@@ -328,7 +328,7 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
     if (m_FullscreenQuad == nullptr)
     {
         VertexLayout layout;
-        layout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, eShaderAttribute_Position, 12, 0));
+        layout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_FullscreenQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
@@ -367,7 +367,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
     {    
         using namespace gfx;
         VertexLayout layout;
-        layout.addElement(VertexElement(eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, eShaderAttribute_Position, 12, 0));
+        layout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
 
         he::ObjectList<VertexPos> vertices(4);
         vertices.add(VertexPos(vec3(-1, 1, 0.0f)));
@@ -389,7 +389,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         m_ParticleQuad->setLoaded(eLoadResult_Success);
     }
 
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_ParticleQuad->getHandle());
+    m_ParticleQuad->instantiate();
     return m_ParticleQuad;
 }
 //////////////////////////////////////////////////////////////////////////

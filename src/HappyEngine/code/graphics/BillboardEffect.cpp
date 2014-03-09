@@ -56,13 +56,9 @@ void BillboardEffect::init(const VertexLayout& layout)
     setTCScale(vec2(1.0f,1.0f));
 }
 
-void BillboardEffect::begin(const DrawContext& context) const
+void BillboardEffect::apply(const DrawContext& context) const
 {
     m_Material->apply(context);
-}
-
-void BillboardEffect::end() const
-{
 }
 
 void BillboardEffect::setWorldViewProjection(const he::mat44& mat) const

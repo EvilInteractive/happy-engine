@@ -37,8 +37,7 @@ public:
     ~Simple2DEffect();
 
     void init(const VertexLayout& layout);
-    void begin(const he::gfx::DrawContext& context) const;
-    void end() const;
+    void apply(const he::gfx::DrawContext& context) const;
 
     void setColor(const Color& color) const;
     void setWorldMatrix(const he::mat44& mat) const;

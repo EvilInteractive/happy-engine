@@ -46,6 +46,7 @@ public:
     uint32 getByteOffset() const { return m_ByteOffset; }
     EShaderAttributeType getType() const { return m_Type; } 
     EShaderAttribute getAttribute() const { return m_Attribute; }
+    EShaderAttributeTypeComponents getComponents() const { return m_Components; }
 
 private:
     EShaderAttributeType m_Type;

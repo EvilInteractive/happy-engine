@@ -188,10 +188,9 @@ void MaterialInstance::applyShader( const EShaderType type, const DrawContext& /
 
 void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& context ) const
 {
-    const ModelMesh* const mesh(context.m_CurrentMesh);
     const MaterialLayout::layout& elements(m_Layout.m_Layout[type]);
     
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBOID());
+    glBindBuffer(GL_ARRAY_BUFFER, context.m_VBO);
     elements.forEach([](const details::MaterialLayoutElement& e)
     {
         glVertexAttribPointer(e.m_ElementIndex, e.m_Components, e.m_Type, GL_FALSE,
@@ -199,7 +198,7 @@ void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& con
         glEnableVertexAttribArray(e.m_ElementIndex);
     });
     
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getVBOIndexID());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context.m_IBO);
 }
 
 void MaterialInstance::calculateMaterialLayout(const VertexLayout& bufferLayout)

@@ -172,7 +172,7 @@ void Material::calculateMaterialLayout( const VertexLayout& bufferLayout, Materi
             for (size_t i(0); i < meshElementCount; ++i)
             {
                 const VertexElement& meshElement(meshElements[i]);
-                if (bufferElementUsageToShaderAttribUsage(meshElement.getAttribute()) == e.getUsage())
+                if (meshElement.getAttribute() == e.getType())
                 {
                     details::MaterialLayoutElement matEl;
                     GLint components(1);

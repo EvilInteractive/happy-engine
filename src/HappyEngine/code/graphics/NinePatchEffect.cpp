@@ -63,13 +63,9 @@ void NinePatchEffect::init(const VertexLayout& layout)
     setWorldMatrix(mat44::Identity);
 }
 
-void NinePatchEffect::begin(const DrawContext& context) const
+void NinePatchEffect::apply(const DrawContext& context) const
 {
     m_Material->apply(context);
-}
-
-void NinePatchEffect::end() const
-{
 }
 
 void NinePatchEffect::setWorldMatrix(const he::mat44& mat) const

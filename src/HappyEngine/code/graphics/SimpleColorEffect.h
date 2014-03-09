@@ -40,8 +40,7 @@ public:
 
     /* GENERAL */
     void init(const VertexLayout& layout);
-    void begin(const he::gfx::DrawContext& context) const;
-    void end() const;
+    void apply(const he::gfx::DrawContext& context) const;
 
     /* SETTERS */
     void setViewProjection(const mat44& mat);

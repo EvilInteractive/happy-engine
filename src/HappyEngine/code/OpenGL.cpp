@@ -336,6 +336,12 @@ const RectI& GL::heGetViewport()
     return s_CurrentContext->m_Viewport;
 }
 
+void GL::getGLTypesFromVertexElement(const VertexElement& element, GLint& components, GLenum& type)
+{
+    type = element.getType();
+    components = element.getComponents();
+}
+
 float GL::getMaxAnisotropicFilteringSupport()
 {
     return s_CurrentContext->m_MaxAnisotropicFilteringSupport;

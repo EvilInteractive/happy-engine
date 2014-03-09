@@ -38,8 +38,7 @@ public:
     ~Simple2DFontEffect();
 
     void init(const VertexLayout& layout);
-    void begin(const he::gfx::DrawContext& context) const;
-    void end() const;
+    void apply(const he::gfx::DrawContext& context) const;
 
     void setWorldMatrix(const he::mat44& mat) const;
     void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;

@@ -287,7 +287,8 @@ void Deferred3DRenderer::render()
         context.m_Camera = camera;
         m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&context](Drawable* d)
         {
-            context.m_CurrentMesh = d->getModelMesh();
+            context.m_VBO = d->getVBOID();
+            context.m_IBO = d->getVBOIndexID();
             d->getMaterial()->apply(context);
             d->getModelMesh()->draw();
         });
@@ -403,7 +404,8 @@ void Deferred3DRenderer::postPointLights()
 
             const gfx::ModelMesh* volume(light->getLightVolume());
             DrawContext context;
-            context.m_CurrentMesh = volume;
+            context.m_VBO = volume->getVBOID();
+            context.m_IBO = volume->getVBOIndexID();
             m_PointLightMaterial->apply(context);
             volume->draw();
         }
@@ -510,7 +512,8 @@ void Deferred3DRenderer::postSpotLights()
 
                 const gfx::ModelMesh* volume(light->getLightVolume());
                 DrawContext context;
-                context.m_CurrentMesh = volume;
+                context.m_VBO = volume->getVBOID();
+                context.m_IBO = volume->getVBOIndexID();
                 m_PointLightMaterial->apply(context);
                 volume->draw();
             }
