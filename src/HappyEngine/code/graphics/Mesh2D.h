@@ -23,6 +23,7 @@
 #pragma once
 
 #include "VertexLayout.h"
+#include "MeshEnums.h"
 
 namespace he {
 class Polygon;
@@ -57,7 +58,7 @@ public:
 
     /* SDM */
     void sdmInit();
-    void sdmShutdown();
+    void sdmDestroy();
 
 private:
     /* DATAMEMBERS */
@@ -67,6 +68,8 @@ private:
 
     bool m_StaticDraw : 4;
     bool m_HasBuffer : 4;
+
+    MeshDrawMode m_DrawMode;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Mesh2D(const Mesh2D&);

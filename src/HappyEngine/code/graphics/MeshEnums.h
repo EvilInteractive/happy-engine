@@ -16,30 +16,35 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2014/03/09
+//Created: 2014/03/12
 
-#ifndef _HE_DrawContext_H_
-#define _HE_DrawContext_H_
+#ifndef _HE_MeshEnums_H_
+#define _HE_MeshEnums_H_
 #pragma once
 
 namespace he {
 namespace gfx {
 
-class ICamera;
-class ModelMesh;
-class MaterialInstance;
-
-struct DrawContext
+ENUM(IndexStride, uint8)
 {
-    DrawContext()
-        : m_Camera(nullptr)
-        , m_VBO(0)
-        , m_IBO(0)
-    {}
+    IndexStride_Byte = sizeof(uint8),
+    IndexStride_UShort = sizeof(uint16),
+    IndexStride_UInt = sizeof(uint32)
+};
 
-    const ICamera* m_Camera;
-    uint32 m_VBO;
-    uint32 m_IBO;
+enum MeshUsage
+{
+    MeshUsage_Static  =  GL_STATIC_DRAW,    // Update rarely to never
+    MeshUsage_Stream  =  GL_STREAM_DRAW,    // Update frequently
+    MeshUsage_Dynamic =  GL_DYNAMIC_DRAW    // Update every frame
+};
+
+enum MeshDrawMode
+{
+    MeshDrawMode_Points     =   GL_POINTS,
+    MeshDrawMode_Lines      =   GL_LINES,
+    MeshDrawMode_LineLoop   =   GL_LINE_LOOP,
+    MeshDrawMode_Triangles  =   GL_TRIANGLES
 };
 
 } } //end namespace

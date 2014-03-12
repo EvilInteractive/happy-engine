@@ -26,6 +26,7 @@
 #include "TextureCube.h"
 #include "Model.h"
 #include "ModelMesh.h"
+#include "Mesh2D.h"
 #include "Font.h"
 #include "PhysicsConcaveMesh.h"
 #include "PhysicsConvexMesh.h"
@@ -100,10 +101,12 @@ void StaticDataManager::init()
     ge::PickingManager::sdmInit();
     ge::EntityManager::sdmInit();
     GlobalSettings::sdmInit();
+    gfx::Mesh2D::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    gfx::Mesh2D::sdmDestroy();
     GlobalSettings::sdmDestroy();
     ge::EntityManager::sdmDestroy();
     ge::PickingManager::sdmDestroy();

@@ -34,7 +34,8 @@ Mesh2D::Mesh2D(bool staticDraw) :
     m_StaticDraw(staticDraw),
     m_HasBuffer(false),
     m_VertexVboID(0),
-    m_IndexVboID(0)
+    m_IndexVboID(0),
+    m_DrawMode(MeshDrawMode_LineLoop)
 {
     glGenBuffers(1, &m_VertexVboID);
     glGenBuffers(1, &m_IndexVboID);
@@ -63,6 +64,7 @@ void Mesh2D::clear()
 
 bool Mesh2D::triangulate()
 {
+    m_DrawMode = MeshDrawMode_Triangles;
     return m_Polygon->triangulate();
 }
 
@@ -111,7 +113,7 @@ const he::PrimitiveList<uint32>& Mesh2D::getIndices() const
 
 void Mesh2D::draw()
 {
-    glDrawElements(GL_TRIANGLES, m_Polygon->getIndexCount(), GL_UNSIGNED_INT, 0);
+    glDrawElements(m_DrawMode, m_Polygon->getIndexCount(), GL_UNSIGNED_INT, 0);
 }
 
 void Mesh2D::sdmInit()
@@ -119,7 +121,7 @@ void Mesh2D::sdmInit()
     s_VertexLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
 }
 
-void Mesh2D::sdmShutdown()
+void Mesh2D::sdmDestroy()
 {
 
 }

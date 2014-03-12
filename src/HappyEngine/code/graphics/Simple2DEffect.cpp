@@ -48,6 +48,10 @@ void Simple2DEffect::init(const VertexLayout& layout)
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
 
+    m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    m_Material->setDepthReadEnabled(false);
+    m_Material->setDepthWriteEnabled(false);
+
     m_WVP = m_Material->findParameter(HEFS::strmatWVP);
     m_Color = m_Material->findParameter(HEFS::strcolor);
     m_Depth = m_Material->findParameter(HEFS::strdepth);

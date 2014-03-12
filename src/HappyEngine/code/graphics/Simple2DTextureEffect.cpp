@@ -51,6 +51,10 @@ void Simple2DTextureEffect::init(const VertexLayout& layout)
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
 
+    m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    m_Material->setDepthReadEnabled(false);
+    m_Material->setDepthWriteEnabled(false);
+
     m_WVP = m_Material->findParameter(HEFS::strmatWVP);
     m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);
     m_Alpha = m_Material->findParameter(HEFS::strinAlpha);
@@ -61,7 +65,7 @@ void Simple2DTextureEffect::init(const VertexLayout& layout)
     setWorldMatrix(mat44::Identity);
 }
 
-void Simple2DTextureEffect::qpply(const DrawContext& context) const
+void Simple2DTextureEffect::apply(const DrawContext& context) const
 {
     m_Material->apply(context);
 }
@@ -94,6 +98,18 @@ void Simple2DTextureEffect::setTCScale(const vec2& scale) const
 void Simple2DTextureEffect::setDepth(float depth) const
 {
     m_Material->getParameter(m_Depth).setFloat(depth);
+}
+
+void Simple2DTextureEffect::setBlended( const bool blended ) const
+{
+    if (blended)
+    {
+        m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    }
+    else
+    {
+        m_Material->setIsBlended(false);
+    }
 }
 
 } } //end namespace

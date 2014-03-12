@@ -24,7 +24,7 @@
 
 namespace he {
 namespace gfx {
-    
+   
 struct ShaderUniformID
 {
     const static ShaderUniformID Unassigned;

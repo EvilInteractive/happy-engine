@@ -23,6 +23,7 @@
 #pragma once
 
 #include "VertexLayout.h"
+#include "MeshEnums.h"
 #include "Bone.h"
 
 #include "Resource.h"
@@ -30,28 +31,6 @@
 
 namespace he {
 namespace gfx {
-
-ENUM(IndexStride, uint8)
-{
-    IndexStride_Byte = sizeof(uint8),
-    IndexStride_UShort = sizeof(uint16),
-    IndexStride_UInt = sizeof(uint32)
-};
-
-enum MeshUsage
-{
-    MeshUsage_Static  =  GL_STATIC_DRAW,    // Update rarely to never
-    MeshUsage_Stream  =  GL_STREAM_DRAW,    // Update frequently
-    MeshUsage_Dynamic =  GL_DYNAMIC_DRAW    // Update every frame
-};
-
-
-enum MeshDrawMode
-{
-    MeshDrawMode_Points     =   GL_POINTS,
-    MeshDrawMode_Lines      =   GL_LINES,
-    MeshDrawMode_Triangles  =   GL_TRIANGLES
-};
 
 struct PickingData
 {

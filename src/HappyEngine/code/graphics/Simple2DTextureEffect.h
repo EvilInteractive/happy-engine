@@ -46,6 +46,7 @@ public:
     void setTCOffset(const vec2& offset) const;
     void setTCScale(const vec2& scale) const;
     void setDepth(float depth) const;
+    void setBlended(const bool blended) const;
 
 private:
     MaterialInstance* m_Material;

@@ -52,6 +52,10 @@ void NinePatchEffect::init(const VertexLayout& layout)
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
 
+    m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    m_Material->setDepthReadEnabled(false);
+    m_Material->setDepthWriteEnabled(false);
+
     m_WVP = m_Material->findParameter(HEFS::strmatWVP);
     m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);
     m_Center = m_Material->findParameter(HEFS::strcenter);

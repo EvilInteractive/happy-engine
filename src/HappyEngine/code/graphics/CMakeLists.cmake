@@ -59,6 +59,7 @@ addFilter(CODE_SRCS src/graphics/material code/graphics/
             
 addFilter(CODE_SRCS src/graphics/model code/graphics/
             Bone.cpp                            Bone.h
+            MeshEnums.h
             Mesh2D.cpp                          Mesh2D.h
             Model.cpp                           Model.h
             ModelMesh.cpp                       ModelMesh.h

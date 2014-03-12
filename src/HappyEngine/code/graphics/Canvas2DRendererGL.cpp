@@ -51,7 +51,6 @@ Canvas2DRendererGL::Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* 
     m_DynamicFontMesh(nullptr),
     m_TextureQuad(nullptr),
     m_DynamicShapeMesh(nullptr),
-    m_TextureQuad(nullptr),
     m_TextureEffectQuad(nullptr),
     m_ColorEffectShape(nullptr),
     m_FontEffectDynFont(nullptr),
@@ -198,7 +197,10 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 
         GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
-        m_FontEffectDynFont->apply();
+        DrawContext context;
+        context.m_VBO = m_DynamicFontMesh->getVBOID();
+        context.m_IBO = m_DynamicFontMesh->getVBOIndexID();
+        m_FontEffectDynFont->apply(context);
         m_DynamicFontMesh->draw();
     }
 }
@@ -313,13 +315,7 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     m_TextureEffectQuad->setTCOffset(tcOffset);
     m_TextureEffectQuad->setTCScale(tcScale);
     m_TextureEffectQuad->setDepth(0.5f);
-
-    GL::heBlendEnabled(true);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
+    m_TextureEffectQuad->setBlended(true);
     
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
@@ -354,7 +350,6 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
 
         mat44 world(mat44::createTranslation(vec3(pos.x + s.x/2, pos.y + s.y/2, 0.0f)) * mat44::createScale(s.x, s.y, 1.0f));
     
-        m_NinePatchEffectQuad->begin();
         m_NinePatchEffectQuad->setWorldMatrix(m_OrthographicMatrix * world);
         m_NinePatchEffectQuad->setCenter(c);
         m_NinePatchEffectQuad->setSize(s);
@@ -362,15 +357,12 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
         m_NinePatchEffectQuad->setDiffuseMap(sprite->getRenderTexture());
         m_NinePatchEffectQuad->setDepth(0.5f);
         m_NinePatchEffectQuad->setBlendColor(m_Color);
-
-        GL::heBlendEnabled(true);
-        GL::heBlendEquation(BlendEquation_Add);
-        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-
-        GL::heSetDepthRead(false);
-        GL::heSetDepthWrite(false);
     
         GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
+        DrawContext context;
+        context.m_VBO = m_TextureQuad->getVBOID();
+        context.m_IBO = m_TextureQuad->getVBOIndexID();
+        m_NinePatchEffectQuad->apply(context);
         m_TextureQuad->draw();
     }
 }
@@ -409,26 +401,18 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
 
     mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
     
-    m_TextureEffectQuad->begin();
     m_TextureEffectQuad->setWorldMatrix(m_OrthographicMatrix * world);
     m_TextureEffectQuad->setDiffuseMap(tex2D);
     m_TextureEffectQuad->setAlpha(1.0f);
     m_TextureEffectQuad->setTCOffset(tcOffset);
     m_TextureEffectQuad->setTCScale(tcScale);
     m_TextureEffectQuad->setDepth(0.5f);
+    m_TextureEffectQuad->setBlended(useBlending);
 
-    if (useBlending)
-    {
-        GL::heBlendEnabled(true);
-        GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
-        GL::heBlendEquation(BlendEquation_Add);
-    }
-    else
-        GL::heBlendEnabled(false);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
+    DrawContext context;
+    context.m_VBO = m_TextureQuad->getVBOID();
+    context.m_IBO = m_TextureQuad->getVBOIndexID();
+    m_TextureEffectQuad->apply(context);
     m_TextureQuad->draw();
 }
 
@@ -443,22 +427,20 @@ void Canvas2DRendererGL::blitImage3D( const Texture2D* tex2D, const gfx::ICamera
     const vec3 position(camera->getPosition() + camera->getLook() * 6.0f); // 6 meters in front of camera
     const mat44 world(mat44::createTranslation(position) * mat44::createBillboard(camera));
 
-    m_TextureEffectQuad->begin();
     m_TextureEffectQuad->setWorldMatrix(camera->getViewProjection() * mat44::createTranslation(position) * mat44::createBillboard(camera) * mat44::createScale(vec3(8.0f, 8.0f / aspect, 1.0f)));
     m_TextureEffectQuad->setDiffuseMap(tex2D);
     m_TextureEffectQuad->setAlpha(1.0f);
     m_TextureEffectQuad->setTCOffset(tcOffset);
     m_TextureEffectQuad->setTCScale(tcScale);
     m_TextureEffectQuad->setDepth(0.5f);
+    m_TextureEffectQuad->setBlended(true);
 
-    GL::heBlendEnabled(true);
-    GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
+    DrawContext context;
+    context.m_VBO = m_TextureQuad->getVBOID();
+    context.m_IBO = m_TextureQuad->getVBOIndexID();
+    m_TextureEffectQuad->apply(context);
 
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
-    GL::heSetCullFace(true);
+    GL::heSetCullFace(true); // must be nicer...
 
     m_TextureQuad->draw();
 
@@ -468,17 +450,7 @@ void Canvas2DRendererGL::blitImage3D( const Texture2D* tex2D, const gfx::ICamera
 void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)
 {
     HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
-    
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
 
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
-    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-
-    m_ColorEffectShape->begin();
     m_ColorEffectShape->setColor(m_Color);
     m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
     m_ColorEffectShape->setDepth(0.5f);
@@ -486,6 +458,12 @@ void Canvas2DRendererGL::strokeShape(Mesh2D* const shape)
     if (!shape->hasBuffer())
         shape->createBuffer(true);
 
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
+
+    DrawContext context;
+    context.m_VBO = shape->getVBOID();
+    context.m_IBO = shape->getVBOIndexID();
+    m_ColorEffectShape->apply(context);
     shape->draw();
 }
 
@@ -493,16 +471,6 @@ void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
 {
     HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
-    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-
-    m_ColorEffectShape->begin();
     m_ColorEffectShape->setColor(m_Color);
     m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
     m_ColorEffectShape->setDepth(0.5f);
@@ -510,6 +478,12 @@ void Canvas2DRendererGL::fillShape(Mesh2D* const shape)
     if (!shape->hasBuffer())
         shape->createBuffer(false);
 
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
+
+    DrawContext context;
+    context.m_VBO = shape->getVBOID();
+    context.m_IBO = shape->getVBOIndexID();
+    m_ColorEffectShape->apply(context);
     shape->draw();
 }
 
@@ -517,16 +491,6 @@ void Canvas2DRendererGL::strokeRect(const RectI& rect)
 {
     HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
-    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-
-    m_ColorEffectShape->begin();
     m_ColorEffectShape->setColor(m_Color);
     m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
     m_ColorEffectShape->setDepth(0.5f);
@@ -538,25 +502,19 @@ void Canvas2DRendererGL::strokeRect(const RectI& rect)
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y + rect.height)));
     m_DynamicShapeMesh->createBuffer(true);
 
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
+
+    DrawContext context;
+    context.m_VBO = m_DynamicShapeMesh->getVBOID();
+    context.m_IBO = m_DynamicShapeMesh->getVBOIndexID();
+    m_ColorEffectShape->apply(context);
     m_DynamicShapeMesh->draw();
-    GL::heBindVao(m_DynamicShapeMesh->getBufferID());
-    glDrawElements(GL_LINE_LOOP, (GLsizei)m_DynamicShapeMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
 }
 
 void Canvas2DRendererGL::fillRect(const RectI& rect)
 {
     HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
-    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-
-    m_ColorEffectShape->begin();
     m_ColorEffectShape->setColor(m_Color);
     m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
     m_ColorEffectShape->setDepth(0.5f);
@@ -568,8 +526,13 @@ void Canvas2DRendererGL::fillRect(const RectI& rect)
     m_DynamicShapeMesh->addVertex(vec2(static_cast<float>(rect.x), static_cast<float>(rect.y + rect.height)));
     m_DynamicShapeMesh->createBuffer(false);
 
-    GL::heBindVao(m_DynamicShapeMesh->getBufferID());
-    glDrawElements(GL_TRIANGLES, (GLsizei)m_DynamicShapeMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
+
+    DrawContext context;
+    context.m_VBO = m_DynamicShapeMesh->getVBOID();
+    context.m_IBO = m_DynamicShapeMesh->getVBOIndexID();
+    m_ColorEffectShape->apply(context);
+    m_DynamicShapeMesh->draw();
 }
 
 void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
@@ -585,7 +548,6 @@ void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
 
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
-    m_ColorEffectShape->begin();
     m_ColorEffectShape->setColor(m_Color);
     m_ColorEffectShape->setWorldMatrix(m_OrthographicMatrix);
     m_ColorEffectShape->setDepth(0.5f);
@@ -599,7 +561,7 @@ void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
     context.m_VBO = m_DynamicShapeMesh->getVBOID();
     context.m_IBO = m_DynamicShapeMesh->getVBOIndexID();
     m_ColorEffectShape->apply(context);
-    glDrawElements(GL_LINE_LOOP, (GLsizei)m_DynamicShapeMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
+    m_DynamicShapeMesh->draw();
 }
 
 /* INTERNAL */
@@ -613,50 +575,53 @@ void Canvas2DRendererGL::init()
     ResourceFactory<ModelMesh>* const modelMeshFactory(ResourceFactory<ModelMesh>::getInstance());
     ObjectHandle modelHandle(modelMeshFactory->create());
     m_TextureQuad = modelMeshFactory->get(modelHandle);
+    {
+        VertexLayout vLayout;
+        vLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+        vLayout.addElement(VertexElement(eShaderAttribute_TextureCoordiante, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 8));
 
-    VertexLayout vLayout;
-    vLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
-    vLayout.addElement(VertexElement(eShaderAttribute_TextureCoordiante, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 8));
+        he::ObjectList<VertexPosTex2D> vertices(4);
+        vertices.add(
+            VertexPosTex2D(vec2(-0.5f, 0.5f),
+            vec2(0, 0)));
 
-    he::ObjectList<VertexPosTex2D> vertices(4);
-    vertices.add(
-        VertexPosTex2D(vec2(-0.5f, 0.5f),
-        vec2(0, 0)));
+        vertices.add(
+            VertexPosTex2D(vec2(0.5f, 0.5f),
+            vec2(1, 0)));
 
-    vertices.add(
-        VertexPosTex2D(vec2(0.5f, 0.5f),
-        vec2(1, 0)));
+        vertices.add(
+            VertexPosTex2D(vec2(-0.5f, -0.5f),
+            vec2(0, 1)));
 
-    vertices.add(
-        VertexPosTex2D(vec2(-0.5f, -0.5f),
-        vec2(0, 1)));
+        vertices.add(
+            VertexPosTex2D(vec2(0.5f, -0.5f),
+            vec2(1, 1)));
 
-    vertices.add(
-        VertexPosTex2D(vec2(0.5f, -0.5f),
-        vec2(1, 1)));
+        he::PrimitiveList<uint8> indices(6);
+        indices.add(0); indices.add(1); indices.add(2);
+        indices.add(1); indices.add(3); indices.add(2);
 
-    he::PrimitiveList<uint8> indices(6);
-    indices.add(0); indices.add(1); indices.add(2);
-    indices.add(1); indices.add(3); indices.add(2);
+        m_TextureQuad->init(vLayout, MeshDrawMode_Triangles);
+        m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
+        m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_TextureQuad->setName("Canvas2DRendererGL-TextureQuad");
 
-    m_TextureQuad->init(vLayout, MeshDrawMode_Triangles);
-    m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
-    m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
-    m_TextureQuad->setName("Canvas2DRendererGL-TextureQuad");
-    m_TextureQuad->setLoaded(eLoadResult_Success);
+        m_TextureQuad->setLoaded(eLoadResult_Success);
+    }
 
     m_DynamicFontMesh = modelMeshFactory->get(modelMeshFactory->create());
+    {
+        VertexLayout vLayout;
+        vLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+        vLayout.addElement(VertexElement(eShaderAttribute_TextureCoordiante, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 8));
+        vLayout.addElement(VertexElement(eShaderAttribute_Color, eShaderAttributeType_Float, eShaderAttributeTypeComponents_4, 16));
 
-    VertexLayout vLayout;
-    vLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
-    vLayout.addElement(VertexElement(eShaderAttribute_TextureCoordiante, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 8));
-    vLayout.addElement(VertexElement(eShaderAttribute_Color, eShaderAttributeType_Float, eShaderAttributeTypeComponents_4, 16));
-
-    m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
-    m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
-    m_DynamicFontMesh->setIndices(nullptr, 0, IndexStride_UInt, MeshUsage_Dynamic);
-    m_DynamicFontMesh->setName("Canvas2DRendererGL-FontMesh");
-    m_DynamicFontMesh->setLoaded(eLoadResult_Success);
+        m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
+        m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
+        m_DynamicFontMesh->setIndices(nullptr, 0, IndexStride_UInt, MeshUsage_Dynamic);
+        m_DynamicFontMesh->setName("Canvas2DRendererGL-FontMesh");
+        m_DynamicFontMesh->setLoaded(eLoadResult_Success);
+    }
 
     m_DynamicShapeMesh = NEW Mesh2D(false);
 
