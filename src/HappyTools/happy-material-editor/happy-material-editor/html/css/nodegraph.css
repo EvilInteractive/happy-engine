@@ -2,8 +2,8 @@
 
 @font-face {
     font-family: 'OpenSansRegular';
-    src: url('OpenSans-Regular-webfont.woff') format('woff'),
-         url('OpenSans-Regular-webfont.ttf') format('truetype');
+    src: url('../font/opensans/OpenSans-Regular-webfont.woff') format('woff'),
+         url('../font/opensans/OpenSans-Regular-webfont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -52,9 +52,21 @@ a.tip:hover span
     font-size: 12px;
 }
 
-#graph
+#canvas
 {
     background: -webkit-gradient(linear, left top, left bottom, from(#cdcdcd), to(#a5a5a5));
+    color: snow;
+    width: 100px;
+    height: 100px;
+    margin: 0px;
+    padding: 0px;
+    z-index: -1000;
+    left:0px;
+    top:0px;
+} 
+
+#graph
+{
     color: snow;
     width: 100px;
     height: 100px;
@@ -65,20 +77,22 @@ a.tip:hover span
 .node
 {
     margin: 0px;
-    padding: 2px;
+    padding: 0px;
     left : 64px;
     top : 64px;
     width : "128px";
     height : "64px";
 
-    overflow: hidden;
+    //overflow: hidden;
     text-align: center;
 
-    background: -webkit-gradient(linear, left top, left bottom, from(#cd0000), to(#a50000));
 
-    border: 1px solid #222;
+    opacity : 0;
+    //background: -webkit-gradient(linear, left top, left bottom, from(#cd0000), to(#a50000));
 
-    -webkit-border-radius: 4px;
+    //border: 1px solid #222;
+
+    //-webkit-border-radius: 4px;
 }
 
 .ui-selecting
