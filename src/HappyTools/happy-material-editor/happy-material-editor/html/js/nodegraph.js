@@ -15,6 +15,7 @@ $(function()
     var g_CtrlPressed = false;
     var g_DragHelper;
     var g_LastClickedNode;
+    var g_MovingConnection;
 
     // Init
     Init();
@@ -35,13 +36,13 @@ $(function()
         for (var x=0; x < 5; ++x)
         for (var y=0; y < 2; ++y)
         {
-            var node1 = new Node(64 + 150 * x, 64 + 80 * y);
-            node1.AddConnector("right", "R", false);
-            node1.AddConnector("right", "G", false);
-            node1.AddConnector("right", "B", false);
-            node1.AddConnector("right", "A", false);
-            node1.AddConnector("left", "RGB", true);
-            node1.AddConnector("left", "RGBA", true);
+            var node1 = new Node("TestName", 64 + 150 * x, 64 + 80 * y);
+            node1.AddConnector("right", "R", true);
+            node1.AddConnector("right", "G", true);
+            node1.AddConnector("right", "B", true);
+            node1.AddConnector("right", "A", true);
+            node1.AddConnector("left", "RGB", false);
+            node1.AddConnector("left", "RGBA", false);
             node1.AddConnector("top", "A", false);
             node1.AddConnector("bottom", "B", true);
         }
@@ -194,9 +195,10 @@ $(function()
         return pos;
     }
 
-    function Node(x, y)
+    function Node(name, x, y)
     {
         // CTOR
+        this.m_Name = name;
         this.m_Id = g_Nodes.length;
         this.m_Connectors = { "left" : new Array(), "top" : new Array(), "right" : new Array(), "bottom" : new Array() };
         this.m_IsMoving = false;
@@ -343,6 +345,11 @@ $(function()
             var y = position.top;
             ctx.fillRect(x,y,128,64);
 
+            ctx.fillStyle = "#000000";
+            ctx.font = "16px OpenSansRegular";
+            ctx.textAlign = "center";
+            ctx.fillText(this.m_Name, x+64, y+32);
+
             for (var i in this.m_Connectors)
             {
                 var connectorList = this.m_Connectors[i];
@@ -356,8 +363,21 @@ $(function()
 
     }
 
-    function GetHelperConnection()
+    function GetOppositeSide(side)
     {
+        if (side == "left") return "right";
+        if (side == "right") return "left";
+        if (side == "top") return "bottom";
+        if (side == "bottom") return "top";
+        return "left";
+    }
+
+    function GetHelperConnection(from)
+    {
+        this.m_From = from;
+        this.m_FallbackSide = GetOppositeSide(from.m_Side);
+        this.m_ConnectedTo = undefined;
+
         g_Graph.append("<div class='connector'>"+name+"</div>");
         this.m_Element = $(".connector").last();
         this.m_Element.css(
@@ -369,11 +389,51 @@ $(function()
 
         this.Draw = function(ctx)
         {
+            var connectPos = GetPosition(this.m_Element);
+            var connectDir = this.m_FallbackSide;
+            if (this.m_ConnectedTo != undefined)
+            {
+                if (this.m_ConnectedTo.CheckInside(connectPos) == false)
+                    this.m_ConnectedTo = undefined;
+            }
+            if (this.m_ConnectedTo == undefined)
+            {
+                for (var i in g_Nodes)
+                {
+                    var node = g_Nodes[i];
+                    if (node != this.m_Parent)
+                    {
+                        for (j in node.m_Connectors)
+                        {
+                            var connectorList = node.m_Connectors[j];
+                            for (k in connectorList)
+                            {
+                                var otherConnector = connectorList[k];
+                                if (this.m_From.m_Provider != otherConnector.m_Provider && otherConnector.CheckInside(connectPos))
+                                {
+                                    this.m_ConnectedTo = otherConnector;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (this.m_ConnectedTo != undefined)
+                    {
+                        break;
+                    }
+                }
+            }
+            if (this.m_ConnectedTo != undefined)
+            {
+                connectPos = GetPosition(this.m_ConnectedTo.m_Element);
+                connectDir = this.m_ConnectedTo.m_Side;
+            }
+
+            var position = GetPosition(this.m_From.m_Element);
+            DrawConnection(ctx, position, this.m_From.m_Side, connectPos, connectDir);
+
             ctx.fillStyle = "#0000FF";
-            var position = GetPosition(this.m_Element);
-            var x = position.left;
-            var y = position.top;
-            ctx.fillRect(x,y,8,8);               
+            ctx.fillRect(connectPos.left, connectPos.right, 8, 8);        
         };
     }
 
@@ -397,22 +457,6 @@ $(function()
         var cp2 = new float2(posTo.left, posTo.top);
         ConnectionModSide(sideTo, cp2, diff);
 
-        // Helper 1
-        ctx.beginPath();
-        ctx.moveTo(posFrom.left, posFrom.top);
-        ctx.lineTo(cp1.left, cp1.top);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'red';
-        ctx.stroke();
-
-        // Helper 2
-        ctx.beginPath();
-        ctx.moveTo(posTo.left, posTo.top);
-        ctx.lineTo(cp2.left, cp2.top);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'blue';
-        ctx.stroke();
-
         // Curve
         ctx.beginPath();
         ctx.moveTo(posFrom.left, posFrom.top);
@@ -426,9 +470,22 @@ $(function()
     {
         this.m_Provider = provider;
         this.m_Receiver = receiver;
-        
 
+        provider.AddConnection(this);
+        receiver.AddConnection(this);
 
+        this.Destroy = function()
+        {
+            this.m_Provider.RemoveConnection(this);
+            this.m_Receiver.RemoveConnection(this);
+        };
+
+        this.Draw = function(ctx)
+        {
+            var posFrom = GetPosition(this.m_Provider.m_Element);
+            var posTo = GetPosition(this.m_Receiver.m_Element);
+            DrawConnection(ctx, posFrom, this.m_Provider.m_Side, posTo, this.m_Receiver.m_Side);
+        };
     }
 
     function Connector(parent, side, provider, name)
@@ -443,15 +500,52 @@ $(function()
         parentNode.append("<div class='connector'>"+name+"</div>");
         this.m_Element = $(".connector").last();
 
+        this.AddConnection = function(connection)
+        {
+            if (this.m_Provider == false)
+            {
+                // Can only contain 1 connection
+                if (this.m_Connections.length > 0)
+                {
+                    this.m_Connections[0].Destroy();
+                }
+            }
+            this.m_Connections.push(connection);
+        };
+
+        this.RemoveConnection = function(connection)
+        {
+            var size = this.m_Connections.length;
+            for (var i = 0; i < size; ++i)
+            {
+                if (this.m_Connections[i] === connection)
+                {
+                    this.m_Connections.splice(i, 1);
+                    break;
+                }
+            }
+        };
+
         this.StopDragging = function()
         {
+            var connectedTo = this.m_DragHelper.m_ConnectedTo;
+            if (connectedTo != undefined)
+            {
+                var provider = this;
+                var receiver = this;
+                if (this.m_Provider)
+                    receiver = connectedTo;
+                else
+                    provider = connectedTo;
+                var connection = new Connection(provider, receiver);
+            }
             this.m_DragHelper = undefined;
             Redraw();
-        }
+        };
 
         this.GetHelperConnector = function()
         {
-            this.m_DragHelper = new GetHelperConnection();
+            this.m_DragHelper = new GetHelperConnection(this);
             return this.m_DragHelper.m_Element;
         };
 
@@ -461,13 +555,8 @@ $(function()
             "width" : "8px", "height" : "8px",
             "background-color" : "black"
         });
-        this.m_Element.droppable(
-        {
-            scope: "connectors"
-        });
         this.m_Element.draggable(
         {
-            scope : "connectors",
             containment: g_Graph,
             helper: function (self) { return function(event, ui) { return self.GetHelperConnector(); }; }(this),
             drag: function(event, ui) { Redraw(); },
@@ -487,44 +576,22 @@ $(function()
         {
             ctx.fillStyle = "#000000";
             var position = GetPosition(this.m_Element);
-            ctx.fillRect(position.left, position.top, 8, 8);
+            ctx.beginPath();
+            ctx.arc(position.left + 4, position.top + 4, 4, 0, Math.PI * 2);
+            ctx.fill();
 
             if (this.m_DragHelper != undefined)
             {
-                var snap = false;
-                var connectPos = GetPosition(this.m_DragHelper.m_Element);
-                var connectDir = "left";
-                for (var i in g_Nodes)
-                {
-                    var node = g_Nodes[i];
-                    if (node != this.m_Parent)
-                    {
-                        for (j in node.m_Connectors)
-                        {
-                            var connectorList = node.m_Connectors[j];
-                            for (k in connectorList)
-                            {
-                                var otherConnector = connectorList[k];
-                                if (this.m_Provider != otherConnector.m_Provider && otherConnector.CheckInside(connectPos))
-                                {
-                                    snap = true;
-                                    connectDir = j;
-                                    connectPos = GetPosition(otherConnector.m_Element);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (snap)
-                    {
-                        break;
-                    }
-                }
-
-                DrawConnection(ctx, position, this.m_Side, connectPos, connectDir);
-
                 this.m_DragHelper.Draw(ctx);
-            }         
+            }    
+
+            if (this.m_Provider)
+            {
+                for (var i in this.m_Connections)
+                {
+                    this.m_Connections[i].Draw(ctx);
+                }
+            }
         };
     }
 
