@@ -37,9 +37,17 @@ if (MSVC)
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    #set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Deployment target for OSX" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Deployment target for OSX" FORCE)
+
+    find_program(XCODE NAMES XCode)
+    find_path(SYS_TEMP NAMES MacOSX10.9.sdk PATHS ${XCODE}/../../Developer/Platforms/MacOSX.platform/Developer/SDKs)
+    set(CMAKE_OSX_SYSROOT ${SYS_TEMP}/MacOSX10.9.sdk CACHE STRING "" FORCE)
+    set(SYS_TEMP)
+
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -F/Library/Frameworks")
     message(clang)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")

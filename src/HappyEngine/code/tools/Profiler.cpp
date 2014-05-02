@@ -295,7 +295,7 @@ void Profiler::attachToRenderer( gfx::Renderer2D* renderer )
 
 void Profiler::detachFromRenderer()
 {
-    HE_IF_ASSERT(m_Renderer != nullptr, "Profiler not attached to a renderer")
+    if (m_Renderer != nullptr)
     {
         if (m_State == Enabled || m_State == Enabling)
             m_Renderer->detachFromRender(this);

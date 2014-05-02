@@ -23,8 +23,10 @@
 #pragma message("-- HappyEngine: Compiling precompiled headers. --")
 #pragma message("-------------------------------------------------\n")
 
-#ifndef NDEBUG
-#define HE_DEBUG 1
+#ifdef HE_DEBUG
+#define _DEBUG 1
+#else
+#define NDEBUG 1
 #endif
 
 #ifdef HE_WINDOWS

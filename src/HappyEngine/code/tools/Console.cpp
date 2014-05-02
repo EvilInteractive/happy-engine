@@ -150,11 +150,7 @@ void Console::processCommand(const he::String& command)
     he::String s(command);
 
     // remove spaces
-    #ifdef _MSC_VER
     s.erase(std::remove_if(s.begin(), s.end(), isspace), s.end());
-    #else // !FIX! will be fixed when work on linux resumed
-    #error What if GCC?
-    #endif
 
     if (s.find('=') != -1)
     {
@@ -475,7 +471,7 @@ void Console::attachToRenderer(gfx::Renderer2D* renderer)
 
 void Console::detachFromRenderer()
 {
-    HE_IF_ASSERT(m_Renderer != nullptr, "Console not attached to a renderer")
+    if (m_Renderer != nullptr)
     {
         if (m_IsOpen)
         {

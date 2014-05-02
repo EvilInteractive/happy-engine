@@ -18,7 +18,6 @@ if(WIN32)
 	include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/awesomium/include)
     include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SDL2/include)
 else()
-	find_library(AWESOMIUM NAMES Awesomium)
 	find_library(SDL2 NAMES SDL2)
 endif()
 
@@ -30,7 +29,6 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
 add_library (HappyMessageBox STATIC ${HAPPYMESSAGEBOX_SRCS})
 
 IF (APPLE)
-target_link_libraries(HappyMessageBox ${AWESOMIUM})
 target_link_libraries(HappyMessageBox ${SDL2})
 ENDIF()
 
