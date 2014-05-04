@@ -134,11 +134,6 @@ endmacro()
 
 macro (LinkThirdParty target)
 
-# Find includes in corresponding build directories
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed.
-set(CMAKE_AUTOMOC ON)
-
 if (APPLE)
 
 target_link_libraries(${target} ${SDL2})

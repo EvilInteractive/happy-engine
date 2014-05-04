@@ -1,6 +1,7 @@
 include(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/runtime/CMakeLists.cmake)
 include(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/system/CMakeLists.cmake)
 include(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/ui/CMakeLists.cmake)
+include(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/forms/CMakeLists.cmake)
 
 addFilter(HAPPYSANDBOX_CODE_SRCS src/ code/
         main.cpp

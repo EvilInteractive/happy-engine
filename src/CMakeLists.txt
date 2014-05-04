@@ -3,7 +3,7 @@
 # to the root binary directory of the project as ${HappyEngine_BINARY_DIR}. 
 cmake_minimum_required (VERSION 2.8) 
 SET(CMAKE_COLOR_MAKEFILE ON)
-SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_VERBOSE_MAKEFILE OFF)
 
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -34,6 +34,15 @@ endif()
 if (MSVC)
     message(msvc)
     string(REPLACE "/Zm1000" "/Zm200" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+endif()
+
+set(MULTITHREADED_BUILD 8 CACHE STRING "How many threads are used to build the project")
+if(MULTITHREADED_BUILD)
+    if(${CMAKE_GENERATOR} MATCHES "Unix Makefiles")
+            message(STATUS "Build tool: ${CMAKE_BUILD_TOOL}")
+            set(CMAKE_MAKE_PROGRAM "${CMAKE_MAKE_PROGRAM} -j${MULTITHREADED_BUILD}")
+            message(STATUS "Added arguments to CMAKE_BUILD_TOOL: ${CMAKE_MAKE_PROGRAM}")
+    endif()
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
