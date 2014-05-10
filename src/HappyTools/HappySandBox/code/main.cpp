@@ -28,6 +28,7 @@
 #include "forms/MainWindow.h"
 
 #include <qapplication.h>
+#include <qstyle.h>
 
 // Happy SandBox
 
@@ -37,17 +38,20 @@ int main( int argc, char* args[] )
 #if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+    QApplication::setStyle("plastique");
 
     he::Path root(args[0]);
     root = root.append("../../Data");
     he::HappyEngine::init(he::SubEngine_All, root);
     hs::StaticDataManager::init();
 
-    QApplication a(argc, args);
-    MainWindow w;
-    w.show();
+    QApplication app(argc, args);
+    app.setQuitOnLastWindowClosed(true);
+    MainWindow window;
+    window.setAttribute(Qt::WA_QuitOnClose);
+    window.show();
 
-    int ret = a.exec();
+    int ret = app.exec();
 
     hs::StaticDataManager::destroy();
     he::HappyEngine::dispose();

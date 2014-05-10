@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QWidget" name="OpenGLTarget" native="true">
+     <widget class="hs::GameWidget" name="gameWidget" native="true">
       <property name="mouseTracking">
        <bool>true</bool>
       </property>
@@ -176,6 +176,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>hs::GameWidget</class>
+   <extends>QWidget</extends>
+   <header>forms/GameWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
  </resources>
