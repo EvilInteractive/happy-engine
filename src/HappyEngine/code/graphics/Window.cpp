@@ -30,9 +30,7 @@
 #include "ContentManager.h"
 #include "OculusRiftBinding.h"
 #include "ModelMesh.h"
-
 #include "OpenGL.h"
-#include "SDL2/SDL.h"
 
 namespace he {
 namespace gfx {
@@ -68,7 +66,7 @@ struct Window::OculusRiftBarrelDistorter
 
     void resize(const uint32 width, const uint32 height);
 
-    void setupEye(io ::OculusRiftDevice* const device, const RectI& viewport, const int eye);
+    void setupEye(io::OculusRiftDevice* const device, const RectI& viewport, const int eye);
 
     Texture2D* m_PreBarrelDistort;
     Shader* m_Shader;
@@ -176,20 +174,13 @@ void Window::OculusRiftBarrelDistorter::distort(const uint32 width, const uint32
 
 
 #pragma warning(disable:4355) // use of this in initializer list
-Window::Window() 
-  : m_ID(0)
-  , m_Window(nullptr)
-  , m_RenderTarget(nullptr)
-  , m_Parent(nullptr)
+Window::Window()
+  : m_RenderTarget(nullptr)
   , m_ClearColor(0.0f, 0, 0)
   , m_WindowRect(-1, -1, 1280, 720)
   , m_Titel("")
   , m_OVRDistorter(nullptr)
   , m_Flags(eFlags_Resizeable | eFlags_IsVisible)
-#ifdef HE_WINDOWS
-#elif HE_LINUX
-  , m_Display(nullptr)
-#endif
 {
     he::eventCallback2<void, int32, int32> resizedCallback([this](const int32 width, const int32 height)
     {
@@ -216,129 +207,64 @@ Window::Window()
 
 Window::~Window()
 {
-    destroy();
-
-#ifdef HE_LINUX
-    XFreeCursor(m_Display, m_Cursor);
-    delete m_Display;
-    m_Display = NULL;
-#endif
 }
 
-bool Window::create()
+bool Window::create(const bool show)
 {
     bool result(false);
-    
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-#ifdef HE_DEBUG
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-    
-    uint32 flags(SDL_WINDOW_OPENGL);
-    if (checkFlag(eFlags_Resizeable))
-        flags |= SDL_WINDOW_RESIZABLE;
-    
-    m_Window = SDL_CreateWindow(m_Titel.c_str(), 
-        m_WindowRect.x == -1? SDL_WINDOWPOS_CENTERED : m_WindowRect.x, 
-        m_WindowRect.y == -1? SDL_WINDOWPOS_CENTERED : m_WindowRect.y, 
-        m_WindowRect.width, m_WindowRect.height, flags);
-    if (m_Window != nullptr &&  m_Context.create(this))
+    if (getContext()->create(this))
     {
-        //m_Window->setKeyRepeatEnabled(true);
         setVSync(checkFlag(eFlags_VSyncEnabled));
-        
-        GRAPHICS->setActiveWindow(this);
-        if (GRAPHICS->registerContext(&m_Context) == true)
+
+        GraphicsEngine* gfxEngine(GRAPHICS);
+        gfxEngine->setActiveWindow(this);
+        if (gfxEngine->registerContext(getContext()) == true)
         {
-            m_RenderTarget = NEW RenderTarget(&m_Context);
-            m_RenderTarget->init();
-            setOculusRiftEnabled(checkFlag(eFlags_EnableOculusRift));
-            raiseFlag(eFlags_IsVisible);
-            m_ID = SDL_GetWindowID(m_Window);
             result = true;
         }
 
-        SDL_GetWindowPosition(m_Window, &m_WindowRect.x, &m_WindowRect.y);
     }
     if (result == false)
     {
         HE_ERROR("Window open failed: %s", SDL_GetError());
-        if (m_Window != nullptr)
-        {
-            SDL_DestroyWindow(m_Window);
-            m_Window = nullptr;
-        }
-        m_Context.destroy();
+        destroy();
+    }
+    else
+    {
+        m_RenderTarget = NEW RenderTarget(getContext());
+        m_RenderTarget->init();
+        setOculusRiftEnabled(checkFlag(eFlags_EnableOculusRift));
+        if (show)
+            raiseFlag(eFlags_IsVisible);
     }
     return result;
 }
+
 void Window::destroy()
 {
-    if (m_Window != nullptr)
-    {
-        setOculusRiftEnabled(false);
-        delete m_RenderTarget;
-        m_RenderTarget = nullptr;
-        GRAPHICS->unregisterContext(&m_Context);
-        SDL_DestroyWindow(m_Window);
-        m_Window = nullptr;
-        m_Context.destroy();
-    }
+    setOculusRiftEnabled(false);
+    delete m_RenderTarget;
+    m_RenderTarget = nullptr;
+    GRAPHICS->unregisterContext(getContext());
 }
-bool Window::isOpen()
-{
-    return m_Window != nullptr && checkFlag(eFlags_IsVisible);
-}
-    
+
 void Window::show()
 {
-    HE_ASSERT(isOpen(), "Window is not open! - fatal");
-    if (checkFlag(eFlags_IsVisible) == false)
-    {
-        SDL_ShowWindow(m_Window);
-        raiseFlag(eFlags_IsVisible);
-    }
+    raiseFlag(eFlags_IsVisible);
 }
-    
+
 void Window::hide()
 {
-    HE_ASSERT(isOpen(), "Window is not open! - fatal");
-    if (checkFlag(eFlags_IsVisible) == true)
-    {
-        SDL_HideWindow(m_Window);
-        clearFlag(eFlags_IsVisible);
-    }
-}
-
-void Window::getWindowPosition( int& x, int& y ) const
-{
-    x = m_WindowRect.x;
-    y = m_WindowRect.y;
-}
-
-he::uint32 Window::getWindowWidth() const
-{
-    return m_WindowRect.width;
-}
-
-he::uint32 Window::getWindowHeight() const
-{
-    return m_WindowRect.height;
+    clearFlag(eFlags_IsVisible);
 }
 
 void Window::setWindowTitle( const he::String& caption )
 {
-    SDL_SetWindowTitle(m_Window, caption.c_str());
     m_Titel = caption;
 }
 
 void Window::setWindowPosition( int x, int y )
 {
-    SDL_SetWindowPosition(m_Window, x, y);
     m_WindowRect.x = x;
     m_WindowRect.y = y;
 }
@@ -347,20 +273,19 @@ void Window::setWindowDimension( uint32 width, uint32 height )
 {
     m_WindowRect.width = static_cast<int>(width);
     m_WindowRect.height = static_cast<int>(height);
-    SDL_SetWindowSize(m_Window, m_WindowRect.width, m_WindowRect.height);
 }
 
 void Window::setVSync( bool enable )
 {
     setFlag(eFlags_VSyncEnabled, enable);
-    SDL_GL_SetSwapInterval(enable? 1 : 0);
 }
 
 void Window::prepareForRendering()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    m_Context.makeCurrent();
-    GRAPHICS->setActiveContext(&m_Context);
+    GLContext* context(getContext());
+    context->makeCurrent();
+    GRAPHICS->setActiveContext(context);
     if (checkFlag(eFlags_EnableOculusRift))
     {
         m_RenderTarget->clear(m_ClearColor);
@@ -381,17 +306,11 @@ void Window::finishRendering()
 
 void Window::present()
 {
-    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    SDL_GL_SwapWindow(m_Window);
 }
 
 void Window::setFullscreen( bool fullscreen )
 {
-    if (checkFlag(eFlags_Fullscreen) != fullscreen)
-    {
-        setFlag(eFlags_Fullscreen, fullscreen);
-        SDL_SetWindowFullscreen(m_Window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    }
+    setFlag(eFlags_Fullscreen, fullscreen);
 }
 
 void Window::setOculusRiftEnabled( const bool enable )
@@ -433,21 +352,20 @@ void Window::setResizable( bool resizable )
     setFlag(eFlags_Resizeable, resizable);
 }
 
-void Window::setMousePosition( const vec2& pos )
+void Window::setMousePosition( const vec2& /*pos*/)
 {
-    SDL_WarpMouseInWindow(m_Window, static_cast<int>(pos.x), static_cast<int>(pos.y));
 }
 
 void Window::addViewAtBegin( const ObjectHandle& view )
 {
-    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to window!")
+    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to Window!")
     {
         m_Views.insert(view, 0);
     }
 }
 void Window::addViewAtEnd( const ObjectHandle& view )
 {
-    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to window!")
+    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to Window!")
     {
         m_Views.add(view);
     }
@@ -455,7 +373,7 @@ void Window::addViewAtEnd( const ObjectHandle& view )
 
 void Window::removeView( const ObjectHandle& view )
 {
-    HE_IF_ASSERT(m_Views.contains(view), "View not attached to window!")
+    HE_IF_ASSERT(m_Views.contains(view), "View not attached to Window!")
     {
         m_Views.remove(view);
     }

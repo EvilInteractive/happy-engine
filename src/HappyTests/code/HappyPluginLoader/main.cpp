@@ -31,18 +31,15 @@ int main( int /*argc*/, char** /*args[]*/ )
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
+    he::HappyEngine::init(he::SubEngine_All, he::Path("/Users/bas/Documents/Programming/EvilInteractive/happy-engine/src/data"));
 
     he::ge::Game* ge(NEW ht::MainGame());
-    HAPPYENGINE->start(ge);
+    HAPPYENGINE->start(ge, true);
     delete ge;
 
     he::HappyEngine::dispose();
 
     he_checkmem();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
 
     return 0;
 }

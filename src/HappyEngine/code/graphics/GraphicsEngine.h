@@ -74,9 +74,14 @@ public:
     View* createView();
     void removeView(View* view);
 
-    Window* createWindow();
+    template<typename T>
+    T* createWindow()
+    {
+        T* window(NEW T());
+        createWindowInternal(window);
+        return window;
+    }
     void removeWindow(Window* window);
-    Window* getWindow(const uint32 id);
     bool registerContext(GLContext* context);
     void unregisterContext(GLContext* context);
 
@@ -84,6 +89,8 @@ public:
     void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
     void setActiveContext(GLContext* context);
     void setActiveView(View* view) { m_ActiveView = view; } // Internal use
+
+    GLContext* getSharedContext() const;
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
@@ -104,6 +111,8 @@ public:
     he::event1<void, GLContext*> ContextRemoved;
 
 private:
+    void createWindowInternal(Window* window);
+
     /* DATAMEMBERS */
     he::ObjectList<ObjectHandle> m_Scenes;
     he::ObjectList<ObjectHandle> m_Views;
@@ -116,6 +125,7 @@ private:
     WebViewSurfaceFactory* m_WebViewSurfaceFactory;
 #endif
 
+    Window* m_SharedContext;
     std::queue<uint32> m_FreeContexts;
     he::PrimitiveList<GLContext*> m_Contexts;
 

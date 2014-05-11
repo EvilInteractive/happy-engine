@@ -32,7 +32,7 @@
 #include "Font.h"
 
 #include "View.h"
-#include "Window.h"
+#include "WindowSDL.h"
 #include "GlobalSettings.h"
 
 namespace ht {
@@ -71,7 +71,7 @@ void MainGame::init()
     globalSettings->save(he::Path("settings.cfg"));
 
     m_View = GRAPHICS->createView();
-    m_Window = GRAPHICS->createWindow();
+    m_Window = GRAPHICS->createWindow<he::gfx::WindowSDL>();
 
     m_Window->setResizable(true);
     m_Window->setVSync(true);
@@ -79,7 +79,7 @@ void MainGame::init()
     m_Window->setWindowTitle("HappyThijsTest");
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
-    m_Window->create();
+    m_Window->create(true);
 
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));

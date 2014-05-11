@@ -34,7 +34,7 @@ int main( int /*argc*/, char** /*args[]*/ )
     he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
 
     he::ge::Game* ge(NEW ht::MainGame());
-    HAPPYENGINE->start(ge);
+    HAPPYENGINE->start(ge, true);
     delete ge;
 
     he::HappyEngine::dispose();

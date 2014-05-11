@@ -48,7 +48,7 @@ public:
 
 
 protected:
-    Singleton() { HE_ASSERT(s_Instance == nullptr, "Singleton is create more than once!"); }
+    Singleton() { HE_ASSERT(s_Instance == nullptr, "Singleton is created more than once!"); }
 
 private:
     static T* s_Instance;

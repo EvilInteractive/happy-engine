@@ -19,23 +19,24 @@
 //Created: 10/07/2012
 
 #include "HappySandBoxPCH.h" 
-
 #include "Sandbox.h"
 
-#include "ControlsManager.h"
-
-#include "FPSGraph.h"
-
-#include "Window.h"
-#include "View.h"
-
-#include "PluginLoader.h"
 #include "system/EntityManager.h"
 #include "system/SandboxRenderPipeline.h"
 #include "system/GameStateMachine.h"
 #include "system/EditorPickingManager.h"
 #include "system/SelectionManager.h"
 
+#include "forms/MainWindow.h"
+#include "forms/GameWidget.h"
+
+#include <qapplication.h>
+
+#include <ControlsManager.h>
+#include <FPSGraph.h>
+#include <Window.h>
+#include <View.h>
+#include <PluginLoader.h>
 #include <EntityManager.h>
 #include <ControlsManager.h>
 #include <Keyboard.h>
@@ -66,6 +67,34 @@ Sandbox::~Sandbox()
 {
 }
 
+int Sandbox::run(int argc, char* args[])
+{
+    QApplication::setStyle("plastique");
+    QApplication app(argc, args);
+    app.setQuitOnLastWindowClosed(true);
+
+    MainWindow window;
+    window.setAttribute(Qt::WA_QuitOnClose);
+    window.show();
+
+    HAPPYENGINE->start(this, false);
+
+    m_QtLoopTimer.setSingleShot(true); //as fast as possible
+    connect(&m_QtLoopTimer, SIGNAL(timeout()), this, SLOT(loop()));
+    m_QtLoopTimer.start(0);
+
+    int ret = app.exec();
+
+    HAPPYENGINE->quit();
+
+    return ret;
+}
+
+void Sandbox::loop()
+{
+    HAPPYENGINE->loop();
+}
+
 void Sandbox::destroy()
 {
     delete m_EntityManager;
@@ -94,15 +123,6 @@ void Sandbox::init()
     globalSettings->save(he::Path("sandboxSettings.cfg"));
 
     m_View = GRAPHICS->createView();
-    m_Window = GRAPHICS->createWindow();
-
-    m_Window->setResizable(true);
-    m_Window->setVSync(false);
-    m_Window->setWindowDimension(1280, 720);
-    m_Window->setWindowTitle("Happy Sandbox");
-    he::eventCallback0<void> quitHandler(boost::bind(&Sandbox::quit, this));
-    m_Window->Closed += quitHandler;
-    m_Window->create();
     
     using namespace he;
 
@@ -136,6 +156,9 @@ void Sandbox::tick(float dTime)
             m_MaterialGenerator->open();
     }
     he::ge::Game::tick(dTime);
+
+    if (!HAPPYENGINE->isQuiting())
+        m_QtLoopTimer.start(0);
 }
 
 void Sandbox::quit()

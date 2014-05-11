@@ -24,6 +24,7 @@
 #include "GraphicsEngine.h"
 
 #include "Window.h"
+#include "WindowSDL.h"
 #include "Scene.h"
 #include "View.h"
 
@@ -66,6 +67,7 @@ GraphicsEngine::~GraphicsEngine()
 }
 void GraphicsEngine::destroy()
 {
+    removeWindow(m_SharedContext);
     SDL_Quit();
     HE_ASSERT(ViewFactory::getInstance()->isEmpty(), "View leak detected!");
     HE_ASSERT(SceneFactory::getInstance()->isEmpty(), "Scene leak detected!");
@@ -77,6 +79,25 @@ void GraphicsEngine::init()
     using namespace err;
     
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#ifdef HE_DEBUG
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0); // Dont share the first one
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
+    Window* context = createWindow<WindowSDL>();
+    context->setFullscreen(false);
+    context->setResizable(false);
+    context->setVSync(false);
+    context->setWindowDimension(0, 0);
+    context->create(false);
+    m_SharedContext = context;
+
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); // Share from this point
     
 #ifdef USE_WEB
     m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
@@ -126,12 +147,11 @@ void GraphicsEngine::removeView( View* view )
     }
 }
 
-Window* GraphicsEngine::createWindow()
+void GraphicsEngine::createWindowInternal(Window* window)
 {
     WindowFactory* factory(WindowFactory::getInstance());
-    Window* window(factory->get(factory->create()));
+    factory->registerObject(window);
     m_Windows.add(window->getHandle());
-    return window;
 }
 
 void GraphicsEngine::removeWindow( Window* window )
@@ -142,21 +162,6 @@ void GraphicsEngine::removeWindow( Window* window )
         m_Windows.remove(window->getHandle());
         factory->destroyObject(window->getHandle());
     }
-}
-    
-Window* GraphicsEngine::getWindow(const uint32 id)
-{
-    WindowFactory* factory(WindowFactory::getInstance());
-    const size_t windowCount(factory->getSize());
-    for (size_t i(0); i < windowCount; ++i)
-    {
-        Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
-        if (window->getID() == id)
-        {
-            return window;
-        }
-    }
-    return nullptr;
 }
 
 void GraphicsEngine::draw()
@@ -275,6 +280,15 @@ void GraphicsEngine::setActiveContext( GLContext* context )
         context->makeCurrent();
         GL::s_CurrentContext = context;
     }
+}
+
+GLContext* GraphicsEngine::getSharedContext() const
+{
+    if (m_SharedContext)
+    {
+        return m_SharedContext->getContext();
+    }
+    return nullptr;
 }
 
 he::uint16 GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution )

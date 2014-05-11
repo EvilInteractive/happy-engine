@@ -21,7 +21,6 @@
 #pragma once
 
 #include <QGLWidget>
-#include "Game.h"
 
 namespace he {
 namespace io {
@@ -31,7 +30,7 @@ namespace io {
 
 namespace hs {
 
-class GameWidget :  public QGLWidget, public he::ge::Game
+class GameWidget :  public QGLWidget
 {
     Q_OBJECT
 public:
@@ -41,10 +40,6 @@ public:
     void present();
     
 private:
-    // From he::ge::Game
-    void init();
-    void destroy();
-
     // From QGLWidget
     void initializeGL();
     void paintGL();

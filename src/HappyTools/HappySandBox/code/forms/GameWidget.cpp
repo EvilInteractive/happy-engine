@@ -32,16 +32,6 @@ GameWidget::~GameWidget()
 {
 }
 
-void GameWidget::init()
-{
-
-}
-
-void GameWidget::destroy()
-{
-
-}
-
 void GameWidget::initializeGL()
 {
 }
@@ -53,6 +43,7 @@ void GameWidget::resizeGL(int width, int height)
 }
 void GameWidget::present()
 {
+
     swapBuffers();
 }
 

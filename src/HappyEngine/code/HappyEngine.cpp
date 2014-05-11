@@ -31,7 +31,7 @@
 #include "Console.h"
 #include "SoundEngine.h"
 #include "StaticDataManager.h"
-#include "Window.h"
+#include "WindowSDL.h"
 #include "Gui.h"
 #include "Sprite.h"
 #include "PluginLoader.h"
@@ -70,6 +70,9 @@ void HappyEngine::dispose()
 }
 void HappyEngine::cleanup()
 {  
+    HE_ASSERT(m_Quit, "Please call HAPPYENGINE->Quit() first before disposing");
+    m_Quit = true;
+
     tools::Profiler::dispose();
 
     m_AudioThread.join(); // wait for audiothread to finish
@@ -153,7 +156,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     m_PluginLoader = NEW pl::PluginLoader();
 }
 
-void HappyEngine::start(ge::Game* game)
+void HappyEngine::start(ge::Game* game, const bool managed)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -188,7 +191,6 @@ void HappyEngine::start(ge::Game* game)
 #endif
     m_Game = game;
     
-
     // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
@@ -201,9 +203,7 @@ void HappyEngine::start(ge::Game* game)
         });
         m_GraphicsEngine->MainContextCreated += mainContextCreatedCallback;
         m_GraphicsEngine->init();
-    }
-    
-    m_Game->init();    
+    }  
     
     if (m_SubEngines & SubEngine_Audio)
     {
@@ -211,13 +211,16 @@ void HappyEngine::start(ge::Game* game)
     }
 
     m_PrevTime = boost::chrono::high_resolution_clock::now();
-    while (m_Quit == false)
+    if (managed)
     {
-        loop();
-    }   
-
-    // Destroy Game
-    game->destroy();
+        m_Game->init();
+        while (m_Quit == false)
+        {
+            loop();
+        }
+        // Destroy Game
+        m_Game->destroy();
+    }
 }
 void HappyEngine::loop()
 {
@@ -259,47 +262,56 @@ void HappyEngine::updateLoop(float dTime)
             {
                 io::IMouse* mouse(m_ControlsManager->getMouse());
                 io::IKeyboard* keyboard(m_ControlsManager->getKeyboard());
-                //bool hasFocus(m_GraphicsEngine->getActiveWindow() == this);
                 
                 switch (event.type)
                 {
                         // Window
                     case SDL_WINDOWEVENT:
                     {
-                        he::gfx::Window* window(m_GraphicsEngine->getWindow(event.window.windowID));
-                        if (nullptr != window)
+                        he::gfx::WindowFactory* factory(he::gfx::WindowFactory::getInstance());
+                        const size_t windowCount(factory->getSize());
+                        for (size_t i(0); i < windowCount; ++i)
                         {
-                            switch (event.window.event)
+                            he::gfx::Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
+                            if (window->getType() == HEFS::strSDLWindow)
                             {
-                                case SDL_WINDOWEVENT_MOVED:
+                                he::gfx::WindowSDL* sdlWindow = checked_cast<he::gfx::WindowSDL*>(window);
+                                if (sdlWindow->getID() == event.window.windowID)
                                 {
-                                    window->Moved(event.window.data1, event.window.data2);
-                                } break;
-                                case SDL_WINDOWEVENT_CLOSE:
-                                {
-                                    window->Closed();
-                                } break;
-                                case SDL_WINDOWEVENT_RESIZED:
-                                {
-                                    window->Resized(event.window.data1, event.window.data2);
-                                } break;
-                                case SDL_WINDOWEVENT_ENTER:
-                                {
-                                    
-                                } break;
-                                case SDL_WINDOWEVENT_LEAVE:
-                                {
-                                    
-                                } break;
-                                case SDL_WINDOWEVENT_FOCUS_GAINED:
-                                {
-                                    m_GraphicsEngine->setActiveWindow(window);
-                                    window->GainedFocus();
-                                } break;
-                                case SDL_WINDOWEVENT_FOCUS_LOST:
-                                {
-                                    window->LostFocus();
-                                } break;
+                                    switch (event.window.event)
+                                    {
+                                        case SDL_WINDOWEVENT_MOVED:
+                                        {
+                                            window->Moved(event.window.data1, event.window.data2);
+                                        } break;
+                                        case SDL_WINDOWEVENT_CLOSE:
+                                        {
+                                            window->Closed();
+                                        } break;
+                                        case SDL_WINDOWEVENT_RESIZED:
+                                        {
+                                            window->Resized(event.window.data1, event.window.data2);
+                                        } break;
+                                        case SDL_WINDOWEVENT_ENTER:
+                                        {
+
+                                        } break;
+                                        case SDL_WINDOWEVENT_LEAVE:
+                                        {
+
+                                        } break;
+                                        case SDL_WINDOWEVENT_FOCUS_GAINED:
+                                        {
+                                            m_GraphicsEngine->setActiveWindow(window);
+                                            window->GainedFocus();
+                                        } break;
+                                        case SDL_WINDOWEVENT_FOCUS_LOST:
+                                        {
+                                            window->LostFocus();
+                                        } break;
+                                    }
+                                    break;
+                                }
                             }
                         }
                     } break;

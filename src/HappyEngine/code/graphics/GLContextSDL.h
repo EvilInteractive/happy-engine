@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -16,30 +16,37 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 03/11/2012
-#include "HappyUnitTestsPCH.h"
+//Created: 16/08/2012
 
-#include "MainGame.h"
-#include "UnitTestFixedStrings.h"
+#ifndef _HE_GLCONTEXTSDL_H_
+#define _HE_GLCONTEXTSDL_H_
+#pragma once
 
-int main( int /*argc*/, char** /*args[]*/ )
+#include "GLContext.h"
+
+namespace he {
+namespace gfx {
+class Window;
+class WindowSDL;
+
+class GLContextSDL : public GLContext
 {
-#if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+public:
+    GLContextSDL();
+    ~GLContextSDL() {}
+    
+    bool create(Window* const window);
+    void destroy();
+    void makeCurrent();
+    
+private:
+    void* m_InternalContextPointer;
+    WindowSDL* m_Window;
+
+    GLContextSDL(const GLContextSDL&);
+    GLContextSDL& operator=(const GLContextSDL&);
+};
+
+} } //end namespace
+
 #endif
-
-    he::HappyEngine::init(he::SubEngine_None, he::Path("../../data"));
-    hut::HTFS::sdmInit();
-
-    he::ge::Game* game(NEW hut::MainGame());
-    HAPPYENGINE->start(game, true);
-    delete game;
-
-    hut::HTFS::sdmDestroy();
-    he::HappyEngine::dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
-}

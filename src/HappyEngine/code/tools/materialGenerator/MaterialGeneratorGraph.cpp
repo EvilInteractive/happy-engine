@@ -26,7 +26,7 @@
 #include "ContentManager.h"
 #include "Game.h"
 #include "View.h"
-#include "Window.h"
+#include "WindowSDL.h"
 
 #include "Renderer2D.h"
 
@@ -161,16 +161,15 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
 
 void MaterialGeneratorGraph::init()
 {
-    m_Window = GRAPHICS->createWindow();
+    m_Window = GRAPHICS->createWindow<he::gfx::WindowSDL>();
     m_View = GRAPHICS->createView();
 
     m_Window->setResizable(true);
-    m_Window->create();
     m_Window->setFullscreen(false);
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("Happy Material Editor");
-    m_Window->hide();
+    m_Window->create(false);
 
     m_View->setWindow(m_Window);
     m_Renderer = NEW gfx::Renderer2D();

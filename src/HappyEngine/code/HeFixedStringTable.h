@@ -22,13 +22,14 @@ _DEF_FS(str, "");
 
 DEF_FS(Array);
 
-DEF_FS(X)
-DEF_FS(Y)
-DEF_FS(Z)
-DEF_FS(W)
+DEF_FS(X);
+DEF_FS(Y);
+DEF_FS(Z);
+DEF_FS(W);
+
+DEF_FS(SDLWindow);
 
 // Components
-DEF_FS(Entity);
 DEF_FS(CharacterPhysicsComponent);
 DEF_FS(DynamicPhysicsComponent);
 DEF_FS(InstancedModelComponent);
@@ -41,56 +42,57 @@ DEF_FS(StaticPhysicsComponent);
 DEF_FS(TriggerComponent);
 
 // Component Properties
+DEF_FS(Entity);
 DEF_FS(Translate);
 DEF_FS(Rotate);
 DEF_FS(Scale);
 
-DEF_FS(Multiplier)
-DEF_FS(Attenuation)
-DEF_FS(Color)
-DEF_FS(Fov)
-DEF_FS(Direction)
-DEF_FS(ShadowResolution)
+DEF_FS(Multiplier);
+DEF_FS(Attenuation);
+DEF_FS(Color);
+DEF_FS(Fov);
+DEF_FS(Direction);
+DEF_FS(ShadowResolution);
 
-DEF_FS(Model)
-DEF_FS(Material)
+DEF_FS(Model);
+DEF_FS(Material);
 
-DEF_FS(Version)
-DEF_FS(Nodes)
-DEF_FS(Type)
-DEF_FS(Connections)
-DEF_FS(Position)
-DEF_FS(ID)
-DEF_FS(Index)
-DEF_FS(From)
-DEF_FS(FromOutput)
-DEF_FS(To)
-DEF_FS(ToInput)
+DEF_FS(Version);
+DEF_FS(Nodes);
+DEF_FS(Type);
+DEF_FS(Connections);
+DEF_FS(Position);
+DEF_FS(ID);
+DEF_FS(Index);
+DEF_FS(From);
+DEF_FS(FromOutput);
+DEF_FS(To);
+DEF_FS(ToInput);
 
 
 //Config
-DEF_FS(HDRSettings)
-DEF_FS(ExposureSpeed)
-DEF_FS(AOSettings)
-DEF_FS(Radius)
-DEF_FS(MaxDistance)
-DEF_FS(ShaderSettings)
-DEF_FS(EnableHDR)
-DEF_FS(EnableAO)
-DEF_FS(EnableBloom)
-DEF_FS(EnableNormalEdgeDetect)
-DEF_FS(EnableDepthEdgeDetect)
-DEF_FS(EnableVignette)
-DEF_FS(EnableFog)
-DEF_FS(PostSettings)
-DEF_FS(ShadowSettings)
-DEF_FS(ShadowQuality)
-DEF_FS(EnableLighting)
-DEF_FS(EnableSpecular)
-DEF_FS(EnableNormalMaps)
-DEF_FS(EnableShadows)
-DEF_FS(LightingSettings)
-DEF_FS(RenderSettings)
-DEF_FS(EnableDeferredRendering)
-DEF_FS(EnablePostEffects)
-DEF_FS(EnableOculusRift)
+DEF_FS(HDRSettings);
+DEF_FS(ExposureSpeed);
+DEF_FS(AOSettings);
+DEF_FS(Radius);
+DEF_FS(MaxDistance);
+DEF_FS(ShaderSettings);
+DEF_FS(EnableHDR);
+DEF_FS(EnableAO);
+DEF_FS(EnableBloom);
+DEF_FS(EnableNormalEdgeDetect);
+DEF_FS(EnableDepthEdgeDetect);
+DEF_FS(EnableVignette);
+DEF_FS(EnableFog);
+DEF_FS(PostSettings);
+DEF_FS(ShadowSettings);
+DEF_FS(ShadowQuality);
+DEF_FS(EnableLighting);
+DEF_FS(EnableSpecular);
+DEF_FS(EnableNormalMaps);
+DEF_FS(EnableShadows);
+DEF_FS(LightingSettings);
+DEF_FS(RenderSettings);
+DEF_FS(EnableDeferredRendering);
+DEF_FS(EnablePostEffects);
+DEF_FS(EnableOculusRift);

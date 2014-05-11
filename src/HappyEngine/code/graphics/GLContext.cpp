@@ -21,9 +21,6 @@
 #include "GLContext.h"
 
 #include "GraphicsEngine.h"
-#include "Window.h"
-
-#include <SDL2/SDL.h>
 
 namespace he {
 namespace gfx {
@@ -31,8 +28,6 @@ namespace gfx {
 
 GLContext::GLContext()
 : m_ID(UINT32_MAX)
-, m_Window(nullptr)
-, m_InternalContextPointer(nullptr)
 
 // Clear
 , m_ClearColor(0.2452f, 0.432413f, 0.1312f, 0.8783f)
@@ -82,37 +77,16 @@ GLContext::GLContext()
 
 bool GLContext::create(Window* const window)
 {
-    m_InternalContextPointer = SDL_GL_CreateContext(window->m_Window);
-    if (m_InternalContextPointer != nullptr)
-    {
-        m_Window = window;
-        GRAPHICS->setActiveContext(this);
-        GL::init();
-        
-        glGenVertexArrays(1, &m_DefaultVAO);
-        GL::heBindVao(m_DefaultVAO);
-        
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    GRAPHICS->setActiveContext(this);
+    GL::init();
+
+    glGenVertexArrays(1, &m_DefaultVAO);
+    GL::heBindVao(m_DefaultVAO);
 }
     
 void GLContext::destroy()
 {
-    if (m_InternalContextPointer != nullptr)
-    {
-        glDeleteVertexArrays(1, &m_DefaultVAO);
-        SDL_GL_DeleteContext(m_InternalContextPointer);
-        m_InternalContextPointer = nullptr;
-    }
-}
-    
-void GLContext::makeCurrent()
-{
-    SDL_GL_MakeCurrent(m_Window->m_Window, m_InternalContextPointer);
+    glDeleteVertexArrays(1, &m_DefaultVAO);
 }
 
 } } //end namespace

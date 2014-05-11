@@ -26,6 +26,9 @@
 #include <IDrawable2D.h>
 #include <Singleton.h>
 
+#include <qobject.h>
+#include <qtimer.h>
+
 namespace he {
     namespace tools {
         class FPSGraph;
@@ -51,11 +54,14 @@ namespace hs {
 class EntityManager;
 class SandboxRenderPipeline;
 
-class Sandbox : public he::ge::Game, public he::Singleton<Sandbox>
+class Sandbox : public QObject, public he::ge::Game, public he::Singleton<Sandbox>
 {
+    Q_OBJECT
 public:
     Sandbox();
     ~Sandbox();
+
+    int run(int argc, char* args[]);
 
     void init();
     void destroy();
@@ -72,6 +78,9 @@ public:
 
     void setGamePlugin(he::pl::IPlugin* const plugin) { m_GamePlugin = plugin; }
 
+private slots:
+    void loop();
+
 private:
     
     he::gfx::Window* m_Window;
@@ -82,6 +91,8 @@ private:
     EntityManager* m_EntityManager;
 
     he::tools::MaterialGeneratorGraph* m_MaterialGenerator;
+
+    QTimer m_QtLoopTimer;
 
     bool m_IsExiting;
 

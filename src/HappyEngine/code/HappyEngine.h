@@ -88,10 +88,19 @@ public:
     static void init(const int subengines, const he::Path& dataPath);
     static void dispose();
 
-    void start(ge::Game* pGame);
-        
+    // Start the engine and run the game
+    // if managed, the engine will maintain the game loop and
+    // call game init and destroy before and after the loop
+    // if not managed, the method will immediately return, and you
+    // should maintain the game loop and call loop()
+    void start(ge::Game* game, const bool managed);
     void quit();
-    
+    bool isQuiting() { return m_Quit; }
+
+    // Do not call unless you started the game unmanaged
+    void loop();
+
+    // Do not call
     void audioLoop();
 
     //root dir
@@ -143,7 +152,6 @@ private:
     
     // Methods
     void initWindow();
-    void loop();
     void updateLoop(float dTime);
     void drawLoop();
     void cleanup();
