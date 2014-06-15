@@ -1,6 +1,9 @@
 #include "HappySandBoxPCH.h"
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "Sandbox.h"
+
+namespace hs {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -16,6 +19,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    HAPPYENGINE->quit();
+    hs::Sandbox::getInstance()->quit();
     QMainWindow::closeEvent(event);
+}
+
+GameWidget* MainWindow::getGameWidget() const
+{
+    return ui->gameWidget;
+}
+
 }

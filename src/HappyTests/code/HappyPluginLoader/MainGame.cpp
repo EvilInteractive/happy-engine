@@ -64,7 +64,7 @@ void MainGame::init()
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1, 1));
 
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
-    m_Window = graphicsEngine->createWindow<he::gfx::WindowSDL>();
+    m_Window = graphicsEngine->createWindow();
 
     const bool oculus(globalSettings->getRenderSettings().stereoSetting == he::gfx::StereoSetting_OculusRift);
 

@@ -28,6 +28,7 @@ namespace he {
 Path Path::s_WorkingDirectory("");
 Path Path::s_FullDataPath("");
 Path Path::s_DataPath("");
+Path Path::s_BinPath("");
 
 void Path::init( const Path& dataPath )
 {
@@ -38,7 +39,6 @@ void Path::init( const Path& dataPath )
 
     s_FullDataPath = s_WorkingDirectory.append(dataPath.str());
 }
-
 
 Path::Path( const he::String& path ): m_Path(path)
 {
@@ -60,6 +60,11 @@ Path& Path::operator=( const Path& other )
 
 Path::~Path()
 {
+}
+
+void Path::setBinPath(const char* path)
+{
+    s_BinPath = he::Path(path);
 }
 
 const he::String& Path::str() const

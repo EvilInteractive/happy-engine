@@ -71,7 +71,7 @@ void MainGame::init()
     globalSettings->save(he::Path("settings.cfg"));
 
     m_View = GRAPHICS->createView();
-    m_Window = GRAPHICS->createWindow<he::gfx::WindowSDL>();
+    m_Window = GRAPHICS->createWindow();
 
     m_Window->setResizable(true);
     m_Window->setVSync(true);

@@ -33,7 +33,9 @@ int main( int argc, char* args[] )
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
     he::Path root(args[0]);
-    root = root.append("../../Data");
+    root = root.append("../");
+    he::Path::setBinPath(root.str().c_str());
+    root = root.append("../Data");
     he::HappyEngine::init(he::SubEngine_All, root);
     hs::StaticDataManager::init();
 

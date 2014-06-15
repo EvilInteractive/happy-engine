@@ -156,7 +156,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     m_PluginLoader = NEW pl::PluginLoader();
 }
 
-void HappyEngine::start(ge::Game* game, const bool managed)
+void HappyEngine::start(ge::Game* game, const bool managed, he::gfx::Window* sharedContext)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -202,7 +202,7 @@ void HappyEngine::start(ge::Game* game, const bool managed)
 #endif
         });
         m_GraphicsEngine->MainContextCreated += mainContextCreatedCallback;
-        m_GraphicsEngine->init();
+        m_GraphicsEngine->init(sharedContext);
     }  
     
     if (m_SubEngines & SubEngine_Audio)

@@ -49,7 +49,7 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path, const char* fileName )
     he::String fullpath(path.str() + fileName + ".dll");
     PLUGIN_HANDLE mod(LoadLibrary(fullpath.c_str())); // if it fails, convert to backslashes
 #else
-    he::String fullpath(path.str() + fileName + ".dylib");
+    he::String fullpath(path.str() + "lib" + fileName + ".dylib");
     PLUGIN_HANDLE mod(dlopen(fullpath.c_str(), RTLD_LAZY));
 #endif
     if (mod != NULL)

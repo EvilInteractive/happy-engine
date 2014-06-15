@@ -161,7 +161,7 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
 
 void MaterialGeneratorGraph::init()
 {
-    m_Window = GRAPHICS->createWindow<he::gfx::WindowSDL>();
+    m_Window = GRAPHICS->createWindow();
     m_View = GRAPHICS->createView();
 
     m_Window->setResizable(true);

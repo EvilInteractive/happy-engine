@@ -68,7 +68,7 @@ void UIMain::load()
 
 void UIMain::unload()
 {
-    HE_IF_ASSERT(m_WebView != nullptr, "UIMain already unloaded!")
+    if (m_WebView != nullptr)
     {
         if (isVisible() == true)
         {

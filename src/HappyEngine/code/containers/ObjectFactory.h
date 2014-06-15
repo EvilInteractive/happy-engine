@@ -139,6 +139,19 @@ public:
         obj->setHandle(handle);
         return handle;
     }
+    virtual void unregisterObject(const ObjectHandle& handle)
+    {
+       HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): unregistering unassigned handle", m_DisplayName.c_str());
+       HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
+       if (m_Salt[handle.index] != handle.salt)
+       {
+           HE_ERROR("ObjectFactory (%s): salt mismatch when unregistering object", m_DisplayName.c_str());
+       }
+       else
+       {
+           unregisterAt(handle.index);
+       }
+    }
     virtual void destroyObject(const ObjectHandle& handle)
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): destroying unassigned handle", m_DisplayName.c_str());
@@ -152,6 +165,16 @@ public:
             destroyAt(handle.index);
         }
     }
+   virtual void unregisterAt(ObjectHandle::IndexType index)
+   {
+       HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): unregistering non existing handle", m_DisplayName.c_str())
+       {
+           m_Pool[index] = nullptr;
+           ++m_Salt[index];
+           m_FreeHandles.push(index);
+       }
+       HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
+   }
     virtual void destroyAt(ObjectHandle::IndexType index)
     {
         HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str())

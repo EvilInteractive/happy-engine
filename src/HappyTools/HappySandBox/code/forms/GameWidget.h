@@ -22,6 +22,8 @@
 
 #include <QGLWidget>
 
+#include <Window.h>
+
 namespace he {
 namespace io {
     class QtMouse;
@@ -29,15 +31,37 @@ namespace io {
 }}
 
 namespace hs {
+class GLContextQT;
 
-class GameWidget :  public QGLWidget
+class GameWidget :  public QGLWidget, public he::gfx::Window
 {
     Q_OBJECT
 public:
     explicit GameWidget(QWidget *parent = 0);
     virtual ~GameWidget();
 
-    void present();
+    // From Window
+    bool create(const bool show);
+    void destroy();
+
+    // Do
+    virtual void present();
+    void show();
+    void hide();
+
+    // Getters
+    he::gfx::GLContext* getContext() const;
+    const he::FixedString& getType() const { return HSFS::strQTWindow; }
+    bool isOpen() const;
+
+    // Setters
+    void setWindowTitle(const he::String& caption);
+    void setWindowPosition(int x, int y);
+    void setWindowDimension(he::uint32 width, he::uint32 height);
+    void setVSync(bool enable);
+    void setFullscreen(bool fullscreen);
+    void setMousePosition(const he::vec2& pos);
+    // ~
     
 private:
     // From QGLWidget
@@ -45,13 +69,19 @@ private:
     void paintGL();
     void resizeGL(int width, int height);
     void closeEvent(QCloseEvent* event);
+    void moveEvent(QMoveEvent* event);
 
-    virtual void mouseMoveEvent(QMouseEvent* event);
-    virtual void mousePressEvent(QMouseEvent* event);
-    virtual void mouseReleaseEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 
-    virtual void keyPressEvent(QKeyEvent* event);
-    virtual void keyReleaseEvent(QKeyEvent* event);
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
+
+    void focusInEvent(QFocusEvent* event);
+    void focusOutEvent(QFocusEvent* event);
+
+    GLContextQT* m_Context;
 
     //Disable default copy constructor and default assignment operator
     GameWidget(const GameWidget&);

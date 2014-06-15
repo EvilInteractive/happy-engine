@@ -7,6 +7,8 @@ namespace Ui {
 class MainWindow;
 }
 
+namespace hs {
+class GameWidget;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,8 +19,11 @@ public:
 
     void closeEvent(QCloseEvent *event);
 
+    GameWidget* getGameWidget() const;
+
 private:
     Ui::MainWindow *ui;
 };
 
+}
 #endif // MAINWINDOW_H

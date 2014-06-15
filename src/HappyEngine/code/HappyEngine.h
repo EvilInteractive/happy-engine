@@ -26,6 +26,7 @@ namespace gfx {
     class GraphicsEngine;
     class ShapeRenderer;
     class Renderer2D;
+    class GLContext;
 }
 namespace gui {
     struct Gui;
@@ -93,7 +94,7 @@ public:
     // call game init and destroy before and after the loop
     // if not managed, the method will immediately return, and you
     // should maintain the game loop and call loop()
-    void start(ge::Game* game, const bool managed);
+    void start(ge::Game* game, const bool managed, he::gfx::Window* sharedContext = nullptr);
     void quit();
     bool isQuiting() { return m_Quit; }
 

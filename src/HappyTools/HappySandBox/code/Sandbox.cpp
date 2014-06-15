@@ -34,14 +34,12 @@
 
 #include <ControlsManager.h>
 #include <FPSGraph.h>
-#include <Window.h>
 #include <View.h>
 #include <PluginLoader.h>
 #include <EntityManager.h>
 #include <ControlsManager.h>
 #include <Keyboard.h>
 #include <Mouse.h>
-#include <materialGenerator/MaterialGeneratorGraph.h>
 #include <GraphicsEngine.h>
 #include <Ray.h>
 #include <PickResult.h>
@@ -54,11 +52,10 @@
 namespace hs {
 
 Sandbox::Sandbox():   m_RenderPipeline(nullptr),
-                      m_Window(nullptr),
                       m_View(nullptr),
+                      m_Window(nullptr),
                       m_GamePlugin(nullptr),
                       m_EntityManager(nullptr),
-                      m_MaterialGenerator(nullptr),
                       m_IsExiting(false)
 {
 }
@@ -73,19 +70,33 @@ int Sandbox::run(int argc, char* args[])
     QApplication app(argc, args);
     app.setQuitOnLastWindowClosed(true);
 
-    MainWindow window;
-    window.setAttribute(Qt::WA_QuitOnClose);
-    window.show();
+    QGLFormat glwformat;
+    glwformat.setVersion( 3, 2 );
+    glwformat.setProfile( QGLFormat::CoreProfile );
+    QGLFormat::setDefaultFormat(glwformat);
 
-    HAPPYENGINE->start(this, false);
+    HE_ASSERT(QGLFormat::defaultFormat().majorVersion() == 3, "Default Major is not 3! but %d", QGLFormat::defaultFormat().majorVersion());
+
+    m_Window = NEW MainWindow();
+    m_Window->setAttribute(Qt::WA_QuitOnClose);
+    m_Window->show();
+    m_Window->getGameWidget()->create(true);
+
+    HAPPYENGINE->start(this, false, m_Window->getGameWidget());
+    init();
 
     m_QtLoopTimer.setSingleShot(true); //as fast as possible
     connect(&m_QtLoopTimer, SIGNAL(timeout()), this, SLOT(loop()));
-    m_QtLoopTimer.start(0);
+    m_QtLoopTimer.start(12);
 
     int ret = app.exec();
 
+    destroy();
     HAPPYENGINE->quit();
+
+    m_Window->getGameWidget()->destroy();
+    delete m_Window;
+    m_Window = nullptr;
 
     return ret;
 }
@@ -99,9 +110,6 @@ void Sandbox::destroy()
 {
     delete m_EntityManager;
     m_EntityManager = nullptr;
-
-    delete m_MaterialGenerator;
-    m_MaterialGenerator = nullptr;
     
     delete m_RenderPipeline;
     m_RenderPipeline = nullptr;
@@ -109,8 +117,7 @@ void Sandbox::destroy()
     GRAPHICS->removeView(m_View);
     m_View = nullptr;
 
-    GRAPHICS->removeWindow(m_Window);
-    m_Window = nullptr;
+    GRAPHICS->unregisterWindow(m_Window->getGameWidget());
 
     GameStateMachine* const stateMachine(GameStateMachine::getInstance());
     stateMachine->destroy();
@@ -122,21 +129,19 @@ void Sandbox::init()
     globalSettings->load(he::Path("sandboxSettings.cfg"));
     globalSettings->save(he::Path("sandboxSettings.cfg"));
 
+    GRAPHICS->registerWindow(m_Window->getGameWidget());
     m_View = GRAPHICS->createView();
     
     using namespace he;
 
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
-    m_View->setWindow(m_Window);
+    m_View->setWindow(m_Window->getGameWidget());
 
     m_RenderPipeline = NEW SandboxRenderPipeline();
     m_RenderPipeline->init(m_View);
-    m_View->init(cameraSettings);
-            
-    m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph();
-    m_MaterialGenerator->init();
-
+    m_View->init(cameraSettings)
+;
     m_EntityManager = NEW EntityManager();
 
     GameStateMachine* const stateMachine(GameStateMachine::getInstance());
@@ -146,19 +151,10 @@ void Sandbox::init()
 
 void Sandbox::tick(float dTime)
 {
-    he::io::ControlsManager* const controls(CONTROLS);
-    he::io::IKeyboard* const keyboard(controls->getKeyboard());
-    if (keyboard->isKeyPressed(he::io::Key_F9))
-    {
-        if (m_MaterialGenerator->isOpen())
-            m_MaterialGenerator->close();
-        else
-            m_MaterialGenerator->open();
-    }
     he::ge::Game::tick(dTime);
 
     if (!HAPPYENGINE->isQuiting())
-        m_QtLoopTimer.start(0);
+        m_QtLoopTimer.start(12);
 }
 
 void Sandbox::quit()
@@ -199,6 +195,24 @@ void Sandbox::quit()
             }
         }
     }
+}
+
+he::gfx::Window*Sandbox::getMainWindow() const
+{
+    return m_Window->getGameWidget();
+}
+
+QGLWidget* Sandbox::getSharedWidget() const
+{
+    QGLWidget* sharedWidget(nullptr);
+    he::gfx::GraphicsEngine* gfxEngine(GRAPHICS);
+
+    if (gfxEngine)
+    {
+        sharedWidget = checked_cast<GameWidget*>(gfxEngine->getSharedContext());
+    }
+
+    return nullptr;
 }
 
 } //end namespace

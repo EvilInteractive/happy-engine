@@ -19,3 +19,4 @@
 
 
 DEF_FS(EditorComponent);
+DEF_FS(QTWindow);

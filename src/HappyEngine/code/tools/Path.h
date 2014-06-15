@@ -55,8 +55,10 @@ public:
     static const Path& getDataPath() { return s_DataPath; }
     static const Path& getFullDataPath() { return s_FullDataPath; }
     static const Path& getWorkingDir() { return s_WorkingDirectory; }
+    static const Path& getBinPath() { return s_BinPath; }
 
     static void init(const Path& dataPath);
+    static void setBinPath(const char* path);
 
 private:
     void convertBackslashesToForward();
@@ -65,6 +67,7 @@ private:
     static Path s_DataPath;
     static Path s_FullDataPath;
     static Path s_WorkingDirectory;
+    static Path s_BinPath;
 
     he::String m_Path;
 };

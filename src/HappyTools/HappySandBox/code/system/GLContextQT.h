@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -15,42 +15,40 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Created: 2013/04/01
+//Author:  Bastian Damman
+//Created: 11/05/2014
 
-#ifndef _HT_UIDebug_H_
-#define _HT_UIDebug_H_
+#ifndef _HE_GLContextQT_H_
+#define _HE_GLContextQT_H_
 #pragma once
 
-#include "system/UI.h"
+#include "GLContext.h"
 
 namespace he {
-namespace tools {
-    class FPSGraph;
+namespace gfx {
+class Window;
 } }
 
 namespace hs {
+class GameWidget;
 
-class UIDebug : public UI
+class GLContextQT : public he::gfx::GLContext
 {
 public:
-    UIDebug();
-    virtual ~UIDebug();
-
-    void load();
-    void unload();
-
-    void show();
-    void hide();
-
-    void repositionElements(const he::int32 width, const he::int32 height);
+    GLContextQT();
+    ~GLContextQT() {}
+    
+    bool create(he::gfx::Window* const window);
+    void destroy();
+    void makeCurrent();
+    
+    GameWidget* getWidget() const { return m_Widget; }
 
 private:
-    he::tools::FPSGraph* m_FPSGraph;
-    he::eventCallback2<void, he::int32, he::int32> m_ResizeCallback;
+    GameWidget* m_Widget;
 
-    /* DEFAULT COPY & ASSIGNMENT */
-    UIDebug(const UIDebug&);
-    UIDebug& operator=(const UIDebug&);
+    GLContextQT(const GLContextQT&);
+    GLContextQT& operator=(const GLContextQT&);
 };
 
 } //end namespace

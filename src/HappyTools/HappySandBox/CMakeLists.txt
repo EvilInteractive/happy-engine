@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.8.11)
 
+add_definitions(-DQT_NO_OPENGL_ES_2)
 
 # include source files
 include (${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/CMakeLists.cmake)
@@ -24,6 +25,9 @@ endif()
 
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Gui REQUIRED)
+
+include_directories(${Qt5OpenGL_INCLUDE_DIRS})
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -54,14 +58,24 @@ LinkThirdParty(HappySandBox)
 # exra links
 target_link_libraries(HappySandBox Qt5::Widgets)
 target_link_libraries(HappySandBox Qt5::OpenGL)
+target_link_libraries(HappySandBox Qt5::Gui)
 
 # link HappyEngine
 target_link_libraries(HappySandBox HappyEngine)
 
-
 # setup PCH
+
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Gui REQUIRED)
+
+set(CMAKE_AUTOMOC OFF)
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
 ADD_NATIVE_PRECOMPILED_HEADER(HappySandBox code/ HappySandBoxPCH.h HappySandBoxPCH.cpp)
+
+target_link_libraries(HappySandBoxPCH Qt5::Widgets)
+target_link_libraries(HappySandBoxPCH Qt5::OpenGL)
+target_link_libraries(HappySandBoxPCH Qt5::Gui)
 
 # set output dir
 SET_TARGET_PROPERTIES(HappySandBox PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)   

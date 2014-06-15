@@ -15,44 +15,45 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Created: 2013/04/01
+//Author:  Bastian Damman
+//Created: 11/05/2014
+#include "HappySandBoxPCH.h"
+#include "GLContextQT.h"
 
-#ifndef _HT_UIDebug_H_
-#define _HT_UIDebug_H_
-#pragma once
+#include "forms/GameWidget.h"
 
-#include "system/UI.h"
+#include <GraphicsEngine.h>
+#include <Window.h>
 
-namespace he {
-namespace tools {
-    class FPSGraph;
-} }
+#include <QOpenGLContext>
+#include <QGLWidget>
 
 namespace hs {
 
-class UIDebug : public UI
+GLContextQT::GLContextQT()
+    : m_Widget(nullptr)
 {
-public:
-    UIDebug();
-    virtual ~UIDebug();
+}
 
-    void load();
-    void unload();
-
-    void show();
-    void hide();
-
-    void repositionElements(const he::int32 width, const he::int32 height);
-
-private:
-    he::tools::FPSGraph* m_FPSGraph;
-    he::eventCallback2<void, he::int32, he::int32> m_ResizeCallback;
-
-    /* DEFAULT COPY & ASSIGNMENT */
-    UIDebug(const UIDebug&);
-    UIDebug& operator=(const UIDebug&);
-};
+bool GLContextQT::create(he::gfx::Window* const window)
+{
+    HE_ASSERT(window && window->getType() == HSFS::strQTWindow, "No window or wrong window type when creating context!");
+    m_Widget = checked_cast<GameWidget*>(window);
+    return GLContext::create(window);
+}
+    
+void GLContextQT::destroy()
+{
+    if (m_Widget != nullptr)
+    {
+        GLContext::destroy();
+        m_Widget = nullptr;
+    }
+}
+    
+void GLContextQT::makeCurrent()
+{
+    m_Widget->makeCurrent();
+}
 
 } //end namespace
-
-#endif

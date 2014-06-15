@@ -18,15 +18,18 @@
 #include "HappySandBoxPCH.h"
 #include "GameWidget.h"
 
+#include "Sandbox.h"
+#include "system/GLContextQT.h"
+
+#include <GraphicsEngine.h>
+#include <QMoveEvent>
+
 namespace hs {
 
-GameWidget::GameWidget(QWidget *parent): QGLWidget(QGLFormat(), parent)
+GameWidget::GameWidget(QWidget *parent): QGLWidget(QGLFormat::defaultFormat(), parent, Sandbox::getInstance()->getSharedWidget())
 {
-    format().setProfile(QGLFormat::CoreProfile);
-    format().setVersion(3, 3);
-    format().setSwapInterval(0);
+    setAutoBufferSwap(false);
 }
-
 
 GameWidget::~GameWidget()
 {
@@ -34,16 +37,19 @@ GameWidget::~GameWidget()
 
 void GameWidget::initializeGL()
 {
+    QGLWidget::initializeGL();
 }
 void GameWidget::paintGL()
 {
+    QGLWidget::paintGL();
 }
 void GameWidget::resizeGL(int width, int height)
 {
+    QGLWidget::resizeGL(width, height);
+    Resized(width, height);
 }
 void GameWidget::present()
 {
-
     swapBuffers();
 }
 
@@ -63,6 +69,12 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event)
 }
 void GameWidget::closeEvent (QCloseEvent* /*event*/)
 {
+    Closed();
+}
+
+void GameWidget::moveEvent(QMoveEvent* event)
+{
+    Moved(event->pos().x(), event->pos().y());
 }
 
 void GameWidget::keyPressEvent(QKeyEvent* event)
@@ -73,6 +85,96 @@ void GameWidget::keyReleaseEvent(QKeyEvent* event)
 {
     QWidget::keyReleaseEvent(event);
 }
+
+void GameWidget::focusInEvent(QFocusEvent* /*event*/)
+{
+    GRAPHICS->setActiveWindow(this);
+    GainedFocus();
+}
+
+void GameWidget::focusOutEvent(QFocusEvent* /*event*/)
+{
+    LostFocus();
+}
+
+bool GameWidget::create(const bool show)
+{
+    bool result(false);
+
+    m_Context = NEW GLContextQT();
+    if (Window::create(show))
+    {
+        m_WindowRect.x = x();
+        m_WindowRect.y = y();
+        m_WindowRect.width = width();
+        m_WindowRect.height = height();
+        result = true;
+    }
+    return result;
+}
+void GameWidget::destroy()
+{
+    Window::destroy();
+    delete m_Context;
+    m_Context = nullptr;
+}
+bool GameWidget::isOpen() const
+{
+    return QGLWidget::isVisible();
+}
+
+void GameWidget::show()
+{
+    QGLWidget::show();
+    Window::show();
+}
+
+void GameWidget::hide()
+{
+    QGLWidget::hide();
+    Window::hide();
+}
+
+void GameWidget::setWindowTitle( const he::String& caption )
+{
+    QGLWidget::setWindowTitle(caption.c_str());
+    Window::setWindowTitle(caption);
+}
+
+void GameWidget::setWindowPosition( int x, int y )
+{
+    move(x, y);
+}
+
+void GameWidget::setWindowDimension( he::uint32 width, he::uint32 height )
+{
+    resize(width, height);
+}
+
+void GameWidget::setVSync( bool enable )
+{
+    he::gfx::Window::setVSync(enable);
+}
+
+void GameWidget::setFullscreen(bool fullscreen)
+{
+    if (fullscreen)
+        showFullScreen();
+    else
+        showNormal();
+    he::gfx::Window::setFullscreen(fullscreen);
+}
+
+void GameWidget::setMousePosition( const he::vec2& /*pos*/ )
+{
+
+}
+
+he::gfx::GLContext* GameWidget::getContext() const
+{
+    return m_Context;
+}
+
 
 } //end namespace
 

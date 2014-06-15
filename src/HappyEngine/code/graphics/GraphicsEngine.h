@@ -44,6 +44,7 @@ namespace gfx {
 class Window;
 class Scene;
 class View;
+class GLContext;
 #ifdef USE_WEB
 class WebViewSurfaceFactory;
 #endif
@@ -59,7 +60,7 @@ public:
     virtual ~GraphicsEngine();
 
     /* GENERAL */
-    void init();
+    void init(he::gfx::Window* sharedContext = nullptr);
     void destroy();
     void tick(float dTime);
     void draw();
@@ -74,14 +75,11 @@ public:
     View* createView();
     void removeView(View* view);
 
-    template<typename T>
-    T* createWindow()
-    {
-        T* window(NEW T());
-        createWindowInternal(window);
-        return window;
-    }
+    Window* createWindow(); // Only works if no sharedContext was provided in init
     void removeWindow(Window* window);
+    void registerWindow(Window* window);
+    bool unregisterWindow(Window* window);
+
     bool registerContext(GLContext* context);
     void unregisterContext(GLContext* context);
 
@@ -111,8 +109,6 @@ public:
     he::event1<void, GLContext*> ContextRemoved;
 
 private:
-    void createWindowInternal(Window* window);
-
     /* DATAMEMBERS */
     he::ObjectList<ObjectHandle> m_Scenes;
     he::ObjectList<ObjectHandle> m_Views;
@@ -125,6 +121,7 @@ private:
     WebViewSurfaceFactory* m_WebViewSurfaceFactory;
 #endif
 
+    bool m_OwnSharedContext;
     Window* m_SharedContext;
     std::queue<uint32> m_FreeContexts;
     he::PrimitiveList<GLContext*> m_Contexts;

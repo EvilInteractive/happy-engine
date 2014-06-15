@@ -32,7 +32,6 @@
 namespace he {
     namespace tools {
         class FPSGraph;
-        class MaterialGeneratorGraph;
     }
     namespace ge {
         class Entity;
@@ -50,9 +49,13 @@ namespace he {
     }
 }
 
+class QGLWidget;
+
 namespace hs {
 class EntityManager;
 class SandboxRenderPipeline;
+class GLContextQT;
+class MainWindow;
 
 class Sandbox : public QObject, public he::ge::Game, public he::Singleton<Sandbox>
 {
@@ -71,26 +74,25 @@ public:
 
     hs::EntityManager* getEntityManager() const { return m_EntityManager; }
     he::pl::IPlugin* getGamePlugin() const { return m_GamePlugin; }
-    he::tools::MaterialGeneratorGraph* getMaterialGenerator() const { return m_MaterialGenerator; }
-    he::gfx::Window* getMainWindow() const { return m_Window; }
+    he::gfx::Window* getMainWindow() const;
     he::gfx::View* getMainView() const { return m_View; }
     hs::SandboxRenderPipeline* getRenderPipeline() { return m_RenderPipeline; }
 
     void setGamePlugin(he::pl::IPlugin* const plugin) { m_GamePlugin = plugin; }
 
+    QGLWidget* getSharedWidget() const;
+
 private slots:
     void loop();
 
 private:
-    
-    he::gfx::Window* m_Window;
+
+    MainWindow* m_Window;
     he::gfx::View* m_View;
     SandboxRenderPipeline* m_RenderPipeline;        
     
     he::pl::IPlugin* m_GamePlugin;
     EntityManager* m_EntityManager;
-
-    he::tools::MaterialGeneratorGraph* m_MaterialGenerator;
 
     QTimer m_QtLoopTimer;
 

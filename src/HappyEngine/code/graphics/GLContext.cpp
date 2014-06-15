@@ -75,13 +75,15 @@ GLContext::GLContext()
     he_memset(m_BoundUbo, 0xff, MAX_UBO * sizeof(uint32));
 }
 
-bool GLContext::create(Window* const window)
+bool GLContext::create(Window* const /*window*/)
 {
     GRAPHICS->setActiveContext(this);
     GL::init();
 
     glGenVertexArrays(1, &m_DefaultVAO);
     GL::heBindVao(m_DefaultVAO);
+
+    return true;
 }
     
 void GLContext::destroy()
