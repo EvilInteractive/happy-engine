@@ -29,7 +29,9 @@ class HAPPY_ENTRY Path
 public:
     Path(const he::String& other); // implicit conversion allowed
     Path(const Path& other);
+    Path(Path&& other);
     Path& operator=(const Path& other);
+    Path& operator=(Path&& other);
     ~Path();
 
     const he::String& str() const; // includes trailing slash
@@ -47,27 +49,27 @@ public:
 
     // Getters
     he::String getFileName() const;
+    he::Path getDirectory() const;
 
     // Iterators
     bool iterateFiles(const bool recursive, const boost::function1<void, const Path&>& func);
 
     // Static
-    static const Path& getDataPath() { return s_DataPath; }
-    static const Path& getFullDataPath() { return s_FullDataPath; }
-    static const Path& getWorkingDir() { return s_WorkingDirectory; }
     static const Path& getBinPath() { return s_BinPath; }
+    static const Path& getDataPath() { return s_DataPath; }
+    static const Path& getWorkingDir() { return s_WorkingDirectory; }
+    static const Path& getUserDir() { return s_UserFolder; }
 
-    static void init(const Path& dataPath);
-    static void setBinPath(const char* path);
+    static void init(const int argc, const char* const * const argv);
 
 private:
     void convertBackslashesToForward();
     void ensureTrailingSlash();
 
-    static Path s_DataPath;
-    static Path s_FullDataPath;
-    static Path s_WorkingDirectory;
     static Path s_BinPath;
+    static Path s_DataPath;
+    static Path s_WorkingDirectory;
+    static Path s_UserFolder;
 
     he::String m_Path;
 };

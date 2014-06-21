@@ -60,7 +60,7 @@ public:
     virtual ~GraphicsEngine();
 
     /* GENERAL */
-    void init(he::gfx::Window* sharedContext = nullptr);
+    void init(const bool supportWindowing, he::gfx::Window* const sharedContexts);
     void destroy();
     void tick(float dTime);
     void draw();
@@ -104,7 +104,6 @@ public:
 #endif
 
     // Events
-    he::event0<void> MainContextCreated;
     he::event1<void, GLContext*> ContextCreated;
     he::event1<void, GLContext*> ContextRemoved;
 

@@ -188,7 +188,7 @@ void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
         he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
         if (device)
         {
-            VRCamera* const camera(checked_cast<VRCamera*>(m_Camera));
+            VRCamera* const camera(he::checked_cast<VRCamera*>(m_Camera));
             const he::vec3& velocityVector(camera->getVelocityVector());
             const he::vec3 pitchYawRoll(device->getPitchYawRoll());
 

@@ -89,7 +89,7 @@ void SelectionManger::select( he::ge::Entity* const entity )
 
 void SelectionManger::internalDeselect( he::ge::Entity* const entity )
 {
-    EditorComponent* const comp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
+    EditorComponent* const comp(he::checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
     if (comp != nullptr)
     {
         comp->setSelected(false);
@@ -98,7 +98,7 @@ void SelectionManger::internalDeselect( he::ge::Entity* const entity )
 
 void SelectionManger::internalSelect( he::ge::Entity* const entity )
 {
-    EditorComponent* const comp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
+    EditorComponent* const comp(he::checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
     if (comp != nullptr)
     {
         comp->setSelected(true);
@@ -122,7 +122,7 @@ void SelectionManger::recomputeBoundingBox()
     m_Selection.forEach([this, entityManager, &first](const he::ObjectHandle& entityHandle)
     {
         he::ge::Entity* const entity(entityManager->getEntity(entityHandle));
-        EditorComponent* const editorComp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
+        EditorComponent* const editorComp(he::checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
         if (first)
         {
             m_AABB = editorComp->getBound();

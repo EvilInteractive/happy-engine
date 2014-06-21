@@ -68,7 +68,7 @@ int Sandbox::run(int argc, char* args[])
 {
     QApplication::setStyle("plastique");
     QApplication app(argc, args);
-    app.setQuitOnLastWindowClosed(true);
+    app.setQuitOnLastWindowClosed(false);
 
     QGLFormat glwformat;
     glwformat.setVersion( 3, 2 );
@@ -78,7 +78,7 @@ int Sandbox::run(int argc, char* args[])
     HE_ASSERT(QGLFormat::defaultFormat().majorVersion() == 3, "Default Major is not 3! but %d", QGLFormat::defaultFormat().majorVersion());
 
     m_Window = NEW MainWindow();
-    m_Window->setAttribute(Qt::WA_QuitOnClose);
+    connect(m_Window, SIGNAL(close()), this, SLOT(quit()));
     m_Window->show();
     m_Window->getGameWidget()->create(true);
 
@@ -209,7 +209,7 @@ QGLWidget* Sandbox::getSharedWidget() const
 
     if (gfxEngine)
     {
-        sharedWidget = checked_cast<GameWidget*>(gfxEngine->getSharedContext());
+        sharedWidget = he::checked_cast<GameWidget*>(gfxEngine->getSharedContext());
     }
 
     return nullptr;

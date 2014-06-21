@@ -136,7 +136,7 @@ he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::Fi
 void EntityManager::onEntityCreated( he::ge::Entity* const entity )
 {
     HE_INFO("Logged a new entity!");
-    EditorComponent* const comp(checked_cast<EditorComponent*>(
+    EditorComponent* const comp(he::checked_cast<EditorComponent*>(
         he::ge::EntityManager::getInstance()->createComponent(HSFS::strEditorComponent)));
     entity->addComponent(comp);
 }

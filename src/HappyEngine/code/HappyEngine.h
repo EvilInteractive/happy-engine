@@ -77,7 +77,9 @@ enum SubEngine
     SubEngine_Physics = 1 << 1,
     SubEngine_Networking = 1 << 2,
     SubEngine_Audio = 1 << 3,
-    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3
+    SubEngine_Controls = 1 << 4,
+    SubEngine_Windowing = 1 << 5,
+    SubEngine_All = 0xff
 };
 
 class HAPPY_ENTRY HappyEngine : public Singleton<HappyEngine>
@@ -86,7 +88,7 @@ friend class Singleton<HappyEngine>;
 public:
     virtual ~HappyEngine();
 
-    static void init(const int subengines, const he::Path& dataPath);
+    static void init(const int argc, const char* const* const argv, const int subengines);
     static void dispose();
 
     // Start the engine and run the game

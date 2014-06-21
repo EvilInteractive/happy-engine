@@ -23,21 +23,70 @@
 
 #include "boost/filesystem.hpp"
 
+#ifdef HE_WINDOWS
+#include <shlobj.h>
+#else
+#include <pwd.h>
+#endif
+
 namespace he {
 
-Path Path::s_WorkingDirectory("");
-Path Path::s_FullDataPath("");
-Path Path::s_DataPath("");
 Path Path::s_BinPath("");
+Path Path::s_DataPath("");
+Path Path::s_WorkingDirectory("");
+Path Path::s_UserFolder("");
 
-void Path::init( const Path& dataPath )
+void Path::init( const int argc, const char* const * const argv )
 {
-    s_DataPath = dataPath;
-
     boost::filesystem::path workDir(boost::filesystem::current_path());
     s_WorkingDirectory = Path(workDir.string());
 
-    s_FullDataPath = s_WorkingDirectory.append(dataPath.str());
+    Path execuatble(argv[0]);
+    s_BinPath = execuatble.append("../");
+
+    const char* const dataPath(getProgramArgumentValue(argc, argv, "dataPath"));
+    if (dataPath == nullptr)
+        s_DataPath = s_BinPath.append("../data");
+    else
+        s_DataPath = Path(dataPath);
+
+#ifdef HE_WINDOWS
+    const char* path(nullptr);
+
+    // User Folder
+    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Profile, 0, NULL, path)))
+    {
+        s_UserFolder = Path(path);
+    }
+    else if (getenv("USERPROFILE"))
+    {
+        s_UserFolder = Path(getenv("USERPROFILE"));
+    }
+    else if (getenv("HOMEDRIVE") && getenv("HOMEPATH"))
+    {
+        s_UserFolder = Path(getenv("HOMEDRIVE"));
+        s_UserFolder.append(getenv("HOMEPATH"));
+    }
+    else
+    {
+        s_UserFolder = s_BinPath;
+    }
+#else
+    // User folder
+    struct passwd* pwd(getpwuid(getuid()));
+    if (pwd)
+    {
+        s_UserFolder = Path(pwd->pw_dir);
+    }
+    else if (getenv("HOME"))
+    {
+        s_UserFolder = Path(getenv("HOME"));
+    }
+    else
+    {
+        s_UserFolder = s_BinPath;
+    }
+#endif
 }
 
 Path::Path( const he::String& path ): m_Path(path)
@@ -50,21 +99,25 @@ Path::Path( const Path& other ): m_Path(other.m_Path)
 {
 }
 
+Path::Path(Path&& other) : m_Path(std::move(other.m_Path))
+{
+
+}
+
 Path& Path::operator=( const Path& other )
 {
     m_Path = other.m_Path;
     return *this;
 }
 
-
+Path& Path::operator=(Path&& other)
+{
+    m_Path = std::move(other.m_Path);
+    return *this;
+}
 
 Path::~Path()
 {
-}
-
-void Path::setBinPath(const char* path)
-{
-    s_BinPath = he::Path(path);
 }
 
 const he::String& Path::str() const
@@ -141,6 +194,14 @@ he::String Path::getFileName() const
         result = m_Path.substr(index + 1, m_Path.size() - index - 1);
     }
     return result;
+}
+
+Path Path::getDirectory() const
+{
+    if (isFile())
+        return (*this).append("../");
+    else
+        return *this;
 }
 
 bool Path::iterateFiles( const bool recursive, const boost::function1<void, const Path&>& func )

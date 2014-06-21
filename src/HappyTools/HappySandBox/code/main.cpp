@@ -32,11 +32,7 @@ int main( int argc, char* args[] )
 #if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-    he::Path root(args[0]);
-    root = root.append("../");
-    he::Path::setBinPath(root.str().c_str());
-    root = root.append("../Data");
-    he::HappyEngine::init(he::SubEngine_All, root);
+    he::HappyEngine::init(argc, args, he::SubEngine_All & ~he::SubEngine_Windowing);
     hs::StaticDataManager::init();
 
     int ret(hs::Sandbox::getInstance()->run(argc, args));

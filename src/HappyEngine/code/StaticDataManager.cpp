@@ -59,7 +59,7 @@ void StaticDataManager::init()
 #ifdef USE_WEB
     Awesomium::WebCore::Initialize(Awesomium::WebConfig());
 #endif
-    he::Path msbbox(he::Path::getFullDataPath().append("gui/messageBox.html"));
+    he::Path msbbox(he::Path::getDataPath().append("gui/messageBox.html"));
     he::HappyMessageBox::init(msbbox.str().c_str(), 1024, 512);
     he::HappyEngine::sdmInit();
     tools::Logger::sdmInit();

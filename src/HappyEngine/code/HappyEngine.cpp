@@ -104,16 +104,20 @@ void HappyEngine::cleanup()
     delete m_GraphicsEngine;
     m_GraphicsEngine = nullptr;
 }
-void HappyEngine::init(const int subengines, const he::Path& dataPath)
+void HappyEngine::init(const int argc, const char* const * const argv, const int subengines)
 {
-    Path::init(dataPath);
+    HE_ASSERT(argc > 0, "There must be at least one argument in the argv argument list!");
+    Path::init(argc, argv);
     StaticDataManager::init();
+    HE_INFO("Bin path: %s", Path::getBinPath().str().c_str());
+    HE_INFO("Data path: %s", Path::getDataPath().str().c_str());
+    HE_INFO("Working path: %s", Path::getWorkingDir().str().c_str());
+    HE_INFO("User path: %s", Path::getUserDir().str().c_str());
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 {
     m_SubEngines |= subengines;
-
 
     if (subengines & SubEngine_Graphics)
     {
@@ -127,9 +131,12 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         ilEnable(IL_ORIGIN_SET);
         ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_LOWER_LEFT);
 
-        m_ControlsManager = NEW io::ControlsManager();
-
         m_Gui = NEW gui::Gui();
+    }
+
+    if (subengines & SubEngine_Controls)
+    {
+        m_ControlsManager = NEW io::ControlsManager();
     }
 
     if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
@@ -190,19 +197,18 @@ void HappyEngine::start(ge::Game* game, const bool managed, he::gfx::Window* sha
     HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
 #endif
     m_Game = game;
+
+    HE_ASSERT((m_SubEngines & SubEngine_Windowing) == 0 || sharedContext == 0 || sharedContext->getType() == HEFS::strSDLWindow, "Remove subengine windowing when supplying a shared context that is not an SDL window!");
     
     // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
-        he::eventCallback0<void> mainContextCreatedCallback([this]()
-        {
-            m_Console->load();
+        m_GraphicsEngine->init((m_SubEngines & SubEngine_Windowing) != 0, sharedContext);
+
+        m_Console->load();
 #ifdef ENABLE_PROFILING
-            PROFILER->load();
+        PROFILER->load();
 #endif
-        });
-        m_GraphicsEngine->MainContextCreated += mainContextCreatedCallback;
-        m_GraphicsEngine->init(sharedContext);
     }  
     
     if (m_SubEngines & SubEngine_Audio)
@@ -251,72 +257,74 @@ void HappyEngine::updateLoop(float dTime)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
-    if (m_SubEngines & SubEngine_Graphics)
+    if (m_SubEngines & SubEngine_Controls)
     {
         m_ControlsManager->tick();
+    }
 
-        PROFILER_BEGIN("Window Poll events");
+    if (m_SubEngines & SubEngine_Windowing)
+    {
+        HIERARCHICAL_PROFILE("Window Poll events");
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
         {
-            SDL_Event event;
-            while (SDL_PollEvent(&event))
+            // Window
+            if (event.type == SDL_WINDOWEVENT)
+            {
+                he::gfx::WindowFactory* factory(he::gfx::WindowFactory::getInstance());
+                const size_t windowCount(factory->getSize());
+                for (size_t i(0); i < windowCount; ++i)
+                {
+                    he::gfx::Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
+                    if (window->getType() == HEFS::strSDLWindow)
+                    {
+                        he::gfx::WindowSDL* sdlWindow = checked_cast<he::gfx::WindowSDL*>(window);
+                        if (sdlWindow->getID() == event.window.windowID)
+                        {
+                            switch (event.window.event)
+                            {
+                                case SDL_WINDOWEVENT_MOVED:
+                                {
+                                    window->Moved(event.window.data1, event.window.data2);
+                                } break;
+                                case SDL_WINDOWEVENT_CLOSE:
+                                {
+                                    window->Closed();
+                                } break;
+                                case SDL_WINDOWEVENT_RESIZED:
+                                {
+                                    window->Resized(event.window.data1, event.window.data2);
+                                } break;
+                                case SDL_WINDOWEVENT_ENTER:
+                                {
+
+                                } break;
+                                case SDL_WINDOWEVENT_LEAVE:
+                                {
+
+                                } break;
+                                case SDL_WINDOWEVENT_FOCUS_GAINED:
+                                {
+                                    m_GraphicsEngine->setActiveWindow(window);
+                                    window->GainedFocus();
+                                } break;
+                                case SDL_WINDOWEVENT_FOCUS_LOST:
+                                {
+                                    window->LostFocus();
+                                } break;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (m_SubEngines & SubEngine_Controls)
             {
                 io::IMouse* mouse(m_ControlsManager->getMouse());
                 io::IKeyboard* keyboard(m_ControlsManager->getKeyboard());
-                
                 switch (event.type)
                 {
-                        // Window
-                    case SDL_WINDOWEVENT:
-                    {
-                        he::gfx::WindowFactory* factory(he::gfx::WindowFactory::getInstance());
-                        const size_t windowCount(factory->getSize());
-                        for (size_t i(0); i < windowCount; ++i)
-                        {
-                            he::gfx::Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
-                            if (window->getType() == HEFS::strSDLWindow)
-                            {
-                                he::gfx::WindowSDL* sdlWindow = checked_cast<he::gfx::WindowSDL*>(window);
-                                if (sdlWindow->getID() == event.window.windowID)
-                                {
-                                    switch (event.window.event)
-                                    {
-                                        case SDL_WINDOWEVENT_MOVED:
-                                        {
-                                            window->Moved(event.window.data1, event.window.data2);
-                                        } break;
-                                        case SDL_WINDOWEVENT_CLOSE:
-                                        {
-                                            window->Closed();
-                                        } break;
-                                        case SDL_WINDOWEVENT_RESIZED:
-                                        {
-                                            window->Resized(event.window.data1, event.window.data2);
-                                        } break;
-                                        case SDL_WINDOWEVENT_ENTER:
-                                        {
-
-                                        } break;
-                                        case SDL_WINDOWEVENT_LEAVE:
-                                        {
-
-                                        } break;
-                                        case SDL_WINDOWEVENT_FOCUS_GAINED:
-                                        {
-                                            m_GraphicsEngine->setActiveWindow(window);
-                                            window->GainedFocus();
-                                        } break;
-                                        case SDL_WINDOWEVENT_FOCUS_LOST:
-                                        {
-                                            window->LostFocus();
-                                        } break;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    } break;
-                        
-                        // Mouse
+                    // Mouse
                     case SDL_MOUSEBUTTONDOWN:
                     {
                         mouse->MouseButtonPressed(static_cast<io::MouseButton>(event.button.button));
@@ -333,8 +341,8 @@ void HappyEngine::updateLoop(float dTime)
                     {
                         mouse->MouseWheelMoved(event.wheel.y);
                     } break;
-                        
-                        // Keyboard
+
+                    // Keyboard
                     case SDL_KEYDOWN:
                     {
                         keyboard->KeyPressed(static_cast<io::Key>(event.key.keysym.scancode));
@@ -350,8 +358,10 @@ void HappyEngine::updateLoop(float dTime)
                 }
             }
         }
-        PROFILER_END();
+    }
 
+    if (m_SubEngines & SubEngine_Graphics)
+    {
         m_GraphicsEngine->tick(dTime);
         CONSOLE->tick();
         if (m_GameLoading == true && m_ContentManager->isLoading() == false) // TODO: event this
@@ -359,7 +369,9 @@ void HappyEngine::updateLoop(float dTime)
     }
 
     if (m_SubEngines & SubEngine_Networking)
+    {
         m_NetworkManager->tick(dTime);
+    }
 
     if (m_ContentManager != nullptr)
     {
@@ -375,7 +387,9 @@ void HappyEngine::updateLoop(float dTime)
     }
 
     if (m_SubEngines & SubEngine_Physics)
+    {
         m_PhysicsEngine->tick(dTime);
+    }
 
     m_Game->tick(dTime);
 }

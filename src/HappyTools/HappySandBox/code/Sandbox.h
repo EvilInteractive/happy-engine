@@ -70,8 +70,6 @@ public:
     void destroy();
     void tick(float dTime);
 
-    void quit();
-
     hs::EntityManager* getEntityManager() const { return m_EntityManager; }
     he::pl::IPlugin* getGamePlugin() const { return m_GamePlugin; }
     he::gfx::Window* getMainWindow() const;
@@ -81,6 +79,9 @@ public:
     void setGamePlugin(he::pl::IPlugin* const plugin) { m_GamePlugin = plugin; }
 
     QGLWidget* getSharedWidget() const;
+
+public slots:
+    void quit();
 
 private slots:
     void loop();

@@ -395,8 +395,8 @@ struct JsonConfig
         void fill()
         {
             m_Float = rand() / static_cast<float>(RAND_MAX);
-            m_Int8Test = checked_numcast<he::int8>(rand() % 255 - 128);
-            m_Uint32Test = checked_numcast<he::uint32>(rand());
+            m_Int8Test = he::checked_numcast<he::int8>(rand() % 255 - 128);
+            m_Uint32Test = he::checked_numcast<he::uint32>(rand());
         }
     };
 

@@ -18,7 +18,7 @@
 //Author: Thijs Morlion
 //Created: 27/01/2013
 
-#ifndef _HT_LEVEL_H_
+#ifndef _HT_Level_H_
 #define _HT_Level_H_
 #pragma once
 

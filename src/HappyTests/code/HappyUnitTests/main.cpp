@@ -22,13 +22,13 @@
 #include "MainGame.h"
 #include "UnitTestFixedStrings.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
+int main( int argc, char* args[] )
 {
 #if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    he::HappyEngine::init(he::SubEngine_None, he::Path("../../data"));
+    he::HappyEngine::init(argc, args, he::SubEngine_All);
     hut::HTFS::sdmInit();
 
     he::ge::Game* game(NEW hut::MainGame());

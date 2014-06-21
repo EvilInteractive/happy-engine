@@ -79,16 +79,16 @@ void GraphicsEngine::destroy()
     HE_ASSERT(WindowFactory::getInstance()->isEmpty(), "Window leak detected!");
 }
 
-void GraphicsEngine::init(Window* sharedContext /*= nullptr*/)
+void GraphicsEngine::init(const bool supportWindowing, Window* const sharedContext)
 {
     using namespace err;
     
     uint32 sdlFlags(SDL_INIT_GAMECONTROLLER);
-    if (sharedContext != nullptr)
+    if (supportWindowing)
         sdlFlags |= SDL_INIT_VIDEO;
     SDL_Init(sdlFlags);
 
-    if (sharedContext == nullptr)
+    if (supportWindowing)
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -99,25 +99,28 @@ void GraphicsEngine::init(Window* sharedContext /*= nullptr*/)
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0); // Dont share the first one
         SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
-        Window* context = createWindow();
-        context->setFullscreen(false);
-        context->setResizable(false);
-        context->setVSync(false);
-        context->setWindowDimension(0, 0);
-        context->create(false);
-        m_SharedContext = context;
-        m_OwnSharedContext = true;
+        if (sharedContext == nullptr)
+        {
+            Window* context = createWindow();
+            context->setFullscreen(false);
+            context->setResizable(false);
+            context->setVSync(false);
+            context->setWindowDimension(0, 0);
+            context->create(false);
+            m_SharedContext = context;
+            m_OwnSharedContext = true;
+        }
 
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); // Share from this point
     }
-    else
+    if (sharedContext)
     {
         m_OwnSharedContext = false;
         m_SharedContext = sharedContext;
     }
-    setActiveContext(m_SharedContext->getContext());
 
-    MainContextCreated();
+    HE_ASSERT(supportWindowing || sharedContext, "GraphicsEngine is enabled, but not windowing. This can only work if a sharedContext is provided, which is not\nFATAL");
+    setActiveContext(m_SharedContext->getContext());
     
 #ifdef USE_WEB
     m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();

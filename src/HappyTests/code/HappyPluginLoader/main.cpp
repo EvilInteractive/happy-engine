@@ -24,14 +24,14 @@
 
 #include "MainGame.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
+int main( int argc, char* args[])
 {
 
 #if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    he::HappyEngine::init(he::SubEngine_All, he::Path("/Users/bas/Documents/Programming/EvilInteractive/happy-engine/src/data"));
+    he::HappyEngine::init(argc, args, he::SubEngine_All);
 
     he::ge::Game* ge(NEW ht::MainGame());
     HAPPYENGINE->start(ge, true);
