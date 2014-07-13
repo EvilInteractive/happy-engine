@@ -79,7 +79,7 @@ void UIDebug::hide()
     sandbox->removeFromTickList(m_FPSGraph);
 }
 
-void UIDebug::repositionElements(const he::int32 width, const he::int32 height)
+void UIDebug::repositionElements(const he::int32 width, const he::int32 /*height*/)
 {
     m_FPSGraph->setPos(he::vec2(width - 100 - 16, 16));
 }

@@ -155,7 +155,7 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
         model->loadModelMeshAndMaterial(materialName, modelName, meshName);
 
 
-        he::vec3 position(rand()%100 - 50, 5 + rand()%10, rand()%100 - 50);
+        he::vec3 position(rand()%100 - 50.0f, 5.0f + rand()%10, rand()%100 - 50.0f);
         shape->setLocalTranslate(position);
 
         shape->activate();

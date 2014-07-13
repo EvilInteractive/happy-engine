@@ -27,7 +27,7 @@ namespace gfx {
 class Window;
 class GL;
     
-class GLContext
+class HAPPY_ENTRY GLContext
 {
 friend GL;
 public:

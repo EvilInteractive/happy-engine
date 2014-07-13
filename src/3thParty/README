@@ -1,0 +1,2 @@
+To link QT5 add the qt directory to your CMAKE_PREFIX_PATH
+if CMAKE_PREFIX_PATH does not exist yet, add it in the interface with Add Entry, and set the type to string

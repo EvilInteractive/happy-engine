@@ -102,6 +102,7 @@ void GraphicsEngine::init(const bool supportWindowing, Window* const sharedConte
 
         if (sharedContext == nullptr)
         {
+            m_OwnSharedContext = true;
             Window* context = createWindow();
             context->setFullscreen(false);
             context->setResizable(false);
@@ -109,7 +110,6 @@ void GraphicsEngine::init(const bool supportWindowing, Window* const sharedConte
             context->setWindowDimension(0, 0);
             context->create(false);
             m_SharedContext = context;
-            m_OwnSharedContext = true;
         }
 
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); // Share from this point

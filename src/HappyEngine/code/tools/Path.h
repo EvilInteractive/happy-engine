@@ -57,8 +57,7 @@ public:
     // Static
     static const Path& getBinPath() { return s_BinPath; }
     static const Path& getDataPath() { return s_DataPath; }
-    static const Path& getWorkingDir() { return s_WorkingDirectory; }
-    static const Path& getUserDir() { return s_UserFolder; }
+    static const Path& getUserDir() { return s_UserDataFolder; }
 
     static void init(const int argc, const char* const * const argv);
 
@@ -68,8 +67,7 @@ private:
 
     static Path s_BinPath;
     static Path s_DataPath;
-    static Path s_WorkingDirectory;
-    static Path s_UserFolder;
+    static Path s_UserDataFolder;
 
     he::String m_Path;
 };

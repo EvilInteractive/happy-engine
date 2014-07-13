@@ -111,7 +111,6 @@ void HappyEngine::init(const int argc, const char* const * const argv, const int
     StaticDataManager::init();
     HE_INFO("Bin path: %s", Path::getBinPath().str().c_str());
     HE_INFO("Data path: %s", Path::getDataPath().str().c_str());
-    HE_INFO("Working path: %s", Path::getWorkingDir().str().c_str());
     HE_INFO("User path: %s", Path::getUserDir().str().c_str());
     HAPPYENGINE->initSubEngines(subengines);
 }
