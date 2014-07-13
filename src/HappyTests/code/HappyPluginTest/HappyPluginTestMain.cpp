@@ -130,9 +130,37 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
     ge::ModelComponent* const sceneModel(checked_cast<ge::ModelComponent*>(
         entityMan->createComponent(HEFS::strModelComponent)));
     scene->addComponent(sceneModel);
-    sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj", "M_Scene");
+    // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj", "M_Scene");
+    sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene.binobj", "M_Ground");
+    // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene2.binobj", "M_Ground");
     scene->activate();
     m_Entities.add(scene);
+
+    for (size_t i(0); i < 50; ++i)
+    {
+        ge::Entity* const shape(entityMan->createEmptyEntity());
+        shape->setScene(m_Scene);
+        ge::ModelComponent* const model(checked_cast<ge::ModelComponent*>(
+            entityMan->createComponent(HEFS::strModelComponent)));
+        shape->addComponent(model);
+        const char* modelName(NULL);
+        const char* materialName(NULL);
+        const char* meshName(NULL);
+        switch (rand() % 3)
+        {
+        case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.material"; break;
+        case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.material";  break;
+        case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.material";  break;
+        }
+        model->loadModelMeshAndMaterial(materialName, modelName, meshName);
+
+
+        he::vec3 position(rand()%100 - 50, 5 + rand()%10, rand()%100 - 50);
+        shape->setLocalTranslate(position);
+
+        shape->activate();
+        m_Entities.add(shape);
+    }
 }
 
 void ht::HappyPluginTestMain::onUnloadLevel()

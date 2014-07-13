@@ -36,6 +36,8 @@ const he::Color SelectionManger::s_SelectionColor(1.0f, 0.3f, 0.01f, 1.0f);
 
 SelectionManger::SelectionManger()
 {
+    he::eventCallback0<void> selectionChangedCallback( [this]() { recomputeBoundingBox(); } );
+    SelectionChanged += selectionChangedCallback;
 }
 
 SelectionManger::~SelectionManger()
@@ -58,9 +60,8 @@ void SelectionManger::deselect( he::ge::Entity* const entity )
     if (m_Selection.find(entity->getHandle(), index))
     {
         internalDeselect(entity);
-        m_Selection.removeAt(index);
-
-        recomputeBoundingBox();
+        m_Selection.removeAt(index);        
+        SelectionChanged();
     }
 }
 
@@ -72,9 +73,10 @@ void SelectionManger::deselectAll()
         he::ge::Entity* const entity(entityMan->getEntity(handle));
         internalDeselect(entity);
     });
+    const bool hadItems(m_Selection.size());
     m_Selection.clear();
-
-    recomputeBoundingBox();
+    if (hadItems)
+        SelectionChanged();
 }
 
 void SelectionManger::select( he::ge::Entity* const entity )
@@ -83,7 +85,7 @@ void SelectionManger::select( he::ge::Entity* const entity )
     {
         internalSelect(entity);
         m_Selection.add(entity->getHandle());
-        recomputeBoundingBox();
+        SelectionChanged();
     }
 }
 

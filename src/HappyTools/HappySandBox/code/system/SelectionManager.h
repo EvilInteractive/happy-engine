@@ -48,11 +48,13 @@ public:
     void deselectAll();
     void select(he::ge::Entity* const entity);
 
-    const SelectionSet& getSelection() const;
+    const SelectionSet& getSelection() const { return m_Selection; }
 
     void drawShapes(he::gfx::ShapeRenderer* const renderer); // override
 
     const static he::Color s_SelectionColor;
+
+    he::event0<void> SelectionChanged;
 
 private:
     void internalDeselect(he::ge::Entity* const entity);

@@ -83,6 +83,7 @@ void GameStateMachine::tick( float dTime )
 {
     if (m_CurrentState != eGameState_Invalid)
     {
+        const EGameState oldState(m_CurrentState);
         GameState* const currentState(m_GameStates[m_CurrentState]);
         currentState->tick(dTime);
         if (m_QueuedStates.empty() == false && currentState->canExit())
@@ -106,6 +107,7 @@ void GameStateMachine::tick( float dTime )
                     break;
                 }
             } while (m_GameStates[m_CurrentState]->enter() == false);
+            GameStateChanged(oldState, m_CurrentState);
         }
     }
 }

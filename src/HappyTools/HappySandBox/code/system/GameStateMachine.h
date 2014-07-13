@@ -27,6 +27,8 @@ public:
 
     virtual void tick(float dTime);
 
+    he::event2<void, hs::EGameState, hs::EGameState> GameStateChanged; // from, to
+
 private:
     GameState* m_GameStates[eGameState_MAX];
     EGameState m_CurrentState;

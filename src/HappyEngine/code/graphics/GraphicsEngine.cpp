@@ -52,6 +52,7 @@ GraphicsEngine::GraphicsEngine()
     , m_WebCore(nullptr)
     , m_WebViewSurfaceFactory(nullptr)
 #endif
+    , m_SharedContext(nullptr)
 {
     for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {

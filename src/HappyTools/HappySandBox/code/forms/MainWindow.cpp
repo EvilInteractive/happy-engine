@@ -7,14 +7,14 @@ namespace hs {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    m_UI(NEW Ui::MainWindow)
 {
-    ui->setupUi(this);
+    m_UI->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete m_UI;
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -25,7 +25,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 GameWidget* MainWindow::getGameWidget() const
 {
-    return ui->gameWidget;
+    return m_UI->gameWidget;
 }
 
 }

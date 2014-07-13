@@ -51,6 +51,7 @@ bool GameStateEdit::enter()
 
 void GameStateEdit::exit()
 {
+    SelectionManger::getInstance()->deselectAll();
 }
 
 void GameStateEdit::tick( const float /*dTime*/ )

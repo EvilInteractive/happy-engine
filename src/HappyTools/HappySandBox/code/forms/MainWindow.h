@@ -22,7 +22,7 @@ public:
     GameWidget* getGameWidget() const;
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* m_UI;
 };
 
 }

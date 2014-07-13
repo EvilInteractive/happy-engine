@@ -129,8 +129,10 @@ void EntityManager::getComponentTypes( he::ObjectList<he::FixedString>& outList 
 
 he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::FixedString& component )
 {
-    HE_ASSERT(m_ComponentDescList.find(component) != m_ComponentDescList.cend(), "Could not find component %s", component.c_str());
-    return m_ComponentDescList[component];
+    if (m_ComponentDescList.find(component) != m_ComponentDescList.cend())
+        return m_ComponentDescList[component];
+    else
+        return nullptr;
 }
 
 void EntityManager::onEntityCreated( he::ge::Entity* const entity )

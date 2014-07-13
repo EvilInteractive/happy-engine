@@ -257,11 +257,6 @@ void HappyEngine::updateLoop(float dTime)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
-    if (m_SubEngines & SubEngine_Controls)
-    {
-        m_ControlsManager->tick();
-    }
-
     if (m_SubEngines & SubEngine_Windowing)
     {
         HIERARCHICAL_PROFILE("Window Poll events");
@@ -392,6 +387,11 @@ void HappyEngine::updateLoop(float dTime)
     }
 
     m_Game->tick(dTime);
+
+    if (m_SubEngines & SubEngine_Controls)
+    {
+        m_ControlsManager->tick();
+    }
 }
 void HappyEngine::drawLoop()
 {
