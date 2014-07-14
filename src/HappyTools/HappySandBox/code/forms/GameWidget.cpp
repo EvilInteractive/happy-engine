@@ -205,11 +205,14 @@ namespace hs {
 
 GameWidget::GameWidget(QWidget *parent): QGLWidget(QGLFormat::defaultFormat(), parent, Sandbox::getInstance()->getSharedWidget())
 {
+    m_Context = NEW GLContextQT();
     setAutoBufferSwap(false);
 }
 
 GameWidget::~GameWidget()
 {
+    delete m_Context;
+    m_Context = nullptr;
 }
 
 void GameWidget::initializeGL()
@@ -314,7 +317,6 @@ bool GameWidget::create(const bool show)
 {
     bool result(false);
 
-    m_Context = NEW GLContextQT();
     if (Window::create(show))
     {
         m_WindowRect.x = x();
@@ -328,8 +330,6 @@ bool GameWidget::create(const bool show)
 void GameWidget::destroy()
 {
     Window::destroy();
-    delete m_Context;
-    m_Context = nullptr;
 }
 bool GameWidget::isOpen() const
 {

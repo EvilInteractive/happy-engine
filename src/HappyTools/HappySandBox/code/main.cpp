@@ -32,13 +32,10 @@ int main( int argc, char* args[] )
 #if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-    he::HappyEngine::init(argc, args, he::SubEngine_All & ~he::SubEngine_Windowing);
-    hs::StaticDataManager::init();
 
+    hs::Sandbox::sdmInit();
     int ret(hs::Sandbox::getInstance()->run(argc, args));
-
-    hs::StaticDataManager::destroy();
-    he::HappyEngine::dispose();
+    hs::Sandbox::sdmDestroy();
 
     return ret;
 }

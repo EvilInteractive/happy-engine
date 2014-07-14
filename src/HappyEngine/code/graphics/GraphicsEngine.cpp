@@ -183,6 +183,7 @@ void GraphicsEngine::removeWindow( Window* window )
 {
     if (unregisterWindow(window))
     {
+        window->destroy();
         delete window;
     }
 }
@@ -311,6 +312,8 @@ void GraphicsEngine::unregisterContext( GLContext* context )
         setActiveContext(context);
         ContextRemoved(context);
         context->setID(UINT32_MAX);
+        if (m_SharedContext->getContext() != context)
+            setActiveContext(m_SharedContext->getContext());
     }
 }
 

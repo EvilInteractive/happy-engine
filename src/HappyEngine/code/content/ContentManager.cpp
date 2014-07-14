@@ -80,9 +80,15 @@ ContentManager::~ContentManager()
 void ContentManager::destroy()
 {
     if (m_ParticleQuad != nullptr)
+    {
         m_ParticleQuad->release();
+        m_ParticleQuad = nullptr;
+    }
     if (m_FullscreenQuad != nullptr)
+    {
         m_FullscreenQuad->release();
+        m_FullscreenQuad = nullptr;
+    }
 
     // All content should be gone when getting here
     // loaders perform last garbage collect

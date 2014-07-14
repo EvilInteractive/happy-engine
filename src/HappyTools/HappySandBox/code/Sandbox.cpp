@@ -26,6 +26,7 @@
 #include "system/GameStateMachine.h"
 #include "system/EditorPickingManager.h"
 #include "system/SelectionManager.h"
+#include "StaticDataManager.h"
 
 #include "forms/MainWindow.h"
 #include "forms/GameWidget.h"
@@ -33,6 +34,7 @@
 #include <qapplication.h>
 
 #include <ControlsManager.h>
+#include <ContentManager.h>
 #include <FPSGraph.h>
 #include <View.h>
 #include <PluginLoader.h>
@@ -77,6 +79,9 @@ int Sandbox::run(int argc, char* args[])
 
     HE_ASSERT(QGLFormat::defaultFormat().majorVersion() == 3, "Default Major is not 3! but %d", QGLFormat::defaultFormat().majorVersion());
 
+    hs::StaticDataManager::init();
+    he::HappyEngine::init(argc, args, he::SubEngine_All & ~he::SubEngine_Windowing);
+
     m_Window = NEW MainWindow();
     connect(m_Window, SIGNAL(close()), this, SLOT(quit()));
     m_Window->show();
@@ -92,11 +97,15 @@ int Sandbox::run(int argc, char* args[])
     int ret = app.exec();
 
     destroy();
-    HAPPYENGINE->quit();
 
-    m_Window->getGameWidget()->destroy();
+    m_Window->getGameWidget()->destroy(); // Unregister context and stuff
+
+    he::HappyEngine::dispose();
+
     delete m_Window;
     m_Window = nullptr;
+
+    hs::StaticDataManager::destroy();
 
     return ret;
 }

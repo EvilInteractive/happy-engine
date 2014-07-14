@@ -31,7 +31,6 @@ namespace hs {
 
 void StaticDataManager::init()
 {
-    Sandbox::sdmInit();
     GameStateMachine::sdmInit();
     UIManager::sdmInit();
     SelectionManger::sdmInit();
@@ -41,7 +40,6 @@ void StaticDataManager::init()
 
 void StaticDataManager::destroy()
 {
-    Sandbox::sdmDestroy();
     GameStateMachine::sdmDestroy();
     UIManager::sdmDestroy();
     SelectionManger::sdmDestroy();

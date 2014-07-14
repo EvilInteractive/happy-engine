@@ -76,19 +76,25 @@ void HappyEngine::cleanup()
     tools::Profiler::dispose();
 
     m_AudioThread.join(); // wait for audiothread to finish
+    
+    delete m_Console;
+    m_Console = nullptr;
+
+    m_Game = nullptr;
+
+    delete m_Gui;
+    m_Gui = nullptr;
+
+    if (m_ContentManager != nullptr)
+        m_ContentManager->destroy();
 
     if (m_GraphicsEngine != nullptr)
         m_GraphicsEngine->destroy();
 
     //dispose/delete all sub engines here
-    delete m_Console;
-    m_Console = nullptr;
-    m_Game = nullptr;
-    delete m_Gui;
-    m_Gui = nullptr;
+    
     delete m_PluginLoader;
     m_PluginLoader = nullptr;
-    m_ContentManager->destroy();
     delete m_ContentManager;
     m_ContentManager = nullptr;
     delete m_SoundEngine;
@@ -99,8 +105,6 @@ void HappyEngine::cleanup()
     m_NetworkManager = nullptr;
     delete m_PhysicsEngine;
     m_PhysicsEngine = nullptr;
-    
-    // Gl context get deleted here - make sure all content is gone
     delete m_GraphicsEngine;
     m_GraphicsEngine = nullptr;
 }

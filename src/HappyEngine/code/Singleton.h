@@ -39,10 +39,10 @@ public:
     static void sdmDestroy()
     {
         delete s_Instance;
+        s_Instance = nullptr;
     }
     static T* getInstance()
     {
-        HE_ASSERT(s_Instance != nullptr, "singleton has not been initialized!");
         return s_Instance;
     }
 
