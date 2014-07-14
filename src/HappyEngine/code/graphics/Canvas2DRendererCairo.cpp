@@ -141,7 +141,9 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
         data->m_ReadyState = 0;
         data->m_ReadyState |= SpriteDynamic;
 
-        m_SpriteList.push(data);
+        m_SpriteListLock.lock(FILE_AND_LINE);
+            m_SpriteList.push(data);
+        m_SpriteListLock.unlock();
 
         clear();
     }
