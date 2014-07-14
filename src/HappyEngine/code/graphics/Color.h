@@ -43,6 +43,8 @@ public:
     ~Color();
     //Default copy constructor and assignment operator are fine
 
+    static Color fromHSB(float hue, float saturation, float brightness);
+
     //-----------------------------------------//
     //                GETTERS                  // 
     //-----------------------------------------//

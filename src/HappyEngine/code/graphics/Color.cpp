@@ -172,4 +172,38 @@ bool Color::operator!=(const Color& other) const
     return m_a != other.m_a || m_rgb != other.m_rgb;
 }
 
+he::Color Color::fromHSB(float hue, float saturation, float brightness)
+{
+    hue = fmod(hue, 1.0f);
+    saturation = he::clamp(saturation, 0.0f, 1.0f);
+    brightness = he::clamp(brightness, 0.0f, 1.0f);
+
+    const float hueSlice(6.0f * hue);
+    const float hueSliceInteger(floor(hueSlice));
+    const float hueSliceInterpolant(hueSlice - hueSliceInteger);
+
+    const he::vec3 tempRGB(
+        brightness * (1.0f - saturation),
+        brightness * (1.0f - saturation * hueSliceInterpolant),
+        brightness * (1.0f - saturation * (1.0f - hueSliceInterpolant))
+    );
+
+    const float isOddSlice(fmod(hueSliceInteger, 2.0f));
+    const float threeSliceSelector(0.5f * (hueSliceInteger - isOddSlice));
+
+    const he::vec3 scrollingRGBForEvenSlices(brightness, tempRGB.z, tempRGB.x);
+    const he::vec3 scrollingRGBForOddSlices(tempRGB.y, brightness, tempRGB.x);  
+    const he::vec3 scrollingRGB(lerp(scrollingRGBForEvenSlices, scrollingRGBForOddSlices, isOddSlice));
+
+    const float isNotFirstSlice(clamp(threeSliceSelector, 0.0f, 1.0f));
+    const float isNotSecondSlice(clamp(threeSliceSelector, 0.0f, 1.0f));
+
+    const he::vec3 result(lerp(scrollingRGB, 
+        lerp(he::vec3(scrollingRGB.z, scrollingRGB.x, scrollingRGB.y), 
+             he::vec3(scrollingRGB.y, scrollingRGB.z, scrollingRGB.x), isNotSecondSlice), isNotFirstSlice));
+
+
+    return Color(result.x, result.y, result.z, 1.0f);
+}
+
 } //end namespace

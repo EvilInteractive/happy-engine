@@ -32,6 +32,7 @@
 #include <EntityManager.h>
 #include <Entity.h>
 #include <ModelComponent.h>
+#include <LightComponent.h>
 #include <LightManager.h>
 #include <Font.h>
 #include <OculusRiftBinding.h>
@@ -91,8 +92,8 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_View->setCamera(m_Camera);
 
     he::gfx::LightManager* lightMan(m_Scene->getLightManager());
-    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 2.0f);
-    lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.5f);
+    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 0.0f);
+    lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.0f);
 
     he::gui::Font* const debugFont(contentMan->getDefaultFont(16));
     m_DebugText = NEW he::gui::Text();
@@ -140,19 +141,34 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
     {
         ge::Entity* const shape(entityMan->createEmptyEntity());
         shape->setScene(m_Scene);
-        ge::ModelComponent* const model(checked_cast<ge::ModelComponent*>(
-            entityMan->createComponent(HEFS::strModelComponent)));
-        shape->addComponent(model);
-        const char* modelName(NULL);
-        const char* materialName(NULL);
-        const char* meshName(NULL);
-        switch (rand() % 3)
+
         {
-        case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.material"; break;
-        case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.material";  break;
-        case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.material";  break;
+            ge::ModelComponent* const model(checked_cast<ge::ModelComponent*>(
+                entityMan->createComponent(HEFS::strModelComponent)));
+            shape->addComponent(model);
+            const char* modelName(NULL);
+            const char* materialName(NULL);
+            const char* meshName(NULL);
+            switch (rand() % 3)
+            {
+            case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.material"; break;
+            case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.material";  break;
+            case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.material";  break;
+            }
+            model->loadModelMeshAndMaterial(materialName, modelName, meshName);
         }
-        model->loadModelMeshAndMaterial(materialName, modelName, meshName);
+
+        {
+            if (rand()%2 == 0)
+            {
+                ge::PointLightComponent* const light(checked_cast<ge::PointLightComponent*>(
+                    entityMan->createComponent(HEFS::strPointLightComponent)));
+                shape->addComponent(light);
+                light->setAttenuation(he::vec2(3, 20));
+                light->setColor(he::Color::fromHSB(rand()%360 / 360.0f, 0.8f, 1.0f));
+                light->setMultiplier(1.0f);
+            }
+        }
 
 
         he::vec3 position(rand()%100 - 50.0f, 5.0f + rand()%10, rand()%100 - 50.0f);
