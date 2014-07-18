@@ -22,6 +22,8 @@
 #define _HE_EntityComponentDesc_H_
 #pragma once
 
+#include <FixedStringMap.h>
+
 namespace he {
 namespace ge {
 
@@ -56,7 +58,7 @@ public:
 
     he::FixedString m_ID;
     he::String m_DisplayName;
-    he::ObjectList<PropertyDesc> m_Properties;
+    he::FixedStringMap<PropertyDesc> m_Properties;
 
 private:
     EntityComponentDesc(const EntityComponentDesc&);

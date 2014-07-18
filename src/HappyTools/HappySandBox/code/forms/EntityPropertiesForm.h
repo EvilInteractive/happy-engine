@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "system/GameState.h"
 
+#include "system/SandboxTypes.h"
+
 namespace Ui {
 class EntityPropertiesForm;
 }
@@ -17,12 +19,12 @@ public:
     ~EntityPropertiesForm();
 
 private:
-    void ClearPanel();
-    void AddComponent(const he::FixedString& id);
+    void clearPanel();
+    void addComponent(const he::FixedString& id, const hs::TSelectionSet& selection);
 
     // Events
-    void OnGameStateChanged(const hs::EGameState from, const hs::EGameState to);
-    void OnSelectionChanged();
+    void onGameStateChanged(const hs::EGameState from, const hs::EGameState to);
+    void onSelectionChanged();
 
     he::eventCallback2<void, hs::EGameState, hs::EGameState> m_GameStateChangedCallback;
     he::eventCallback0<void> m_SelectionChangedCallback;

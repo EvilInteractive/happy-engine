@@ -29,6 +29,9 @@ class IPropertyValue
 {
 public:
     virtual ~IPropertyValue() {}
+
+    virtual IPropertyValue* Clone() const = 0;
+    virtual bool Equals(const IPropertyValue* const value) const = 0;
 };
 
 template<typename T>
@@ -38,8 +41,14 @@ public:
     explicit PropertyValue(const T& defaultValue): m_Value(defaultValue)  {}
     virtual ~PropertyValue() {}
 
+    IPropertyValue* Clone() const { return NEW PropertyValue<T>(m_Value); }
+    bool Equals(const IPropertyValue* const value) const
+    {
+        return checked_cast<const PropertyValue<T>*>(value)->get() == get();
+    }
+
     void set(const T& value) { m_Value = value; }
-    const T& get() { return m_Value; }
+    const T& get() const { return m_Value; }
 
 private:
     T m_Value;
@@ -55,6 +64,14 @@ public:
     ~Property() 
     {
         delete m_Value;
+    }
+
+    Property* Clone() const
+    {
+        Property* newProp(NEW Property);
+        newProp->m_Name = m_Name;
+        newProp->m_Value = m_Value->Clone();
+        return newProp;
     }
 
     template<typename T>
@@ -75,8 +92,13 @@ public:
     template<typename T>
     const T& get() const
     { 
-        PropertyValue<T>* prop(checked_cast<PropertyValue<T>*>(m_Value));
+        const PropertyValue<T>* prop(checked_cast<const PropertyValue<T>*>(m_Value));
         return prop->get();
+    }
+
+    const bool Equals(const Property* const other) const
+    {
+        return m_Name == other->m_Name && m_Value->Equals(other->m_Value);
     }
 
     const he::FixedString& getName() const { return m_Name; }

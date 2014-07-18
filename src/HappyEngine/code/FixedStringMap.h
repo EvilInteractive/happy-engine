@@ -36,16 +36,23 @@ public:
     }
 };
 
+
 template<typename T>
 class FixedStringMap : public std::unordered_map<FixedString, T, FixedStringHasher>
 {
+    typedef std::unordered_map<FixedString, T, FixedStringHasher> _InternalFixedString;
 public:
     FixedStringMap() : std::unordered_map<FixedString, T, FixedStringHasher>() {}
     // do nothing special in here!
 
+    inline void forEach(const std::function<void(const FixedString&, T&)>& func);
+    inline void forEach(const std::function<void(const FixedString&, const T&)>& func) const;
 
-    inline void forEach(const boost::function1<void, const std::pair<const FixedString, T>&>& func) const;
-    inline void forEach(const boost::function1<void, std::pair<const FixedString, T>&>& func);
+    inline void setAt(const he::FixedString& key, const T& value);
+    inline void setAt(const he::FixedString& key, T&& value);
+
+    inline const T* find(const he::FixedString& key) const;
+    inline T* find(const he::FixedString& key);
 
 private:
     FixedStringMap(const FixedStringMap&);
@@ -53,21 +60,55 @@ private:
 };
 
 template<typename T>
-void he::FixedStringMap<T>::forEach( const boost::function1<void, std::pair<const FixedString, T>&>& func )
+void he::FixedStringMap<T>::forEach( const std::function<void(const FixedString&, T&)>& func )
 {
     typename std::unordered_map<FixedString, T, FixedStringHasher>::iterator it(this->begin());
     typename std::unordered_map<FixedString, T, FixedStringHasher>::iterator end(this->end());
     for (; it != end; ++it)
-        func(*it);
+        func(it->first, it->second);
 }
 
 template<typename T>
-void he::FixedStringMap<T>::forEach( const boost::function1<void, const std::pair<const FixedString, T>&>& func ) const
+void he::FixedStringMap<T>::forEach( const std::function<void(const FixedString&, const T&)>& func ) const
 {
     typename std::unordered_map<FixedString, T, FixedStringHasher>::const_iterator it(this->cbegin());
     typename std::unordered_map<FixedString, T, FixedStringHasher>::const_iterator end(this->cend());
     for (; it != end; ++it)
-        func(*it);
+        func(it->first, it->second);
+}
+
+template<typename T>
+void he::FixedStringMap<T>::setAt( const he::FixedString& key, const T& value )
+{
+    operator[](key) = value;
+}
+
+template<typename T>
+void he::FixedStringMap<T>::setAt( const he::FixedString& key, T&& value )
+{
+    operator[](key) = std::forward<T>(value);
+}
+
+template<typename T>
+const T* he::FixedStringMap<T>::find( const he::FixedString& key ) const
+{
+    const_iterator it(_InternalFixedString::find(key));
+    if (it != cend())
+    {
+        return &it->second;
+    }
+    return nullptr;
+}
+
+template<typename T>
+T* he::FixedStringMap<T>::find( const he::FixedString& key )
+{
+    iterator it(_InternalFixedString::find(key));
+    if (it != end())
+    {
+        return &it->second;
+    }
+    return nullptr;
 }
 
 } //end namespace

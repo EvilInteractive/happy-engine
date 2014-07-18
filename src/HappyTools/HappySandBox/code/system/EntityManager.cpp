@@ -68,7 +68,7 @@ void EntityManager::init()
     descList.forEach([this](he::ge::EntityComponentDesc* const desc)
     {
         HE_INFO("Registering entity component: %s", desc->m_ID.c_str());
-        HE_ASSERT(m_ComponentDescList.find(desc->m_ID) == m_ComponentDescList.cend(), "Component ID %s is already registered!", desc->m_ID.c_str());
+        HE_ASSERT(!m_ComponentDescList.find(desc->m_ID), "Component ID %s is already registered!", desc->m_ID.c_str());
         m_ComponentDescList[desc->m_ID] = desc;
     });
 }
@@ -81,9 +81,9 @@ void EntityManager::destroy()
         entityMan->destroyEntity(entity);
     });
     entityMan->destroy();
-    m_ComponentDescList.forEach([](std::pair<const he::FixedString, he::ge::EntityComponentDesc*>& desc)
+    m_ComponentDescList.forEach([](const he::FixedString& /*key*/, he::ge::EntityComponentDesc* desc)
     {
-        delete desc.second;
+        delete desc;
     });
     m_ComponentDescList.clear();
 }
@@ -121,18 +121,16 @@ he::ge::Entity* EntityManager::createEntity()
 
 void EntityManager::getComponentTypes( he::ObjectList<he::FixedString>& outList ) const
 {
-    m_ComponentDescList.forEach([&outList](const std::pair<const he::FixedString, he::ge::EntityComponentDesc*>& desc)
+    m_ComponentDescList.forEach([&outList](const he::FixedString& id, he::ge::EntityComponentDesc* /*desc*/)
     {
-        outList.add(desc.first);
+        outList.add(id);
     });
 }
 
 he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::FixedString& component )
 {
-    if (m_ComponentDescList.find(component) != m_ComponentDescList.cend())
-        return m_ComponentDescList[component];
-    else
-        return nullptr;
+    he::ge::EntityComponentDesc** desc = m_ComponentDescList.find(component);
+    return desc? *desc : nullptr;
 }
 
 void EntityManager::onEntityCreated( he::ge::Entity* const entity )

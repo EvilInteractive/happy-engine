@@ -84,7 +84,7 @@ EntityComponentDesc::EntityComponentDesc() : m_ID(), m_DisplayName("")
 
 EntityComponentDesc::~EntityComponentDesc()
 {
-    m_Properties.forEach([](PropertyDesc& desc)
+    m_Properties.forEach([](const he::FixedString& /*propID*/, PropertyDesc& desc)
     {
         delete desc.m_Property;
         desc.m_Property = nullptr;

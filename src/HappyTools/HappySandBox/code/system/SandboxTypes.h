@@ -24,7 +24,7 @@
 
 namespace hs {
 
-typedef he::PrimitiveList<he::ObjectHandle> SelectionSet;
+typedef he::PrimitiveList<he::ObjectHandle> TSelectionSet;
 
 } //end namespace
 

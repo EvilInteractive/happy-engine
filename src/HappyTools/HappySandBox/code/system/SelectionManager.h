@@ -48,7 +48,7 @@ public:
     void deselectAll();
     void select(he::ge::Entity* const entity);
 
-    const SelectionSet& getSelection() const { return m_Selection; }
+    const TSelectionSet& getSelection() const { return m_Selection; }
 
     void drawShapes(he::gfx::ShapeRenderer* const renderer); // override
 
@@ -62,7 +62,7 @@ private:
 
     void recomputeBoundingBox();
 
-    SelectionSet m_Selection;
+    TSelectionSet m_Selection;
 
     he::AABB m_AABB;
 

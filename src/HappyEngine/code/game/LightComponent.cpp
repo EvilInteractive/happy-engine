@@ -147,19 +147,19 @@ void PointLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
     // Multiplier
     Property* mulProp(NEW Property());
     mulProp->init<float>(HEFS::strMultiplier, 1.0f);
-    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
+    desc.m_Properties.setAt(mulProp->getName(), PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
         NEW PropertyConverterFloat(), NEW PropertyFeelSlider(0.01f, 100.0f)));
 
     // Attenuation
     Property* attProp(NEW Property());
     attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
-    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
+    desc.m_Properties.setAt(attProp->getName(), PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
         NEW PropertyConverterVec2(), NEW PropertyFeelDefault()));
 
     // Color
     Property* colorProp(NEW Property());
     colorProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
-    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light", 
+    desc.m_Properties.setAt(colorProp->getName(), PropertyDesc(colorProp, "Color", "Sets the color of the light", 
         NEW PropertyConverterVec3(), NEW PropertyFeelColor()));
 }
 
@@ -368,25 +368,25 @@ void SpotLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
     // Multiplier
     Property* const mulProp(NEW Property());
     mulProp->init<float>(HEFS::strMultiplier, 1.0f);
-    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
+    desc.m_Properties.setAt(mulProp->getName(), PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
         NEW PropertyConverterFloat(), NEW PropertyFeelSlider(0.01f, 100.0f)));
 
     // Fov
     Property* const fovProp(NEW Property());
     fovProp->init<float>(HEFS::strFov, 90.0f); // Properties are in degrees
-    desc.m_Properties.add(PropertyDesc(fovProp, "Field of view", "Sets the field of view of the spotlight", 
+    desc.m_Properties.setAt(fovProp->getName(), PropertyDesc(fovProp, "Field of view", "Sets the field of view of the spotlight", 
         NEW PropertyConverterFloat(), NEW PropertyFeelSlider(10.0f, 180.0f)));
 
     // Color
     Property* const colorProp(NEW Property());
     colorProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
-    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light",
+    desc.m_Properties.setAt(colorProp->getName(), PropertyDesc(colorProp, "Color", "Sets the color of the light",
         NEW PropertyConverterVec3(), NEW PropertyFeelColor()));
 
     // Attenuation
     Property* const attProp(NEW Property());
     attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
-    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
+    desc.m_Properties.setAt(attProp->getName(), PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
         NEW PropertyConverterVec2(), NEW PropertyFeelDefault()));
 
     // ShadowResolution
@@ -400,7 +400,7 @@ void SpotLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
     shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_512));
     shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_1024));
     shadowProp->init<he::gfx::ShadowResolution>(HEFS::strShadowResolution, he::gfx::ShadowResolution_None);
-    desc.m_Properties.add(PropertyDesc(shadowProp, "Shadow Resolution", "Sets the shadow of the spotlight",
+    desc.m_Properties.setAt(shadowProp->getName(), PropertyDesc(shadowProp, "Shadow Resolution", "Sets the shadow of the spotlight",
         NEW PropertyConverterEnum<he::gfx::ShadowResolution>(he::gfx::shadowResolutionFromGuiString, he::gfx::shadowResolutionToGuiString), 
         shadowDropDown));
 }
