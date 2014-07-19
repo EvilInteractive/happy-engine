@@ -80,20 +80,20 @@ void he::FixedStringMap<T>::forEach( const std::function<void(const FixedString&
 template<typename T>
 void he::FixedStringMap<T>::setAt( const he::FixedString& key, const T& value )
 {
-    operator[](key) = value;
+    this->operator[](key) = value;
 }
 
 template<typename T>
 void he::FixedStringMap<T>::setAt( const he::FixedString& key, T&& value )
 {
-    operator[](key) = std::forward<T>(value);
+    this->operator[](key) = std::forward<T>(value);
 }
 
 template<typename T>
 const T* he::FixedStringMap<T>::find( const he::FixedString& key ) const
 {
-    const_iterator it(_InternalFixedString::find(key));
-    if (it != cend())
+    typename _InternalFixedString::const_iterator it(_InternalFixedString::find(key));
+    if (it != this->cend())
     {
         return &it->second;
     }
@@ -103,8 +103,8 @@ const T* he::FixedStringMap<T>::find( const he::FixedString& key ) const
 template<typename T>
 T* he::FixedStringMap<T>::find( const he::FixedString& key )
 {
-    iterator it(_InternalFixedString::find(key));
-    if (it != end())
+    typename _InternalFixedString::iterator it(_InternalFixedString::find(key));
+    if (it != this->end())
     {
         return &it->second;
     }
