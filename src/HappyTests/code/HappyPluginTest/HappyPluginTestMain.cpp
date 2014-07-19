@@ -137,6 +137,7 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
     scene->activate();
     m_Entities.add(scene);
 
+    int counters[3] = { 0, 0, 0 };
     for (size_t i(0); i < 50; ++i)
     {
         ge::Entity* const shape(entityMan->createEmptyEntity());
@@ -149,13 +150,21 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
             const char* modelName(NULL);
             const char* materialName(NULL);
             const char* meshName(NULL);
-            switch (rand() % 3)
+            const char* name(NULL);
+            const int obj(rand() % 3);
+            switch (obj)
             {
-            case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.material"; break;
-            case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.material";  break;
-            case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.material";  break;
+            case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.material"; name = "TheePot"; break;
+            case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.material"; name = "Cube"; break;
+            case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.material";  name = "Car"; break;
             }
             model->loadModelMeshAndMaterial(materialName, modelName, meshName);
+
+            const int nameSize(snprintf(NULL, 0, "%s_%d", name, counters[obj]));
+            he::String fullname;
+            fullname.resize(nameSize);
+            snprintf(&fullname[0], nameSize+1, "%s_%d", name, counters[obj]++);
+            shape->setName(std::move(fullname));
         }
 
         {

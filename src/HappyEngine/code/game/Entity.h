@@ -36,7 +36,7 @@ class HAPPY_ENTRY Entity : public EntityComponent, public Object3D
 public:
     DECLARE_RTTI(RTTI::Entity)
 
-    Entity();
+    explicit Entity();
     virtual ~Entity();
     
     void addComponent(EntityComponent* const component);
@@ -54,6 +54,10 @@ public:
 
     void setScene(gfx::Scene* const scene) { m_Scene = scene; }
     gfx::Scene* getScene() const { return m_Scene; }
+
+    void setName(const he::String& name);
+    void setName(he::String&& name);
+    const he::String& getName() const { return m_Name; }
      
     //////////////////////////////////////////////////////////////////////////
     /// EntityComponent
@@ -94,6 +98,7 @@ private:
     he::PrimitiveList<EntityComponent*> m_Components;
     Entity* m_Parent;
     gfx::Scene* m_Scene;
+    he::String m_Name;
     bool m_IsActive;
 
     //Disable default copy constructor and default assignment operator

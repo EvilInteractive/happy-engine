@@ -27,7 +27,7 @@
 namespace he {
 namespace ge {
     
-Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr), m_IsActive(false)
+Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr), m_Name("Entity"), m_IsActive(false)
 {
 }
 
@@ -55,6 +55,16 @@ void Entity::deactivate()
     {
         component->deactivate();
     });
+}
+
+void Entity::setName(const he::String& name)
+{
+    m_Name = name;
+}
+
+void Entity::setName(he::String&& name)
+{
+    m_Name = std::forward<he::String>(name);
 }
 
 

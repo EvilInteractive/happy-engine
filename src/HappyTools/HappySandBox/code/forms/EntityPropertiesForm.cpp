@@ -191,6 +191,29 @@ void EntityPropertiesForm::onSelectionChanged()
     {
         TComponentList list;
         fillPropertyList(selection, list);
-        list.forEach([this, &selection](const he::FixedString& id){ addComponent(id, selection); });
+        list.forEach([this, &selection](const he::FixedString& id)
+        {
+            addComponent(id, selection);
+        });
+
+        he::String name;
+        he::ge::EntityManager* const entityManager(he::ge::EntityManager::getInstance());
+        selection.forEach([entityManager, &name](const he::ObjectHandle handle)
+        {
+            he::ge::Entity* entity(entityManager->getEntity(handle));
+            if (entity)
+            {
+                if (name.empty() == false)
+                {
+                    name += ", ";
+                }
+                name += entity->getName();
+            }
+        });
+        m_UI->m_Name->setText(name.c_str());
+    }
+    else
+    {
+        m_UI->m_Name->setText("");
     }
 }
