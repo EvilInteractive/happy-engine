@@ -62,7 +62,7 @@ he::String PropertyConverterVec2::toString( const Property* const prop )
 {
     char buf[40];
     const vec2& value(prop->get<vec2>());
-    sprintf(buf, "%.*f, %.*f", m_Precision, value.x, m_Precision, value.y);
+    hesnprintf(buf, 39, "%.*f, %.*f", m_Precision, value.x, m_Precision, value.y);
     return he::String(buf);
 }
 
@@ -116,7 +116,7 @@ he::String PropertyConverterVec3::toString( const Property* const prop )
 {
     char buf[60];
     const vec3& value(prop->get<vec3>());
-    sprintf(buf, "%.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z);
+    hesnprintf(buf, 59, "%.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z);
     return he::String(buf);
 }
 
@@ -174,7 +174,7 @@ he::String PropertyConverterVec4::toString( const Property* const prop )
 {
     char buf[80];
     const vec4& value(prop->get<vec4>());
-    sprintf(buf, "%.*f, %.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z, m_Precision, value.w);
+    hesnprintf(buf, 79, "%.*f, %.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z, m_Precision, value.w);
     return he::String(buf);
 }
 

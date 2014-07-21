@@ -67,6 +67,19 @@ inline const char* getProgramArgumentValue(const int argc, const char* const * c
     return nullptr;
 }
 
+// None of the following methods will crash if there is not enough space in the buffer
+// the differnce between the _s version and the none _s version is that the none _s version
+// will give an assert when it goes out of bounds.
+// Please keep in mind that this method will fill in the last character when the buffer is flooded
+// So always pass as buffSize one byte less than allocated, or the '\0' will be missing
+// Returns how many actual chars have been written
+int HAPPY_ENTRY hevsnprintf_s(char* buffer, const size_t buffSize, const char* format, va_list& vaList);
+// This one can be used to get the needed size, if you pass in nullptr for the buffer
+int HAPPY_ENTRY hevsnprintf(char* buffer, const size_t buffSize, const char* format, va_list& vaList);
+int HAPPY_ENTRY hesnprintf_s(char* buffer, const size_t buffSize, const char* format, ...);
+// This one can be used to get the needed size, if you pass in nullptr for the buffer
+int HAPPY_ENTRY hesnprintf(char* buffer, const size_t buffSize, const char* format, ...);
+
 } //end namespace
 
 #endif

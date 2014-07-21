@@ -46,7 +46,7 @@ struct NodeGraphError
         va_start(argList, message);
         char buff[1024];
         memset(buff, 0, 1024);
-        vsnprintf(buff, 1024, message, argList);
+        hevsnprintf(buff, 1023, message, argList);
         va_end(argList);
 
         m_ErrorMessage = buff;

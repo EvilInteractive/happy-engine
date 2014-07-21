@@ -32,7 +32,7 @@ static std::unordered_map<int, std::unordered_set<const char*>> g_IgnoreAsserts;
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message)
 {        
     char infoText[1000];
-    sprintf(infoText, "** ASSERTION FAILURE! **\n"
+    hesnprintf(infoText, 999, "** ASSERTION FAILURE! **\n"
         "Assert in function:\n    %s\n"
         "In file: \n    %s\n"
         "On line: %d\n\n"

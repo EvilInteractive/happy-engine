@@ -57,7 +57,7 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 {
     char buff[1024];
     memset(buff, 0, 1024);
-    vsnprintf(buff, 1024, str, argList);
+    hevsnprintf(buff, 1023, str, argList);
 
     he::String typeString("");
     CMSG_TYPE consoleType(CMSG_TYPE_ENGINE);

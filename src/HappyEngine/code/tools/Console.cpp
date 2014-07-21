@@ -357,7 +357,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
     
     Color col(m_MsgColors[type]);
 
-    sprintf(buff, "&%c%c%c%s%s", 
+    hesnprintf(buff, 1023, "&%c%c%c%s%s", 
         col.r16(), col.g16(), col.b16(), 
         type == CMSG_TYPE_COMMAND? "] " : "", msg);
 

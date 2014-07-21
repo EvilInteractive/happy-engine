@@ -160,10 +160,10 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
             }
             model->loadModelMeshAndMaterial(materialName, modelName, meshName);
 
-            const int nameSize(snprintf(NULL, 0, "%s_%d", name, counters[obj]));
+            const int nameSize(hesnprintf(nullptr, 0, "%s_%d", name, counters[obj]));
             he::String fullname;
             fullname.resize(nameSize);
-            snprintf(&fullname[0], nameSize+1, "%s_%d", name, counters[obj]++);
+            hesnprintf(&fullname[0], nameSize, "%s_%d", name, counters[obj]++);
             shape->setName(std::move(fullname));
         }
 

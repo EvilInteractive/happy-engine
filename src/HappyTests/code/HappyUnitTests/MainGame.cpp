@@ -556,7 +556,7 @@ void MainGame::threadSafeQueueMP1CTest()
         for (size_t i(0); i < producerThreadCount; ++i)
         {
             char name[20];
-            sprintf(name, "ProducerThread%d", i);
+            he::hesnprintf(name, 19, "ProducerThread%d", i);
             producedValuesPerThread[i+1] = 0;
             producerThread[i].startThread([&, i]()
             {

@@ -76,7 +76,7 @@ public:
     virtual he::String toString(const Property* const prop)
     {
         char buf[20];
-        sprintf(buf, "%.*f", m_Precision, prop->get<float>());
+        hesnprintf(buf, 19, "%.*f", m_Precision, prop->get<float>());
         return he::String(buf);
     }
 
