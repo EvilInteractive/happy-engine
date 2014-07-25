@@ -48,6 +48,10 @@ public:
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strEntity; }
 
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+
     virtual void activate();
     virtual void deactivate();
     bool isActive() const { return m_IsActive; }

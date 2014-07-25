@@ -144,6 +144,8 @@ void PointLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
     desc.m_ID = HEFS::strPointLightComponent;
     desc.m_DisplayName = "Pointlight";
 
+    EntityComponent::fillEntityComponentDesc(desc);
+
     // Multiplier
     Property* mulProp(NEW Property());
     mulProp->init<float>(HEFS::strMultiplier, 1.0f);
@@ -364,6 +366,8 @@ void SpotLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
     desc.m_ID = HEFS::strSpotLightComponent;
     desc.m_DisplayName = "Spotlight";
+
+    EntityComponent::fillEntityComponentDesc(desc);
     
     // Multiplier
     Property* const mulProp(NEW Property());

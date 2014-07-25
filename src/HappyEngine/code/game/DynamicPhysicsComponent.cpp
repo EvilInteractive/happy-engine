@@ -92,9 +92,12 @@ void DynamicPhysicsComponent::calculateWorldMatrix()
     Object3D::calculateWorldMatrix();
 }
 
-void DynamicPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+void DynamicPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
+    desc.m_ID = HEFS::strDynamicPhysicsComponent;
+    desc.m_DisplayName = "Dynamic physics component";
 
+    EntityComponent::fillEntityComponentDesc(desc);
 }
 
 bool DynamicPhysicsComponent::setProperty( const Property* const inProperty )

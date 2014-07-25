@@ -74,6 +74,8 @@ void CharacterPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& de
 {
     desc.m_ID = HEFS::strCharacterPhysicsComponent;
     desc.m_DisplayName = "Character physics component";
+
+    EntityComponent::fillEntityComponentDesc(desc);
 }
 
 bool CharacterPhysicsComponent::setProperty( const Property* const inProperty )
