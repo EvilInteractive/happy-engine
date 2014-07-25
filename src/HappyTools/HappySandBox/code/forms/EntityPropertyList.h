@@ -27,12 +27,16 @@ class EntityPropertyList : public QWidget
     Q_OBJECT
 
 public:
-    explicit EntityPropertyList(const he::FixedString& component, QWidget *parent = 0);
+    explicit EntityPropertyList(QWidget *parent = 0);
     ~EntityPropertyList();
+
+    void setComponentType(const he::FixedString& type) { m_Component = type; }
 
     void addProperty(const he::ge::PropertyDesc& prop);
     void setValue(const he::FixedString& prop, const he::String& value);
     void setValueMixed(const he::FixedString& prop);
+
+    void clear();
 
     he::event2<void, const he::FixedString& /*component*/, he::ge::Property*> ValueChanged;
 

@@ -24,6 +24,9 @@ EntityPropertiesForm::EntityPropertiesForm(QWidget *parent) :
     m_SelectionChangedCallback(std::bind(&EntityPropertiesForm::onSelectionChanged, this))
 {
     m_UI->setupUi(this);
+    m_UI->m_EntityProperties->setComponentType(he::HEFS::strEntity);
+
+    clearPanel();
 
     hs::GameStateMachine::getInstance()->GameStateChanged += m_GameStateChangedCallback;
 }
@@ -60,18 +63,22 @@ namespace
         });
     }
 
-    hs::EntityPropertyList* openComponent(Ui::EntityPropertiesForm* container, const he::FixedString& id, const he::String& name)
+    hs::EntityPropertyList* createPropertyContainer(Ui::EntityPropertiesForm* container, const he::FixedString& id, const he::String& name)
     {
-        hs::EntityPropertyList* list(NEW hs::EntityPropertyList(id, container->m_ComponentPanel));
-        container->m_ComponentPanel->addItem(list, QString(name.c_str()));
+        hs::EntityPropertyList* list(nullptr);
+        if (id == he::HEFS::strEntity)
+        {
+            list = container->m_EntityProperties;
+        }
+        else
+        {
+            list = NEW hs::EntityPropertyList(container->m_ComponentPanel);
+            list->setComponentType(id);
+            container->m_ComponentPanel->addItem(list, QString(name.c_str()));
+        }
         return list;
     }
-
-    void closeComponent(hs::EntityPropertyList* /*list*/)
-    {
-
-    }
-
+    
     void addProperty(hs::EntityPropertyList* list, const he::ge::PropertyDesc& prop)
     {
         list->addProperty(prop);
@@ -91,17 +98,19 @@ namespace
 
 }
 
-void EntityPropertiesForm::addComponent(const he::FixedString& id, const hs::TSelectionSet& selection)
+void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, const hs::TSelectionSet& selection)
 {
     hs::EntityManager* entityMan(hs::Sandbox::getInstance()->getEntityManager());
     he::ge::EntityComponentDesc* desc(entityMan->getComponentDescriptor(id));
     if (desc)
     {
-        hs::EntityPropertyList* list(openComponent(m_UI, id, desc->m_DisplayName));
+        hs::EntityPropertyList* list(createPropertyContainer(m_UI, id, desc->m_DisplayName));
         desc->m_Properties.forEach([list, &selection, &id](const he::FixedString& /*propID*/, const he::ge::PropertyDesc& propDesc)
         {
+            // Add Property to list
             addProperty(list, propDesc);
 
+            // Find if the property has mixed values, or get the value and fill it in
             bool hasResult(false);
             bool isMixed(false);
             he::ge::EntityManager* const entityManager(he::ge::EntityManager::getInstance());
@@ -115,7 +124,7 @@ void EntityPropertiesForm::addComponent(const he::FixedString& id, const hs::TSe
                 he::ge::Entity* entity(entityManager->getEntity(selection[i]));
                 if (entity)
                 {
-                    he::ge::EntityComponent* const comp(entity->getComponent(id));
+                    he::ge::EntityComponent* const comp(id == he::HEFS::strEntity? entity : entity->getComponent(id));
                     if (comp != nullptr && comp->getProperty(prop))
                     {
                         if (hasResult)
@@ -133,9 +142,11 @@ void EntityPropertiesForm::addComponent(const he::FixedString& id, const hs::TSe
 
             propDesc.m_Property != tempProp? delete tempProp : delete prop;
 
+            // Set the property value
             ::setProperty(list, propDesc, isMixed);
         });
 
+        // Add event handler is the propery is edited
         he::eventCallback2<void, const he::FixedString&, he::ge::Property*> valueChangedCallback(
         [this](const he::FixedString& compId, he::ge::Property* prop)
         { 
@@ -146,7 +157,7 @@ void EntityPropertiesForm::addComponent(const he::FixedString& id, const hs::TSe
                 he::ge::Entity* entity(entityManager->getEntity(handle));
                 if (entity)
                 {
-                    he::ge::EntityComponent* const comp(entity->getComponent(compId));
+                    he::ge::EntityComponent* const comp(compId == he::HEFS::strEntity? entity : entity->getComponent(compId));
                     if (comp)
                     {
                         comp->setProperty(prop);
@@ -155,13 +166,12 @@ void EntityPropertiesForm::addComponent(const he::FixedString& id, const hs::TSe
             });
         });
         list->ValueChanged += valueChangedCallback;
-
-        closeComponent(list);
     }
 }
 
 void EntityPropertiesForm::clearPanel()
 {
+    m_UI->m_EntityProperties->clear();
     while (m_UI->m_ComponentPanel->count() > 0)
     {
         QWidget* comp(m_UI->m_ComponentPanel->widget(0));
@@ -189,11 +199,15 @@ void EntityPropertiesForm::onSelectionChanged()
     const hs::TSelectionSet& selection(hs::SelectionManger::getInstance()->getSelection());
     if (selection.size() > 0)
     {
+        // Fill entity properties
+        createComponentProperties(he::HEFS::strEntity, selection);
+
+        // Fill component properties
         TComponentList list;
         fillPropertyList(selection, list);
         list.forEach([this, &selection](const he::FixedString& id)
         {
-            addComponent(id, selection);
+            createComponentProperties(id, selection);
         });
 
         he::String name;

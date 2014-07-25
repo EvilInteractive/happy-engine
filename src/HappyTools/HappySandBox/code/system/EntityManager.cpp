@@ -41,6 +41,7 @@ namespace hs {
 EntityManager::EntityManager() 
     : m_EntityCreatedCallback(boost::bind(&EntityManager::onEntityCreated, this, _1))
     , m_EntityDestroyedCallback(boost::bind(&EntityManager::onEntityDestroyed, this, _1))
+    , m_EntityDesc(nullptr)
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->init();
@@ -71,6 +72,10 @@ void EntityManager::init()
         HE_ASSERT(!m_ComponentDescList.find(desc->m_ID), "Component ID %s is already registered!", desc->m_ID.c_str());
         m_ComponentDescList[desc->m_ID] = desc;
     });
+
+    HE_ASSERT(!m_EntityDesc, "EntityDesc is not nullptr when initializing!");
+    m_EntityDesc = NEW he::ge::EntityComponentDesc();
+    he::ge::Entity::fillEntityComponentDesc(*m_EntityDesc);
 }
 
 void EntityManager::destroy()
@@ -86,6 +91,9 @@ void EntityManager::destroy()
         delete desc;
     });
     m_ComponentDescList.clear();
+
+    delete m_EntityDesc;
+    m_EntityDesc = nullptr;
 }
 
 /* GENERAL */
@@ -127,15 +135,14 @@ void EntityManager::getComponentTypes( he::ObjectList<he::FixedString>& outList 
     });
 }
 
-he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::FixedString& component )
+he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::FixedString& component ) const
 {
-    he::ge::EntityComponentDesc** desc = m_ComponentDescList.find(component);
+    he::ge::EntityComponentDesc* const * desc = (component == he::HEFS::strEntity)? &m_EntityDesc : m_ComponentDescList.find(component);
     return desc? *desc : nullptr;
 }
 
 void EntityManager::onEntityCreated( he::ge::Entity* const entity )
 {
-    HE_INFO("Logged a new entity!");
     EditorComponent* const comp(he::checked_cast<EditorComponent*>(
         he::ge::EntityManager::getInstance()->createComponent(HSFS::strEditorComponent)));
     entity->addComponent(comp);
@@ -143,7 +150,6 @@ void EntityManager::onEntityCreated( he::ge::Entity* const entity )
 
 void EntityManager::onEntityDestroyed( he::ge::Entity* const /*entity*/ )
 {
-    HE_INFO("Destroyed an entity!");
 }
 
 } //end namespace

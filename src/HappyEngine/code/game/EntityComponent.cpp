@@ -35,7 +35,7 @@ IMPLEMENT_OBJECT(EntityComponent)
 void EntityComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
     Property* posProp(NEW Property());
-    posProp->init<vec3>(HEFS::strPosition, vec3(0, 0, 0));
+    posProp->init<vec3>(HEFS::strTranslate, vec3(0, 0, 0));
     desc.m_Properties.setAt(posProp->getName(), PropertyDesc(posProp, "Local Position", "Sets the local position of the component", 
         NEW PropertyConverterVec3(), NEW PropertyFeelDefault()));
 

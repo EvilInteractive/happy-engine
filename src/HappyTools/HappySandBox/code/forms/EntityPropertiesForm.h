@@ -20,7 +20,7 @@ public:
 
 private:
     void clearPanel();
-    void addComponent(const he::FixedString& id, const hs::TSelectionSet& selection);
+    void createComponentProperties(const he::FixedString& id, const hs::TSelectionSet& selection);
 
     // Events
     void onGameStateChanged(const hs::EGameState from, const hs::EGameState to);

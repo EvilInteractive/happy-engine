@@ -45,7 +45,7 @@ class EntityPropertyListItem : public QObject, public QTableWidgetItem
 public:
     EntityPropertyListItem(const he::FixedString& component, const he::FixedString& prop);
     virtual ~EntityPropertyListItem() {}
-
+    
     virtual void setValue(const he::String& value) = 0;
     virtual void setValueMixed() = 0;
 

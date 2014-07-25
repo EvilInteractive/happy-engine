@@ -6,30 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>327</width>
-    <height>599</height>
+    <width>451</width>
+    <height>688</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <property name="leftMargin">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <property name="margin">
     <number>0</number>
    </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <property name="verticalSpacing">
-    <number>0</number>
-   </property>
-   <item row="1" column="0">
+   <item>
+    <widget class="QLineEdit" name="m_Name"/>
+   </item>
+   <item>
     <widget class="QFrame" name="frame_2">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -37,75 +28,89 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <property name="leftMargin">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="margin">
        <number>8</number>
       </property>
-      <property name="topMargin">
-       <number>8</number>
-      </property>
-      <property name="rightMargin">
-       <number>8</number>
-      </property>
-      <property name="bottomMargin">
-       <number>8</number>
-      </property>
-      <property name="verticalSpacing">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
+      <item>
        <widget class="QLineEdit" name="m_Filter"/>
       </item>
-      <item row="1" column="0">
-       <widget class="QToolBox" name="m_ComponentPanel">
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+      <item>
+       <widget class="QGroupBox" name="m_EntityGroup">
+        <property name="title">
+         <string>Entity Properties</string>
         </property>
-        <property name="lineWidth">
-         <number>1</number>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="hs::EntityPropertyList" name="m_EntityProperties" native="true"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="m_ComponentGroup">
+        <property name="title">
+         <string>Component Properties</string>
         </property>
-        <property name="midLineWidth">
-         <number>1</number>
-        </property>
-        <property name="currentIndex">
-         <number>1</number>
-        </property>
-        <widget class="QWidget" name="page">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>100</width>
-           <height>30</height>
-          </rect>
-         </property>
-         <attribute name="label">
-          <string>Model Component</string>
-         </attribute>
-        </widget>
-        <widget class="QWidget" name="page_2">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>309</width>
-           <height>471</height>
-          </rect>
-         </property>
-         <attribute name="label">
-          <string>Light Component</string>
-         </attribute>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QToolBox" name="m_ComponentPanel">
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="midLineWidth">
+            <number>1</number>
+           </property>
+           <property name="currentIndex">
+            <number>1</number>
+           </property>
+           <widget class="QWidget" name="page">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>409</width>
+              <height>453</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>Model Component</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="page_2">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>409</width>
+              <height>453</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>Light Component</string>
+            </attribute>
+           </widget>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLineEdit" name="m_Name"/>
-   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>hs::EntityPropertyList</class>
+   <extends>QWidget</extends>
+   <header>forms/EntityPropertyList.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -13,9 +13,9 @@
 #include <QLineEdit>
 
 namespace hs {
-EntityPropertyList::EntityPropertyList(const he::FixedString& component, QWidget *parent) :
+EntityPropertyList::EntityPropertyList(QWidget *parent) :
     QWidget(parent),
-    m_Component(component),
+    m_Component(he::HEFS::str),
     m_UI(NEW Ui::EntityPropertyList),
     m_CurrentRow(0)
 {
@@ -25,6 +25,14 @@ EntityPropertyList::EntityPropertyList(const he::FixedString& component, QWidget
 EntityPropertyList::~EntityPropertyList()
 {
     delete m_UI;
+}
+
+void EntityPropertyList::clear()
+{
+    m_UI->m_Table->clearContents();
+    m_UI->m_Table->setRowCount(0);
+    m_CurrentRow = 0;
+    m_Items.clear();
 }
 
 void EntityPropertyList::addProperty(const he::ge::PropertyDesc& prop)
@@ -85,4 +93,5 @@ void EntityPropertyList::getRowContents( const he::FixedString& component, const
     default: LOG(he::LogType_ProgrammerAssert, "Unknown property feel! %d", prop.m_Feel->getType());
     }
 }
+
 }

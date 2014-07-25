@@ -35,12 +35,10 @@ Mouse::Mouse(): m_Position(0.0f, 0.0f), m_PrevPosition(0.0f, 0.0f), m_Scroll(0)
     eventCallback1<void, MouseButton> mouseButtonPressedHandler([&](MouseButton button)
     {
         m_ButtonState[button] = true;
-        LOG(he::LogType_Info, "Mouse down");
     });
     eventCallback1<void, MouseButton> mouseButtonReleasedHandler([&](MouseButton button)
     {
         m_ButtonState[button] = false;
-        LOG(he::LogType_Info, "Mouse up");
     });
     eventCallback1<void, const vec2&> mouseMovedHandler([&](const vec2& pos)
     {
