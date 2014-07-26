@@ -29,6 +29,8 @@
 #include <qobject.h>
 #include <qtimer.h>
 
+class QColorDialog;
+
 namespace he {
     namespace tools {
         class FPSGraph;
@@ -76,6 +78,8 @@ public:
     he::gfx::View* getMainView() const { return m_View; }
     hs::SandboxRenderPipeline* getRenderPipeline() { return m_RenderPipeline; }
 
+    QColorDialog* getColorPicker() const { return m_ColorPicker; }
+
     void setGamePlugin(he::pl::IPlugin* const plugin) { m_GamePlugin = plugin; }
 
     QGLWidget* getSharedWidget() const;
@@ -94,6 +98,7 @@ private:
     
     he::pl::IPlugin* m_GamePlugin;
     EntityManager* m_EntityManager;
+    QColorDialog* m_ColorPicker;
 
     QTimer m_QtLoopTimer;
 

@@ -31,6 +31,8 @@ namespace ge {
 
 namespace hs {
 
+class EntityPropertyFeel;
+
 enum EEntityPropertyListItem
 {
     eEntityPropertyListItem_Default = QTableWidgetItem::UserType,
@@ -43,52 +45,21 @@ class EntityPropertyListItem : public QObject, public QTableWidgetItem
 {
     Q_OBJECT
 public:
-    EntityPropertyListItem(const he::FixedString& component, const he::FixedString& prop);
-    virtual ~EntityPropertyListItem() {}
+    EntityPropertyListItem(const he::FixedString& component, const he::FixedString& prop, EntityPropertyFeel* feel);
+    virtual ~EntityPropertyListItem();
     
-    virtual void setValue(const he::String& value) = 0;
-    virtual void setValueMixed() = 0;
-
-    bool isDirty() const { return m_IsDirty; }
-    void setDirty(const bool dirty);
-
+    virtual void setValue(const he::String& value);
+    virtual void setValueMixed();
+    
     he::event2<void, const he::FixedString& /*component*/, he::ge::Property*> ValueChanged;
 
 protected:
     void applyNewValue(const he::String& newValue);
-    virtual void onDirtyChanged(const bool /*newValue*/) {}
 
 private:
     he::FixedString m_Component;
     he::FixedString m_Property;
-
-    bool m_IsDirty;
-};
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-
-class EntityPropertyListDefaultFeelItem : public EntityPropertyListItem
-{
-    Q_OBJECT
-public:
-    EntityPropertyListDefaultFeelItem(const he::FixedString& component, const he::FixedString& prop, QLineEdit* widget);
-
-    virtual void setValue(const he::String& value);
-    virtual void setValueMixed();
-
-    private slots:
-        void onEditingFinished();
-        void onTextModified(const QString& text);
-
-protected:
-    void onDirtyChanged(const bool newValue);
-
-private:
-    void applyValueChange();
-
-    QLineEdit* m_Textbox;
+    EntityPropertyFeel* m_Feel;
 };
 
 } //end namespace

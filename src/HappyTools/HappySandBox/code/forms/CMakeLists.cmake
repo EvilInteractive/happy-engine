@@ -10,3 +10,11 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/entity code/forms/
         EntityPropertyList.cpp          EntityPropertyList.h            EntityPropertyList.ui
         EntityPropertyListItem.cpp      EntityPropertyListItem.h
     )
+    
+addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/entity/feels code/forms/
+        EntityPropertyFeel.cpp              EntityPropertyFeel.h
+        EntityPropertyColorFeel.cpp         EntityPropertyColorFeel.h           EntityPropertyColorFeel.ui
+        EntityPropertyDefaultFeel.cpp       EntityPropertyDefaultFeel.h         EntityPropertyDefaultFeel.ui
+        EntityPropertyDropDownFeel.cpp      EntityPropertyDropDownFeel.h        EntityPropertyDropDownFeel.ui
+        EntityPropertySliderFeel.cpp        EntityPropertySliderFeel.h          EntityPropertySliderFeel.ui
+    )

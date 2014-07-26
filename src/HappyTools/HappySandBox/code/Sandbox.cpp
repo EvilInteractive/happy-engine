@@ -32,6 +32,7 @@
 #include "forms/GameWidget.h"
 
 #include <qapplication.h>
+#include <QColorDialog>
 
 #include <ControlsManager.h>
 #include <ContentManager.h>
@@ -58,7 +59,8 @@ Sandbox::Sandbox():   m_RenderPipeline(nullptr),
                       m_Window(nullptr),
                       m_GamePlugin(nullptr),
                       m_EntityManager(nullptr),
-                      m_IsExiting(false)
+                      m_IsExiting(false),
+                      m_ColorPicker(nullptr)
 {
 }
 
@@ -117,6 +119,9 @@ void Sandbox::loop()
 
 void Sandbox::destroy()
 {
+    delete m_ColorPicker;
+    m_ColorPicker = nullptr;
+
     delete m_EntityManager;
     m_EntityManager = nullptr;
     
@@ -156,6 +161,8 @@ void Sandbox::init()
     GameStateMachine* const stateMachine(GameStateMachine::getInstance());
     stateMachine->init();
     stateMachine->setState(eGameState_Init);
+
+    m_ColorPicker = NEW QColorDialog(m_Window);
 }
 
 void Sandbox::tick(float dTime)

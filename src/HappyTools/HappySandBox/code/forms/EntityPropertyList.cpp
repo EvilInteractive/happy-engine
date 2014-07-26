@@ -4,6 +4,11 @@
 
 #include "EntityPropertyListItem.h"
 
+#include "EntityPropertyDefaultFeel.h"
+#include "EntityPropertyDropDownFeel.h"
+#include "EntityPropertyColorFeel.h"
+#include "EntityPropertySliderFeel.h"
+
 #include <Property.h>
 #include <PropertyFeel.h>
 #include <EntityComponentDesc.h>
@@ -85,12 +90,17 @@ void EntityPropertyList::getRowContents( const he::FixedString& component, const
     {
     case he::ge::ePropertyFeel_DropDown: //dropdown
     case he::ge::ePropertyFeel_Slider: // slider
-    case he::ge::ePropertyFeel_Color: //tb + colorpicker
     case he::ge::ePropertyFeel_Default: //tb
         {
-            QLineEdit* textEdit(NEW QLineEdit(m_UI->m_Table));
-            outItem = NEW hs::EntityPropertyListDefaultFeelItem(component, prop.m_Property->getName(), textEdit);
-            outWidget = textEdit;
+            EntityPropertyDefaultFeel* feel(NEW EntityPropertyDefaultFeel(m_UI->m_Table));
+            outItem = NEW hs::EntityPropertyListItem(component, prop.m_Property->getName(), feel);
+            outWidget = feel;
+        } break;
+    case he::ge::ePropertyFeel_Color: //tb + colorpicker
+        {
+            EntityPropertyColorFeel* feel(NEW EntityPropertyColorFeel(m_UI->m_Table));
+            outItem = NEW hs::EntityPropertyListItem(component, prop.m_Property->getName(), feel);
+            outWidget = feel;
         } break;
     default: LOG(he::LogType_ProgrammerAssert, "Unknown property feel! %d", prop.m_Feel->getType());
     }

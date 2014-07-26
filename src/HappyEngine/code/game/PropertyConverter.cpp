@@ -123,6 +123,11 @@ he::String PropertyConverterVec3::toString( const Property* const prop )
 
 void PropertyConverterVec4::fromString( Property* const prop, const he::String& str )
 {
+    prop->set<vec4>(fromString(str));
+}
+
+he::vec4 PropertyConverterVec4::fromString( const he::String& str )
+{
     const char* charBuf(str.c_str());
     vec4 result(0, 0, 0, 0);
     if (charBuf != nullptr)
@@ -167,14 +172,20 @@ void PropertyConverterVec4::fromString( Property* const prop, const he::String& 
             }
         }
     }
-    prop->set<vec4>(result);
+    return result;
 }
 
 he::String PropertyConverterVec4::toString( const Property* const prop )
 {
-    char buf[80];
     const vec4& value(prop->get<vec4>());
-    hesnprintf(buf, 79, "%.*f, %.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z, m_Precision, value.w);
+    return toString(value, m_Precision);
+}
+
+he::String PropertyConverterVec4::toString( const he::vec4& value, const uint8 precision/* = 4*/ )
+{
+    char buf[80];
+    buf[79] = '\0';
+    hesnprintf(buf, 79, "%.*f, %.*f, %.*f, %.*f", precision, value.x, precision, value.y, precision, value.z, precision, value.w);
     return he::String(buf);
 }
 

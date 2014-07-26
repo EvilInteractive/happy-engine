@@ -22,6 +22,7 @@
 
 #include "Sandbox.h"
 #include "system/EntityManager.h"
+#include "EntityPropertyFeel.h"
 
 #include <EntityComponentDesc.h>
 #include <PropertyFeel.h>
@@ -32,97 +33,43 @@
 
 namespace hs {
 
-    EntityPropertyListItem::EntityPropertyListItem(const he::FixedString& component, const he::FixedString& prop) 
+    EntityPropertyListItem::EntityPropertyListItem(const he::FixedString& component, const he::FixedString& prop, EntityPropertyFeel* const feel) 
         : QObject()
         , QTableWidgetItem(eEntityPropertyListItem_Default)
         , m_Component(component)
         , m_Property(prop)
-        , m_IsDirty(false)
+        , m_Feel(feel)
     {
+        he::eventCallback1<void, const he::String&> valueChangedCallback(std::bind(&EntityPropertyListItem::applyNewValue, this, std::placeholders::_1));
+        m_Feel->ValueChanged += valueChangedCallback;
     }
 
-    void EntityPropertyListItem::setDirty( const bool newValue )
+    EntityPropertyListItem::~EntityPropertyListItem()
     {
-        if (newValue != m_IsDirty)
-        {
-            m_IsDirty = newValue;
-            onDirtyChanged(newValue);
-        }
     }
 
     void EntityPropertyListItem::applyNewValue(const he::String& value)
     {
-        if (isDirty())
+        he::ge::EntityComponentDesc* desc(
+            hs::Sandbox::getInstance()->getEntityManager()->getComponentDescriptor(m_Component));
+        he::ge::PropertyDesc* propDesc(desc->m_Properties.find(m_Property));
+        HE_ASSERT(propDesc, "Could not find propertydesc %s for component %s", m_Component.c_str(), m_Property.c_str());
+        if (propDesc)
         {
-            setDirty(false);
-
-            he::ge::EntityComponentDesc* desc(
-                hs::Sandbox::getInstance()->getEntityManager()->getComponentDescriptor(m_Component));
-            he::ge::PropertyDesc* propDesc(desc->m_Properties.find(m_Property));
-            HE_ASSERT(propDesc, "Could not find propertydesc %s for component %s", m_Component.c_str(), m_Property.c_str());
-            if (propDesc)
-            {
-                propDesc->m_Converter->fromString(propDesc->m_Property, value);
-                ValueChanged(m_Component, propDesc->m_Property);
-                setValue(propDesc->m_Converter->toString(propDesc->m_Property));
-            }
-        }
-    }
-    //////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////
-
-    EntityPropertyListDefaultFeelItem::EntityPropertyListDefaultFeelItem(const he::FixedString& component, const he::FixedString& prop, QLineEdit* widget) 
-        : EntityPropertyListItem(component, prop)
-        , m_Textbox(widget)
-    {
-        connect(widget, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
-        connect(widget, SIGNAL(textEdited(QString)), this, SLOT(onTextModified(QString)));
-    }
-    void EntityPropertyListDefaultFeelItem::onEditingFinished()
-    {
-        applyValueChange();
-    }
-
-    void EntityPropertyListDefaultFeelItem::onTextModified( const QString& /*text*/ )
-    {
-        setDirty(true);
-    }
-
-    void EntityPropertyListDefaultFeelItem::onDirtyChanged( const bool newValue )
-    {
-        if (newValue)
-        {
-            m_Textbox->setStyleSheet(
-                "border: 2px solid green;");
-        }
-        else
-        {
-            m_Textbox->setStyleSheet(
-                "border: 1px solid black;");
+            propDesc->m_Converter->fromString(propDesc->m_Property, value);
+            ValueChanged(m_Component, propDesc->m_Property);
+            setValue(propDesc->m_Converter->toString(propDesc->m_Property));
         }
     }
 
-    void EntityPropertyListDefaultFeelItem::setValue( const he::String& value )
+    void EntityPropertyListItem::setValue( const he::String& value )
     {
-        m_Textbox->setText(value.c_str());
-        setDirty(false);
+        m_Feel->setValue(value);
     }
 
-    void EntityPropertyListDefaultFeelItem::setValueMixed()
+    void EntityPropertyListItem::setValueMixed()
     {
-        m_Textbox->setPlaceholderText("<Mixed Values>");
-        m_Textbox->setText("");
-        setDirty(false);
-    }
-
-    void EntityPropertyListDefaultFeelItem::applyValueChange()
-    {
-        if (isDirty())
-        {
-            he::String value(m_Textbox->text().toUtf8());
-            applyNewValue(value);
-        }
+        m_Feel->setValueMixed();
     }
 
 } //end namespace

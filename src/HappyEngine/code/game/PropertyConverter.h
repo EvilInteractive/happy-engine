@@ -116,6 +116,9 @@ public:
     virtual void fromString(Property* const prop, const he::String& str);
     virtual he::String toString(const Property* const prop);
 
+    static he::vec4 fromString(const he::String& str);
+    static he::String toString(const he::vec4& vec, const uint8 precision = 4);
+
 private:
     uint8 m_Precision;
 };
