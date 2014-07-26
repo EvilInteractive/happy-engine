@@ -79,6 +79,8 @@ void EntityPropertyList::setValueMixed( const he::FixedString& prop )
 void EntityPropertyList::getRowContents( const he::FixedString& component, const he::ge::PropertyDesc& prop, QTableWidgetItem*& outName, hs::EntityPropertyListItem*& outItem, QWidget*& outWidget )
 {
     outName = NEW QTableWidgetItem(QString(prop.m_DisplayName.c_str()));
+    outName->setToolTip(QString(prop.m_Tooltip.c_str()));
+
     switch (prop.m_Feel->getType())
     {
     case he::ge::ePropertyFeel_DropDown: //dropdown
