@@ -89,6 +89,16 @@ void EntityPropertyList::getRowContents( const he::FixedString& component, const
     switch (prop.m_Feel->getType())
     {
     case he::ge::ePropertyFeel_DropDown: //dropdown
+        {
+            EntityPropertyDropDownFeel* feel(NEW EntityPropertyDropDownFeel(m_UI->m_Table));
+            he::ge::PropertyFeelDropDown* dd(he::checked_cast<he::ge::PropertyFeelDropDown*>(prop.m_Feel));
+            dd->getList().forEach([feel](const he::String& val)
+            {
+                feel->addValue(val);
+            });
+            outItem = NEW hs::EntityPropertyListItem(component, prop.m_Property->getName(), feel);
+            outWidget = feel;
+        } break;
     case he::ge::ePropertyFeel_Slider: // slider
     case he::ge::ePropertyFeel_Default: //tb
         {

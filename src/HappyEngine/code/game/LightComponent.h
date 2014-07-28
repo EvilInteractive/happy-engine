@@ -114,7 +114,7 @@ public:
     
     void setMultiplier(float multiplier);
     void setDirection(const vec3& direction);
-    void setAttenuation(float begin, float end);
+    void setAttenuation(const he::vec2& att);
     void setColor(const vec3& color);
     void setColor(const Color& color);
     void setFov(float angle);

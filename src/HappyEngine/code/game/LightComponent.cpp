@@ -291,12 +291,11 @@ void SpotLightComponent::setDirection( const vec3& direction )
         m_SpotLight->setDirection(direction);
 }
 
-void SpotLightComponent::setAttenuation( float begin, float end )
+void SpotLightComponent::setAttenuation( const he::vec2& att )
 {
-    m_Attenuation.x = begin;
-    m_Attenuation.y = end;
+    m_Attenuation = att;
     if (m_SpotLight != nullptr)
-        m_SpotLight->setAttenuation(begin, end);
+        m_SpotLight->setAttenuation(att.x, att.y);
 }
 
 void SpotLightComponent::setColor( const vec3& color )
@@ -411,12 +410,80 @@ void SpotLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 
 bool SpotLightComponent::setProperty( const Property* const inProperty )
 {
-    return EntityComponent::setProperty(inProperty);
+    bool result(false);
+    if (EntityComponent::setProperty(inProperty) == false)
+    {
+        const he::FixedString& id(inProperty->getName());
+        if (id == HEFS::strMultiplier)
+        {
+            setMultiplier(inProperty->get<float>());
+            result = true;
+        }
+        else if (id == HEFS::strFov)
+        {
+            setFov(inProperty->get<float>() / 180.0f * he::pi);
+            result = true;
+        }
+        else if (id == HEFS::strColor)
+        {
+            setColor(inProperty->get<he::vec3>());
+            result = true;
+        }
+        else if (id == HEFS::strAttenuation)
+        {
+            setAttenuation(inProperty->get<vec2>());
+            result = true;
+        }
+        else if (id == HEFS::strShadowResolution)
+        {
+            setShadow(inProperty->get<he::gfx::ShadowResolution>());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
 }
 
 bool SpotLightComponent::getProperty( Property* const inOutProperty )
 {
-    return EntityComponent::getProperty(inOutProperty);
+    bool result(false);
+    if (EntityComponent::getProperty(inOutProperty) == false)
+    {
+        const he::FixedString& id(inOutProperty->getName());
+        if (id == HEFS::strMultiplier)
+        {
+            inOutProperty->set(getMultiplier());
+            result = true;
+        }
+        else if (id == HEFS::strFov)
+        {
+            inOutProperty->set(getFov() * 180 / he::pi);
+            result = true;
+        }
+        else if (id == HEFS::strColor)
+        {
+            inOutProperty->set(getColor());
+            result = true;
+        }
+        else if (id == HEFS::strAttenuation)
+        {
+            inOutProperty->set(vec2(getBeginAttenuation(), getEndAttenuation()));
+            result = true;
+        }
+        else if (id == HEFS::strShadowResolution)
+        {
+            inOutProperty->set(getShadow());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
 }
 
 #pragma endregion

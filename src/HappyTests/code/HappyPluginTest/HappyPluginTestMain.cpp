@@ -92,8 +92,8 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_View->setCamera(m_Camera);
 
     he::gfx::LightManager* lightMan(m_Scene->getLightManager());
-    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 0.0f);
-    lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.0f);
+    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 0.4f);
+    lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.2f);
 
     he::gui::Font* const debugFont(contentMan->getDefaultFont(16));
     m_DebugText = NEW he::gui::Text();
@@ -132,7 +132,7 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
         entityMan->createComponent(HEFS::strModelComponent)));
     scene->addComponent(sceneModel);
     // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj", "M_Scene");
-    sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene.binobj", "M_Ground");
+    sceneModel->loadModelMeshAndMaterial("white.material", "testScene.binobj", "M_Ground");
     // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene2.binobj", "M_Ground");
     scene->activate();
     m_Entities.add(scene);
@@ -162,17 +162,18 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
 
             const int nameSize(hesnprintf(nullptr, 0, "%s_%d", name, counters[obj]));
             he::String fullname;
-            fullname.resize(nameSize);
-            hesnprintf(&fullname[0], nameSize, "%s_%d", name, counters[obj]++);
+            fullname.resize(nameSize+1);
+            hesnprintf(&fullname[0], nameSize+1, "%s_%d", name, counters[obj]++);
             shape->setName(std::move(fullname));
         }
 
         {
             if (rand()%2 == 0)
             {
-                ge::PointLightComponent* const light(checked_cast<ge::PointLightComponent*>(
-                    entityMan->createComponent(HEFS::strPointLightComponent)));
+                ge::SpotLightComponent* const light(checked_cast<ge::SpotLightComponent*>(
+                    entityMan->createComponent(HEFS::strSpotLightComponent)));
                 shape->addComponent(light);
+                light->setDirection(he::vec3(0, -1, 0));
                 light->setAttenuation(he::vec2(3, 20));
                 light->setColor(he::Color::fromHSB(rand()%360 / 360.0f, 0.8f, 1.0f));
                 light->setMultiplier(1.0f);
