@@ -404,8 +404,8 @@ void Deferred3DRenderer::postPointLights()
 
             const gfx::ModelMesh* volume(light->getLightVolume());
             DrawContext context;
-            context.m_VBO = volume->getVBOID();
-            context.m_IBO = volume->getVBOIndexID();
+            context.m_VBO = volume->getVBO();
+            context.m_IBO = volume->getIBO();
             m_PointLightMaterial->apply(context);
             volume->draw();
         }
@@ -512,8 +512,8 @@ void Deferred3DRenderer::postSpotLights()
 
                 const gfx::ModelMesh* volume(light->getLightVolume());
                 DrawContext context;
-                context.m_VBO = volume->getVBOID();
-                context.m_IBO = volume->getVBOIndexID();
+                context.m_VBO = volume->getVBO();
+                context.m_IBO = volume->getIBO();
                 m_PointLightMaterial->apply(context);
                 volume->draw();
             }

@@ -198,8 +198,8 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
         DrawContext context;
-        context.m_VBO = m_DynamicFontMesh->getVBOID();
-        context.m_IBO = m_DynamicFontMesh->getVBOIndexID();
+        context.m_VBO = m_DynamicFontMesh->getVBO();
+        context.m_IBO = m_DynamicFontMesh->getIBO();
         m_FontEffectDynFont->apply(context);
         m_DynamicFontMesh->draw();
     }
@@ -320,8 +320,8 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
     DrawContext context;
-    context.m_VBO = m_TextureQuad->getVBOID();
-    context.m_IBO = m_TextureQuad->getVBOIndexID();
+    context.m_VBO = m_TextureQuad->getVBO();
+    context.m_IBO = m_TextureQuad->getIBO();
     m_TextureEffectQuad->apply(context);
     m_TextureQuad->draw();
 }
@@ -360,8 +360,8 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
     
         GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
         DrawContext context;
-        context.m_VBO = m_TextureQuad->getVBOID();
-        context.m_IBO = m_TextureQuad->getVBOIndexID();
+        context.m_VBO = m_TextureQuad->getVBO();
+        context.m_IBO = m_TextureQuad->getIBO();
         m_NinePatchEffectQuad->apply(context);
         m_TextureQuad->draw();
     }
@@ -410,8 +410,8 @@ void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,
     m_TextureEffectQuad->setBlended(useBlending);
 
     DrawContext context;
-    context.m_VBO = m_TextureQuad->getVBOID();
-    context.m_IBO = m_TextureQuad->getVBOIndexID();
+    context.m_VBO = m_TextureQuad->getVBO();
+    context.m_IBO = m_TextureQuad->getIBO();
     m_TextureEffectQuad->apply(context);
     m_TextureQuad->draw();
 }
@@ -436,8 +436,8 @@ void Canvas2DRendererGL::blitImage3D( const Texture2D* tex2D, const gfx::ICamera
     m_TextureEffectQuad->setBlended(true);
 
     DrawContext context;
-    context.m_VBO = m_TextureQuad->getVBOID();
-    context.m_IBO = m_TextureQuad->getVBOIndexID();
+    context.m_VBO = m_TextureQuad->getVBO();
+    context.m_IBO = m_TextureQuad->getIBO();
     m_TextureEffectQuad->apply(context);
 
     GL::heSetCullFace(true); // must be nicer...

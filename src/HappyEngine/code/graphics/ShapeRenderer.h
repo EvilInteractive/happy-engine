@@ -31,6 +31,7 @@ namespace gfx {
 
 class Texture2D;
 class ModelMesh;
+class ShapeMesh;
 class BillboardEffect;
 class SimpleColorEffect;
 class View;
@@ -57,22 +58,21 @@ public:
 
     /* DRAW METHODS */
     void drawAABB(const vec3& position, const vec3& dimensions, const Color& color) const;
-    void drawColored(const ModelMesh* model, const mat44& world, const Color& color) const;
-    void drawColoredNoDepth(const ModelMesh* model, const mat44& world, const Color& color) const;
-    void drawMeshColor(const ModelMesh* spline, const mat44& world, const Color& color) const;
+    void drawShape(const ShapeMesh* shape, const mat44& world, const Color& color) const;
     void drawBillboard(const Texture2D* tex2D, const vec3& pos);
 
 private:
-
     void createBillboardQuad();
     void createAABB();
 
     /* DATAMEMBERS */
-    SimpleColorEffect* m_ColorEffect;
     
     ModelMesh* m_BillboardQuad;
     ModelMesh* m_AABB;
+
     BillboardEffect* m_BillboardEffect;
+    SimpleColorEffect* m_AABBEffect;
+    SimpleColorEffect* m_ShapeEffect;
 
     View* m_View;
     const RenderTarget* m_RenderTarget;

@@ -125,11 +125,11 @@ void AutoExposure::calculate( const Texture2D* hdrMap)
     m_LumShader->setShaderVar(m_PrevLumMapPos, m_LumTexture[m_FirstBuffer? 1 : 0]);
     m_LumShader->setShaderVar(m_DTimePos, m_DTime * m_ExposureSpeed);
     
-    glBindBuffer(GL_ARRAY_BUFFER, m_Quad->getVBOID());
+    glBindBuffer(GL_ARRAY_BUFFER, m_Quad->getVBO());
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(12)); 
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Quad->getVBOIndexID());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Quad->getIBO());
 
     m_Quad->draw();
 }

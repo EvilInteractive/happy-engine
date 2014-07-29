@@ -21,7 +21,7 @@
 
 #include "DrawListContainer.h"
 #include "Drawable.h"
-#include "Material.h"
+#include "MaterialInstance.h"
 #ifdef HE_USE_OCTREE
 #include "CullOctree.h"
 #endif
@@ -53,7 +53,7 @@ DrawListContainer::~DrawListContainer()
 
 void DrawListContainer::getContainerIndex(const Drawable* drawable, BlendFilter& blend)
 {
-    const gfx::Material* material(drawable->getMaterial());
+    const gfx::MaterialInstance* material(drawable->getMaterial());
     HE_IF_ASSERT(material != nullptr, "Material is nullptr!")
     {
         if (material->isBlended() || material->noPost())

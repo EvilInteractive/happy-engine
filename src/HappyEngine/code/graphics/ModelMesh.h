@@ -55,8 +55,8 @@ public:
     // Getters
     inline const he::ObjectList<Bone>& getBones() const { return m_BoneList; }
 
-    inline uint32 getVBOID() const { return m_VertexVboID; }
-    inline uint32 getVBOIndexID() const { return m_IndexVboID; }
+    inline uint32 getVBO() const { return m_VertexVboID; }
+    inline uint32 getIBO() const { return m_IndexVboID; }
     inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }
 
     void createPickingData(const void* const vertices, const size_t vertexCount, const VertexLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);

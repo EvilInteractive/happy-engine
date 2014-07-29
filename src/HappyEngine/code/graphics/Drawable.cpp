@@ -134,7 +134,7 @@ void Drawable::attachToScene( Scene* scene )
     }
 }
 
-void Drawable::calculateBound()
+bool Drawable::calculateBound()
 {
     if (checkFlag(eDrawableFlags_NeedsBoundUpdate))
     {
@@ -148,7 +148,9 @@ void Drawable::calculateBound()
             m_Bound.fromAABB(newAABB);
             clearFlag(eDrawableFlags_NeedsBoundUpdate);
         }
+        return true;
     }
+    return false;
 }
 
 void Drawable::setWorldMatrixDirty( const uint8 cause )
