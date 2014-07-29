@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -22,6 +22,12 @@
 #pragma message("-------------------------------------------------")
 #pragma message("-- HappyEngine: Compiling precompiled headers. --")
 #pragma message("-------------------------------------------------\n")
+
+#ifdef HE_DEBUG
+#define _DEBUG 1
+#else
+#define NDEBUG 1
+#endif
 
 #ifdef HE_WINDOWS
 #define __HE_FUNCTION__ __FUNCTION__
@@ -128,36 +134,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HappyInfo.h"
 #include "HeAssert.h"
 
-#ifdef HE_DEBUG
-#pragma warning(disable:4389) // '==' signed/unsigned mismatch
-template<typename To, typename From>
-inline To checked_numcast(const From value)
-{
-    const To result(static_cast<To>(value));
-    HE_ASSERT(result == value, "Numcast fail!");
-    return result;
-}
-#pragma warning(default:4389)
-template<typename To, typename From>
-inline To checked_cast(From const value)
-{
-    To const result(dynamic_cast<To>(value));
-    HE_ASSERT(value == nullptr || nullptr != result, "checked cast failed!");
-    return result;
-}
-#else
-template<typename To, typename From>
-inline To checked_numcast(const From value)
-{
-    return static_cast<To>(value);
-}
-template<typename To, typename From>
-inline To checked_cast(From value)
-{
-    return static_cast<To>(value);
-}
-#endif
-
+#include "HappyFunctions.h"
 #include "HappyMemory.h"
 #include "HappyNew.h"
 #include "MathConstants.h"

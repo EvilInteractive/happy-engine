@@ -70,8 +70,8 @@ void ThreadTicketManager::check(const size_t id, const char* file, int line)
     {
         const ThreadTicket& ticket(m_Tickets[id]);
         HE_ASSERT(ticket.m_Owner == he::Thread::getCurrentThread(),
-                  "Thread '%s' access violation!\nThread is claimed by thread with ID: %u, calling thread is %u.\nLast claim was by %s(%d)",
-                  ticket.m_Name, ticket.m_Owner, he::Thread::getCurrentThread(), ticket.m_File, ticket.m_Line);
+            "Thread '%s' access violation @ %s(%d)!\nThread is claimed by thread with ID: %u, calling thread is %u.\nLast claim was by %s(%d)",
+                  ticket.m_Name, file, line, ticket.m_Owner, he::Thread::getCurrentThread(), ticket.m_File, ticket.m_Line);
     }
 }
 

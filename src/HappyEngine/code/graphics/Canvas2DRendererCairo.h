@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -103,7 +103,6 @@ private:
     };
 
     void blit();
-    float normalizeAngle(float a);
     void handleDrawCalls();
     void transformY();
 

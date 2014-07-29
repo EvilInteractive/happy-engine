@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -48,11 +48,13 @@ public:
     void deselectAll();
     void select(he::ge::Entity* const entity);
 
-    const SelectionSet& getSelection() const;
+    const TSelectionSet& getSelection() const { return m_Selection; }
 
     void drawShapes(he::gfx::ShapeRenderer* const renderer); // override
 
     const static he::Color s_SelectionColor;
+
+    he::event0<void> SelectionChanged;
 
 private:
     void internalDeselect(he::ge::Entity* const entity);
@@ -60,7 +62,7 @@ private:
 
     void recomputeBoundingBox();
 
-    SelectionSet m_Selection;
+    TSelectionSet m_Selection;
 
     he::AABB m_AABB;
 

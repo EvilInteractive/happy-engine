@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -24,25 +24,22 @@
 
 #include "MainGame.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
+int main( int argc, char* args[])
 {
 
 #if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
+    he::HappyEngine::init(argc, args, he::SubEngine_All);
 
     he::ge::Game* ge(NEW ht::MainGame());
-    HAPPYENGINE->start(ge);
+    HAPPYENGINE->start(ge, true);
     delete ge;
 
     he::HappyEngine::dispose();
 
     he_checkmem();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
 
     return 0;
 }

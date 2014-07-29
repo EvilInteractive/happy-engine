@@ -19,7 +19,10 @@ bool GameStateUnload::enter()
 {
     Sandbox* const sandbox(Sandbox::getInstance());
     he::pl::IPlugin* const plugin(sandbox->getGamePlugin());
-    plugin->onUnloadLevel();
+    if (plugin)
+    {
+        plugin->onUnloadLevel();
+    }
     return true;
 }
 

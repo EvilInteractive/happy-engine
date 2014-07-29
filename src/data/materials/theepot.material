@@ -1,0 +1,15 @@
+[Deferred]
+shader = "defaultDeferred.shader"
+
+[Forward]
+shader = "defaultForward.shader"
+
+[TEXTURE2D]
+diffuseMap = 0.7, 0.7, 0.7, 1
+normalMap = 0.5, 0.5, 1.0, 1
+specGlossIllMap = 0.8, 0.8, 0.0, 1
+
+[info]
+blending = false
+post = true
+shadow = true

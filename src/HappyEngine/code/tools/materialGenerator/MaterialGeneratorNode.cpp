@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -353,13 +353,13 @@ bool MaterialGeneratorNode::canConnect( const MaterialGeneratorNodeOutput& fromO
             int size(0);
             char outputTypeBuffer[128];
             outputOverloads.forEach([&outputTypeBuffer, &size, fromOutputIndex](const Overload& overload) 
-            { size += sprintf(outputTypeBuffer + size, "%s, ", materialGeneratorVariableTypeToString(overload.outputs[fromOutputIndex])); });
+            { size += hesnprintf(outputTypeBuffer + size, 127 - size, "%s, ", materialGeneratorVariableTypeToString(overload.outputs[fromOutputIndex])); });
             outputTypeBuffer[size - 2] = '\0'; // remove trailing comma
 
             size = 0;
             char inputTypeBuffer[128];
             inputOverloads.forEach([&inputTypeBuffer, &size, toInputIndex](const Overload& overload) 
-            { size += sprintf(inputTypeBuffer + size, "%s, ", materialGeneratorVariableTypeToString(overload.inputs[toInputIndex])); });
+            { size += hesnprintf(inputTypeBuffer + size, 127 - size, "%s, ", materialGeneratorVariableTypeToString(overload.inputs[toInputIndex])); });
             inputTypeBuffer[size - 2] = '\0'; // remove trailing comma
 
             error.setMessage("Node output with possible types: \n"

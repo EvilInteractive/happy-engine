@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -395,8 +395,8 @@ struct JsonConfig
         void fill()
         {
             m_Float = rand() / static_cast<float>(RAND_MAX);
-            m_Int8Test = checked_numcast<he::int8>(rand() % 255 - 128);
-            m_Uint32Test = checked_numcast<he::uint32>(rand());
+            m_Int8Test = he::checked_numcast<he::int8>(rand() % 255 - 128);
+            m_Uint32Test = he::checked_numcast<he::uint32>(rand());
         }
     };
 
@@ -556,7 +556,7 @@ void MainGame::threadSafeQueueMP1CTest()
         for (size_t i(0); i < producerThreadCount; ++i)
         {
             char name[20];
-            sprintf(name, "ProducerThread%d", i);
+            he::hesnprintf(name, 19, "ProducerThread%d", i);
             producedValuesPerThread[i+1] = 0;
             producerThread[i].startThread([&, i]()
             {

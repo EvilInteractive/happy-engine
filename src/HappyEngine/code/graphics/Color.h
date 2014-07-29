@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -42,6 +42,8 @@ public:
     Color(const vec4& col);
     ~Color();
     //Default copy constructor and assignment operator are fine
+
+    static Color fromHSB(float hue, float saturation, float brightness);
 
     //-----------------------------------------//
     //                GETTERS                  // 

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -32,6 +32,7 @@ namespace io {
 namespace ge {
 class Entity;
 class Property;
+struct EntityComponentDesc;
 class HAPPY_ENTRY EntityComponent : public Object3D
 {
 DECLARE_OBJECT(EntityComponent)
@@ -46,6 +47,7 @@ public:
 
     virtual const he::FixedString& getComponentID() const = 0;
 
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
     virtual bool setProperty(const Property* const inProperty);
     virtual bool getProperty(Property* const inOutProperty);
     

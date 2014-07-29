@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -42,8 +42,11 @@ public:
     void show();
     void hide();
 
+    void repositionElements(const he::int32 width, const he::int32 height);
+
 private:
     he::tools::FPSGraph* m_FPSGraph;
+    he::eventCallback2<void, he::int32, he::int32> m_ResizeCallback;
 
     /* DEFAULT COPY & ASSIGNMENT */
     UIDebug(const UIDebug&);

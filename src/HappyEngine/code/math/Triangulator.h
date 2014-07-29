@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -19,7 +19,7 @@
 //Created: 14/10/2011
 
 #ifndef _HE_TRIANGULATOR_H_
-#define _HE_TRINAGULATOR_H_
+#define _HE_TRIANGULATOR_H_
 #pragma once
 
 #include "vec2.h"

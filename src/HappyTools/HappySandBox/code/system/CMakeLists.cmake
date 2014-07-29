@@ -2,6 +2,7 @@
 addFilter(HAPPYSANDBOX_CODE_SRCS src/system/ code/system/
         SandboxTypes.h
         SandboxRenderPipeline.cpp   SandboxRenderPipeline.h
+        GLContextQT.cpp             GLContextQT.h
     )
 
 addFilter(HAPPYSANDBOX_CODE_SRCS src/system/statemachine code/system/

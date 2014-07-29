@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -44,6 +44,7 @@ namespace gfx {
 class Window;
 class Scene;
 class View;
+class GLContext;
 #ifdef USE_WEB
 class WebViewSurfaceFactory;
 #endif
@@ -59,7 +60,7 @@ public:
     virtual ~GraphicsEngine();
 
     /* GENERAL */
-    void init();
+    void init(const bool supportWindowing, he::gfx::Window* const sharedContexts);
     void destroy();
     void tick(float dTime);
     void draw();
@@ -74,9 +75,11 @@ public:
     View* createView();
     void removeView(View* view);
 
-    Window* createWindow();
+    Window* createWindow(); // Only works if no sharedContext was provided in init
     void removeWindow(Window* window);
-    Window* getWindow(const uint32 id);
+    void registerWindow(Window* window);
+    bool unregisterWindow(Window* window);
+
     bool registerContext(GLContext* context);
     void unregisterContext(GLContext* context);
 
@@ -84,6 +87,8 @@ public:
     void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
     void setActiveContext(GLContext* context);
     void setActiveView(View* view) { m_ActiveView = view; } // Internal use
+
+    GLContext* getSharedContext() const;
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
@@ -99,7 +104,6 @@ public:
 #endif
 
     // Events
-    he::event0<void> MainContextCreated;
     he::event1<void, GLContext*> ContextCreated;
     he::event1<void, GLContext*> ContextRemoved;
 
@@ -116,6 +120,8 @@ private:
     WebViewSurfaceFactory* m_WebViewSurfaceFactory;
 #endif
 
+    bool m_OwnSharedContext;
+    Window* m_SharedContext;
     std::queue<uint32> m_FreeContexts;
     he::PrimitiveList<GLContext*> m_Contexts;
 

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -54,7 +54,7 @@ void ShadowCasterSpotLight::init(ShadowResolution shadowSize)
 
     he::gfx::GraphicsEngine* const gfxEngine(GRAPHICS);
 
-    m_RenderTarget = NEW RenderTarget(gfxEngine->getContexts()[0]); // TODO: change 0 with something better!
+    m_RenderTarget = NEW RenderTarget(gfxEngine->getSharedContext());
     const uint16 size(gfxEngine->getShadowMapSize(shadowSize));
     m_RenderTarget->setSize(size, size);
     m_RenderTarget->setDepthTarget();

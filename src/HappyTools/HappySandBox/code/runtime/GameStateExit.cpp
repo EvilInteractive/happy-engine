@@ -8,6 +8,8 @@
 
 #include <tools/FPSGraph.h>
 
+#include <QApplication>
+
 namespace hs {
 
 GameStateExit::GameStateExit ()
@@ -26,6 +28,9 @@ bool GameStateExit::enter()
     CONSOLE->detachFromRenderer();
     PROFILER->detachFromRenderer();
     HAPPYENGINE->quit();
+
+    QApplication::quit();
+
     return true;
 }
 

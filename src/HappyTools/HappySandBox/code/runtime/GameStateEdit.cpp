@@ -51,6 +51,7 @@ bool GameStateEdit::enter()
 
 void GameStateEdit::exit()
 {
+    SelectionManger::getInstance()->deselectAll();
 }
 
 void GameStateEdit::tick( const float /*dTime*/ )
@@ -71,7 +72,7 @@ void GameStateEdit::tick( const float /*dTime*/ )
             he::ge::PickResult result;
             if (EditorPickingManager::getInstance()->pick(ray, result))
             {
-                he::ge::PickingComponent* const comp(checked_cast<he::ge::PickingComponent*>(result.getObject()));
+                he::ge::PickingComponent* const comp(he::checked_cast<he::ge::PickingComponent*>(result.getObject()));
                 if (keyboard->isKeyDown(he::io::Key_Alt) == false)
                     SelectionManger::getInstance()->select(comp->getEntityParent());
                 else

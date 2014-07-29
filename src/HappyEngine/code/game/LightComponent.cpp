@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -144,22 +144,24 @@ void PointLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
     desc.m_ID = HEFS::strPointLightComponent;
     desc.m_DisplayName = "Pointlight";
 
+    EntityComponent::fillEntityComponentDesc(desc);
+
     // Multiplier
     Property* mulProp(NEW Property());
     mulProp->init<float>(HEFS::strMultiplier, 1.0f);
-    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
+    desc.m_Properties.setAt(mulProp->getName(), PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
         NEW PropertyConverterFloat(), NEW PropertyFeelSlider(0.01f, 100.0f)));
 
     // Attenuation
     Property* attProp(NEW Property());
     attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
-    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
+    desc.m_Properties.setAt(attProp->getName(), PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
         NEW PropertyConverterVec2(), NEW PropertyFeelDefault()));
 
     // Color
     Property* colorProp(NEW Property());
     colorProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
-    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light", 
+    desc.m_Properties.setAt(colorProp->getName(), PropertyDesc(colorProp, "Color", "Sets the color of the light", 
         NEW PropertyConverterVec3(), NEW PropertyFeelColor()));
 }
 
@@ -289,12 +291,11 @@ void SpotLightComponent::setDirection( const vec3& direction )
         m_SpotLight->setDirection(direction);
 }
 
-void SpotLightComponent::setAttenuation( float begin, float end )
+void SpotLightComponent::setAttenuation( const he::vec2& att )
 {
-    m_Attenuation.x = begin;
-    m_Attenuation.y = end;
+    m_Attenuation = att;
     if (m_SpotLight != nullptr)
-        m_SpotLight->setAttenuation(begin, end);
+        m_SpotLight->setAttenuation(att.x, att.y);
 }
 
 void SpotLightComponent::setColor( const vec3& color )
@@ -364,29 +365,31 @@ void SpotLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
     desc.m_ID = HEFS::strSpotLightComponent;
     desc.m_DisplayName = "Spotlight";
+
+    EntityComponent::fillEntityComponentDesc(desc);
     
     // Multiplier
     Property* const mulProp(NEW Property());
     mulProp->init<float>(HEFS::strMultiplier, 1.0f);
-    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
+    desc.m_Properties.setAt(mulProp->getName(), PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
         NEW PropertyConverterFloat(), NEW PropertyFeelSlider(0.01f, 100.0f)));
 
     // Fov
     Property* const fovProp(NEW Property());
     fovProp->init<float>(HEFS::strFov, 90.0f); // Properties are in degrees
-    desc.m_Properties.add(PropertyDesc(fovProp, "Field of view", "Sets the field of view of the spotlight", 
+    desc.m_Properties.setAt(fovProp->getName(), PropertyDesc(fovProp, "Field of view", "Sets the field of view of the spotlight", 
         NEW PropertyConverterFloat(), NEW PropertyFeelSlider(10.0f, 180.0f)));
 
     // Color
     Property* const colorProp(NEW Property());
     colorProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
-    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light",
+    desc.m_Properties.setAt(colorProp->getName(), PropertyDesc(colorProp, "Color", "Sets the color of the light",
         NEW PropertyConverterVec3(), NEW PropertyFeelColor()));
 
     // Attenuation
     Property* const attProp(NEW Property());
     attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
-    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
+    desc.m_Properties.setAt(attProp->getName(), PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
         NEW PropertyConverterVec2(), NEW PropertyFeelDefault()));
 
     // ShadowResolution
@@ -400,19 +403,87 @@ void SpotLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
     shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_512));
     shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_1024));
     shadowProp->init<he::gfx::ShadowResolution>(HEFS::strShadowResolution, he::gfx::ShadowResolution_None);
-    desc.m_Properties.add(PropertyDesc(shadowProp, "Shadow Resolution", "Sets the shadow of the spotlight",
+    desc.m_Properties.setAt(shadowProp->getName(), PropertyDesc(shadowProp, "Shadow Resolution", "Sets the shadow of the spotlight",
         NEW PropertyConverterEnum<he::gfx::ShadowResolution>(he::gfx::shadowResolutionFromGuiString, he::gfx::shadowResolutionToGuiString), 
         shadowDropDown));
 }
 
 bool SpotLightComponent::setProperty( const Property* const inProperty )
 {
-    return EntityComponent::setProperty(inProperty);
+    bool result(false);
+    if (EntityComponent::setProperty(inProperty) == false)
+    {
+        const he::FixedString& id(inProperty->getName());
+        if (id == HEFS::strMultiplier)
+        {
+            setMultiplier(inProperty->get<float>());
+            result = true;
+        }
+        else if (id == HEFS::strFov)
+        {
+            setFov(inProperty->get<float>() / 180.0f * he::pi);
+            result = true;
+        }
+        else if (id == HEFS::strColor)
+        {
+            setColor(inProperty->get<he::vec3>());
+            result = true;
+        }
+        else if (id == HEFS::strAttenuation)
+        {
+            setAttenuation(inProperty->get<vec2>());
+            result = true;
+        }
+        else if (id == HEFS::strShadowResolution)
+        {
+            setShadow(inProperty->get<he::gfx::ShadowResolution>());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
 }
 
 bool SpotLightComponent::getProperty( Property* const inOutProperty )
 {
-    return EntityComponent::getProperty(inOutProperty);
+    bool result(false);
+    if (EntityComponent::getProperty(inOutProperty) == false)
+    {
+        const he::FixedString& id(inOutProperty->getName());
+        if (id == HEFS::strMultiplier)
+        {
+            inOutProperty->set(getMultiplier());
+            result = true;
+        }
+        else if (id == HEFS::strFov)
+        {
+            inOutProperty->set(getFov() * 180 / he::pi);
+            result = true;
+        }
+        else if (id == HEFS::strColor)
+        {
+            inOutProperty->set(getColor());
+            result = true;
+        }
+        else if (id == HEFS::strAttenuation)
+        {
+            inOutProperty->set(vec2(getBeginAttenuation(), getEndAttenuation()));
+            result = true;
+        }
+        else if (id == HEFS::strShadowResolution)
+        {
+            inOutProperty->set(getShadow());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
 }
 
 #pragma endregion

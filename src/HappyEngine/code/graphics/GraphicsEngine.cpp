@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -24,6 +24,7 @@
 #include "GraphicsEngine.h"
 
 #include "Window.h"
+#include "WindowSDL.h"
 #include "Scene.h"
 #include "View.h"
 
@@ -46,10 +47,12 @@ namespace gfx {
 GraphicsEngine::GraphicsEngine()
     : m_ActiveWindow(nullptr)
     , m_ActiveView(nullptr)
+    , m_OwnSharedContext(false)
 #ifdef USE_WEB
     , m_WebCore(nullptr)
     , m_WebViewSurfaceFactory(nullptr)
 #endif
+    , m_SharedContext(nullptr)
 {
     for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -66,17 +69,59 @@ GraphicsEngine::~GraphicsEngine()
 }
 void GraphicsEngine::destroy()
 {
+    if (m_OwnSharedContext)
+    {
+        removeWindow(m_SharedContext);
+        m_SharedContext = nullptr;
+    }
     SDL_Quit();
     HE_ASSERT(ViewFactory::getInstance()->isEmpty(), "View leak detected!");
     HE_ASSERT(SceneFactory::getInstance()->isEmpty(), "Scene leak detected!");
     HE_ASSERT(WindowFactory::getInstance()->isEmpty(), "Window leak detected!");
 }
 
-void GraphicsEngine::init()
+void GraphicsEngine::init(const bool supportWindowing, Window* const sharedContext)
 {
     using namespace err;
     
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+    uint32 sdlFlags(SDL_INIT_GAMECONTROLLER);
+    if (supportWindowing)
+        sdlFlags |= SDL_INIT_VIDEO;
+    SDL_Init(sdlFlags);
+
+    if (supportWindowing)
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    #ifdef HE_DEBUG
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    #endif
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0); // Dont share the first one
+        SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
+        if (sharedContext == nullptr)
+        {
+            m_OwnSharedContext = true;
+            Window* context = createWindow();
+            context->setFullscreen(false);
+            context->setResizable(false);
+            context->setVSync(false);
+            context->setWindowDimension(0, 0);
+            context->create(false);
+            m_SharedContext = context;
+        }
+
+        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); // Share from this point
+    }
+    if (sharedContext)
+    {
+        m_OwnSharedContext = false;
+        m_SharedContext = sharedContext;
+    }
+
+    HE_ASSERT(supportWindowing || sharedContext, "GraphicsEngine is enabled, but not windowing. This can only work if a sharedContext is provided, which is not\nFATAL");
+    setActiveContext(m_SharedContext->getContext());
     
 #ifdef USE_WEB
     m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
@@ -126,37 +171,41 @@ void GraphicsEngine::removeView( View* view )
     }
 }
 
-Window* GraphicsEngine::createWindow()
+Window*GraphicsEngine::createWindow()
 {
-    WindowFactory* factory(WindowFactory::getInstance());
-    Window* window(factory->get(factory->create()));
-    m_Windows.add(window->getHandle());
+    HE_ASSERT(m_OwnSharedContext, "You should not try to create a window from the engine when you supplied you own sharedContext!");
+    Window* window(NEW WindowSDL());
+    registerWindow(window);
     return window;
 }
 
 void GraphicsEngine::removeWindow( Window* window )
 {
-    HE_IF_ASSERT(m_Windows.contains(window->getHandle()), "Window does not exist in the window list")
+    if (unregisterWindow(window))
+    {
+        window->destroy();
+        delete window;
+    }
+}
+
+void GraphicsEngine::registerWindow(Window* window)
+{
+    WindowFactory* factory(WindowFactory::getInstance());
+    factory->registerObject(window);
+    m_Windows.add(window->getHandle());
+}
+
+bool GraphicsEngine::unregisterWindow(Window* window)
+{
+    if (m_Windows.contains(window->getHandle()))
     {
         WindowFactory* factory(WindowFactory::getInstance());
         m_Windows.remove(window->getHandle());
-        factory->destroyObject(window->getHandle());
+        factory->unregisterObject(window->getHandle());
+
+        return true;
     }
-}
-    
-Window* GraphicsEngine::getWindow(const uint32 id)
-{
-    WindowFactory* factory(WindowFactory::getInstance());
-    const size_t windowCount(factory->getSize());
-    for (size_t i(0); i < windowCount; ++i)
-    {
-        Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
-        if (window->getID() == id)
-        {
-            return window;
-        }
-    }
-    return nullptr;
+    return false;
 }
 
 void GraphicsEngine::draw()
@@ -240,9 +289,7 @@ bool GraphicsEngine::registerContext( GLContext* context )
             HE_INFO("Max render size: %d", maxRenderSize);
             HE_INFO("Max rect tex size: %d", maxRectSize);
             
-            HE_INFO("Max anisotropic filtering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
-            
-            MainContextCreated();
+            HE_INFO("Max anisotropic filtering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());      
         }
         
         context->setID(m_FreeContexts.front());
@@ -265,6 +312,8 @@ void GraphicsEngine::unregisterContext( GLContext* context )
         setActiveContext(context);
         ContextRemoved(context);
         context->setID(UINT32_MAX);
+        if (m_SharedContext->getContext() != context)
+            setActiveContext(m_SharedContext->getContext());
     }
 }
 
@@ -275,6 +324,15 @@ void GraphicsEngine::setActiveContext( GLContext* context )
         context->makeCurrent();
         GL::s_CurrentContext = context;
     }
+}
+
+GLContext* GraphicsEngine::getSharedContext() const
+{
+    if (m_SharedContext)
+    {
+        return m_SharedContext->getContext();
+    }
+    return nullptr;
 }
 
 he::uint16 GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution )

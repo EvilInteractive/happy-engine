@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2013  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //

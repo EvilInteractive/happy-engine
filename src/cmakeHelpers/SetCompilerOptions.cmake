@@ -26,7 +26,7 @@
     endforeach()
     endforeach()
 else()
-    add_definitions(-Wall -MP)                     #Warning 4, multiprocess compilation
+    add_definitions(-Wall -MP -Wno-reorder)           #Warning 4, multiprocess compilation, ignore reorder of variables in ctor
     add_definitions(-fcxx-exceptions)              #c++ exceptions untill we can get rid of it
     
     # Release specific

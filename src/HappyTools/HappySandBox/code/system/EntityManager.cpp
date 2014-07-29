@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -41,6 +41,8 @@ namespace hs {
 EntityManager::EntityManager() 
     : m_EntityCreatedCallback(std::bind(&EntityManager::onEntityCreated, this, std::placeholders::_1))
     , m_EntityDestroyedCallback(std::bind(&EntityManager::onEntityDestroyed, this, std::placeholders::_1))
+    , m_EntityDesc(nullptr)
+    , m_EntityDesc(nullptr)
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->init();
@@ -68,9 +70,13 @@ void EntityManager::init()
     descList.forEach([this](he::ge::EntityComponentDesc* const desc)
     {
         HE_INFO("Registering entity component: %s", desc->m_ID.c_str());
-        HE_ASSERT(m_ComponentDescList.find(desc->m_ID) == m_ComponentDescList.cend(), "Component ID %s is already registered!", desc->m_ID.c_str());
+        HE_ASSERT(!m_ComponentDescList.find(desc->m_ID), "Component ID %s is already registered!", desc->m_ID.c_str());
         m_ComponentDescList[desc->m_ID] = desc;
     });
+
+    HE_ASSERT(!m_EntityDesc, "EntityDesc is not nullptr when initializing!");
+    m_EntityDesc = NEW he::ge::EntityComponentDesc();
+    he::ge::Entity::fillEntityComponentDesc(*m_EntityDesc);
 }
 
 void EntityManager::destroy()
@@ -81,11 +87,14 @@ void EntityManager::destroy()
         entityMan->destroyEntity(entity);
     });
     entityMan->destroy();
-    m_ComponentDescList.forEach([](std::pair<const he::FixedString, he::ge::EntityComponentDesc*>& desc)
+    m_ComponentDescList.forEach([](const he::FixedString& /*key*/, he::ge::EntityComponentDesc* desc)
     {
-        delete desc.second;
+        delete desc;
     });
     m_ComponentDescList.clear();
+
+    delete m_EntityDesc;
+    m_EntityDesc = nullptr;
 }
 
 /* GENERAL */
@@ -121,29 +130,27 @@ he::ge::Entity* EntityManager::createEntity()
 
 void EntityManager::getComponentTypes( he::ObjectList<he::FixedString>& outList ) const
 {
-    m_ComponentDescList.forEach([&outList](const std::pair<const he::FixedString, he::ge::EntityComponentDesc*>& desc)
+    m_ComponentDescList.forEach([&outList](const he::FixedString& id, he::ge::EntityComponentDesc* /*desc*/)
     {
-        outList.add(desc.first);
+        outList.add(id);
     });
 }
 
-he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::FixedString& component )
+he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::FixedString& component ) const
 {
-    HE_ASSERT(m_ComponentDescList.find(component) != m_ComponentDescList.cend(), "Could not find component %s", component.c_str());
-    return m_ComponentDescList[component];
+    he::ge::EntityComponentDesc* const * desc = (component == he::HEFS::strEntity)? &m_EntityDesc : m_ComponentDescList.find(component);
+    return desc? *desc : nullptr;
 }
 
 void EntityManager::onEntityCreated( he::ge::Entity* const entity )
 {
-    HE_INFO("Logged a new entity!");
-    EditorComponent* const comp(checked_cast<EditorComponent*>(
+    EditorComponent* const comp(he::checked_cast<EditorComponent*>(
         he::ge::EntityManager::getInstance()->createComponent(HSFS::strEditorComponent)));
     entity->addComponent(comp);
 }
 
 void EntityManager::onEntityDestroyed( he::ge::Entity* const /*entity*/ )
 {
-    HE_INFO("Destroyed an entity!");
 }
 
 } //end namespace

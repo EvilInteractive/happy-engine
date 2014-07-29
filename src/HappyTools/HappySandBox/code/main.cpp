@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -20,28 +20,22 @@
 
 #include "HappySandBoxPCH.h" 
 
-#include "ContentManager.h"
-
 #include "Sandbox.h"
 #include "StaticDataManager.h"
 
+
 // Happy SandBox
 
-int main( int /*argc*/, char** /*args[]*/ )
+int main( int argc, char* args[] )
 {
 
 #if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
-    hs::StaticDataManager::init();
-    HAPPYENGINE->start(hs::Sandbox::getInstance());
-    hs::StaticDataManager::destroy();
-    he::HappyEngine::dispose();
+    hs::Sandbox::sdmInit();
+    int ret(hs::Sandbox::getInstance()->run(argc, args));
+    hs::Sandbox::sdmDestroy();
 
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+    return ret;
 }

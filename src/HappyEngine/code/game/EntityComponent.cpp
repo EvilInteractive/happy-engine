@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -22,11 +22,33 @@
 
 #include "Property.h"
 #include "Entity.h"
+#include "EntityComponentDesc.h"
+
+#include "PropertyConverter.h"
+#include "PropertyFeel.h"
 
 namespace he {
 namespace ge {
 
 IMPLEMENT_OBJECT(EntityComponent)
+
+void EntityComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
+{
+    Property* posProp(NEW Property());
+    posProp->init<vec3>(HEFS::strTranslate, vec3(0, 0, 0));
+    desc.m_Properties.setAt(posProp->getName(), PropertyDesc(posProp, "Local Position", "Sets the local position of the component", 
+        NEW PropertyConverterVec3(), NEW PropertyFeelDefault()));
+
+    Property* rotProp(NEW Property());
+    rotProp->init<vec3>(HEFS::strRotate, vec3(0, 0, 0));
+    desc.m_Properties.setAt(rotProp->getName(), PropertyDesc(rotProp, "Local Rotation", "Sets the local rotation of the component", 
+        NEW PropertyConverterVec3(), NEW PropertyFeelDefault()));
+
+    Property* scaleProp(NEW Property());
+    scaleProp->init<vec3>(HEFS::strScale, vec3(1, 1, 1));
+    desc.m_Properties.setAt(scaleProp->getName(), PropertyDesc(scaleProp, "Local Scale", "Sets the local scale of the component", 
+        NEW PropertyConverterVec3(), NEW PropertyFeelDefault()));
+}
 
 bool EntityComponent::setProperty( const Property* const inProperty )
 {
@@ -79,5 +101,6 @@ Entity* EntityComponent::getEntityParent()
 {
     return checked_cast<Entity*>(getParent());
 }
+
 
 } } //end namespace

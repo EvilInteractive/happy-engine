@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -26,6 +26,7 @@ namespace gfx {
     class GraphicsEngine;
     class ShapeRenderer;
     class Renderer2D;
+    class GLContext;
 }
 namespace gui {
     struct Gui;
@@ -76,7 +77,9 @@ enum SubEngine
     SubEngine_Physics = 1 << 1,
     SubEngine_Networking = 1 << 2,
     SubEngine_Audio = 1 << 3,
-    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3
+    SubEngine_Controls = 1 << 4,
+    SubEngine_Windowing = 1 << 5,
+    SubEngine_All = 0xff
 };
 
 class HAPPY_ENTRY HappyEngine : public Singleton<HappyEngine>
@@ -85,13 +88,22 @@ friend class Singleton<HappyEngine>;
 public:
     virtual ~HappyEngine();
 
-    static void init(const int subengines, const he::Path& dataPath);
+    static void init(const int argc, const char* const* const argv, const int subengines);
     static void dispose();
 
-    void start(ge::Game* pGame);
-        
+    // Start the engine and run the game
+    // if managed, the engine will maintain the game loop and
+    // call game init and destroy before and after the loop
+    // if not managed, the method will immediately return, and you
+    // should maintain the game loop and call loop()
+    void start(ge::Game* game, const bool managed, he::gfx::Window* sharedContext = nullptr);
     void quit();
-    
+    bool isQuiting() { return m_Quit; }
+
+    // Do not call unless you started the game unmanaged
+    void loop();
+
+    // Do not call
     void audioLoop();
 
     //root dir
@@ -143,7 +155,6 @@ private:
     
     // Methods
     void initWindow();
-    void loop();
     void updateLoop(float dTime);
     void drawLoop();
     void cleanup();

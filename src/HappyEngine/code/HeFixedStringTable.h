@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -28,6 +28,7 @@ DEF_FS(Z);
 DEF_FS(W);
 
 DEF_FS(Error);
+DEF_FS(SDLWindow);
 
 //////////////////////////////////////////////////////////////////////////
 // Components

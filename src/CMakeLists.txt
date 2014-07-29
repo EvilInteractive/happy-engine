@@ -3,7 +3,7 @@
 # to the root binary directory of the project as ${HappyEngine_BINARY_DIR}. 
 cmake_minimum_required (VERSION 2.8) 
 SET(CMAKE_COLOR_MAKEFILE ON)
-SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_VERBOSE_MAKEFILE OFF)
 
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -33,13 +33,29 @@ endif()
 # Compiler flags
 if (MSVC)
     message(msvc)
-    string(REPLACE "/Zm1000" "/Zm200" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    set(NEW_FLAGS)
+    message(${CMAKE_CXX_FLAGS})
+    foreach(flag ${CMAKE_CXX_FLAGS})
+        if (NOT flag MATCHES "/Zm.*")
+            SET(NEW_FLAGS "${NEW_FLAGS} ${flag}")
+        endif()
+    endforeach()
+    SET(CMAKE_CXX_FLAGS "${NEW_FLAGS} /Zm200")
+    message(${CMAKE_CXX_FLAGS})
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    #set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Deployment target for OSX" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Deployment target for OSX" FORCE)
+
+    find_program(XCODE NAMES XCode)
+    find_path(SYS_TEMP NAMES MacOSX10.9.sdk PATHS ${XCODE}/../../Developer/Platforms/MacOSX.platform/Developer/SDKs)
+    set(CMAKE_OSX_SYSROOT ${SYS_TEMP}/MacOSX10.9.sdk CACHE STRING "" FORCE)
+    set(SYS_TEMP)
+
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -F/Library/Frameworks")
     message(clang)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")

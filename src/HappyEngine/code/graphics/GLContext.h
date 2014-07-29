@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -18,39 +18,33 @@
 //Author:  Bastian Damman
 //Created: 16/08/2012
 
-#ifndef _HE_GLCONTEXT_H_
-#define _HE_GLCONTEXT_H_
+#ifndef _HE_GLContext_H_
+#define _HE_GLContext_H_
 #pragma once
-
-#include "OpenGL.h"
-#include "Rect.h"
-#include "Color.h"
 
 namespace he {
 namespace gfx {
 class Window;
 class GL;
     
-class GLContext
+class HAPPY_ENTRY GLContext
 {
 friend GL;
 public:
     GLContext();
+    virtual ~GLContext() {}
     
-    bool create(Window* const window);
-    void destroy();
-    void makeCurrent();
+    virtual bool create(Window* const window);
+    virtual void destroy();
+    virtual void makeCurrent() = 0;
 
     inline GLEWContext& getGlewContext() { return m_GLEWContext; }
     inline uint32 getID() const { return m_ID; }
     inline void setID(const uint32 id) { m_ID = id; }
-    inline Window* getWindow() const { return m_Window; }
     
 private:
     GLEWContext m_GLEWContext;
     uint32 m_ID;
-    Window* m_Window;
-    void* m_InternalContextPointer;
     
     // Clear
     Color m_ClearColor;

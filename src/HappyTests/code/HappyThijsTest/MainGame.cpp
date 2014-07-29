@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -32,7 +32,7 @@
 #include "Font.h"
 
 #include "View.h"
-#include "Window.h"
+#include "WindowSDL.h"
 #include "GlobalSettings.h"
 
 namespace ht {
@@ -79,7 +79,7 @@ void MainGame::init()
     m_Window->setWindowTitle("HappyThijsTest");
     he::eventCallback0<void> quitHandler(std::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
-    m_Window->create();
+    m_Window->create(true);
 
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -50,7 +50,7 @@ void EditorComponent::init( he::ge::Entity* parent )
     HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
     m_Parent = parent;
 
-    he::ge::PickingComponent* const pickingComp(checked_cast<he::ge::PickingComponent*>(
+    he::ge::PickingComponent* const pickingComp(he::checked_cast<he::ge::PickingComponent*>(
         he::ge::EntityManager::getInstance()->createComponent(he::HEFS::strPickingComponent)));
     pickingComp->setPickingManager(EditorPickingManager::getInstance());
     m_Parent->addComponent(pickingComp);
@@ -76,15 +76,15 @@ void EditorComponent::computeBound()
         he::ge::EntityComponent* const comp(entity->getComponentAt(i));
         if (comp->getComponentID() == he::HEFS::strModelComponent)
         {
-            he::ge::ModelComponent* const modelComp(checked_cast<he::ge::ModelComponent*>(comp));
+            he::ge::ModelComponent* const modelComp(he::checked_cast<he::ge::ModelComponent*>(comp));
             if (first)
             {
-                m_AABB = modelComp->getBound().getAABB();
+                m_AABB = modelComp->getDrawable()->getBound().getAABB();
                 first = false;
             }
             else
             {
-                m_AABB.merge(modelComp->getBound().getAABB());
+                m_AABB.merge(modelComp->getDrawable()->getBound().getAABB());
             }
         }
     }

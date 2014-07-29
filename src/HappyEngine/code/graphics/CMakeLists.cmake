@@ -5,6 +5,7 @@ addFilter(CODE_SRCS src/graphics code/graphics/
             Drawable.cpp                        Drawable.h
             Hitregion.cpp                       Hitregion.h
             GLContext.cpp                       GLContext.h
+            GLContextSDL.cpp                    GLContextSDL.h
             IDrawable2D.h
             IShapeDrawable.h
             Object3D.cpp                        Object3D.h
@@ -79,6 +80,7 @@ addFilter(CODE_SRCS src/graphics/rendering code/graphics/
             Scene.cpp                           Scene.h
             View.cpp                            View.h
             Window.cpp                          Window.h
+            WindowSDL.cpp                       WindowSDL.h
         )
             
 addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/

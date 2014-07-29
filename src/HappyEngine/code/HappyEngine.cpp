@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -31,7 +31,7 @@
 #include "Console.h"
 #include "SoundEngine.h"
 #include "StaticDataManager.h"
-#include "Window.h"
+#include "WindowSDL.h"
 #include "Gui.h"
 #include "Sprite.h"
 #include "PluginLoader.h"
@@ -70,22 +70,31 @@ void HappyEngine::dispose()
 }
 void HappyEngine::cleanup()
 {  
+    HE_ASSERT(m_Quit, "Please call HAPPYENGINE->Quit() first before disposing");
+    m_Quit = true;
+
     tools::Profiler::dispose();
 
     m_AudioThread.join(); // wait for audiothread to finish
+    
+    delete m_Console;
+    m_Console = nullptr;
+
+    m_Game = nullptr;
+
+    delete m_Gui;
+    m_Gui = nullptr;
+
+    if (m_ContentManager != nullptr)
+        m_ContentManager->destroy();
 
     if (m_GraphicsEngine != nullptr)
         m_GraphicsEngine->destroy();
 
     //dispose/delete all sub engines here
-    delete m_Console;
-    m_Console = nullptr;
-    m_Game = nullptr;
-    delete m_Gui;
-    m_Gui = nullptr;
+    
     delete m_PluginLoader;
     m_PluginLoader = nullptr;
-    m_ContentManager->destroy();
     delete m_ContentManager;
     m_ContentManager = nullptr;
     delete m_SoundEngine;
@@ -96,22 +105,23 @@ void HappyEngine::cleanup()
     m_NetworkManager = nullptr;
     delete m_PhysicsEngine;
     m_PhysicsEngine = nullptr;
-    
-    // Gl context get deleted here - make sure all content is gone
     delete m_GraphicsEngine;
     m_GraphicsEngine = nullptr;
 }
-void HappyEngine::init(const int subengines, const he::Path& dataPath)
+void HappyEngine::init(const int argc, const char* const * const argv, const int subengines)
 {
-    Path::init(dataPath);
+    HE_ASSERT(argc > 0, "There must be at least one argument in the argv argument list!");
+    Path::init(argc, argv);
     StaticDataManager::init();
     CLAIM_THREAD(eThreadTicket_Main);
+    HE_INFO("Bin path: %s", Path::getBinPath().str().c_str());
+    HE_INFO("Data path: %s", Path::getDataPath().str().c_str());
+    HE_INFO("User path: %s", Path::getUserDir().str().c_str());
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 {
     m_SubEngines |= subengines;
-
 
     if (subengines & SubEngine_Graphics)
     {
@@ -125,9 +135,12 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         ilEnable(IL_ORIGIN_SET);
         ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_LOWER_LEFT);
 
-        m_ControlsManager = NEW io::ControlsManager();
-
         m_Gui = NEW gui::Gui();
+    }
+
+    if (subengines & SubEngine_Controls)
+    {
+        m_ControlsManager = NEW io::ControlsManager();
     }
 
     if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
@@ -154,7 +167,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     m_PluginLoader = NEW pl::PluginLoader();
 }
 
-void HappyEngine::start(ge::Game* game)
+void HappyEngine::start(ge::Game* game, const bool managed, he::gfx::Window* sharedContext)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -188,23 +201,19 @@ void HappyEngine::start(ge::Game* game)
     HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
 #endif
     m_Game = game;
-    
 
+    HE_ASSERT((m_SubEngines & SubEngine_Windowing) == 0 || sharedContext == 0 || sharedContext->getType() == HEFS::strSDLWindow, "Remove subengine windowing when supplying a shared context that is not an SDL window!");
+    
     // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
-        he::eventCallback0<void> mainContextCreatedCallback([this]()
-        {
-            m_Console->load();
+        m_GraphicsEngine->init((m_SubEngines & SubEngine_Windowing) != 0, sharedContext);
+
+        m_Console->load();
 #ifdef ENABLE_PROFILING
-            PROFILER->load();
+        PROFILER->load();
 #endif
-        });
-        m_GraphicsEngine->MainContextCreated += mainContextCreatedCallback;
-        m_GraphicsEngine->init();
-    }
-    
-    m_Game->init();    
+    }  
     
     if (m_SubEngines & SubEngine_Audio)
     {
@@ -212,13 +221,16 @@ void HappyEngine::start(ge::Game* game)
     }
 
     m_PrevTime = boost::chrono::high_resolution_clock::now();
-    while (m_Quit == false)
+    if (managed)
     {
-        loop();
-    }   
-
-    // Destroy Game
-    game->destroy();
+        m_Game->init();
+        while (m_Quit == false)
+        {
+            loop();
+        }
+        // Destroy Game
+        m_Game->destroy();
+    }
 }
 void HappyEngine::loop()
 {
@@ -249,26 +261,24 @@ void HappyEngine::updateLoop(float dTime)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
-    if (m_SubEngines & SubEngine_Graphics)
+    if (m_SubEngines & SubEngine_Windowing)
     {
-        m_ControlsManager->tick();
-
-        PROFILER_BEGIN("Window Poll events");
+        HIERARCHICAL_PROFILE("Window Poll events");
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
         {
-            SDL_Event event;
-            while (SDL_PollEvent(&event))
+            // Window
+            if (event.type == SDL_WINDOWEVENT)
             {
-                io::IMouse* mouse(m_ControlsManager->getMouse());
-                io::IKeyboard* keyboard(m_ControlsManager->getKeyboard());
-                //bool hasFocus(m_GraphicsEngine->getActiveWindow() == this);
-                
-                switch (event.type)
+                he::gfx::WindowFactory* factory(he::gfx::WindowFactory::getInstance());
+                const size_t windowCount(factory->getSize());
+                for (size_t i(0); i < windowCount; ++i)
                 {
-                        // Window
-                    case SDL_WINDOWEVENT:
+                    he::gfx::Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
+                    if (window->getType() == HEFS::strSDLWindow)
                     {
-                        he::gfx::Window* window(m_GraphicsEngine->getWindow(event.window.windowID));
-                        if (nullptr != window)
+                        he::gfx::WindowSDL* sdlWindow = checked_cast<he::gfx::WindowSDL*>(window);
+                        if (sdlWindow->getID() == event.window.windowID)
                         {
                             switch (event.window.event)
                             {
@@ -286,11 +296,11 @@ void HappyEngine::updateLoop(float dTime)
                                 } break;
                                 case SDL_WINDOWEVENT_ENTER:
                                 {
-                                    
+
                                 } break;
                                 case SDL_WINDOWEVENT_LEAVE:
                                 {
-                                    
+
                                 } break;
                                 case SDL_WINDOWEVENT_FOCUS_GAINED:
                                 {
@@ -302,10 +312,18 @@ void HappyEngine::updateLoop(float dTime)
                                     window->LostFocus();
                                 } break;
                             }
+                            break;
                         }
-                    } break;
-                        
-                        // Mouse
+                    }
+                }
+            }
+            else if (m_SubEngines & SubEngine_Controls)
+            {
+                io::IMouse* mouse(m_ControlsManager->getMouse());
+                io::IKeyboard* keyboard(m_ControlsManager->getKeyboard());
+                switch (event.type)
+                {
+                    // Mouse
                     case SDL_MOUSEBUTTONDOWN:
                     {
                         mouse->MouseButtonPressed(static_cast<io::MouseButton>(event.button.button));
@@ -322,8 +340,8 @@ void HappyEngine::updateLoop(float dTime)
                     {
                         mouse->MouseWheelMoved(event.wheel.y);
                     } break;
-                        
-                        // Keyboard
+
+                    // Keyboard
                     case SDL_KEYDOWN:
                     {
                         keyboard->KeyPressed(static_cast<io::Key>(event.key.keysym.scancode));
@@ -339,8 +357,10 @@ void HappyEngine::updateLoop(float dTime)
                 }
             }
         }
-        PROFILER_END();
+    }
 
+    if (m_SubEngines & SubEngine_Graphics)
+    {
         m_GraphicsEngine->tick(dTime);
         CONSOLE->tick();
         if (m_GameLoading == true && m_ContentManager->isLoading() == false) // TODO: event this
@@ -348,7 +368,9 @@ void HappyEngine::updateLoop(float dTime)
     }
 
     if (m_SubEngines & SubEngine_Networking)
+    {
         m_NetworkManager->tick(dTime);
+    }
 
     if (m_ContentManager != nullptr)
     {
@@ -364,9 +386,16 @@ void HappyEngine::updateLoop(float dTime)
     }
 
     if (m_SubEngines & SubEngine_Physics)
+    {
         m_PhysicsEngine->tick(dTime);
+    }
 
     m_Game->tick(dTime);
+
+    if (m_SubEngines & SubEngine_Controls)
+    {
+        m_ControlsManager->tick();
+    }
 }
 void HappyEngine::drawLoop()
 {

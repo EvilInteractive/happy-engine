@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -140,6 +140,19 @@ public:
         obj->setHandle(handle);
         return handle;
     }
+    virtual void unregisterObject(const ObjectHandle handle)
+    {
+       HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): unregistering unassigned handle", m_DisplayName.c_str());
+       HE_ASSERT(handle.getType() == m_Type, "ObjectHandle does not belong to this factory!");
+       if (m_Salt[handle.getIndex()] != handle.getSalt())
+       {
+           HE_ERROR("ObjectFactory (%s): salt mismatch when unregistering object", m_DisplayName.c_str());
+       }
+       else
+       {
+           unregisterAt(handle.getIndex());
+       }
+    }
     virtual void destroyObject(const ObjectHandle handle)
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): destroying unassigned handle", m_DisplayName.c_str());
@@ -153,6 +166,16 @@ public:
             destroyAt(handle.getIndex());
         }
     }
+   virtual void unregisterAt(const ObjectHandle::IndexType index)
+   {
+       HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): unregistering non existing handle", m_DisplayName.c_str())
+       {
+           m_Pool[index] = nullptr;
+           ++m_Salt[index];
+           m_FreeHandles.push(index);
+       }
+       HE_ASSERT(m_Salt[index] + 1 < ObjectHandle::s_MaxSalts, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
+   }
     virtual void destroyAt(const ObjectHandle::IndexType index)
     {
         HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str())

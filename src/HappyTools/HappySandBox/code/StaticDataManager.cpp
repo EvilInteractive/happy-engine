@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -31,7 +31,6 @@ namespace hs {
 
 void StaticDataManager::init()
 {
-    Sandbox::sdmInit();
     GameStateMachine::sdmInit();
     UIManager::sdmInit();
     SelectionManger::sdmInit();
@@ -41,7 +40,6 @@ void StaticDataManager::init()
 
 void StaticDataManager::destroy()
 {
-    Sandbox::sdmDestroy();
     GameStateMachine::sdmDestroy();
     UIManager::sdmDestroy();
     SelectionManger::sdmDestroy();

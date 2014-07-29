@@ -21,7 +21,7 @@ GameStateLoadPlugin::~GameStateLoadPlugin()
 
 bool GameStateLoadPlugin::enter()
 {
-    he::Path pluginPath("");
+    he::Path pluginPath(he::Path::getBinPath());
     he::pl::IPlugin* const plugin(PluginManager::getInstance()->loadPlugin(pluginPath, "HappyPluginTest"));
     Sandbox* const sandbox(Sandbox::getInstance());
     sandbox->setGamePlugin(plugin);

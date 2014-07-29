@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -46,7 +46,7 @@ struct NodeGraphError
         va_start(argList, message);
         char buff[1024];
         memset(buff, 0, 1024);
-        vsnprintf(buff, 1024, message, argList);
+        hevsnprintf(buff, 1023, message, argList);
         va_end(argList);
 
         m_ErrorMessage = buff;

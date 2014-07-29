@@ -1,5 +1,5 @@
 
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -89,9 +89,15 @@ void ContentManager::destroy()
     m_LoadThread = nullptr;
 
     if (m_ParticleQuad != nullptr)
+    {
         m_ParticleQuad->release();
+        m_ParticleQuad = nullptr;
+    }
     if (m_FullscreenQuad != nullptr)
+    {
         m_FullscreenQuad->release();
+        m_FullscreenQuad = nullptr;
+    }
 
     // All content should be gone when getting here
     // loaders perform last garbage collect

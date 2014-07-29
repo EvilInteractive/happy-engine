@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -76,7 +76,7 @@ public:
     virtual he::String toString(const Property* const prop)
     {
         char buf[20];
-        sprintf(buf, "%.*f", m_Precision, prop->get<float>());
+        hesnprintf(buf, 19, "%.*f", m_Precision, prop->get<float>());
         return he::String(buf);
     }
 
@@ -115,6 +115,9 @@ public:
     virtual ~PropertyConverterVec4() {}
     virtual void fromString(Property* const prop, const he::String& str);
     virtual he::String toString(const Property* const prop);
+
+    static he::vec4 fromString(const he::String& str);
+    static he::String toString(const he::vec4& vec, const uint8 precision = 4);
 
 private:
     uint8 m_Precision;

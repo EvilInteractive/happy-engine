@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -17,6 +17,7 @@
 //
 #include "HappySandBoxPCH.h"
 
+#include <qopenglfunctions.h>
 #include "FlyCamera.h"
 #include "MathFunctions.h"
 #include "ControlsManager.h"

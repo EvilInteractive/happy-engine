@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -132,14 +132,16 @@ void ModelComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
     desc.m_ID = HEFS::strModelComponent;
     desc.m_DisplayName = "Model Component";
 
+    EntityComponent::fillEntityComponentDesc(desc);
+
     Property* modelProp(NEW Property());
     modelProp->init<he::String>(HEFS::strModel, "");
-    desc.m_Properties.add(PropertyDesc(modelProp, "Model", "The model to display", 
+    desc.m_Properties.setAt(modelProp->getName(), PropertyDesc(modelProp, "Model", "The model to display", 
         NEW PropertyConverterString(), NEW PropertyFeelDefault()));
 
     Property* materialProp(NEW Property());
     materialProp->init<he::String>(HEFS::strMaterial, "");
-    desc.m_Properties.add(PropertyDesc(materialProp, "Material", "The material to use", 
+    desc.m_Properties.setAt(materialProp->getName(), PropertyDesc(materialProp, "Material", "The material to use", 
         NEW PropertyConverterString(), NEW PropertyFeelDefault()));
 }
 

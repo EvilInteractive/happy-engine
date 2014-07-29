@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -22,7 +22,7 @@
 
 #include "MainGame.h"
 
-#include <Window.h>
+#include <WindowSDL.h>
 #include <GraphicsEngine.h>
 #include <PluginLoader.h>
 #include <IPlugin.h>
@@ -71,19 +71,19 @@ void MainGame::init()
     m_Window->setResizable(true);
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 800);
-    m_Window->setWindowTitle("lHappyPluginTest");
+    m_Window->setWindowTitle("HappyPluginTest");
     m_Window->setFullscreen(false);
     m_Window->setOculusRiftEnabled(oculus);
     he::eventCallback0<void> quitHandler(std::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
-    m_Window->create();
+    m_Window->create(true);
 
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
     entityMan->init();
 
     m_PluginLoader = NEW he::pl::PluginLoader();
-    m_Plugin = m_PluginLoader->loadPlugin(he::Path(""), "HappyPluginTest");
+    m_Plugin = m_PluginLoader->loadPlugin(he::Path::getBinPath(), "HappyPluginTest");
     if (m_Plugin != nullptr)
     {
         m_Plugin->init(m_Window, he::RectF(0, 0, 1.0f, 1.0f));
@@ -136,19 +136,28 @@ void MainGame::destroy()
 
     PROFILER->detachFromRenderer();
     CONSOLE->detachFromRenderer();
-    m_DebugRenderer->detachFromRender(m_FpsGraph);
+    if (m_DebugRenderer)
+    {
+        m_DebugRenderer->detachFromRender(m_FpsGraph);
+        m_DebugRenderer->detachFromRender(this);
+    }
     removeFromTickList(m_FpsGraph);
     delete m_FpsGraph;
     m_FpsGraph = nullptr;
-    m_DebugRenderer->detachFromRender(this);
 
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
-    graphicsEngine->removeView(m_View);
-    m_View = nullptr;
+    if (m_View)
+    {
+        graphicsEngine->removeView(m_View);
+        m_View = nullptr;
+    }
     delete m_DebugRenderer;
     m_DebugRenderer = nullptr;
-    graphicsEngine->removeWindow(m_Window);
-    m_Window = nullptr;
+    if (m_Window)
+    {
+        graphicsEngine->removeWindow(m_Window);
+        m_Window = nullptr;
+    }
 }
 
 void MainGame::draw2D( he::gui::Canvas2D* /*canvas*/ )

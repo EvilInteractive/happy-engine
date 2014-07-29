@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -87,9 +87,12 @@ px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const
     return m_DynamicActor;
 }
 
-void DynamicPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+void DynamicPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
+    desc.m_ID = HEFS::strDynamicPhysicsComponent;
+    desc.m_DisplayName = "Dynamic physics component";
 
+    EntityComponent::fillEntityComponentDesc(desc);
 }
 
 bool DynamicPhysicsComponent::setProperty( const Property* const inProperty )

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -24,18 +24,13 @@
 
 #include "Singleton.h"
 
-struct SDL_Window;
-
 namespace he {
-namespace io {
-    ENUM(MouseCursor, uint8);
-}
 namespace gfx {
 class Window;
 class RenderTarget;
 class Texture2D;
 
-class WindowFactory: public ObjectFactory<Window>, public Singleton<WindowFactory>
+class WindowFactory: public ObjectFactory<Window, NoCreateObjectAllocator<Window>>, public Singleton<WindowFactory>
 {
     friend Singleton;
     WindowFactory() { init(1, 2, "WindowFactory"); }
@@ -54,7 +49,6 @@ class HAPPY_ENTRY Window
 {
 DECLARE_OBJECT(Window)
 friend class GraphicsEngine;
-friend class GLContext;
 enum EFlags
 {
     eFlags_VSyncEnabled = 1 << 0,
@@ -68,38 +62,39 @@ public:
     Window();
     virtual ~Window();
 
-    // Open/Close
-    bool create();
-    void destroy();
-    bool isOpen();
-    
-    bool isVisible() const { return checkFlag(eFlags_IsVisible); }
-    void show();
-    void hide();
+    virtual bool create(const bool show);
+    virtual void destroy();
+
+    virtual bool isOpen() const = 0;
+    virtual bool isVisible() const { return checkFlag(eFlags_IsVisible); }
+    virtual void show();
+    virtual void hide();
 
     // Do
-    void prepareForRendering();
-    void finishRendering();
-    void present();
+    virtual void prepareForRendering();
+    virtual void finishRendering();
+    virtual void present();
 
     // Setters
-    void setWindowTitle(const he::String& caption);
-    void setWindowPosition(int x, int y);
-    void setWindowDimension(uint32 width, uint32 height);
-    void setVSync(bool enable);
-    void setFullscreen(bool fullscreen);
-    void setResizable(bool resizable);   // call before creating, or destroy and create
-    void setMousePosition(const vec2& pos);
-    void setOculusRiftEnabled(const bool enable);
+    virtual void setWindowTitle(const he::String& caption);
+    virtual void setWindowPosition(int x, int y);
+    virtual void setWindowDimension(uint32 width, uint32 height);
+    virtual void setVSync(bool enable);
+    virtual void setFullscreen(bool fullscreen);
+    virtual void setResizable(bool resizable);   // call before creating, or destroy and create
+    virtual void setMousePosition(const vec2& pos);
+    virtual void setOculusRiftEnabled(const bool enable);
 
     // Getters
-    uint32 getID() const { return m_ID; }
-    void getWindowPosition(int& x, int& y) const;
-    uint32 getWindowWidth() const;
-    uint32 getWindowHeight() const;
-    GLContext* getContext() { return &m_Context; }  
-    NativeWindowHandle getNativeHandle() const;
+    virtual GLContext* getContext() const = 0;
     const RenderTarget* getRenderTarget() const { return m_RenderTarget; }
+
+    void getWindowPosition( int& x, int& y ) const { x = m_WindowRect.x; y = m_WindowRect.y; }
+    he::uint32 getWindowWidth() const { return m_WindowRect.width; }
+    he::uint32 getWindowHeight() const { return m_WindowRect.height; }
+
+    virtual const he::FixedString& getType() const = 0;
+
 
     // Views
     void addViewAtBegin(const ObjectHandle& view);
@@ -114,13 +109,11 @@ public:
     event0<void> GainedFocus;
     event0<void> LostFocus;
 
-private:
+protected:
     inline void raiseFlag(const EFlags flag) { m_Flags |= flag; }
     inline bool checkFlag(const EFlags flag) const { return (m_Flags & flag) != 0; }
     inline void clearFlag(const EFlags flag) { m_Flags &= ~flag; }
     inline void setFlag(const EFlags flag, const bool enable) { enable? raiseFlag(flag) : clearFlag(flag); }
-
-    uint32 m_ID;
     
     he::ObjectList<ObjectHandle> m_Views;
     RenderTarget* m_RenderTarget;
@@ -128,16 +121,12 @@ private:
     // Oculus
     OculusRiftBarrelDistorter* m_OVRDistorter;
 
-    SDL_Window* m_Window;
-    Window* m_Parent;
-
     RectI m_WindowRect;
     he::String m_Titel;
     Color m_ClearColor;
     uint8 m_Flags;
 
-    GLContext m_Context;
-
+private:
     //Disable default copy constructor and default assignment operator
     Window(const Window&);
     Window& operator=(const Window&);

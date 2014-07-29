@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -62,7 +62,7 @@ he::String PropertyConverterVec2::toString( const Property* const prop )
 {
     char buf[40];
     const vec2& value(prop->get<vec2>());
-    sprintf(buf, "%.*f, %.*f", m_Precision, value.x, m_Precision, value.y);
+    hesnprintf(buf, 39, "%.*f, %.*f", m_Precision, value.x, m_Precision, value.y);
     return he::String(buf);
 }
 
@@ -116,12 +116,17 @@ he::String PropertyConverterVec3::toString( const Property* const prop )
 {
     char buf[60];
     const vec3& value(prop->get<vec3>());
-    sprintf(buf, "%.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z);
+    hesnprintf(buf, 59, "%.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z);
     return he::String(buf);
 }
 
 
 void PropertyConverterVec4::fromString( Property* const prop, const he::String& str )
+{
+    prop->set<vec4>(fromString(str));
+}
+
+he::vec4 PropertyConverterVec4::fromString( const he::String& str )
 {
     const char* charBuf(str.c_str());
     vec4 result(0, 0, 0, 0);
@@ -167,14 +172,20 @@ void PropertyConverterVec4::fromString( Property* const prop, const he::String& 
             }
         }
     }
-    prop->set<vec4>(result);
+    return result;
 }
 
 he::String PropertyConverterVec4::toString( const Property* const prop )
 {
-    char buf[80];
     const vec4& value(prop->get<vec4>());
-    sprintf(buf, "%.*f, %.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z, m_Precision, value.w);
+    return toString(value, m_Precision);
+}
+
+he::String PropertyConverterVec4::toString( const he::vec4& value, const uint8 precision/* = 4*/ )
+{
+    char buf[80];
+    buf[79] = '\0';
+    hesnprintf(buf, 79, "%.*f, %.*f, %.*f, %.*f", precision, value.x, precision, value.y, precision, value.z, precision, value.w);
     return he::String(buf);
 }
 

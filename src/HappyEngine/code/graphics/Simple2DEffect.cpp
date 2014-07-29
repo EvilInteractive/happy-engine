@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -61,7 +61,7 @@ void Simple2DEffect::init(const VertexLayout& layout)
     setDepth(0.0f);
 }
 
-void Simple2DEffect::qpply(const DrawContext& context) const
+void Simple2DEffect::apply(const DrawContext& context) const
 {
     m_Material->apply(context);
 }

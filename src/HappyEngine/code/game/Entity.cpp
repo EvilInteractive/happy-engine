@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -22,12 +22,16 @@
 
 #include "Entity.h"
 #include "Scene.h"
-#include "GraphicsEngine.h"
+
+#include "EntityComponentDesc.h"
+#include "Property.h"
+#include "PropertyConverter.h"
+#include "PropertyFeel.h"
 
 namespace he {
 namespace ge {
     
-Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr), m_IsActive(false)
+Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr), m_Name("Entity"), m_IsActive(false)
 {
 }
 
@@ -55,6 +59,16 @@ void Entity::deactivate()
     {
         component->deactivate();
     });
+}
+
+void Entity::setName(const he::String& name)
+{
+    m_Name = name;
+}
+
+void Entity::setName(he::String&& name)
+{
+    m_Name = std::forward<he::String>(name);
 }
 
 
@@ -107,6 +121,56 @@ EntityComponent* Entity::getComponent( const he::FixedString& id )
     {
         return nullptr;
     }
+}
+
+void Entity::fillEntityComponentDesc( EntityComponentDesc& desc )
+{
+    desc.m_DisplayName = "Entity";
+    desc.m_ID = HEFS::strEntity;
+    EntityComponent::fillEntityComponentDesc(desc);
+
+    Property* nameProp(NEW Property());
+    nameProp->init<he::String>(HEFS::strName, "");
+    desc.m_Properties.setAt(nameProp->getName(), PropertyDesc(nameProp, "Name", "Sets the name of the component", 
+        NEW PropertyConverterString(), NEW PropertyFeelDefault()));
+}
+
+bool Entity::setProperty( const Property* const inProperty )
+{
+    bool result(false);
+    if (!EntityComponent::setProperty(inProperty))
+    {
+        const he::FixedString& name(inProperty->getName());
+        if (name == HEFS::strName)
+        {
+            setName(inProperty->get<he::String>());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
+}
+
+bool Entity::getProperty( Property* const inOutProperty )
+{
+    bool result(false);
+    if (!EntityComponent::getProperty(inOutProperty))
+    {
+        const he::FixedString& name(inOutProperty->getName());
+        if (name == HEFS::strName)
+        {
+            inOutProperty->set<he::String>(getName());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
 }
 
 } } //end namespace

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -26,10 +26,14 @@
 #include <IDrawable2D.h>
 #include <Singleton.h>
 
+#include <qobject.h>
+#include <qtimer.h>
+
+class QColorDialog;
+
 namespace he {
     namespace tools {
         class FPSGraph;
-        class MaterialGeneratorGraph;
     }
     namespace ge {
         class Entity;
@@ -47,41 +51,56 @@ namespace he {
     }
 }
 
+class QGLWidget;
+
 namespace hs {
 class EntityManager;
 class SandboxRenderPipeline;
+class GLContextQT;
+class MainWindow;
 
-class Sandbox : public he::ge::Game, public he::Singleton<Sandbox>
+class Sandbox : public QObject, public he::ge::Game, public he::Singleton<Sandbox>
 {
+    Q_OBJECT
 public:
     Sandbox();
     ~Sandbox();
+
+    int run(int argc, char* args[]);
 
     void init();
     void destroy();
     void tick(float dTime);
 
-    void quit();
-
     hs::EntityManager* getEntityManager() const { return m_EntityManager; }
     he::pl::IPlugin* getGamePlugin() const { return m_GamePlugin; }
-    he::tools::MaterialGeneratorGraph* getMaterialGenerator() const { return m_MaterialGenerator; }
-    he::gfx::Window* getMainWindow() const { return m_Window; }
+    he::gfx::Window* getMainWindow() const;
     he::gfx::View* getMainView() const { return m_View; }
     hs::SandboxRenderPipeline* getRenderPipeline() { return m_RenderPipeline; }
 
+    QColorDialog* getColorPicker() const { return m_ColorPicker; }
+
     void setGamePlugin(he::pl::IPlugin* const plugin) { m_GamePlugin = plugin; }
 
+    QGLWidget* getSharedWidget() const;
+
+public slots:
+    void quit();
+
+private slots:
+    void loop();
+
 private:
-    
-    he::gfx::Window* m_Window;
+
+    MainWindow* m_Window;
     he::gfx::View* m_View;
     SandboxRenderPipeline* m_RenderPipeline;        
     
     he::pl::IPlugin* m_GamePlugin;
     EntityManager* m_EntityManager;
+    QColorDialog* m_ColorPicker;
 
-    he::tools::MaterialGeneratorGraph* m_MaterialGenerator;
+    QTimer m_QtLoopTimer;
 
     bool m_IsExiting;
 

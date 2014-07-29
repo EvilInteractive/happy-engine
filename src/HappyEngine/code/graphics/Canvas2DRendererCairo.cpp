@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -28,6 +28,14 @@
 #include "Sprite.h"
 #include "Text.h"
 #include "Font.h"
+
+namespace
+{
+    float normalizeAngle(float a)
+    {
+        return (a * -1.0f);
+    }
+}
 
 namespace he {
 namespace gfx {
@@ -141,7 +149,9 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
         data->m_ReadyState = 0;
         data->m_ReadyState |= SpriteDynamic;
 
-        m_SpriteList.push(data);
+        m_SpriteListLock.lock(FILE_AND_LINE);
+            m_SpriteList.push(data);
+        m_SpriteListLock.unlock();
 
         clear();
     }
@@ -369,16 +379,13 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadSta
 
     HE_ASSERT((sData->m_ReadyState & SpriteReadyForRender) == false,
         "Sprite is already marked for rendering, can't draw!");
-
-    sData->m_DrawCalls.push(
-        std::bind(
-        ::cairo_arc,
-        sData->m_CairoPaint,
-        static_cast<double>(pos.x),
-        static_cast<double>(pos.y),
-        static_cast<double>(radius),
-        static_cast<double>(normalizeAngle(angleRadStart)),
-        static_cast<double>(normalizeAngle(angleRadEnd))));
+    cairo_t* paintPtr(sData->m_CairoPaint);
+    sData->m_DrawCalls.push([paintPtr, pos, radius, angleRadStart, angleRadEnd]()
+        {
+            ::cairo_arc(paintPtr, static_cast<double>(pos.x), static_cast<double>(pos.y),
+                static_cast<double>(radius), static_cast<double>(normalizeAngle(angleRadStart)),
+                static_cast<double>(normalizeAngle(angleRadEnd)));
+        });
     m_SpriteListLock.unlock();
 }
 void Canvas2DRendererCairo::curveTo(const vec2& controlP1, const vec2& controlP2, const vec2& end)
@@ -390,16 +397,14 @@ void Canvas2DRendererCairo::curveTo(const vec2& controlP1, const vec2& controlP2
     HE_ASSERT((sData->m_ReadyState & SpriteReadyForRender) == false,
         "Sprite is already marked for rendering, can't draw!");
 
-    sData->m_DrawCalls.push(
-        std::bind(
-        &cairo_curve_to,
-        sData->m_CairoPaint,
-        static_cast<double>(controlP1.x),
-        static_cast<double>(controlP1.y),
-        static_cast<double>(controlP2.x),
-        static_cast<double>(controlP2.y),
-        static_cast<double>(end.x),
-        static_cast<double>(end.y)));
+    cairo_t* paintPtr(sData->m_CairoPaint);
+    sData->m_DrawCalls.push([paintPtr, controlP1, controlP2, end]()
+    {
+        cairo_curve_to(paintPtr,
+            static_cast<double>(controlP1.x), static_cast<double>(controlP1.y),
+            static_cast<double>(controlP2.x), static_cast<double>(controlP2.y),
+            static_cast<double>(end.x), static_cast<double>(end.y));
+    });
     m_SpriteListLock.unlock();
 }
 void Canvas2DRendererCairo::newPath()
@@ -526,10 +531,7 @@ void Canvas2DRendererCairo::blit()
         --spriteToBlit;
     }
 }
-float Canvas2DRendererCairo::normalizeAngle(float a)
-{
-    return (a * -1.0f);
-}
+
 void Canvas2DRendererCairo::handleDrawCalls()
 {
     const size_t waitTime(10);

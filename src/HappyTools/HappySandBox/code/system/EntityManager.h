@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -52,13 +52,15 @@ public:
 
     /* GETTERS */
     void getComponentTypes(he::ObjectList<he::FixedString>& outList) const;
-    he::ge::EntityComponentDesc* getComponentDescriptor(const he::FixedString& component);
+    he::ge::EntityComponentDesc* getComponentDescriptor(const he::FixedString& component) const;
+    he::ge::EntityComponentDesc* getEntityDescriptor() const { return m_EntityDesc; }
 
 private:
     void onEntityCreated(he::ge::Entity* const entity);
     void onEntityDestroyed(he::ge::Entity* const entity);
 
     he::PrimitiveList<he::ge::Entity*> m_Entities;
+    he::ge::EntityComponentDesc* m_EntityDesc;
     he::FixedStringMap<he::ge::EntityComponentDesc*> m_ComponentDescList;
 
     he::eventCallback1<void, he::ge::Entity*> m_EntityCreatedCallback;

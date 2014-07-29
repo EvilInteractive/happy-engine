@@ -1,0 +1,154 @@
+<RCC>
+    <qresource prefix="/icons/toolbar">
+        <file>resources/3d bar chart.png</file>
+        <file>resources/Abort.png</file>
+        <file>resources/About.png</file>
+        <file>resources/Add.png</file>
+        <file>resources/Anchor.png</file>
+        <file>resources/Application.png</file>
+        <file>resources/Apply.png</file>
+        <file>resources/Back.png</file>
+        <file>resources/Bad mark.png</file>
+        <file>resources/Blue key.png</file>
+        <file>resources/Blue tag.png</file>
+        <file>resources/Boss.png</file>
+        <file>resources/Bottom.png</file>
+        <file>resources/Calculator.png</file>
+        <file>resources/Calendar.png</file>
+        <file>resources/Car key.png</file>
+        <file>resources/CD.png</file>
+        <file>resources/Clipboard.png</file>
+        <file>resources/Clock.png</file>
+        <file>resources/Close.png</file>
+        <file>resources/Compass.png</file>
+        <file>resources/Component.png</file>
+        <file>resources/Copy.png</file>
+        <file>resources/Create.png</file>
+        <file>resources/Cut.png</file>
+        <file>resources/Danger.png</file>
+        <file>resources/Database.png</file>
+        <file>resources/Delete.png</file>
+        <file>resources/Delivery.png</file>
+        <file>resources/Dial.png</file>
+        <file>resources/Disaster.png</file>
+        <file>resources/Dollar.png</file>
+        <file>resources/Down.png</file>
+        <file>resources/Download.png</file>
+        <file>resources/E-mail.png</file>
+        <file>resources/Eject.png</file>
+        <file>resources/Erase.png</file>
+        <file>resources/Error.png</file>
+        <file>resources/Euro.png</file>
+        <file>resources/Exit.png</file>
+        <file>resources/Fall.png</file>
+        <file>resources/Fast-forward.png</file>
+        <file>resources/Favourites.png</file>
+        <file>resources/Female.png</file>
+        <file>resources/Filter.png</file>
+        <file>resources/Find.png</file>
+        <file>resources/First record.png</file>
+        <file>resources/First.png</file>
+        <file>resources/Flag.png</file>
+        <file>resources/Folder.png</file>
+        <file>resources/Forbidden.png</file>
+        <file>resources/Forward.png</file>
+        <file>resources/Free bsd.png</file>
+        <file>resources/Go back.png</file>
+        <file>resources/Go forward.png</file>
+        <file>resources/Go.png</file>
+        <file>resources/Good-mark.png</file>
+        <file>resources/Green tag.png</file>
+        <file>resources/Heart.png</file>
+        <file>resources/Help book 3d.png</file>
+        <file>resources/Help book.png</file>
+        <file>resources/Help.png</file>
+        <file>resources/Hint.png</file>
+        <file>resources/Home.png</file>
+        <file>resources/How-to.png</file>
+        <file>resources/Hungup.png</file>
+        <file>resources/Info.png</file>
+        <file>resources/Key.png</file>
+        <file>resources/Last recor.png</file>
+        <file>resources/Last.png</file>
+        <file>resources/Left-right.png</file>
+        <file>resources/Lightning.png</file>
+        <file>resources/Linux.png</file>
+        <file>resources/List.png</file>
+        <file>resources/Load.png</file>
+        <file>resources/Lock.png</file>
+        <file>resources/Low rating.png</file>
+        <file>resources/Mail.png</file>
+        <file>resources/Male.png</file>
+        <file>resources/Medium rating.png</file>
+        <file>resources/Message.png</file>
+        <file>resources/Mobile-phone.png</file>
+        <file>resources/Modify.png</file>
+        <file>resources/Movie.png</file>
+        <file>resources/Music.png</file>
+        <file>resources/New document.png</file>
+        <file>resources/New.png</file>
+        <file>resources/Next track.png</file>
+        <file>resources/Next.png</file>
+        <file>resources/No-entry.png</file>
+        <file>resources/No.png</file>
+        <file>resources/Notes.png</file>
+        <file>resources/OK.png</file>
+        <file>resources/Paste.png</file>
+        <file>resources/Pause.png</file>
+        <file>resources/People.png</file>
+        <file>resources/Person.png</file>
+        <file>resources/Phone number.png</file>
+        <file>resources/Pie chart.png</file>
+        <file>resources/Pinion.png</file>
+        <file>resources/Play-music.png</file>
+        <file>resources/Play.png</file>
+        <file>resources/Playback.png</file>
+        <file>resources/Previous record.png</file>
+        <file>resources/Previous.png</file>
+        <file>resources/Problem.png</file>
+        <file>resources/Question.png</file>
+        <file>resources/Raise.png</file>
+        <file>resources/Record.png</file>
+        <file>resources/Red mark.png</file>
+        <file>resources/Red star.png</file>
+        <file>resources/Red tag.png</file>
+        <file>resources/Redo.png</file>
+        <file>resources/Refresh.png</file>
+        <file>resources/Remove.png</file>
+        <file>resources/Repair.png</file>
+        <file>resources/Report.png</file>
+        <file>resources/Retort.png</file>
+        <file>resources/Rewind.png</file>
+        <file>resources/Sad.png</file>
+        <file>resources/Save.png</file>
+        <file>resources/Search.png</file>
+        <file>resources/Shopping cart.png</file>
+        <file>resources/Smile.png</file>
+        <file>resources/Sound.png</file>
+        <file>resources/Stop sign.png</file>
+        <file>resources/Stop.png</file>
+        <file>resources/Sync.png</file>
+        <file>resources/Table.png</file>
+        <file>resources/Target.png</file>
+        <file>resources/Taxi.png</file>
+        <file>resources/Terminate.png</file>
+        <file>resources/Text preview.png</file>
+        <file>resources/Text.png</file>
+        <file>resources/Thumbs down.png</file>
+        <file>resources/Thumbs up.png</file>
+        <file>resources/Top.png</file>
+        <file>resources/Turn off.png</file>
+        <file>resources/Undo.png</file>
+        <file>resources/Unlock.png</file>
+        <file>resources/Up-down.png</file>
+        <file>resources/Up.png</file>
+        <file>resources/Update.png</file>
+        <file>resources/Upload.png</file>
+        <file>resources/User group.png</file>
+        <file>resources/View.png</file>
+        <file>resources/Warning.png</file>
+        <file>resources/Wrench.png</file>
+        <file>resources/Yes.png</file>
+        <file>resources/Zoom.png</file>
+    </qresource>
+</RCC>

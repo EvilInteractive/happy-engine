@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -32,6 +32,7 @@
 #include <EntityManager.h>
 #include <Entity.h>
 #include <ModelComponent.h>
+#include <LightComponent.h>
 #include <LightManager.h>
 #include <Font.h>
 #include <OculusRiftBinding.h>
@@ -91,8 +92,8 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_View->setCamera(m_Camera);
 
     he::gfx::LightManager* lightMan(m_Scene->getLightManager());
-    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 2.0f);
-    lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.5f);
+    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 0.4f);
+    lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.2f);
 
     he::gui::Font* const debugFont(contentMan->getDefaultFont(16));
     m_DebugText = NEW he::gui::Text();
@@ -130,9 +131,62 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
     ge::ModelComponent* const sceneModel(checked_cast<ge::ModelComponent*>(
         entityMan->createComponent(HEFS::strModelComponent)));
     scene->addComponent(sceneModel);
-    sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj", "M_Scene");
+    // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj", "M_Scene");
+    sceneModel->loadModelMeshAndMaterial("white.material", "testScene.binobj", "M_Ground");
+    // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene2.binobj", "M_Ground");
     scene->activate();
     m_Entities.add(scene);
+
+    int counters[3] = { 0, 0, 0 };
+    for (size_t i(0); i < 50; ++i)
+    {
+        ge::Entity* const shape(entityMan->createEmptyEntity());
+        shape->setScene(m_Scene);
+
+        {
+            ge::ModelComponent* const model(checked_cast<ge::ModelComponent*>(
+                entityMan->createComponent(HEFS::strModelComponent)));
+            shape->addComponent(model);
+            const char* modelName(NULL);
+            const char* materialName(NULL);
+            const char* meshName(NULL);
+            const char* name(NULL);
+            const int obj(rand() % 3);
+            switch (obj)
+            {
+            case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.material"; name = "TheePot"; break;
+            case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.material"; name = "Cube"; break;
+            case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.material";  name = "Car"; break;
+            }
+            model->loadModelMeshAndMaterial(materialName, modelName, meshName);
+
+            const int nameSize(hesnprintf(nullptr, 0, "%s_%d", name, counters[obj]));
+            he::String fullname;
+            fullname.resize(nameSize+1);
+            hesnprintf(&fullname[0], nameSize+1, "%s_%d", name, counters[obj]++);
+            shape->setName(std::move(fullname));
+        }
+
+        {
+            if (rand()%2 == 0)
+            {
+                ge::SpotLightComponent* const light(checked_cast<ge::SpotLightComponent*>(
+                    entityMan->createComponent(HEFS::strSpotLightComponent)));
+                shape->addComponent(light);
+                light->setDirection(he::vec3(0, -1, 0));
+                light->setAttenuation(he::vec2(3, 20));
+                light->setColor(he::Color::fromHSB(rand()%360 / 360.0f, 0.8f, 1.0f));
+                light->setMultiplier(1.0f);
+            }
+        }
+
+
+        he::vec3 position(rand()%100 - 50.0f, 5.0f + rand()%10, rand()%100 - 50.0f);
+        shape->setLocalTranslate(position);
+
+        shape->activate();
+        m_Entities.add(shape);
+    }
 }
 
 void ht::HappyPluginTestMain::onUnloadLevel()
@@ -188,7 +242,7 @@ void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
         he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
         if (device)
         {
-            VRCamera* const camera(checked_cast<VRCamera*>(m_Camera));
+            VRCamera* const camera(he::checked_cast<VRCamera*>(m_Camera));
             const he::vec3& velocityVector(camera->getVelocityVector());
             const he::vec3 pitchYawRoll(device->getPitchYawRoll());
 

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -150,11 +150,7 @@ void Console::processCommand(const he::String& command)
     he::String s(command);
 
     // remove spaces
-    #ifdef _MSC_VER
     s.erase(std::remove_if(s.begin(), s.end(), isspace), s.end());
-    #else // !FIX! will be fixed when work on linux resumed
-    #error What if GCC?
-    #endif
 
     if (s.find('=') != -1)
     {
@@ -361,7 +357,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
     
     Color col(m_MsgColors[type]);
 
-    sprintf(buff, "&%c%c%c%s%s", 
+    hesnprintf(buff, 1023, "&%c%c%c%s%s", 
         col.r16(), col.g16(), col.b16(), 
         type == CMSG_TYPE_COMMAND? "] " : "", msg);
 
@@ -475,7 +471,7 @@ void Console::attachToRenderer(gfx::Renderer2D* renderer)
 
 void Console::detachFromRenderer()
 {
-    HE_IF_ASSERT(m_Renderer != nullptr, "Console not attached to a renderer")
+    if (m_Renderer != nullptr)
     {
         if (m_IsOpen)
         {

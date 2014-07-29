@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -25,12 +25,14 @@
 
 #include <tools/FPSGraph.h>
 #include <Renderer2D.h>
+#include <Window.h>
 
 namespace hs {
 
 UIDebug::UIDebug()
     : m_FPSGraph(nullptr)
 {
+    m_ResizeCallback = he::eventCallback2<void, he::int32, he::int32>(std::bind(&UIDebug::repositionElements, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 UIDebug::~UIDebug()
@@ -42,7 +44,11 @@ void UIDebug::load()
     /* GUI */
     m_FPSGraph = NEW he::tools::FPSGraph();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_Full);
-    m_FPSGraph->setPos(he::vec2(910,35));
+
+    he::gfx::Window* window(hs::Sandbox::getInstance()->getMainWindow());
+    repositionElements(window->getWindowWidth(), window->getWindowHeight());
+    window->Resized += m_ResizeCallback;
+
 }
 
 void UIDebug::unload()
@@ -51,6 +57,8 @@ void UIDebug::unload()
     {
         hide();
     }
+    he::gfx::Window* window(hs::Sandbox::getInstance()->getMainWindow());
+    window->Resized -= m_ResizeCallback;
     delete m_FPSGraph;
     m_FPSGraph = nullptr;
 }
@@ -69,6 +77,11 @@ void UIDebug::hide()
     Sandbox* const sandbox(Sandbox::getInstance());
     sandbox->getRenderPipeline()->getDebugRenderer()->detachFromRender(m_FPSGraph);
     sandbox->removeFromTickList(m_FPSGraph);
+}
+
+void UIDebug::repositionElements(const he::int32 width, const he::int32 /*height*/)
+{
+    m_FPSGraph->setPos(he::vec2(width - 100 - 16, 16));
 }
 
 } //end namespace

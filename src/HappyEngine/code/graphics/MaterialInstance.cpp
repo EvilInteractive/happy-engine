@@ -35,14 +35,14 @@ namespace
         HE_ASSERT(uniform != nullptr, "Could not find corresponding shader uniform when trying to set materialparam!");
         switch (var.getType())
         {
-            case he::gfx::MaterialParameter::eType_Float: checked_cast<he::gfx::ShaderUniformFloat*>(uniform)->set(shader, var.getFloat()); break;
-            case he::gfx::MaterialParameter::eType_Float2: checked_cast<he::gfx::ShaderUniformVec2*>(uniform)->set(shader, var.getFloat2()); break;
-            case he::gfx::MaterialParameter::eType_Float3: checked_cast<he::gfx::ShaderUniformVec3*>(uniform)->set(shader, var.getFloat3()); break;
-            case he::gfx::MaterialParameter::eType_Float4: checked_cast<he::gfx::ShaderUniformVec4*>(uniform)->set(shader, var.getFloat4()); break;
-            case he::gfx::MaterialParameter::eType_Float44: checked_cast<he::gfx::ShaderUniformMat44*>(uniform)->set(shader, var.getFloat44()); break;
-            case he::gfx::MaterialParameter::eType_Int: checked_cast<he::gfx::ShaderUniformInt*>(uniform)->set(shader, var.getInt()); break;
-            case he::gfx::MaterialParameter::eType_Texture2D: checked_cast<he::gfx::ShaderUniformTexture2D*>(uniform)->set(shader, var.getTexture2D()); break;
-            case he::gfx::MaterialParameter::eType_TextureCube: checked_cast<he::gfx::ShaderUniformTextureCube*>(uniform)->set(shader, var.getTextureCube()); break;
+            case he::gfx::MaterialParameter::eType_Float: he::checked_cast<he::gfx::ShaderUniformFloat*>(uniform)->set(shader, var.getFloat()); break;
+            case he::gfx::MaterialParameter::eType_Float2: he::checked_cast<he::gfx::ShaderUniformVec2*>(uniform)->set(shader, var.getFloat2()); break;
+            case he::gfx::MaterialParameter::eType_Float3: he::checked_cast<he::gfx::ShaderUniformVec3*>(uniform)->set(shader, var.getFloat3()); break;
+            case he::gfx::MaterialParameter::eType_Float4: he::checked_cast<he::gfx::ShaderUniformVec4*>(uniform)->set(shader, var.getFloat4()); break;
+            case he::gfx::MaterialParameter::eType_Float44: he::checked_cast<he::gfx::ShaderUniformMat44*>(uniform)->set(shader, var.getFloat44()); break;
+            case he::gfx::MaterialParameter::eType_Int: he::checked_cast<he::gfx::ShaderUniformInt*>(uniform)->set(shader, var.getInt()); break;
+            case he::gfx::MaterialParameter::eType_Texture2D: he::checked_cast<he::gfx::ShaderUniformTexture2D*>(uniform)->set(shader, var.getTexture2D()); break;
+            case he::gfx::MaterialParameter::eType_TextureCube: he::checked_cast<he::gfx::ShaderUniformTextureCube*>(uniform)->set(shader, var.getTextureCube()); break;
             case he::gfx::MaterialParameter::eType_Invalid: LOG(he::LogType_ProgrammerAssert, "Trying to set invalid material parameter!"); break;
             default: LOG(he::LogType_ProgrammerAssert, "Trying to set unknown material parameter type, %s", var.typeToString(var.getType())); break;
         }

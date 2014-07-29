@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -39,16 +39,16 @@ public:
     static void sdmDestroy()
     {
         delete s_Instance;
+        s_Instance = nullptr;
     }
     static T* getInstance()
     {
-        HE_ASSERT(s_Instance != nullptr, "singleton has not been initialized!");
         return s_Instance;
     }
 
 
 protected:
-    Singleton() { HE_ASSERT(s_Instance == nullptr, "Singleton is create more than once!"); }
+    Singleton() { HE_ASSERT(s_Instance == nullptr, "Singleton is created more than once!"); }
 
 private:
     static T* s_Instance;

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -21,24 +21,42 @@
 
 #include "Path.h"
 
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
+#include <SDL2/SDL_filesystem.h>
 
 namespace he {
 
-Path Path::s_WorkingDirectory("");
-Path Path::s_FullDataPath("");
+Path Path::s_BinPath("");
 Path Path::s_DataPath("");
+Path Path::s_UserDataFolder("");
 
-void Path::init( const Path& dataPath )
+void Path::init( const int argc, const char* const * const argv )
 {
-    s_DataPath = dataPath;
+    char* sdlBasePath(SDL_GetBasePath());
+    s_BinPath = Path(sdlBasePath);
+    SDL_free(sdlBasePath);
 
-    boost::filesystem::path workDir(boost::filesystem::current_path());
-    s_WorkingDirectory = Path(workDir.string());
+    const char* const dataPath(getProgramArgumentValue(argc, argv, "dataPath"));
+    if (dataPath == nullptr)
+    {
+        s_DataPath = s_BinPath;
+        size_t index(s_DataPath.m_Path.rfind("/bin/"));
+        if (index != std::string::npos)
+        {
+            s_DataPath.m_Path = s_DataPath.m_Path.substr(0, index);
+            s_DataPath.ensureTrailingSlash();
+        }
+        s_DataPath = s_DataPath.append("data");
+    }
+    else
+    {
+        s_DataPath = Path(dataPath);
+    }
 
-    s_FullDataPath = s_WorkingDirectory.append(dataPath.str());
+    char* sdlUserPath(SDL_GetPrefPath("EvilInteractive", "Game"));
+    s_UserDataFolder = Path(sdlUserPath);
+    SDL_free(sdlUserPath);
 }
-
 
 Path::Path( const he::String& path ): m_Path(path)
 {
@@ -50,13 +68,22 @@ Path::Path( const Path& other ): m_Path(other.m_Path)
 {
 }
 
+Path::Path(Path&& other) : m_Path(std::move(other.m_Path))
+{
+
+}
+
 Path& Path::operator=( const Path& other )
 {
     m_Path = other.m_Path;
     return *this;
 }
 
-
+Path& Path::operator=(Path&& other)
+{
+    m_Path = std::move(other.m_Path);
+    return *this;
+}
 
 Path::~Path()
 {
@@ -136,6 +163,14 @@ he::String Path::getFileName() const
         result = m_Path.substr(index + 1, m_Path.size() - index - 1);
     }
     return result;
+}
+
+Path Path::getDirectory() const
+{
+    if (isFile())
+        return (*this).append("../");
+    else
+        return *this;
 }
 
 bool Path::iterateFiles( const bool recursive, const boost::function1<void, const Path&>& func )

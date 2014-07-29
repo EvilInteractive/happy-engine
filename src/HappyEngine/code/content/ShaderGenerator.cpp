@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -109,7 +109,7 @@ he::ObjectHandle ShaderGenerator::addVariable()
 
     const uint32 id(m_LocalVarUID++);
     char name[20];
-    sprintf(name, "localvar%d", id);
+    hesnprintf(name, 19, "localvar%d", id);
     var->setLocalName(name);
 
     return result;
@@ -125,7 +125,7 @@ ShaderGeneratorVariable* ShaderGenerator::addInternalVariable()
 
     const uint32 id(m_LocalVarUID++);
     char name[20];
-    sprintf(name, "localvar%d", id);
+    hesnprintf(name, 19, "localvar%d", id);
     var->setLocalName(name);
 
     return var;

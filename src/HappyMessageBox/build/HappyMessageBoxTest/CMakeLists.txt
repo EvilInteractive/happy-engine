@@ -6,8 +6,7 @@ addFilter(HAPPYMESSAGEBOXTEST_SRCS src ../../../HappyMessageBox/src/HappyMessage
  
 include_directories (${HappyEngine_SOURCE_DIR}/HappyMessageBox/include)
 IF (APPLE)
-	find_library(AWESOMIUM NAMES Awesomium)
-	find_library(SDL2 NAMES SDL2)
+    find_library(SDL2 NAMES SDL2)
 ELSE()
 	include_directories (${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/include)
 	link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/lib/${PLATFORM}${BITNESS})
@@ -26,13 +25,12 @@ target_link_libraries(HappyMessageBoxTest HappyMessageBox)
 
 # link HappyJson
 IF (APPLE)
-	target_link_libraries(HappyMessageBoxTest ${AWESOMIUM})
-	target_link_libraries(HappyMessageBoxTest ${SDL2})
+    target_link_libraries(HappyMessageBoxTest ${SDL2})
 ELSE()
 	target_link_libraries(HappyMessageBoxTest awesomium)
 
-	target_link_libraries(HappyMessageBoxTest SDL2)
-	target_link_libraries(HappyMessageBoxTest SDL2main)
+    target_link_libraries(HappyMessageBoxTest SDL2)
+    target_link_libraries(HappyMessageBoxTest SDL2main)
 ENDIF()
 #set output dir
 SET_TARGET_PROPERTIES(HappyMessageBoxTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)    

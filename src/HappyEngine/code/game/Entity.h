@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -36,7 +36,7 @@ class HAPPY_ENTRY Entity : public EntityComponent
 public:
     DECLARE_RTTI(RTTI::Entity)
 
-    Entity();
+    explicit Entity();
     virtual ~Entity();
     
     void addComponent(EntityComponent* const component);
@@ -48,12 +48,20 @@ public:
 
     const he::FixedString& getComponentID() const { return HEFS::strEntity; }
 
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    bool setProperty(const Property* const inProperty);
+    bool getProperty(Property* const inOutProperty);
+
     void activate();
     void deactivate();
     bool isActive() const { return m_IsActive; }
 
     void setScene(gfx::Scene* const scene) { m_Scene = scene; }
     gfx::Scene* getScene() const { return m_Scene; }
+
+    void setName(const he::String& name);
+    void setName(he::String&& name);
+    const he::String& getName() const { return m_Name; }
      
     //////////////////////////////////////////////////////////////////////////
     /// EntityComponent
@@ -70,6 +78,7 @@ private:
     he::PrimitiveList<EntityComponent*> m_Components;
     Entity* m_Parent;
     gfx::Scene* m_Scene;
+    he::String m_Name;
     bool m_IsActive;
 
     //Disable default copy constructor and default assignment operator

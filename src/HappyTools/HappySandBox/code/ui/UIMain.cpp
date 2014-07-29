@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -68,7 +68,7 @@ void UIMain::load()
 
 void UIMain::unload()
 {
-    HE_IF_ASSERT(m_WebView != nullptr, "UIMain already unloaded!")
+    if (m_WebView != nullptr)
     {
         if (isVisible() == true)
         {
