@@ -56,7 +56,7 @@ public:
     HE_FORCEINLINE ModelMesh* const getModelMesh() const { return m_ModelMesh; }
     HE_FORCEINLINE MaterialInstance* const getMaterial() const { return m_Material; }
 
-    bool canDraw() const { return checkFlag(eDrawableFlags_IsLoaded | eDrawableFlags_IsLoaded); }
+    bool canDraw() const { return checkFlag(eDrawableFlags_IsLoaded | eDrawableFlags_IsVisible); }
 
     bool getCastsShadow() const { return checkFlag(eDrawableFlags_CastShadow); }
     void setCastsShadow(const bool castShadow) { castShadow? raiseFlag(eDrawableFlags_CastShadow) : clearFlag(eDrawableFlags_CastShadow); }
