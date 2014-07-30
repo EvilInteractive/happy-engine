@@ -1,0 +1,8 @@
+{
+    "VertexShader" : "shared/postShaderQuad.vert",
+    "FragmentShader" : "post/autoLum.frag",
+    "IsBlended" : false,
+    "CullFrontFace" : false,
+    "DepthRead" : false,
+    "DepthWrite" : false,
+}

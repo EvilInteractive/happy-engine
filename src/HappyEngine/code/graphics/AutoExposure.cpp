@@ -19,26 +19,30 @@
 //Created: 26/10/2011
 
 #include "HappyPCH.h" 
-
 #include "AutoExposure.h"
 
 #include "ContentManager.h"
-#include "GraphicsEngine.h"
+#include "DrawContext.h"
 #include "Game.h"
+#include "GraphicsEngine.h"
+#include "MaterialInstance.h"
 #include "ModelMesh.h"
 #include "Texture2D.h"
-#include "ExternalError.h"
+#include "RenderTarget.h"
 
 namespace he {
     namespace gfx {
 
-AutoExposure::AutoExposure():
-    m_LumShader(nullptr),
-    m_DTime(0),
-    m_FirstBuffer(true),
-    m_ExposureSpeed(1.0f),
-    m_Quad(nullptr),
-    m_bOnce(false)
+AutoExposure::AutoExposure()
+: m_LumMaterial(nullptr)
+, m_MaterialparamHDRmapIndex(-1)
+, m_MaterialparamPrevLumMapIndex(-1)
+, m_MaterialparamDTimeIndex(-1)
+, m_ExposureSpeed(2.0f)
+, m_RenderTarget(nullptr)
+, m_Quad(nullptr)
+, m_FirstBuffer(true)
+, m_IsInitialized(false)
 {
     ObjectHandle handle1(ResourceFactory<Texture2D>::getInstance()->create());
     ObjectHandle handle2(ResourceFactory<Texture2D>::getInstance()->create());
@@ -56,12 +60,12 @@ AutoExposure::~AutoExposure()
 {
     m_LumTexture[0]->release();
     m_LumTexture[1]->release();
-    glDeleteFramebuffers(1, &m_FboID);
-    if (GAME != nullptr)
+    delete m_RenderTarget;
+    if (m_IsInitialized && GAME != nullptr)
         GAME->removeFromTickList(this);
     if (m_Quad != nullptr)
         m_Quad->release();
-    m_LumShader->release();
+    delete m_LumMaterial;
 }
 
 void AutoExposure::init(const PostSettings::HdrSettings& settings)
@@ -78,58 +82,57 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
     //////////////////////////////////////////////////////////////////////////
-    glGenFramebuffers(1, &m_FboID);
-    GL::heBindFbo(m_FboID);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_LumTexture[0]->getID(), 0);
-    err::checkFboStatus("auto exposure");
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                          LOAD SHADERS                              ///
-    //////////////////////////////////////////////////////////////////////////
-    ShaderLayout shaderLayout;
-    shaderLayout.addAttribute(ShaderLayoutAttribute("inPosition", eShaderAttribute_Position));
-
-    he::ObjectList<he::String> shaderOutputs;
-    shaderOutputs.add("outColor");
-
-    m_LumShader = ResourceFactory<gfx::Shader>::getInstance()->get(
-        CONTENT->loadShader("shared/postShaderQuad.vert", 
-                            "post/autoLum.frag", shaderLayout, shaderOutputs));
-    m_HDRmapPos = m_LumShader->getShaderSamplerId(HEFS::strhdrMap);
-    m_PrevLumMapPos = m_LumShader->getShaderSamplerId(HEFS::strprevLumMap);
-    m_DTimePos = m_LumShader->getShaderVarId(HEFS::strdTime);
-
-    m_ExposureSpeed = settings.exposureSpeed;
+    m_RenderTarget = NEW RenderTarget(GRAPHICS->getSharedContext());
+    m_RenderTarget->setSize(1, 1);
+    m_RenderTarget->addTextureTarget(m_LumTexture[0]);
+    m_RenderTarget->init();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         LOAD RENDER QUAD                           ///
     //////////////////////////////////////////////////////////////////////////
     m_Quad = CONTENT->getFullscreenQuad();
 
+    //////////////////////////////////////////////////////////////////////////
+    ///                          LOAD MATERIAL                             ///
+    //////////////////////////////////////////////////////////////////////////
+    he::gfx::Material* const mat(CONTENT->loadMaterial("engine/post/autolum.hm"));
+    m_LumMaterial = mat->createMaterialInstance(eShaderType_Normal);
+    mat->release();
+    
+    m_LumMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
+
+    m_MaterialparamHDRmapIndex = m_LumMaterial->findParameter(HEFS::strhdrMap);
+    m_MaterialparamPrevLumMapIndex = m_LumMaterial->findParameter(HEFS::strprevLumMap);
+    m_MaterialparamDTimeIndex = m_LumMaterial->findParameter(HEFS::strdTime);
+    
+    m_ExposureSpeed = settings.exposureSpeed;
+
     GAME->addToTickList(this);
+
+    m_IsInitialized = true;
+}
+
+void AutoExposure::tick( float dTime )
+{
+    m_LumMaterial->getParameter(m_MaterialparamDTimeIndex).setFloat(dTime);
 }
 
 void AutoExposure::calculate( const Texture2D* hdrMap)
 {
     m_FirstBuffer = !m_FirstBuffer;
 
-    GL::heBlendEnabled(false);
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-    GL::heBindFbo(m_FboID);
-    GL::heSetViewport(RectI(0, 0, 1, 1));
-    GL::heSetCullFace(false);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_LumTexture[m_FirstBuffer? 0 : 1]->getID(), 0);
-    m_LumShader->bind();
-    m_LumShader->setShaderVar(m_HDRmapPos, hdrMap);
-    m_LumShader->setShaderVar(m_PrevLumMapPos, m_LumTexture[m_FirstBuffer? 1 : 0]);
-    m_LumShader->setShaderVar(m_DTimePos, m_DTime * m_ExposureSpeed);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, m_Quad->getVBO());
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(12)); 
-    glEnableVertexAttribArray(0);
+    m_LumMaterial->getParameter(m_MaterialparamHDRmapIndex).setTexture2D(hdrMap);
+    m_LumMaterial->getParameter(m_MaterialparamPrevLumMapIndex).setTexture2D(m_LumTexture[m_FirstBuffer? 1 : 0]);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Quad->getIBO());
+    m_RenderTarget->switchTextureTarget(0, m_LumTexture[m_FirstBuffer? 0 : 1]);
+    m_RenderTarget->prepareForRendering();
+
+    GL::heSetViewport(RectI(0, 0, 1, 1));
+
+    DrawContext context;
+    context.m_VBO = m_Quad->getVBO();
+    context.m_VBO = m_Quad->getIBO();
+    m_LumMaterial->apply(context);
 
     m_Quad->draw();
 }
@@ -139,9 +142,5 @@ const Texture2D* AutoExposure::getLuminanceMap() const
     return m_LumTexture[m_FirstBuffer? 0 : 1];
 }
 
-void AutoExposure::tick( float dTime )
-{
-    m_DTime = dTime;
-}
 
 } } //end namespace
