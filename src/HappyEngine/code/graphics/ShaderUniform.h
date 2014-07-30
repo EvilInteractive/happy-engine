@@ -64,11 +64,11 @@ class ShaderUniform : public IShaderUniform
 public:
     ShaderUniform(const he::FixedString& name, const uint32 id, const T& defaultValue);
 
-    void init(Shader* const shader);
-    void set(Shader* const shader, const T& value);
+    inline void init(Shader* const shader) override;
+    inline void set(Shader* const shader, const T& value);
 
-    const he::FixedString& getName() const { return m_Name; }
-    EShaderUniformType getType() const { return TType; }
+    const he::FixedString& getName() const override { return m_Name; }
+    EShaderUniformType getType() const override { return TType; }
     
     const T& getValue() const { return m_Value; }
     

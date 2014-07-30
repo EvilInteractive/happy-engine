@@ -9,7 +9,6 @@ addFilter(CODE_SRCS src/graphics code/graphics/
             IDrawable2D.h
             IShapeDrawable.h
             Object3D.cpp                        Object3D.h
-            IDrawable.h  
             SkyBox.cpp                          SkyBox.h
 			Texture.cpp							Texture.h
             Texture2D.cpp                       Texture2D.h
@@ -51,7 +50,7 @@ addFilter(CODE_SRCS src/graphics/material code/graphics/
             MaterialParameter.cpp               MaterialParameter.h
             Shader.cpp                          Shader.h
             ShaderLayout.cpp                    ShaderLayout.h
-            ShaderUniform.inl                   ShaderUniform.h         
+            ShaderUniform.cpp                   ShaderUniform.inl                   ShaderUniform.h         
             ShaderEnums.cpp                     ShaderEnums.h
             ShaderUniformBuffer.cpp             ShaderUniformBuffer.h
             ShaderUniformBufferManager.cpp      ShaderUniformBufferManager.h

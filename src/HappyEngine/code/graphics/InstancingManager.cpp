@@ -32,28 +32,29 @@ InstancingManager::InstancingManager()
 
 InstancingManager::~InstancingManager()
 {
-    std::for_each(m_Controllers.cbegin(), m_Controllers.cend(), [](const std::pair<he::String, InstancingController*>& pair)
-    {
-        delete pair.second;
-    });
+//     std::for_each(m_Controllers.cbegin(), m_Controllers.cend(), [](const std::pair<he::String, InstancingController*>& pair)
+//     {
+//         delete pair.second;
+//     });
 }
 
-void InstancingManager::createController( const he::String& id, bool dynamic, const ObjectHandle& meshHandle, const ObjectHandle& material )
+void InstancingManager::createController( const he::String& /*id*/, bool /*dynamic*/, const ObjectHandle& /*meshHandle*/, const ObjectHandle& /*material*/ )
 {
-    InstancingController* pController(NEW InstancingController(id, dynamic, meshHandle, material));
-    m_Controllers[id] = pController;
+    //InstancingController* pController(NEW InstancingController(id, dynamic, meshHandle, material));
+    //m_Controllers[id] = pController;
 }
 
-void InstancingManager::createController( const he::String& id, bool dynamic, const he::String& materialAsset, const he::String& modelAsset, const he::String& mesh )
+void InstancingManager::createController( const he::String& /*id*/, bool /*dynamic*/, const he::String& /*materialAsset*/, const he::String& /*modelAsset*/, const he::String& /*mesh*/ )
 {
-    InstancingController* pController(NEW InstancingController(id, dynamic, materialAsset, modelAsset, mesh));
-    m_Controllers[id] = pController;
+    //InstancingController* pController(NEW InstancingController(id, dynamic, materialAsset, modelAsset, mesh));
+    //m_Controllers[id] = pController;
 }
 
-InstancingController* InstancingManager::getController( const he::String& id )
+InstancingController* InstancingManager::getController( const he::String& /*id*/ )
 {
-    auto it(m_Controllers.find(id));
-    return (it != m_Controllers.cend())? it->second : nullptr;
+    //auto it(m_Controllers.find(id));
+    //return (it != m_Controllers.cend())? it->second : nullptr;
+    return nullptr;
 }
 
 } } //end namespace

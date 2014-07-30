@@ -22,27 +22,18 @@
 #define _HE_INI_READER_H_
 #pragma once
 
-#undef string
-#undef wstring
-#include <string>
-#include <map>
-
-#include "vec2.h"
-#include "vec3.h"
-#include "vec4.h"
-
 namespace he {
 namespace io {
 
 class IniReader
 {
 private:
-typedef std::map<he::String, std::map<he::String, he::String>> IniReadData;
+typedef std::map<he::String, he::String> InitReadSubData;
+typedef std::map<he::String, InitReadSubData> IniReadData;
 public:
     IniReader();
     virtual ~IniReader();
 
-    //throws FileNotFoundException
     bool open(const he::String& path);
 
     bool isOpen() const;

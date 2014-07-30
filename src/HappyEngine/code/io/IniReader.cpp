@@ -42,9 +42,9 @@ bool parseKeyValue(const he::String& line, he::String& key, he::String& value)
 {
     using namespace std;
 
-    wstring::size_type pos(line.find(L'='));
+    std::string::size_type pos(line.find(L'='));
 
-    if (pos != wstring::npos)
+    if (pos != std::string::npos)
     {
         key = line.substr(0, pos);
         value = line.substr(pos + 1, line.size() - (pos + 1));
@@ -62,24 +62,24 @@ inline he::String getSubDivision(const he::String& str)
 void removeSpaces(he::String& str)
 {
     using namespace std;
-    wstringstream stream;
+    stringstream stream;
 
     bool stringHalt = false;
     for_each(str.cbegin(), str.cend(), [&](wchar_t c)
     {
         if (stringHalt)
         {
-            if (stringHalt && c == L'"')
+            if (stringHalt && c == '"')
                 stringHalt = false;
 
             stream << c;
         }
         else
         {
-            if (c != L' ')
+            if (c != ' ')
             {
                 stream << c;
-                if (c == L'"')
+                if (c == '"')
                     stringHalt = true;
             }
         }
@@ -92,14 +92,14 @@ bool IniReader::open(const he::String& path)
 
     m_Data.clear();
     m_IsOpen = false;
-    std::wifstream file;
+    std::ifstream file;
     file.open(path, ios::in);
 
     if (file.is_open())
     {
-        map<wstring, wstring> subData;
-        wstring line;
-        wstring sub = "";
+        InitReadSubData subData;
+        he::String line;
+        he::String sub = "";
         while(file.eof() == false)
         {
             getline(file, line);
@@ -115,18 +115,18 @@ bool IniReader::open(const he::String& path)
                     if (sub != "")
                         m_Data.insert(make_pair(sub, subData));
                     sub = getSubDivision(line);
-                    subData = map<wstring, wstring>();
+                    subData = InitReadSubData();
                 }
                 else
                 {
-                    wstring key, value;
+                    he::String key, value;
                     if (parseKeyValue(line, key, value))
                         subData.insert(make_pair(key, value));
                 }
             }
         }
 
-        if (sub != "")
+        if (sub.empty() == false)
             m_Data.insert(make_pair(sub, subData));
         file.close();
         m_IsOpen = true;
@@ -151,7 +151,7 @@ bool IniReader::readBool(const he::String& root, const he::String& node, bool de
     he::String raw("");
     if (readRaw(root, node, raw))
     {
-        if (raw == "true" || raw == "True" || raw == "TRUE" || raw == "1")
+        if (strcmp(raw.c_str(), "1") == 0 || stricmp(raw.c_str(), "true") == 0)
             return true;
         else
             return false;

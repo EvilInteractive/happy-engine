@@ -39,7 +39,7 @@ namespace he {
 namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
-
+/*
 #pragma warning(disable:4355) // use of this in initializer list
 InstancingController::InstancingController(const he::String& name, bool dynamic, const ObjectHandle& meshHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
@@ -393,7 +393,7 @@ void InstancingController::removeManualFiller( const IInstanceFiller* filler )
     m_ManualCpuBufferFillers.remove(filler);
 }
 
-void InstancingController::tick( float /*dTime*/ )
+void InstancingController::tick( float /*dTime*//* )
 {
     updateBuffer();
 }
@@ -442,7 +442,7 @@ void InstancingController::calculateBound()
 {
 
 }
-
+*/
 
 
 } } //end namespace
