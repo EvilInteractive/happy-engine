@@ -57,8 +57,8 @@ public:
     void draw();
 
     /* SDM */
-    void sdmInit();
-    void sdmDestroy();
+    static void sdmInit();
+    static void sdmDestroy();
 
 private:
     /* DATAMEMBERS */

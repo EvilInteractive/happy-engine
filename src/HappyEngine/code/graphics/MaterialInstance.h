@@ -58,6 +58,7 @@ public:
     
     void setDepthWriteEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthWrite) : clearFlag(eMaterialFlags_DepthWrite); }
     void setDepthReadEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthRead) : clearFlag(eMaterialFlags_DepthRead); }
+    void setDepthFunc(const DepthFunc func);
     
     void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
     
@@ -78,6 +79,7 @@ private:
     BlendEquation m_BlendEquation : 16;
     BlendFunc m_SourceBlend : 16;
     BlendFunc m_DestBlend : 16;
+    DepthFunc m_DepthFunc : 16;
     const Material* m_Material;
     MaterialLayout m_Layout;
 

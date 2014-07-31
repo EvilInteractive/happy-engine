@@ -59,6 +59,8 @@ public:
     
     void setDepthWriteEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthWrite) : clearFlag(eMaterialFlags_DepthWrite); }
     void setDepthReadEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthRead) : clearFlag(eMaterialFlags_DepthRead); }
+
+    void setDepthFunc(const DepthFunc func);
     
     MaterialInstance* createMaterialInstance(const EShaderType type) const;
     
@@ -76,6 +78,7 @@ private:
     
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
+    DepthFunc m_DepthFunc;
 
     // Disabled
     Material(const Material* other);

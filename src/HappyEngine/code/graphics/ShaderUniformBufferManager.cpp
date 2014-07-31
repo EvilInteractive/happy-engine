@@ -85,6 +85,7 @@ void ShaderUniformBufferManager::updateCameraBuffer(const ICamera* const camera)
     const RectI& viewport(GL::heGetViewport());
     buffer.m_ViewSize.x = static_cast<float>(viewport.width);
     buffer.m_ViewSize.y = static_cast<float>(viewport.height);
+    buffer.m_ProjParams = vec4(camera->getProjection()(0, 0), camera->getProjection()(1, 1), camera->getNearClip(), camera->getFarClip());
 
     m_CameraBuffer.updateData(buffer);
 }

@@ -57,6 +57,7 @@ MaterialInstance::MaterialInstance(const Material* const material, const EShader
     , m_Flags(0)
     , m_BlendEquation(BlendEquation_Add)
     , m_SourceBlend(BlendFunc_Zero), m_DestBlend(BlendFunc_One)
+    , m_DepthFunc(DepthFunc_LessOrEqual)
     , m_Material(material)
 {
     m_Material->instantiate();
@@ -77,6 +78,7 @@ void MaterialInstance::init()
     m_BlendEquation = m_Material->m_BlendEquation;
     m_SourceBlend = m_Material->m_SourceBlend;
     m_DestBlend = m_Material->m_DestBlend;
+    m_DepthFunc = m_Material->m_DepthFunc;
     
     m_Parameters.clear();
     m_ParameterNames.clear();
@@ -177,6 +179,7 @@ void MaterialInstance::applyShader( const EShaderType type, const DrawContext& /
     {
         GL::heBlendEnabled(false);
     }
+    GL::heSetDepthFunc(m_DepthFunc);
     GL::heSetDepthRead(checkFlag(eMaterialFlags_DepthRead));
     GL::heSetDepthWrite(checkFlag(eMaterialFlags_DepthWrite));
     GL::heSetCullFace(checkFlag(eMaterialFlags_CullFrontFace));
@@ -234,6 +237,11 @@ void MaterialInstance::setIsBlended( bool isBlended, BlendEquation equation /*= 
     m_BlendEquation = equation;
     m_SourceBlend = sourceBlend;
     m_DestBlend = destBlend;
+}
+
+void MaterialInstance::setDepthFunc( const DepthFunc func )
+{
+    m_DepthFunc = func;
 }
 
 

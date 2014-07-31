@@ -27,6 +27,7 @@
 #include "Model.h"
 #include "ModelMesh.h"
 #include "Mesh2D.h"
+#include "ShapeMesh.h"
 #include "Font.h"
 #include "PhysicsConcaveMesh.h"
 #include "PhysicsConvexMesh.h"
@@ -102,10 +103,12 @@ void StaticDataManager::init()
     ge::EntityManager::sdmInit();
     GlobalSettings::sdmInit();
     gfx::Mesh2D::sdmInit();
+    gfx::ShapeMesh::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    gfx::ShapeMesh::sdmDestroy();
     gfx::Mesh2D::sdmDestroy();
     GlobalSettings::sdmDestroy();
     ge::EntityManager::sdmDestroy();

@@ -21,6 +21,7 @@
 #version 150 core
 
 #include "packing/decode.frag"
+#include "shared/perCameraUniformBuffer.frag"
 
 in vec3 passPos;
 out vec4 outColor;
@@ -34,11 +35,6 @@ struct SpotLight
     vec3 color;
     float endAttenuation;
     float cosCutoff;
-};
-
-layout(shared) uniform SharedBuffer
-{
-    vec4 projParams;
 };
 
 uniform SpotLight light;
@@ -113,7 +109,7 @@ void main()
     vec2 texCoord = ndc * 0.5f + 0.5f;
      
     vec3 normalDepth = texture(normalDepthMap, texCoord).xyz;   
-    vec3 position = getPosition( normalDepth.z, ndc, projParams );
+    vec3 position = getPosition( normalDepth.z, ndc, perCameraUniformBuffer.projParams );
     
     vec3 lightDir = light.position - position;
     float lightDist = length(lightDir);

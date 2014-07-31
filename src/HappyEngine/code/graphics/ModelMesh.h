@@ -72,7 +72,7 @@ public:
 
     inline const Bound& getBound() const { return m_Bound; }
 
-    void draw();
+    void draw() const;
     
 private:
     struct ShadowSkinnedVertex

@@ -23,7 +23,6 @@
 #define _HE_DEFERRED_3D_RENDERER_H_
 #pragma once
 
-#include "Shader.h"
 #include "IRenderer.h"
 #include "DrawListContainer.h"
 #include "VertexLayout.h"
@@ -35,14 +34,15 @@ namespace gui {
 }
 namespace gfx {
 
-class LightManager;
-class Bloom;
 class AutoExposure;
+class Bloom;
 class DrawSettings;
-class Texture2D;
+class LightManager;
+class MaterialInstance;
 class ModelMesh;
 class RenderTarget;
 class Scene;
+class Texture2D;
 
 class HAPPY_ENTRY Deferred3DRenderer : public IRenderer, public IDrawable2D
 {
@@ -50,62 +50,62 @@ private:
     struct PostPointLightData
     {
         //LightBuffer
-        uint32 position;
-        uint32 multiplier;
-        uint32 color;
-        uint32 beginAttenuation;
-        uint32 endAttenuation;
+        int8 position;
+        int8 multiplier;
+        int8 color;
+        int8 beginAttenuation;
+        int8 endAttenuation;
 
         //No Buffer
-        uint32 colorIllMap, normalDepthMap, sgMap;
-        uint32 wvp;
+        int8 colorIllMap, normalDepthMap, sgMap;
+        int8 wvp;
     };
     struct PostSpotLightData
     {
         //LightBuffer
-        uint32 position;
-        uint32 multiplier;
-        uint32 direction;
-        uint32 beginAttenuation;
-        uint32 color;
-        uint32 endAttenuation;
-        uint32 cosCutOff;
+        int8 position;
+        int8 multiplier;
+        int8 direction;
+        int8 beginAttenuation;
+        int8 color;
+        int8 endAttenuation;
+        int8 cosCutOff;
 
         //No Buffer
-        uint32 colorIllMap, normalDepthMap, sgMap;
-        uint32 wvp;
+        int8 colorIllMap, normalDepthMap, sgMap;
+        int8 wvp;
     };
     struct PostShadowSpotLightData
     {
         //LightBuffer
-        uint32 position;
-        uint32 multiplier;
-        uint32 direction;
-        uint32 beginAttenuation;
-        uint32 color;
-        uint32 endAttenuation;
-        uint32 cosCutOff;
+        int8 position;
+        int8 multiplier;
+        int8 direction;
+        int8 beginAttenuation;
+        int8 color;
+        int8 endAttenuation;
+        int8 cosCutOff;
 
         //No Buffer
-        uint32 colorIllMap, normalDepthMap, sgMap;
-        uint32 wvp;
+        int8 colorIllMap, normalDepthMap, sgMap;
+        int8 wvp;
 
         // Shadow
-        uint32 shadowMap;
-        uint32 shadowMatrix;
-        uint32 shadowInvSize;
+        int8 shadowMap;
+        int8 shadowMatrix;
+        int8 shadowInvSize;
     };
     struct PostAmbDirIllLightData
     {
-        uint32 ambColor;
-        uint32 dirColor;
-        uint32 dirDirection;
-        uint32 dirPosition;
-        uint32 dirNearFar;
+        int8 ambColor;
+        int8 dirColor;
+        int8 dirDirection;
+        int8 dirPosition;
+        int8 dirNearFar;
 
         //No Buffer
-        uint32 shadowMap0, shadowMap1, shadowMap2, shadowMap3;
-        uint32 colorIllMap, normalDepthMap, sgMap;
+        int8 shadowMap0, shadowMap1, shadowMap2, shadowMap3;
+        int8 colorIllMap, normalDepthMap, sgMap;
     };
 
 public:
@@ -127,7 +127,7 @@ public:
 private:
     void onViewResized();
     void initFromSettings();
-    void compileShaders();
+    void loadMaterials();
 
     void postAmbDirIllLight();
     void postPointLights();
@@ -148,21 +148,21 @@ private:
     const RenderTarget* m_OutputRenderTarget;
     
     //////////////////////////////////////////////////////////////////////////
-    ///                              SHADERS                               ///
+    ///                             Material                               ///
     //////////////////////////////////////////////////////////////////////////
-    const Texture2D* m_pColorRampTex;
+    const Texture2D* m_ColorRampTex;
 
     //Point light
-    Shader* m_PointLightShader;
+    MaterialInstance* m_PointLightMaterial;
     PostPointLightData m_PointLightData;
 
     //Spot light
-    Shader* m_SpotLightShader, *m_ShadowSpotLightShader;
+    MaterialInstance* m_SpotLightMaterial, *m_ShadowSpotLightMaterial;
     PostSpotLightData m_SpotLightData;
     PostShadowSpotLightData m_ShadowSpotLightData;
 
     //Amb&Dir&Ill light
-    Shader* m_AmbDirIllShader;
+    MaterialInstance* m_AmbDirIllMaterial;
     PostAmbDirIllLightData m_AmbDirIllLightData;
 
     //////////////////////////////////////////////////////////////////////////

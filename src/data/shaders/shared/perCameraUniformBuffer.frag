@@ -31,6 +31,8 @@ struct PerCameraUniformBuffer
     
     vec2 cameraNearFar;
     vec2 cameraViewSize;
+    
+    vec4 projParams;
 };
 
 layout(std140) uniform SharedPerCameraUniformBuffer

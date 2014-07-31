@@ -32,6 +32,7 @@ Material::Material()
     , m_BlendEquation(BlendEquation_Add)
     , m_SourceBlend(BlendFunc_One)
     , m_DestBlend(BlendFunc_Zero)
+    , m_DepthFunc(DepthFunc_LessOrEqual)
 {
 }
 
@@ -192,6 +193,11 @@ void Material::calculateMaterialLayout( const VertexLayout& bufferLayout, Materi
             }
         });
     }
+}
+
+void Material::setDepthFunc( const DepthFunc func )
+{
+    m_DepthFunc = func;
 }
 
 } } //end namespace

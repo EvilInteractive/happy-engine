@@ -99,6 +99,29 @@ DEF_FS(tcTransform);
 DEF_FS(map);
 DEF_FS(lumMap);
 
+//////////////////////////////////////////////////////////////////////////
+// Deferred
+//////////////////////////////////////////////////////////////////////////
+_DEF_FS(strlight_position, "light.position");
+_DEF_FS(strlight_multiplier, "light.multiplier");
+_DEF_FS(strlight_direction, "light.direction");
+_DEF_FS(strlight_color, "light.color");
+_DEF_FS(strlight_beginAttenuation, "light.beginAttenuation");
+_DEF_FS(strlight_endAttenuation, "light.endAttenuation");
+_DEF_FS(strlight_cosCutoff, "light.cosCutoff");
+_DEF_FS(strambLight_color, "ambLight.color");
+_DEF_FS(strdirLight_color, "dirLight.color");
+_DEF_FS(strdirLight_direction, "dirLight.direction");
+DEF_FS(colorIllMap);
+DEF_FS(normalDepthMap);
+DEF_FS(sgMap);
+DEF_FS(mtxWVP);
+DEF_FS(shadowMap);
+DEF_FS(shadowMatrix);
+DEF_FS(shadowMapInvSize);
+
+
+
 
 //////////////////////////////////////////////////////////////////////////
 // Material

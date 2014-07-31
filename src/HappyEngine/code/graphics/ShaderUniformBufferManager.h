@@ -52,6 +52,7 @@ class ShaderUniformBufferManager
         UNIFORM_MAT4(m_ViewProjection);
         UNIFORM_VEC3(m_CameraPosition); // isn't this in the view matrix? it is.. but for simplicity
         UNIFORM_VEC2_VEC2(m_NearFar, m_ViewSize);
+        UNIFORM_VEC4(m_ProjParams);
 
         PerCameraBuffer()
             : m_View(mat44::Identity)

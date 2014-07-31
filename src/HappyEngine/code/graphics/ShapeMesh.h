@@ -63,8 +63,8 @@ public:
     static const VertexLayout& getVertexLayout() { return s_VertexLayout; }
     
     /* SDM */
-    void sdmInit();
-    void sdmDestroy();
+    static void sdmInit();
+    static void sdmDestroy();
 
 private:
     /* DATAMEMBERS */

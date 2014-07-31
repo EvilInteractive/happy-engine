@@ -189,7 +189,7 @@ bool Path::iterateFiles( const bool recursive, const boost::function1<void, cons
             }
             else if (boost::filesystem::is_directory(it->status()))
             {
-                Path path(it->path().string());
+                Path path(it->path().c_str());
                 path.iterateFiles(recursive, func);
             }
         }
@@ -210,7 +210,7 @@ bool Path::isDirectory() const
 
 bool Path::exists() const
 {
-    boost::filesystem::path boostPath(m_Path);
+    boost::filesystem::path boostPath(m_Path.c_str());
     boost::system::error_code error;
     return boost::filesystem::exists(boostPath, error);
 }
