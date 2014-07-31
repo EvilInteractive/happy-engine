@@ -24,10 +24,11 @@
 #include "ContentManager.h"
 #include "GraphicsEngine.h"
 #include "Vertex.h"
-
+#include "DrawContext.h"
 #include "Texture2D.h"
 #include "ModelMesh.h"
 #include "MaterialInstance.h"
+#include "RenderTarget.h"
 #include "View.h"
 #include "Window.h"
 
@@ -37,13 +38,12 @@ namespace gfx {
 #pragma warning(disable:4355) // use of this in member initializer list
 Bloom::Bloom()
 : m_ToneMapBuffer(nullptr)
-, m_Mesh(nullptr)
+, m_Quad(nullptr)
 , m_View(nullptr)
 , m_DownSampleBrightPassMaterial(nullptr)
 , m_DownSampleMaterial(nullptr)
 , m_DownSampleBrightPassMap(-1)
 , m_DownSampleBrightPassLumMap(-1)
-, m_DownSampleBrightPassToneMapData(-1)
 , m_DownSampleMap(-1)
 , m_Hdr(false)
 , m_ViewportSizeChangedHandler(std::bind(&Bloom::resize, this))
@@ -52,7 +52,6 @@ Bloom::Bloom()
     {
         m_BlurPassMaterial[i] = nullptr;	
         m_BlurMapPos[i] = -1;
-        m_BlurTexelSize[i] = -1;
     }
 }
 #pragma warning(default:4355)
@@ -104,10 +103,10 @@ void Bloom::cleanShaders()
         delete m_DownSampleBrightPassMaterial;
         m_DownSampleBrightPassMaterial = nullptr;
     }
-    if (m_Mesh != nullptr)
+    if (m_Quad != nullptr)
     {
-        m_Mesh->release();
-        m_Mesh = nullptr;
+        m_Quad->release();
+        m_Quad = nullptr;
     }
 }
 
@@ -123,7 +122,7 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
     //////////////////////////////////////////////////////////////////////////
     ///                             Quad                                   ///
     //////////////////////////////////////////////////////////////////////////
-    m_Mesh = CONTENT->getFullscreenQuad();
+    m_Quad = CONTENT->getFullscreenQuad();
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Materials                              ///
@@ -135,7 +134,7 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
         m_DownSampleMaterial = downSampleMaterial->createMaterialInstance(eShaderType_Normal);
         downSampleMaterial->release();
 
-        m_DownSampleMaterial->calculateMaterialLayout(m_Mesh->getVertexLayout());
+        m_DownSampleMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
         m_DownSampleBrightPassMap = m_DownSampleMaterial->findParameter(HEFS::strmap);
     }
 
@@ -145,69 +144,75 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
         m_DownSampleBrightPassMaterial = downSampleBPMaterial->createMaterialInstance(eShaderType_Normal);
         downSampleBPMaterial->release();
 
-        if (hdr)
-        {
-            m_DownSampleBrightPassLumMap = m_DownSampleBrightPassMaterial->findParameter(HEFS::strlumMap);
-            //m_DownSampleBrightPassToneMapData = m_DownSampleBrightPassShader->getBufferId("SharedToneMapBuffer");
-            //m_DownSampleBrightPassShader->setBuffer(m_DownSampleBrightPassToneMapData, m_ToneMapBuffer);
-        }
-
+        m_DownSampleBrightPassLumMap = m_DownSampleBrightPassMaterial->findParameter(HEFS::strlumMap);
         m_DownSampleMap = m_DownSampleMaterial->findParameter(HEFS::strmap);
     }
 
-    for (int pass = 0; pass < 2; ++pass)
+    const Material* const blurHMaterial(CONTENT->loadMaterial("engine/post/gaussBlurH.hm"));
+    m_BlurPassMaterial[0] = blurHMaterial->createMaterialInstance(eShaderType_Normal);
+    blurHMaterial->release();
+
+    const Material* const blurVMaterial(CONTENT->loadMaterial("engine/post/gaussBlurV.hm"));
+    m_BlurPassMaterial[1] = blurVMaterial->createMaterialInstance(eShaderType_Normal);
+    blurVMaterial->release();
+
+    for (size_t i(0); i < 2; ++i)
     {
-        m_BlurMapPos[pass] = m_BlurPassMaterial[pass]->getShaderSamplerId("map");
+        m_BlurMapPos[i] = m_BlurPassMaterial[i]->findParameter(HEFS::strmap);
     }
-
-
-
-    GRAPHICS->setActiveContext(m_View->getWindow()->getContext());
-    for (int pass = 0; pass < 2; ++pass)
+    
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Textures                               ///
+    //////////////////////////////////////////////////////////////////////////
+    ResourceFactory<Texture2D>* textFac(ResourceFactory<Texture2D>::getInstance());
+    GraphicsEngine* const gfxEngine(GRAPHICS);
+    gfxEngine->setActiveContext(m_View->getWindow()->getContext());
+    for (int pass(0); pass < 2; ++pass)
     {
-        //////////////////////////////////////////////////////////////////////////
-        ///                             Textures                               ///
-        //////////////////////////////////////////////////////////////////////////
-        m_Texture[pass].resize(m_DownSamples);
+        m_Texture[pass].resize(s_DownSamples);
 
-        for (int i = 0; i < m_DownSamples; ++i)
+        for (int i(0); i < s_DownSamples; ++i)
         {
-            ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
-            m_Texture[pass][i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
-            m_Texture[pass][i]->init(gfx::TextureWrapType_Clamp,  gfx::TextureFilterType_Linear, 
-                gfx::TextureFormat_RGBA16F, false);
+            ObjectHandle handle(textFac->create());
+            m_Texture[pass][i] = textFac->get(handle);
+            m_Texture[pass][i]->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Linear, gfx::TextureFormat_RGBA16F, false);
             m_Texture[pass][i]->setName("Bloom::m_Texture[pass][i]");
         }
-
-        //////////////////////////////////////////////////////////////////////////
-        ///                               Fbo's                                ///
-        //////////////////////////////////////////////////////////////////////////
-
-        //Downsample fbo's
-        m_FboId[pass].resize(m_DownSamples);
-        glGenFramebuffers(m_DownSamples, &m_FboId[pass][0]);
-
-        for (int i(0); i < m_DownSamples; ++i)
-        {
-            GL::heBindFbo(m_FboId[pass][i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture[pass][i]->getID(), 0);       
-        }
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                             RenderTargets                          ///
+    //////////////////////////////////////////////////////////////////////////
+    m_RenderTarget.resize(s_DownSamples);
+    for (int i(0); i < s_DownSamples; ++i)
+    {
+        RenderTarget* rt(NEW RenderTarget(gfxEngine->getSharedContext()));
+        m_RenderTarget[i] = rt;
+    }
+
     resize();
+
+    for (int i(0); i < s_DownSamples; ++i)
+    {
+        m_RenderTarget[i]->addTextureTarget(m_Texture[0][i]);
+        m_RenderTarget[i]->init();
+    }
 }
 
 void Bloom::resize()
 {
-    for (int pass = 0; pass < 2; ++pass)
+    //////////////////////////////////////////////////////////////////////////
+    ///                     Textures & Rendertargets                       ///
+    //////////////////////////////////////////////////////////////////////////
+    for (int i = 0; i < s_DownSamples; ++i)
     {
-        //////////////////////////////////////////////////////////////////////////
-        ///                             Textures                               ///
-        //////////////////////////////////////////////////////////////////////////
-        for (int i = 0; i < m_DownSamples; ++i)
+        const int width(m_View->getViewport().width / ((i+2) * 2));
+        const int height(m_View->getViewport().height / ((i+2) * 2));
+        for (int pass = 0; pass < 2; ++pass)
         {
-            m_Texture[pass][i]->setData(m_View->getViewport().width / ((i+2) * 2), m_View->getViewport().height / ((i+2) * 2), 
-                0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Float, 0 );
+            m_Texture[pass][i]->setData(width, height, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Float, 0 );
         }
+        m_RenderTarget[i]->setSize(width, height);
     }
 }
 
@@ -216,45 +221,50 @@ void Bloom::render( const Texture2D* texture, const Texture2D* lumMap )
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     HE_ASSERT(m_Hdr == true && lumMap != nullptr || m_Hdr == false && lumMap == nullptr, "no valid lumMap provided");
 
-    GL::heBlendEnabled(false);
-    GL::heSetCullFace(false);
-    GL::heSetDepthWrite(false);
-    GL::heSetDepthRead(false);
-
-    GL::heBindVao(m_Mesh->getVertexArraysID());
-    
+    DrawContext context;
+    context.m_VBO = m_Quad->getVBO();
+    context.m_IBO = m_Quad->getIBO();
+        
     //BrightPass
-    GL::heBindFbo(m_FboId[0][0]);
-    m_DownSampleBrightPassMaterial->bind();
-    m_DownSampleBrightPassMaterial->setShaderVar(m_DownSampleBrightPassMap, texture);
-    if (m_Hdr)
-    {
-        m_DownSampleBrightPassMaterial->setShaderVar(m_DownSampleBrightPassLumMap, lumMap);
-    }
-    GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
-    m_Mesh->draw();
+    GL::heSetViewport(he::RectI(0, 0, static_cast<int>(m_Texture[0][0]->getWidth()), static_cast<int>(m_Texture[0][0]->getHeight())));
+
+    m_RenderTarget[0]->prepareForRendering();
+    m_DownSampleBrightPassMaterial->getParameter(m_DownSampleBrightPassMap).setTexture2D(texture);
+    if (m_DownSampleBrightPassLumMap >= 0)
+        m_DownSampleBrightPassMaterial->getParameter(m_DownSampleBrightPassLumMap).setTexture2D(lumMap);
+    m_DownSampleBrightPassMaterial->apply(context);
+    m_Quad->draw();
 
     //DownSample further
-    m_DownSampleMaterial->bind();
-    for (uint32 fboId = 1; fboId < m_DownSamples; ++fboId)
+    for (uint32 fboId(1); fboId < s_DownSamples; ++fboId)
     {
-        GL::heBindFbo(m_FboId[0][fboId]);
-        m_DownSampleMaterial->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
-        GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][fboId]->getWidth(), (int)m_Texture[0][fboId]->getHeight()));
+        m_RenderTarget[fboId]->prepareForRendering();
+
+        const Texture2D* const tex(m_Texture[0][fboId - 1]);
+        m_DownSampleMaterial->getParameter(m_DownSampleMap).setTexture2D(tex);
+        GL::heSetViewport(he::RectI(0, 0, static_cast<int>(tex->getWidth()), static_cast<int>(tex->getHeight())));
+        m_DownSampleMaterial->apply(context);
 
         m_Quad->draw();
     }
 
     //Blur
-    for (int pass = 0; pass < 2; ++pass)
+    for (uint32 fboId(1); fboId < s_DownSamples; ++fboId)
     {
-        m_BlurPassMaterial[pass]->bind();
-        for (uint32 fboId = 1; fboId < m_FboId[pass].size(); ++fboId)
+        RenderTarget* const rt(m_RenderTarget[fboId]);
+        for (int pass(0); pass < 2; ++pass)
         {
-            GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
-            m_BlurPassMaterial[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
-            GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[pass == 0?1:0][fboId]->getWidth(), (int)m_Texture[pass == 0?1:0][fboId]->getHeight()));
-            glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
+            Texture2D* const fromTex(m_Texture[pass][fboId]);
+            Texture2D* const toTex(m_Texture[(pass+1)%2][fboId]);
+            MaterialInstance* const mat(m_BlurPassMaterial[pass]);
+
+            GL::heSetViewport(he::RectI(0, 0, static_cast<int>(toTex->getWidth()), static_cast<int>(toTex->getHeight())));
+            mat->getParameter(m_BlurMapPos[pass]).setTexture2D(fromTex);
+            rt->switchTextureTarget(0, toTex);
+
+            rt->prepareForRendering();
+            mat->apply(context);
+            m_Quad->draw();
         }
     }
 }

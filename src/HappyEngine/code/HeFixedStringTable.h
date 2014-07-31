@@ -96,6 +96,8 @@ DEF_FS(screenCenter);
 DEF_FS(scale);
 DEF_FS(scaleIn);
 DEF_FS(tcTransform);
+DEF_FS(map);
+DEF_FS(lumMap);
 
 
 //////////////////////////////////////////////////////////////////////////

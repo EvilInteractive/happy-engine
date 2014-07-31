@@ -57,7 +57,7 @@ private:
     he::PrimitiveList<Texture2D*> m_Texture[s_BlurPasses];
 
     UniformBuffer* m_ToneMapBuffer;
-    ModelMesh* m_Mesh;
+    ModelMesh* m_Quad;
     View* m_View;
 
     MaterialInstance* m_DownSampleBrightPassMaterial;
@@ -66,10 +66,8 @@ private:
 
     int8 m_DownSampleBrightPassMap;
     int8 m_DownSampleBrightPassLumMap;
-    int8 m_DownSampleBrightPassToneMapData;
     int8 m_DownSampleMap;
     int8 m_BlurMapPos[s_BlurPasses];
-    int8 m_BlurTexelSize[s_BlurPasses];
         
     bool m_Hdr;
 
