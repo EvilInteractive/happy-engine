@@ -218,7 +218,7 @@ bool GraphicsEngine::unregisterWindow(Window* window)
 void GraphicsEngine::draw()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    
+
     PROFILER_BEGIN("Scenes");
     SceneFactory* const sceneFactory(SceneFactory::getInstance());
     m_Scenes.forEach([sceneFactory](const ObjectHandle& sceneHandle)

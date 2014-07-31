@@ -52,6 +52,7 @@
 #include "Canvas2D.h"
 #include "GlobalSettings.h"
 #include "MaterialInstance.h"
+#include "ShaderUniformBufferManager.h"
 
 #include "Drawable.h"
 #include "DrawContext.h"
@@ -278,6 +279,7 @@ void Deferred3DRenderer::render()
         m_CollectionRenderTarget->prepareForRendering();
         GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
         m_CollectionRenderTarget->clear(he::Color(0.0f, 1, 0, 0));
+        GRAPHICS->getShaderUniformBufferManager()->updateSceneBuffer(m_Scene);
 
 
         //////////////////////////////////////////////////////////////////////////

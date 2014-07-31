@@ -32,19 +32,19 @@ class ICamera;
 
 class ShaderUniformBufferManager
 {
-    UNIFORM_STRUCT(PerFrameBuffer)
+    UNIFORM_STRUCT(PerSceneBuffer)
         UNIFORM_FLOAT_FLOAT_FLOAT_FLOAT(m_HDRShoulderStrength, m_HDRLinearStrength, m_HDRLinearAngle, m_HDRToeStrength);
         UNIFORM_FLOAT_FLOAT_FLOAT_FLOAT(m_HDRToeNumerator, m_HDRToeDenominator, m_HDRExposureBias, __pad_HDR);
         UNIFORM_VEC4(m_AmbientLightColor);
         UNIFORM_VEC4(m_DirectionalLightColor);
         UNIFORM_VEC3(m_DirectionalLightDirection);
 
-        PerFrameBuffer()
+        PerSceneBuffer()
             : m_AmbientLightColor(1.0f, 1.0f, 1.0f, 0.5f)
             , m_DirectionalLightColor(1.0f, 1.0f, 1.0f, 2.0f)
             , m_DirectionalLightDirection(0.0f, -1.0f, 0.0f)
         {}
-    UNIFORM_STRUCT_END(PerFrameBuffer)
+    UNIFORM_STRUCT_END(PerSceneBuffer)
 
     UNIFORM_STRUCT(PerCameraBuffer)
         UNIFORM_MAT4(m_View);
@@ -70,13 +70,13 @@ public:
 
     void init();
 
-    void updateFrameBuffer(const Scene* const scene);
+    void updateSceneBuffer(const Scene* const scene);
     void updateCameraBuffer(const ICamera* const camera);
 
     uint32 findLink(const he::FixedString& name) const;
 
 private:
-    SharedUniformBuffer<PerFrameBuffer> m_FrameBuffer;
+    SharedUniformBuffer<PerSceneBuffer> m_FrameBuffer;
     SharedUniformBuffer<PerCameraBuffer> m_CameraBuffer;
 
     size_t m_BufferCounter;

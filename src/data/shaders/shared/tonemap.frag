@@ -20,7 +20,7 @@
 #if _FRAG_TONEMAP
 #define _FRAG_TONEMAP
 
-#include "shared/perFrameUniformBuffer.frag"
+#include "shared/perSceneUniformBuffer.frag"
 
 float getWhite(in sampler2D lumMap, in float min, in float max)
 {
@@ -28,17 +28,17 @@ float getWhite(in sampler2D lumMap, in float min, in float max)
 }
 vec3 tonemapFunc(in vec3 x)
 {
-	return ((x * (perFrameUniformBuffer.shoulderStrength * x + perFrameUniformBuffer.linearAngle * perFrameUniformBuffer.linearStrength) + 
-            perFrameUniformBuffer.toeStrength * perFrameUniformBuffer.toeNumerator) / 
-			(x * (perFrameUniformBuffer.shoulderStrength * x + perFrameUniformBuffer.linearStrength) + 
-            perFrameUniformBuffer.toeStrength * perFrameUniformBuffer.toeDenominator)) - 
-            perFrameUniformBuffer.toeNumerator / perFrameUniformBuffer.toeDenominator;
+	return ((x * (perSceneUniformBuffer.shoulderStrength * x + perSceneUniformBuffer.linearAngle * perSceneUniformBuffer.linearStrength) + 
+            perSceneUniformBuffer.toeStrength * perSceneUniformBuffer.toeNumerator) / 
+			(x * (perSceneUniformBuffer.shoulderStrength * x + perSceneUniformBuffer.linearStrength) + 
+            perSceneUniformBuffer.toeStrength * perSceneUniformBuffer.toeDenominator)) - 
+            perSceneUniformBuffer.toeNumerator / perSceneUniformBuffer.toeDenominator;
 }
 vec3 tonemap(in vec3 hdr, in vec3 whitePoint)
 {
 	vec3 ldr = hdr;
 		
-	ldr = tonemapFunc(ldr*perFrameUniformBuffer.exposureBias) / tonemapFunc(whitePoint);
+	ldr = tonemapFunc(ldr*perSceneUniformBuffer.exposureBias) / tonemapFunc(whitePoint);
 	
 	return ldr;
 }

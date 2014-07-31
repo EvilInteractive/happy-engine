@@ -17,10 +17,10 @@
 //
 //Author: Bastian Damman
 
-#if _FRAG_PERFRAMEUNIFORMBUFFER
-#define _FRAG_PERFRAMEUNIFORMBUFFER
+#if _FRAG_PERSCENEUNIFORMBUFFER
+#define _FRAG_PERSCENEUNIFORMBUFFER
 
-struct PerFrameUniformBuffer
+struct PerSceneUniformBuffer
 {
     // HDR
 	float shoulderStrength;
@@ -39,9 +39,9 @@ struct PerFrameUniformBuffer
     float __pad_Light
 };
 
-layout(std140) uniform SharedPerFrameUniformBuffer
+layout(std140) uniform PerSceneUniformBuffer
 {
-	PerFrameUniformBuffer perFrameUniformBuffer;
+	PerFrameUniformBuffer perSceneUniformBuffer;
 };
 
-#endif // _FRAG_PERFRAMEUNIFORMBUFFER
+#endif // _FRAG_PERSCENEUNIFORMBUFFER

@@ -51,12 +51,12 @@ public:
         }
     }
 
-    void init(const size_t id, const T& defaultValues)
+    void init(const size_t id, const T& defaultValues, const bool dynamic)
     {
         m_BufferId = id;
         glGenBuffers(1, &m_GlBuffer);
         glBindBuffer(GL_UNIFORM_BUFFER, m_GlBuffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(T), &defaultValues, GL_STREAM_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(T), &defaultValues, dynamic? GL_DYNAMIC_DRAW : GL_STREAM_DRAW);
         bindBuffer();
     }
 

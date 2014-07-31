@@ -42,13 +42,13 @@ ShaderUniformBufferManager::~ShaderUniformBufferManager()
 
 void ShaderUniformBufferManager::init()
 {
-    m_FrameBuffer.init(m_BufferCounter++, PerFrameBuffer());
-    m_CameraBuffer.init(m_BufferCounter++, PerCameraBuffer());
+    m_FrameBuffer.init(m_BufferCounter++, PerSceneBuffer(), true);
+    m_CameraBuffer.init(m_BufferCounter++, PerCameraBuffer(), true);
 }
 
-void ShaderUniformBufferManager::updateFrameBuffer(const Scene* const scene)
+void ShaderUniformBufferManager::updateSceneBuffer(const Scene* const scene)
 {
-    PerFrameBuffer buffer;
+    PerSceneBuffer buffer;
 
     const LightManager* const lightMan(scene->getLightManager());
 

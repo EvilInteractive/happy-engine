@@ -21,6 +21,8 @@
 
 #include "CameraOrtho.h"
 #include "Bound.h"
+#include "GraphicsEngine.h"
+#include "ShaderUniformBufferManager.h"
 
 namespace he {
 namespace gfx {
@@ -150,6 +152,7 @@ void CameraOrtho::prepareForRendering()
         m_RegenViewMatrix = false;
         m_RegenProjMatrix = false;
     }
+    GRAPHICS->getShaderUniformBufferManager()->updateCameraBuffer(this);
 }
 
 void CameraOrtho::setNearFarPlane( float nearZ, float farZ )

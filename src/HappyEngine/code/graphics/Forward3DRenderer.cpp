@@ -30,6 +30,8 @@
 #include "RenderTarget.h"
 #include "Scene.h"
 #include "View.h"
+#include "GraphicsEngine.h"
+#include "ShaderUniformBufferManager.h"
 
 namespace he {
 namespace gfx {
@@ -82,6 +84,8 @@ void Forward3DRenderer::render()
     const ICamera* camera(m_View->getCamera());
     if (camera != nullptr)
     {
+        GRAPHICS->getShaderUniformBufferManager()->updateSceneBuffer(m_Scene);
+
         m_RenderTarget->prepareForRendering();
         
         GL::heSetDepthFunc(DepthFunc_LessOrEqual);
