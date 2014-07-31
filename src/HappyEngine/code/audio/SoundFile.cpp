@@ -26,6 +26,33 @@
 namespace he {
 namespace sfx {
 
+SoundFileProperties::SoundFileProperties()
+    : samplesCount(0)
+    , channelsCount(0)
+    , samplerate(0)
+{
+
+}
+
+SoundFileProperties::SoundFileProperties( SoundFileProperties&& other )
+    : filePath(std::move(other.filePath))
+    , samplesCount(samplesCount)
+    , channelsCount(channelsCount)
+    , samplerate(samplerate)
+{
+
+}
+
+SoundFileProperties& SoundFileProperties::operator=( SoundFileProperties&& other )
+{
+    filePath = std::move(other.filePath);
+    samplesCount = other.samplesCount;
+    channelsCount = other.channelsCount;
+    samplerate = other.samplerate;
+    return *this;
+}
+
+
 /* CONSTRUCTOR - DESTRUCTOR */
 SoundFile::SoundFile() :	
     m_FilePath(""),
@@ -36,7 +63,7 @@ SoundFile::SoundFile() :
 {
 }
 
-SoundFile::SoundFile(const he::String& filePath) :	m_FilePath(filePath),
+SoundFile::SoundFile(const he::String& filePath) :	m_FilePath(filePath.clone()),
                                                     m_SoundFile(nullptr),
                                                     m_NrSamples(0),
                                                     m_Samplerate(0),
@@ -108,18 +135,18 @@ SoundFileProperties SoundFile::getProperties() const
 {
     SoundFileProperties prop;
 
-    prop.filePath = m_FilePath;
+    prop.filePath = m_FilePath.clone();
     prop.channelsCount = m_ChannelsCount;
     prop.samplerate = m_Samplerate;
     prop.samplesCount = m_NrSamples;
 
-    return prop;
+    return std::move(prop);
 }
 
 /* DEFAULT COPY & ASSIGNMENT */
 SoundFile::SoundFile(const SoundFile& second)
     : m_SoundFile(second.m_SoundFile)
-    , m_FilePath(second.m_FilePath)
+    , m_FilePath(second.m_FilePath.clone())
     , m_NrSamples(second.m_NrSamples)
     , m_Samplerate(second.m_Samplerate)
     , m_ChannelsCount(second.m_ChannelsCount)
@@ -129,7 +156,7 @@ SoundFile::SoundFile(const SoundFile& second)
 SoundFile& SoundFile::operator=(const SoundFile& second)
 {
     m_SoundFile = second.m_SoundFile;
-    m_FilePath = second.m_FilePath;
+    m_FilePath = second.m_FilePath.clone();
     m_NrSamples = second.m_NrSamples;
     m_Samplerate = second.m_Samplerate;
     m_ChannelsCount = second.m_ChannelsCount;

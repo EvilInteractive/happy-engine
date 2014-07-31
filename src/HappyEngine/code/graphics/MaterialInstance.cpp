@@ -96,8 +96,8 @@ void MaterialInstance::init()
             case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
             case eShaderUniformType_Int:
                 param.init(id, MaterialParameter::eType_Int);
-                break;
                 param.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
+                break;
             case eShaderUniformType_UInt:
                 LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
                 break;

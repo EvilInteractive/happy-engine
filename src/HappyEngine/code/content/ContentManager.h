@@ -75,7 +75,7 @@ public:
     gui::Font* loadFont(const he::String& path, uint16 size, uint8 options = 0);
     gui::Font* getDefaultFont(uint16 size = 12);
 
-    gfx::Shader* loadShader(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>& outputs);
+    gfx::Shader* loadShader(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr);
    
     gfx::Material* loadMaterial(const he::String& asset);
 

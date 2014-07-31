@@ -42,7 +42,7 @@ class SkyBox;
 class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
 {
     friend Singleton;
-    SceneFactory() { init(1, 2, "SceneFactory"); }
+    SceneFactory() { init(1, 2, he::String("SceneFactory")); }
     virtual ~SceneFactory() { }
 };
 

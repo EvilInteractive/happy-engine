@@ -26,23 +26,58 @@ out vec4 outColor;
 
 uniform sampler2D map;
 
+
 void main()
 {
     vec3 color = vec3(0, 0, 0);
     
+    // Normalized in 1D
+    /*
+    0.05309227f;
+    0.087110729f;
+    0.124071462f;
+    0.153402364f;
+    0.164646348f;
+    0.153402364f;
+    0.124071462f;
+    0.087110729f;
+    0.05309227f;
+    */
+    
+    // Normalized in 2D
+    /*
+    0.008741448f;
+    0.014342463f;
+    0.020427913f;
+    0.025257139f;
+    0.02710842f;;
+    0.025257139f;
+    0.020427913f;
+    0.014342463f;
+    0.008741448f;
+    */
+
 #if PASS1
-    color += textureOffset(map, texCoord, ivec2(-2, 0)).rgb * 0.0625f;
-    color += textureOffset(map, texCoord, ivec2(-1, 0)).rgb * 0.2500f;
-    color += textureOffset(map, texCoord, ivec2( 0, 0)).rgb * 0.3750f;
-    color += textureOffset(map, texCoord, ivec2( 1, 0)).rgb * 0.2500f;
-    color += textureOffset(map, texCoord, ivec2( 2, 0)).rgb * 0.0625f;
+    color += textureOffset(map, texCoord, ivec2(-4, 0)).rgb * 0.05309227f;
+    color += textureOffset(map, texCoord, ivec2(-3, 0)).rgb * 0.087110729f;
+    color += textureOffset(map, texCoord, ivec2(-2, 0)).rgb * 0.124071462f;
+    color += textureOffset(map, texCoord, ivec2(-1, 0)).rgb * 0.153402364f;
+    color += textureOffset(map, texCoord, ivec2( 0, 0)).rgb * 0.164646348f;
+    color += textureOffset(map, texCoord, ivec2( 1, 0)).rgb * 0.153402364f;
+    color += textureOffset(map, texCoord, ivec2( 2, 0)).rgb * 0.124071462f;
+    color += textureOffset(map, texCoord, ivec2( 3, 0)).rgb * 0.087110729f;
+    color += textureOffset(map, texCoord, ivec2( 4, 0)).rgb * 0.05309227f;
 #endif
 #if PASS2
-    color += textureOffset(map, texCoord, ivec2(0, -2)).rgb * 0.0625f;
-    color += textureOffset(map, texCoord, ivec2(0, -1)).rgb * 0.2500f;
-    color += textureOffset(map, texCoord, ivec2(0,  0)).rgb * 0.3750f;
-    color += textureOffset(map, texCoord, ivec2(0,  1)).rgb * 0.2500f;
-    color += textureOffset(map, texCoord, ivec2(0,  2)).rgb * 0.0625f;
+    color += textureOffset(map, texCoord, ivec2(0, -4)).rgb * 0.05309227f;
+    color += textureOffset(map, texCoord, ivec2(0, -3)).rgb * 0.087110729f;
+    color += textureOffset(map, texCoord, ivec2(0, -2)).rgb * 0.124071462f;
+    color += textureOffset(map, texCoord, ivec2(0, -1)).rgb * 0.153402364f;
+    color += textureOffset(map, texCoord, ivec2(0,  0)).rgb * 0.164646348f;
+    color += textureOffset(map, texCoord, ivec2(0,  1)).rgb * 0.153402364f;
+    color += textureOffset(map, texCoord, ivec2(0,  2)).rgb * 0.124071462f;
+    color += textureOffset(map, texCoord, ivec2(0,  3)).rgb * 0.087110729f;
+    color += textureOffset(map, texCoord, ivec2(0,  4)).rgb * 0.05309227f;
 #endif
             
     outColor = vec4(color, 1.0f);

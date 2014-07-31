@@ -64,7 +64,7 @@ public:
 
     void setName(const he::String& name)
     {
-        m_Name = name;
+        m_Name = name.clone();
     }
     const he::String& getName() const
     {

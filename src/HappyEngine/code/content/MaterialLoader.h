@@ -47,6 +47,7 @@ struct MaterialDesc
     gfx::BlendEquation m_BlendEquation;
     gfx::BlendFunc m_SourceBlend;
     gfx::BlendFunc m_DestBlend;
+    he::ObjectList<he::String> m_Defines;
 
     // Default values for uniforms go here as well
 

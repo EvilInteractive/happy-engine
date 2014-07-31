@@ -40,13 +40,8 @@ public:
     virtual ~Shader();
 
     // Init
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath);
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>& outputs);
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
-    
-    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName);
-    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>& outputs);
-    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr);
+    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines = nullptr);
 
     // Use
     void bind();
@@ -56,6 +51,8 @@ public:
     IShaderUniform* getUniform(const ShaderUniformID id) const;
     const he::PrimitiveList<IShaderUniform*>& getUniforms() const { return m_Uniforms; }
     const ShaderLayout& getShaderLayout() const { return m_Layout; }
+
+    int8 getOutputIndex(const he::FixedString& outputName) const;
     
     // Setters
     void setShaderVar(uint32 id, const int value) const;

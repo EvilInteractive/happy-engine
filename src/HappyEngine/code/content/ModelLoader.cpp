@@ -184,7 +184,7 @@ gfx::Model* ModelLoader::asyncLoadModel(const he::String& path, const bool saveP
     else
     {
         ModelLoadData data;
-        data.path = path;
+        data.path = path.clone();
         data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
         data.savePickingData = savePickingData;
         
@@ -244,7 +244,7 @@ gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const he::String& path, const h
         ObjectHandle meshHandle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
 
         ModelLoadData data;
-        data.path = path;
+        data.path = path.clone();
         data.modelHandle = modelHandle;
         data.savePickingData = savePickingData;
 
@@ -326,7 +326,7 @@ gfx::Model* ModelLoader::loadModel(const he::String& path, const bool savePickin
     else
     {
         ModelLoadData data;
-        data.path = path;
+        data.path = path.clone();
         data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
         data.savePickingData = savePickingData;
         gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
@@ -368,7 +368,7 @@ gfx::ModelMesh* ModelLoader::loadModelMesh(const he::String& path, const he::Str
     else
     {
         ModelLoadData data;
-        data.path = path;
+        data.path = path.clone();
         data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
         data.savePickingData = savePickingData;
 

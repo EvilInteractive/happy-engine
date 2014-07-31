@@ -34,6 +34,27 @@ class PointLight;
 
 class Scene;
 
+struct ToneMapData
+{
+    ToneMapData()
+        : shoulderStrength(0.2f)
+        , linearStrength(0.52f)
+        , linearAngle(1.14f)
+        , toeStrength(0.81f)
+        , toeNumerator(0.04f)
+        , toeDenominator(1.1f)
+        , exposureBias(0.55f)
+    {}
+
+    float shoulderStrength;
+    float linearStrength;
+    float linearAngle;
+    float toeStrength;
+    float toeNumerator;
+    float toeDenominator;
+    float exposureBias;
+};
+
 class HAPPY_ENTRY LightManager
 {
 public:
@@ -60,6 +81,9 @@ public:
 
     static const VertexLayout& getVertexLayoutLightVolume();
 
+    const ToneMapData& getToneMapData() const { return m_ToneMapData; }
+    ToneMapData& getToneMapDataForEdit() { return m_ToneMapData; }
+
 private:
     Scene* m_Scene;
 
@@ -68,6 +92,8 @@ private:
 
     he::ObjectList<ObjectHandle> m_PointLightList;
     he::ObjectList<ObjectHandle> m_SpotLightList;
+
+    ToneMapData m_ToneMapData;
 
     //Disable default copy constructor and default assignment operator
     LightManager(const LightManager&);

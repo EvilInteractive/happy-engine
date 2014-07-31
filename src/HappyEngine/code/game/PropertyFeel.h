@@ -99,7 +99,7 @@ public:
 
     virtual EPropertyFeel getType() { return ePropertyFeel_DropDown; }
 
-    void addItem(const char* item) { m_List.add(item); }
+    void addItem(const char* item) { m_List.add(he::String(item)); }
     const he::ObjectList<he::String>& getList() const { return m_List; }
 
 private:

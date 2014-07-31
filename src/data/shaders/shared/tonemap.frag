@@ -17,35 +17,30 @@
 //
 //Author: Bastian Damman
 
-struct ToneMapData
-{
-	float shoulderStrength;
-	float linearStrength;
-	float linearAngle;
-	float toeStrength;
-	float toeNumerator;
-	float toeDenominator;
-	float exposureBias;
-};
-layout(std140) uniform SharedToneMapBuffer
-{
-	ToneMapData toneMapData;
-};
+#if _FRAG_TONEMAP
+#define _FRAG_TONEMAP
+
+#include "shared/perFrameUniformBuffer.frag"
 
 float getWhite(in sampler2D lumMap, in float min, in float max)
 {
     return clamp(textureLod(lumMap, vec2(0.5f, 0.5f), 0).r, min, max);
 }
-vec3 tonemapFunc(in vec3 x, in ToneMapData data)
+vec3 tonemapFunc(in vec3 x)
 {
-	return ((x * (data.shoulderStrength * x + data.linearAngle * data.linearStrength) + data.toeStrength * data.toeNumerator) / 
-			(x * (data.shoulderStrength * x + data.linearStrength) + data.toeStrength * data.toeDenominator)) - data.toeNumerator / data.toeDenominator;
+	return ((x * (perFrameUniformBuffer.shoulderStrength * x + perFrameUniformBuffer.linearAngle * perFrameUniformBuffer.linearStrength) + 
+            perFrameUniformBuffer.toeStrength * perFrameUniformBuffer.toeNumerator) / 
+			(x * (perFrameUniformBuffer.shoulderStrength * x + perFrameUniformBuffer.linearStrength) + 
+            perFrameUniformBuffer.toeStrength * perFrameUniformBuffer.toeDenominator)) - 
+            perFrameUniformBuffer.toeNumerator / perFrameUniformBuffer.toeDenominator;
 }
 vec3 tonemap(in vec3 hdr, in vec3 whitePoint)
 {
 	vec3 ldr = hdr;
 		
-	ldr = tonemapFunc(ldr*toneMapData.exposureBias, toneMapData) / tonemapFunc(whitePoint, toneMapData);
+	ldr = tonemapFunc(ldr*perFrameUniformBuffer.exposureBias) / tonemapFunc(whitePoint);
 	
 	return ldr;
 }
+
+#endif // _FRAG_TONEMAP

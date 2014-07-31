@@ -70,8 +70,18 @@ void ShapeMesh::addPoint( const vec3& point, const bool startNewLine /*= false*/
 {
     HE_ASSERT(m_Points, "beginEditing was not called when the call clearPoints was made!");
     const size_t vertexCount(m_Points->m_Vertices.size());
-    if (m_Points->m_SupportLineBreaks && !startNewLine && vertexCount > 0)
-        m_Points->m_Indices.add(he::checked_numcast<uint16>(vertexCount - 1));
+    if (m_Points->m_SupportLineBreaks && vertexCount > 0)
+    {
+        if (m_Points->m_Indices.size() % 2 == 0)
+        {
+            if (!startNewLine)
+                m_Points->m_Indices.add(he::checked_numcast<uint16>(vertexCount - 1));
+        }
+        else
+        {
+            HE_ASSERT(!startNewLine, "Could not start newline! Last point just started a new line!");
+        }
+    }
     m_Points->m_Indices.add(he::checked_numcast<uint16>(vertexCount));
     m_Points->m_Vertices.add(point);
 }

@@ -46,7 +46,7 @@ class ViewFactory: public ObjectFactory<View>, public Singleton<ViewFactory>
 {
     friend class Singleton<ViewFactory>;
 
-    ViewFactory() { init(1, 2, "ViewFactory"); }
+    ViewFactory() { init(1, 2, he::String("ViewFactory")); }
 
 public:
     virtual ~ViewFactory() { }

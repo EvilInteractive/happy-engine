@@ -26,12 +26,12 @@ namespace he {
 namespace gfx {
 
 #define UNIFORM_STRUCT(name) struct name {
-#define UNIFORM_VEC3(var) vec3 var; float __##pad_##var;
+#define UNIFORM_VEC3(var) vec3 var; float __pad_##var;
 #define UNIFORM_MAT4(var) mat44 var;
 #define UNIFORM_VEC4(var) vec4 var;
 #define UNIFORM_VEC2_VEC2(var1, var2) vec2 var1; vec2 var2;
 #define UNIFORM_VEC2_FLOAT_FLOAT(var1, var2, var3) vec2 var1; float var2; float var3;
-#define UNIFORM_FLOAT_FLOAT_FLOAT_FLOAT(var1, var2, var3, var4) vec2 var1; float var2; float var3; float var4;
+#define UNIFORM_FLOAT_FLOAT_FLOAT_FLOAT(var1, var2, var3, var4) float var1; float var2; float var3; float var4;
 #define UNIFORM_STRUCT_END(name) }; HE_COMPILE_ASSERT(sizeof(name) % 16 == 0, "Uniform struct '" STR(name) "' is not 16byte aligned!");
 // EVAL(CONCAT(CONCAT("Uniform struct ", STR(name)), " is not 16byte aligned!"))
 
@@ -57,6 +57,7 @@ public:
         glGenBuffers(1, &m_GlBuffer);
         glBindBuffer(GL_UNIFORM_BUFFER, m_GlBuffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(T), &defaultValues, GL_STREAM_DRAW);
+        bindBuffer();
     }
 
     void updateData(const T& data)
@@ -72,7 +73,7 @@ public:
 
     void bindBuffer() const
     {
-        GL::heBindUniformBuffer(m_GlBuffer, m_BufferId);
+        GL::heBindUniformBuffer(m_BufferId, m_GlBuffer);
     }
 
 private:

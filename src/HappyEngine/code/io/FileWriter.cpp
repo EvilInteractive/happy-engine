@@ -38,7 +38,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
     close();
 
     bool success(true);
-    boost::filesystem::path boostPath(path.str());
+    boost::filesystem::path boostPath(path.str().c_str());
     boost::system::error_code error;
     if (boost::filesystem::exists(boostPath, error) == false)
     {
@@ -85,20 +85,6 @@ FileWriter& FileWriter::operator<<( const he::String& str )
 {
     HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
     m_Stream << str.c_str();
-    return *this;
-}
-
-FileWriter& FileWriter::operator<<( const wchar_t* const str )
-{
-    HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
-    m_Stream << str;
-    return *this;
-}
-
-FileWriter& FileWriter::operator<<( const std::wstring& str )
-{
-    HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
-    m_Stream << str;
     return *this;
 }
 

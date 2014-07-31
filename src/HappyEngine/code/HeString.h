@@ -26,7 +26,39 @@
 
 namespace he {
 
-typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> > String;
+typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> > StdString;
+class String : public StdString
+{
+public:
+    String();
+    ~String();
+
+    String(const char* charBuffer, const int len = -1);
+    String(const wchar_t* charBuffer);
+    String(he::String&& other);
+    String(std::string&& other);
+    String(const he::String& other);
+    String& operator=(he::String&& other);
+    String& operator=(const he::String& other);
+    
+    he::String clone() const;
+    uint32 hash() const;
+
+    // Operators
+    bool operator==(const he::String& other) const;
+    bool operator!=(const he::String& other) const;
+    bool operator<(const he::String& other) const;
+    bool operator==(const char* const other) const;
+    bool operator!=(const char* const other) const;
+    bool operator<(const char* const other) const;
+
+    String& operator+=(const he::String& other);
+    String& operator+=(he::String&& other);
+    String& operator+=(const char* const other);
+    String operator+(const he::String& other) const;
+    String operator+(he::String&& other) const;
+    String operator+(const char* const other) const;
+};
 
 void toLower(char* const buff);
 

@@ -44,7 +44,21 @@ he::String trimEnd(const he::String& str)
     }
     return str.substr(0, i + 1);
 }
-he::String ShaderPreProcessor::process(const he::String& code, const std::set<he::String>& defines)
+he::String trimBegin(const he::String& str)
+{
+    const size_t size(str.size());
+    size_t i(0);
+    for (; i < size; ++i)
+    {
+        if (str[i] != ' ')
+        {
+            break;
+        }
+    }
+    return str.substr(i);
+}
+
+he::String ShaderPreProcessor::process(const he::String& code, he::ObjectList<he::String>& defines)
 {
     std::stringstream stream;
 
@@ -77,7 +91,8 @@ he::String ShaderPreProcessor::process(const he::String& code, const std::set<he
         else if (line.find("#if ") != he::String::npos)
         {
             ++ifblocks;
-            if (discardBlock == 0 && defines.find(trimEnd(line.substr(line.find("#if ") + 4))) == defines.cend())
+            size_t index;
+            if (discardBlock == 0 && !defines.find(trimEnd(line.substr(line.find("#if ") + 4)), index))
             {
                 discardBlock = ifblocks;
             }
@@ -86,7 +101,15 @@ he::String ShaderPreProcessor::process(const he::String& code, const std::set<he
         {
             if (discardBlock == 0)
             {
-                if (line.find("#include ") != he::String::npos)
+                if (line.find("#define") != he::String::npos)
+                {
+                    he::String defineName(line.substr(7));
+                    defineName = trimBegin(defineName);
+                    defineName = trimEnd(defineName);
+                    if (!defines.contains(defineName))
+                        defines.add(defineName);
+                }
+                else if (line.find("#include ") != he::String::npos)
                 {
                     const he::String& includeRelativePath(CONTENT->getShaderFolderPath().str());
                     HE_ASSERT(includeRelativePath.back() == '/', "includeRelativePath does not end with trailing slash");
@@ -110,7 +133,9 @@ he::String ShaderPreProcessor::process(const he::String& code, const std::set<he
 
                 }
                 else
+                {
                     stream << line << "\n";
+                }
             }
         }
     });

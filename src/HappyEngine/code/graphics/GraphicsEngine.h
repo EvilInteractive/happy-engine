@@ -48,6 +48,7 @@ class GLContext;
 #ifdef USE_WEB
 class WebViewSurfaceFactory;
 #endif
+class ShaderUniformBufferManager;
 
 ENUM(ShadowResolution, uint8);
 
@@ -98,6 +99,7 @@ public:
     static uint16 getShadowMapSize(const ShadowResolution& resolution);
 
     View* getActiveView() const { return m_ActiveView; }
+    ShaderUniformBufferManager* getShaderUniformBufferManager() const { return m_UBOManager; }
     
 #ifdef USE_WEB
     Awesomium::WebCore* getWebCore() const { return m_WebCore; }
@@ -124,6 +126,8 @@ private:
     Window* m_SharedContext;
     std::queue<uint32> m_FreeContexts;
     he::PrimitiveList<GLContext*> m_Contexts;
+
+    ShaderUniformBufferManager* m_UBOManager;
 
 
     /* DEFAULT COPY & ASSIGNMENT */

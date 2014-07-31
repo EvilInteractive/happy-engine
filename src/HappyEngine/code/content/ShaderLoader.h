@@ -38,10 +38,10 @@ public:
     ShaderLoader();
     ~ShaderLoader();
     
-    gfx::Shader* load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>& outputs);
+    gfx::Shader* load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr);
     
 private:
-    AssetContainer<ObjectHandle> m_AssetContainer;
+    AssetContainer<ObjectHandle, uint32> m_AssetContainer;
     
     //Disable default copy constructor and default assignment operator
     ShaderLoader(const ShaderLoader&);

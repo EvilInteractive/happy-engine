@@ -19,13 +19,15 @@
 #include "Shader.h"
 
 #include "FileReader.h"
+#include "GraphicsEngine.h"
+#include "ExternalError.h"
+#include "GlobalStringTable.h"
+
 #include "ShaderPreProcessor.h"
 #include "ShaderUniform.h"
 #include "ShaderUniformFactory.h"
+#include "ShaderUniformBufferManager.h"
 
-#include "ExternalError.h"
-
-#include "GlobalStringTable.h"
 
 namespace 
 {
@@ -113,15 +115,7 @@ Shader::~Shader()
     glDeleteProgram(m_Id);
 }
 
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath)
-{
-    return initFromFile(vsPath, fsPath, std::set<he::String>(), he::ObjectList<he::String>());
-}
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>& outputs)
-{
-    return initFromFile(vsPath, fsPath, std::set<he::String>(), outputs);
-}
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines)
 {
     HE_ASSERT(m_Id != -1, "no need to init twice");
 
@@ -152,18 +146,10 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     }
     // <-----------------------------------------------
 
-    return initFromMem(strVS, strFS, vsPath, fsPath, defines, outputs);
+    return initFromMem(strVS, strFS, vsPath, fsPath, defines);
 }
 
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName)
-{
-    return initFromMem(vs, fs, debugVertName, debugFragName, std::set<he::String>(), he::ObjectList<he::String>());
-}
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName , const he::ObjectList<he::String>& outputs)
-{
-    return initFromMem(vs, fs, debugVertName, debugFragName, std::set<he::String>(), outputs);
-}
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines /*= nullptr*/)
 {
     bool succes = true;
 
@@ -172,8 +158,17 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
     m_VertShaderName = debugVertName;
     m_FragShaderName = debugFragName;
 
-    he::String vsPost = ct::details::ShaderPreProcessor::process(vs, defines);
-    he::String fsPost = ct::details::ShaderPreProcessor::process(fs, defines);
+    he::ObjectList<he::String> shaderDefines;
+
+    if (defines)
+        shaderDefines.append(*defines);
+    he::String vsPost = ct::details::ShaderPreProcessor::process(vs, shaderDefines);
+
+    shaderDefines.clear();
+
+    if (defines)
+        shaderDefines.append(*defines);
+    he::String fsPost = ct::details::ShaderPreProcessor::process(fs, shaderDefines);
 
     m_VsId = glCreateShader(GL_VERTEX_SHADER);
     m_FsId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -191,12 +186,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
     m_Id = glCreateProgram();
     glAttachShader(m_Id, m_VsId);
     glAttachShader(m_Id, m_FsId);
-
-    for (uint32 i = 0; i < outputs.size(); ++i)
-    {
-        glBindFragDataLocation(m_Id, i, outputs[i].c_str());
-    }
-
+    
     glLinkProgram(m_Id);
 
     succes &= validateProgram(m_Id);
@@ -204,7 +194,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
     bind();
 
     GlobalStringTable* const stringTable(GlobalStringTable::getInstance());
-
+    
     GLint attribCount(-1);
     glGetProgramiv( m_Id, GL_ACTIVE_ATTRIBUTES, &attribCount );
     for (GLint i(0); i < attribCount; ++i)
@@ -251,9 +241,27 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
         }
     }
 
-    GLint unitformCount(-1);
-    glGetProgramiv( m_Id, GL_ACTIVE_UNIFORMS, &unitformCount ); 
-    for(GLint i(0); i < unitformCount; ++i)  
+    GLint uniformBlockCount(-1);
+    glGetProgramiv( m_Id, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount );
+    for(GLint i(0); i < uniformBlockCount; ++i)  
+    {
+        GLchar buffer[100];
+        GLsizei size(0);
+        glGetActiveUniformBlockName(m_Id, i, 99, &size, buffer);
+        const he::FixedString uboName(he::GlobalStringTable::getInstance()->add(buffer, size));
+
+        const GLuint location(glGetUniformBlockIndex(m_Id, uboName.c_str()));
+        ShaderUniformBufferManager* uboMan(GRAPHICS->getShaderUniformBufferManager());
+        uint32 uboLink(uboMan->findLink(uboName));
+        if (uboLink != UINT32_MAX)
+        {
+            glUniformBlockBinding(m_Id, location, uboLink);
+        }
+    }
+
+    GLint uniformCount(-1);
+    glGetProgramiv( m_Id, GL_ACTIVE_UNIFORMS, &uniformCount ); 
+    for(GLint i(0); i < uniformCount; ++i)  
     {
         GLint nameLen(-1);
         GLint num(1);
@@ -394,6 +402,11 @@ ShaderUniformID Shader::getUniformID( const he::FixedString& name ) const
 IShaderUniform* Shader::getUniform( const ShaderUniformID id ) const
 {
     return m_Uniforms[id.m_ID];
+}
+
+he::int8 Shader::getOutputIndex( const he::FixedString& outputName ) const
+{
+    return checked_numcast<int8>(glGetFragDataLocation(m_Id, outputName.c_str()));
 }
 
 } } //end namespace

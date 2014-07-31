@@ -29,6 +29,7 @@
 #include "View.h"
 
 #include "Light.h"
+#include "ShaderUniformBufferManager.h"
 
 // warnings in awesomium lib
 #ifdef USE_WEB
@@ -53,6 +54,7 @@ GraphicsEngine::GraphicsEngine()
     , m_WebViewSurfaceFactory(nullptr)
 #endif
     , m_SharedContext(nullptr)
+    , m_UBOManager(nullptr)
 {
     for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -69,6 +71,8 @@ GraphicsEngine::~GraphicsEngine()
 }
 void GraphicsEngine::destroy()
 {
+    delete m_UBOManager;
+    m_UBOManager = nullptr;
     if (m_OwnSharedContext)
     {
         removeWindow(m_SharedContext);
@@ -123,6 +127,9 @@ void GraphicsEngine::init(const bool supportWindowing, Window* const sharedConte
     HE_ASSERT(supportWindowing || sharedContext, "GraphicsEngine is enabled, but not windowing. This can only work if a sharedContext is provided, which is not\nFATAL");
     setActiveContext(m_SharedContext->getContext());
     
+    m_UBOManager = NEW ShaderUniformBufferManager();
+    m_UBOManager->init();
+
 #ifdef USE_WEB
     m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
     m_WebCore = Awesomium::WebCore::instance();

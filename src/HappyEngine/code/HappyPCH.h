@@ -112,11 +112,11 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #endif
 
 #include "HappyTargetDefines.h"
+#include "HappyTypes.h"
 #include "HeString.h"
 #include "FixedString.h"
 #include "HeFixedStrings.h"
 
-#include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"

@@ -180,6 +180,7 @@ void MaterialDesc::visit( he::io::StructuredVisitor* const visitor )
     visitor->visitCasted<he::FixedString, gfx::BlendEquation>(HEFS::strBlendEquation, m_BlendEquation, NULL, ::blendEquationToString, ::blendEquationFromString);
     visitor->visitCasted<he::FixedString, gfx::BlendFunc>(HEFS::strSourceBlend, m_SourceBlend, NULL, ::blendFuncToString, ::blendFuncFromString);
     visitor->visitCasted<he::FixedString, gfx::BlendFunc>(HEFS::strDestBlend, m_DestBlend, NULL, ::blendFuncToString, ::blendFuncFromString);
+    visitor->visitList(HEFS::strDefines, m_Defines);
 }
 
 MaterialLoader::MaterialLoader()
@@ -227,8 +228,7 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
             material->setDepthWriteEnabled(desc.m_DepthWrite);
             if (desc.m_FragmentShader.empty() == false && desc.m_VertexShader.empty() == false)
             {
-                he::ObjectList<he::String> shaderOutputs; // check this... seems like it can be automatic
-                gfx::Shader* const shader(CONTENT->loadShader(desc.m_VertexShader, desc.m_FragmentShader, shaderOutputs));
+                gfx::Shader* const shader(CONTENT->loadShader(desc.m_VertexShader, desc.m_FragmentShader, &desc.m_Defines));
                 material->setNormalShader(shader);
                 material->init();
             }

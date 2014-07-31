@@ -73,10 +73,10 @@ bool TextureLoader::loadTick()
         TextureLoadData data;
         if (m_TextureLoadQueue.pop(data))
         {
-			bool success(false);
+            bool success(false);
             if (data.m_Path[0] != '_')
             {
-            	success = loadData(data);
+                success = loadData(data);
             }
             else
             {
@@ -258,7 +258,7 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
 
     gfx::Texture2D* tex2D(FACTORY_2D->get(data.m_Tex));
 
-    if (tex2D->getName() == "")
+    if (tex2D->getName().empty())
         tex2D->setName(data.m_Path);
 
     tex2D->init(gfx::TextureWrapType_Repeat, gfx::TextureFilterType_Anisotropic_16x, 
@@ -306,7 +306,7 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
     bool succes(true);
     gfx::TextureCube* texCube(FACTORY_CUBE->get(data.m_Tex));
 
-    if (texCube->getName() == "")
+    if (texCube->getName().empty())
         texCube->setName(data.m_Path);
 
     texCube->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Anisotropic_16x, data.m_TextureFormat, true);

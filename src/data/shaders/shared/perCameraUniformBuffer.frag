@@ -15,23 +15,27 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 17/11/2012
-#include "HappyPCH.h" 
+//Author: Bastian Damman
 
-#include "ShaderGeneratorVariableFactory.h"
+#if _FRAG_CAMERAUNIFORMBUFFER
+#define _FRAG_CAMERAUNIFORMBUFFER
 
-namespace he {
-namespace ct {
-
-ShaderGeneratorVariableFactory::ShaderGeneratorVariableFactory()
+struct PerCameraUniformBuffer
 {
-    init(32, 32, he::String("ShaderGeneratorVariableFactory"));
-}
+    mat4 viewMatrix;
+    mat4 projMatrix;
+    mat4 viewProjMatrix;
+    
+    vec3 cameraPosition;
+    float __padCamPos;
+    
+    vec2 cameraNearFar;
+    vec2 cameraViewSize;
+};
 
-
-ShaderGeneratorVariableFactory::~ShaderGeneratorVariableFactory()
+layout(std140) uniform SharedPerCameraUniformBuffer
 {
-}
+	PerCameraUniformBuffer perCameraUniformBuffer;
+};
 
-} } //end namespace
+#endif // _FRAG_CAMERAUNIFORMBUFFER

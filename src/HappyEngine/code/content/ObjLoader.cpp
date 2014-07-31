@@ -85,7 +85,7 @@ bool ObjLoader::read(const he::String& path)
         return false;
     }
     
-    for_each(objData.cbegin(), objData.cend(), [&](const string& line)
+    for_each(objData.cbegin(), objData.cend(), [&](const he::String& line)
     {
         if (line[0] == 'v' && line[1] == ' ')
         {

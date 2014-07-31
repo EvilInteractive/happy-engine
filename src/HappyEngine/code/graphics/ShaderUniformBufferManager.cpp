@@ -40,17 +40,26 @@ ShaderUniformBufferManager::~ShaderUniformBufferManager()
 {
 }
 
-void ShaderUniformBufferManager::Init()
+void ShaderUniformBufferManager::init()
 {
     m_FrameBuffer.init(m_BufferCounter++, PerFrameBuffer());
     m_CameraBuffer.init(m_BufferCounter++, PerCameraBuffer());
 }
 
-void ShaderUniformBufferManager::UpdateFrameBuffer(const Scene* const scene)
+void ShaderUniformBufferManager::updateFrameBuffer(const Scene* const scene)
 {
     PerFrameBuffer buffer;
 
     const LightManager* const lightMan(scene->getLightManager());
+
+    const ToneMapData& toneMapData(lightMan->getToneMapData());
+    buffer.m_HDRShoulderStrength = toneMapData.shoulderStrength;
+    buffer.m_HDRLinearStrength = toneMapData.linearStrength;
+    buffer.m_HDRLinearAngle = toneMapData.linearAngle;
+    buffer.m_HDRToeStrength = toneMapData.toeStrength;
+    buffer.m_HDRToeNumerator = toneMapData.toeNumerator;
+    buffer.m_HDRToeDenominator = toneMapData.toeDenominator;
+    buffer.m_HDRExposureBias = toneMapData.exposureBias;
 
     const AmbientLight* const ambLight(lightMan->getAmbientLight());
     buffer.m_AmbientLightColor = vec4(ambLight->color, ambLight->multiplier);
@@ -59,10 +68,11 @@ void ShaderUniformBufferManager::UpdateFrameBuffer(const Scene* const scene)
     buffer.m_DirectionalLightColor = vec4(dirLight->getColor(), dirLight->getMultiplier());
     buffer.m_DirectionalLightDirection = dirLight->getDirection();
 
+
     m_FrameBuffer.updateData(buffer);
 }
 
-void ShaderUniformBufferManager::UpdateCameraBuffer(const ICamera* const camera)
+void ShaderUniformBufferManager::updateCameraBuffer(const ICamera* const camera)
 {
     PerCameraBuffer buffer;
 

@@ -1,0 +1,9 @@
+{
+    "VertexShader" : "shared/postShaderQuad.vert",
+    "FragmentShader" : "post/gaussblur.frag",
+    "Defines" : { "PASS2" },
+    "IsBlended" : false,
+    "CullFrontFace" : false,
+    "DepthRead" : false,
+    "DepthWrite" : false,
+}

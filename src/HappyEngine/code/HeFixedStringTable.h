@@ -128,6 +128,7 @@ DEF_FS(SourceBlend);
 DEF_FS(DestBlend);
 DEF_FS(FragmentShader);
 DEF_FS(VertexShader);
+DEF_FS(Defines);
 
 //////////////////////////////////////////////////////////////////////////
 // 2D Effects

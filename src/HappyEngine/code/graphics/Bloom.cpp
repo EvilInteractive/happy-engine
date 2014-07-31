@@ -25,11 +25,9 @@
 #include "GraphicsEngine.h"
 #include "Vertex.h"
 
-#include "ExternalError.h"
-
 #include "Texture2D.h"
 #include "ModelMesh.h"
-#include "Shader.h"
+#include "MaterialInstance.h"
 #include "View.h"
 #include "Window.h"
 
@@ -37,21 +35,24 @@ namespace he {
 namespace gfx {
 
 #pragma warning(disable:4355) // use of this in member initializer list
-Bloom::Bloom(): m_DownSamples(4),
-                m_DownSampleShader(nullptr), 
-                m_DownSampleBrightPassShader(nullptr),
-                m_Mesh(nullptr), m_Hdr(true),
-                m_ViewportSizeChangedHandler(std::bind(&Bloom::resize, this)),
-                m_View(nullptr),
-                m_ToneMapBuffer(nullptr)
+Bloom::Bloom()
+: m_ToneMapBuffer(nullptr)
+, m_Mesh(nullptr)
+, m_View(nullptr)
+, m_DownSampleBrightPassMaterial(nullptr)
+, m_DownSampleMaterial(nullptr)
+, m_DownSampleBrightPassMap(-1)
+, m_DownSampleBrightPassLumMap(-1)
+, m_DownSampleBrightPassToneMapData(-1)
+, m_DownSampleMap(-1)
+, m_Hdr(false)
+, m_ViewportSizeChangedHandler(std::bind(&Bloom::resize, this))
 {
     for (uint32 i(0); i < s_BlurPasses; ++i)
     {
-        m_BlurShaderPass[i] = nullptr;	
-        m_FboId[i].forEach([](uint32& id)
-        {
-            id = UINT32_MAX;
-        });
+        m_BlurPassMaterial[i] = nullptr;	
+        m_BlurMapPos[i] = -1;
+        m_BlurTexelSize[i] = -1;
     }
 }
 #pragma warning(default:4355)
@@ -76,13 +77,9 @@ void Bloom::cleanTextures()
                 m_Texture[pass][i] = nullptr;
             }
         }
-        m_FboId[pass].forEach([](uint32& id)
+        m_RenderTarget.forEach([](RenderTarget* renderTarget)
         {
-            if (id != UINT32_MAX)
-            {
-                glDeleteFramebuffers(1, &id);
-                id = UINT32_MAX;
-            }
+            delete renderTarget;
         });
     }
 }
@@ -90,22 +87,22 @@ void Bloom::cleanShaders()
 {
     for (int pass(0); pass < s_BlurPasses; ++pass)
     {
-        if (m_BlurShaderPass[pass] != nullptr)
+        if (m_BlurPassMaterial[pass] != nullptr)
         {
-            m_BlurShaderPass[pass]->release();
-            m_BlurShaderPass[pass] = nullptr;
+            delete m_BlurPassMaterial[pass];
+            m_BlurPassMaterial[pass] = nullptr;
         }
     }
-    if (m_DownSampleShader != nullptr)
+    if (m_DownSampleMaterial != nullptr)
     {
-        m_DownSampleShader->release();
-        m_DownSampleShader = nullptr;
+        delete m_DownSampleMaterial;
+        m_DownSampleMaterial = nullptr;
     }
 
-    if (m_DownSampleBrightPassShader != nullptr)
+    if (m_DownSampleBrightPassMaterial != nullptr)
     {
-        m_DownSampleBrightPassShader->release();
-        m_DownSampleBrightPassShader = nullptr;
+        delete m_DownSampleBrightPassMaterial;
+        m_DownSampleBrightPassMaterial = nullptr;
     }
     if (m_Mesh != nullptr)
     {
@@ -124,53 +121,45 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
 
     m_Hdr = hdr;
     //////////////////////////////////////////////////////////////////////////
-    ///                             Shaders                                ///
-    //////////////////////////////////////////////////////////////////////////
-    ShaderLayout layout;
-    layout.addAttribute(ShaderLayoutAttribute(0, "inPosition"));
-
-    const he::String& folder(CONTENT->getShaderFolderPath().str());
-
-    std::set<he::String> defineBrightPass;
-    defineBrightPass.insert("BRIGHTPASS");
-    if (hdr)
-        defineBrightPass.insert("HDR");
-    m_DownSampleBrightPassShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    m_DownSampleBrightPassShader->initFromFile(folder + "shared/postShaderQuad.vert", 
-                                                folder + "post/bloom.frag", layout, defineBrightPass);
-    m_DownSampleBrightPassMap = m_DownSampleBrightPassShader->getShaderSamplerId("map");
-
-    if (hdr)
-    {
-        m_DownSampleBrightPassLumMap = m_DownSampleBrightPassShader->getShaderSamplerId("lumMap");
-        //m_DownSampleBrightPassToneMapData = m_DownSampleBrightPassShader->getBufferId("SharedToneMapBuffer");
-        //m_DownSampleBrightPassShader->setBuffer(m_DownSampleBrightPassToneMapData, m_ToneMapBuffer);
-    }
-
-    m_DownSampleShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    m_DownSampleShader->initFromFile(folder + "shared/postShaderQuad.vert", 
-                                      folder + "post/bloom.frag", layout);
-    m_DownSampleMap = m_DownSampleShader->getShaderSamplerId("map");
-
-    for (int pass = 0; pass < 2; ++pass)
-    {
-        m_BlurShaderPass[pass] = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-
-        std::set<he::String> definePass;
-        if (pass == 0)
-            definePass.insert("PASS1");
-        else
-            definePass.insert("PASS2");
-
-        m_BlurShaderPass[pass]->initFromFile(folder + "shared/postShaderQuad.vert", 
-                                              folder + "post/gaussblur.frag", layout, definePass);
-        m_BlurMapPos[pass] = m_BlurShaderPass[pass]->getShaderSamplerId("map");
-    }
-
-    //////////////////////////////////////////////////////////////////////////
     ///                             Quad                                   ///
     //////////////////////////////////////////////////////////////////////////
     m_Mesh = CONTENT->getFullscreenQuad();
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Materials                              ///
+    //////////////////////////////////////////////////////////////////////////
+
+    // DownSample
+    {
+        const Material* const downSampleMaterial(CONTENT->loadMaterial("engine/post/downSample.hm"));
+        m_DownSampleMaterial = downSampleMaterial->createMaterialInstance(eShaderType_Normal);
+        downSampleMaterial->release();
+
+        m_DownSampleMaterial->calculateMaterialLayout(m_Mesh->getVertexLayout());
+        m_DownSampleBrightPassMap = m_DownSampleMaterial->findParameter(HEFS::strmap);
+    }
+
+    // DownSampleBrightPass
+    {
+        const Material* const downSampleBPMaterial(CONTENT->loadMaterial("engine/post/downSampleBrightPass.hm"));
+        m_DownSampleBrightPassMaterial = downSampleBPMaterial->createMaterialInstance(eShaderType_Normal);
+        downSampleBPMaterial->release();
+
+        if (hdr)
+        {
+            m_DownSampleBrightPassLumMap = m_DownSampleBrightPassMaterial->findParameter(HEFS::strlumMap);
+            //m_DownSampleBrightPassToneMapData = m_DownSampleBrightPassShader->getBufferId("SharedToneMapBuffer");
+            //m_DownSampleBrightPassShader->setBuffer(m_DownSampleBrightPassToneMapData, m_ToneMapBuffer);
+        }
+
+        m_DownSampleMap = m_DownSampleMaterial->findParameter(HEFS::strmap);
+    }
+
+    for (int pass = 0; pass < 2; ++pass)
+    {
+        m_BlurMapPos[pass] = m_BlurPassMaterial[pass]->getShaderSamplerId("map");
+    }
+
 
 
     GRAPHICS->setActiveContext(m_View->getWindow()->getContext());
@@ -236,21 +225,21 @@ void Bloom::render( const Texture2D* texture, const Texture2D* lumMap )
     
     //BrightPass
     GL::heBindFbo(m_FboId[0][0]);
-    m_DownSampleBrightPassShader->bind();
-    m_DownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassMap, texture);
+    m_DownSampleBrightPassMaterial->bind();
+    m_DownSampleBrightPassMaterial->setShaderVar(m_DownSampleBrightPassMap, texture);
     if (m_Hdr)
     {
-        m_DownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, lumMap);
+        m_DownSampleBrightPassMaterial->setShaderVar(m_DownSampleBrightPassLumMap, lumMap);
     }
     GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
     m_Mesh->draw();
 
     //DownSample further
-    m_DownSampleShader->bind();
-    for (uint32 fboId = 1; fboId < m_FboId[0].size(); ++fboId)
+    m_DownSampleMaterial->bind();
+    for (uint32 fboId = 1; fboId < m_DownSamples; ++fboId)
     {
         GL::heBindFbo(m_FboId[0][fboId]);
-        m_DownSampleShader->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
+        m_DownSampleMaterial->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
         GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][fboId]->getWidth(), (int)m_Texture[0][fboId]->getHeight()));
 
         m_Quad->draw();
@@ -259,11 +248,11 @@ void Bloom::render( const Texture2D* texture, const Texture2D* lumMap )
     //Blur
     for (int pass = 0; pass < 2; ++pass)
     {
-        m_BlurShaderPass[pass]->bind();
+        m_BlurPassMaterial[pass]->bind();
         for (uint32 fboId = 1; fboId < m_FboId[pass].size(); ++fboId)
         {
             GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
-            m_BlurShaderPass[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
+            m_BlurPassMaterial[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
             GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[pass == 0?1:0][fboId]->getWidth(), (int)m_Texture[pass == 0?1:0][fboId]->getHeight()));
             glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
         }

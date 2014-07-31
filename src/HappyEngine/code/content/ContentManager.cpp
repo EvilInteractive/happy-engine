@@ -53,14 +53,14 @@ ContentManager::ContentManager():
     m_MaterialFolder("materials/"),
     m_FxFolder("fx/"),
 
-    m_ContentRootDir(""),
-    m_TexturePath(""), 
-    m_ModelPath(""), 
-    m_PhysicsPath(""), 
-    m_FontPath(""),
-    m_ShaderPath(""), 
-    m_MaterialPath(""),
-    m_FxPath(""),
+    m_ContentRootDir(he::String("")),
+    m_TexturePath(he::String("")), 
+    m_ModelPath(he::String("")), 
+    m_PhysicsPath(he::String("")), 
+    m_FontPath(he::String("")),
+    m_ShaderPath(he::String("")), 
+    m_MaterialPath(he::String("")),
+    m_FxPath(he::String("")),
 
     m_ParticleQuad(nullptr),
     m_FullscreenQuad(nullptr)
@@ -215,13 +215,13 @@ gui::Font* ContentManager::loadFont(const he::String& asset, uint16 size, uint8 
 
 gui::Font* ContentManager::getDefaultFont(uint16 size)
 {
-    return loadFont("Ubuntu-Bold.ttf", size);
+    return loadFont(he::String("Ubuntu-Bold.ttf"), size);
 }
 
 //////////////////////////////////////////////////////////////////////////
-he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const he::ObjectList<he::String>& outputs)
+he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const he::ObjectList<he::String>* const defines /*= nullptr*/)
 {
-    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, outputs);
+    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, defines);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -338,7 +338,7 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_FullscreenQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
-        m_FullscreenQuad->setName("Full screen quad");
+        m_FullscreenQuad->setName(he::String("Full screen quad"));
 
         he::ObjectList<VertexPos> vertices(4);
         vertices.add(VertexPos(vec3(-1, 1, 1.0f)));
@@ -387,7 +387,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_ParticleQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
-        m_ParticleQuad->setName("Particle quad");
+        m_ParticleQuad->setName(he::String("Particle quad"));
 
         m_ParticleQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);

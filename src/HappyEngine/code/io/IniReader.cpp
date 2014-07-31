@@ -112,7 +112,7 @@ bool IniReader::open(const he::String& path)
                 }
                 else if (line[0] == '[')
                 {
-                    if (sub != "")
+                    if (!sub.empty())
                         m_Data.insert(make_pair(sub, subData));
                     sub = getSubDivision(line);
                     subData = InitReadSubData();
@@ -163,10 +163,9 @@ bool IniReader::readBool(const he::String& root, const he::String& node, bool de
 }
 int IniReader::readInt(const he::String& root, const he::String& node, int defaultReturn) const
 {
-    he::String wraw("");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         int ret = INT_MAX;
         if (sscanf(raw.c_str(), "%d", &ret) == EOF || ret == INT_MAX)
             return defaultReturn;
@@ -180,10 +179,9 @@ int IniReader::readInt(const he::String& root, const he::String& node, int defau
 }
 float IniReader::readFloat(const he::String& root, const he::String& node, float defaultReturn) const
 {
-    he::String wraw("");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         float ret = FLT_MAX;
         if (sscanf(raw.c_str(), "%f", &ret) == EOF || ret == FLT_MAX)
             return defaultReturn;
@@ -198,10 +196,9 @@ float IniReader::readFloat(const he::String& root, const he::String& node, float
 
 vec2 IniReader::readVector2(const he::String& root, const he::String& node, const vec2& defaultReturn) const
 {
-    he::String wraw("");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         vec2 ret(FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f", &ret.x, &ret.y) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX)
             return defaultReturn;
@@ -215,10 +212,9 @@ vec2 IniReader::readVector2(const he::String& root, const he::String& node, cons
 }
 vec3 IniReader::readVector3(const he::String& root, const he::String& node, const vec3& defaultReturn) const
 {
-    he::String wraw("");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         vec3 ret(FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f,%f", &ret.x, &ret.y, &ret.z) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || ret.z == FLT_MAX)
             return defaultReturn;
@@ -232,10 +228,9 @@ vec3 IniReader::readVector3(const he::String& root, const he::String& node, cons
 }
 vec4 IniReader::readVector4(const he::String& root, const he::String& node, const vec4& defaultReturn) const
 {
-    he::String wraw("");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         vec4 ret(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f,%f,%f", &ret.x, &ret.y, &ret.z, &ret.w) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX ||
                                                                                            ret.z == FLT_MAX || ret.w == FLT_MAX)
@@ -251,10 +246,9 @@ vec4 IniReader::readVector4(const he::String& root, const he::String& node, cons
 
 he::String IniReader::readString(const he::String& root, const he::String& node, const he::String& defaultReturn) const
 {
-    he::String wraw("");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         if (raw.front() == '"')
         {
             raw = raw.substr(1, raw.size() - 1);

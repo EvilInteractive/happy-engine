@@ -134,6 +134,7 @@ struct ObjectHandle
     const static ObjectHandle unassigned;
 };
 
+class String;
 struct HAPPY_ENTRY Guid
 {
     Guid();

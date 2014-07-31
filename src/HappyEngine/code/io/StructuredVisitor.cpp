@@ -27,7 +27,7 @@ namespace io {
 
 bool StructuredVisitor::visit( const he::FixedString& key, Guid& value, const char* comment /*= NULL*/ )
 {
-    std::string guid(m_OpenType == eOpenType_Write? value.toString() : "");
+    he::String guid(m_OpenType == eOpenType_Write? value.toString() : "");
     if (visit(key, guid, comment))
     {
         if (m_OpenType == eOpenType_Read)

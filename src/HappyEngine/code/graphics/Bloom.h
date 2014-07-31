@@ -30,6 +30,8 @@ class ModelMesh;
 class Shader;
 class View;
 class UniformBuffer;
+class RenderTarget;
+class MaterialInstance;
 
 class Bloom
 {
@@ -48,29 +50,28 @@ private:
     void cleanTextures();
     void cleanShaders();
 
-    he::PrimitiveList<uint32> m_FboId[2];
-    he::PrimitiveList<Texture2D*> m_Texture[2];
-    
-    Shader* m_DownSampleBrightPassShader;
-    uint32 m_DownSampleBrightPassMap;
-    uint32 m_DownSampleBrightPassLumMap;
-    uint32 m_DownSampleBrightPassToneMapData;
-    UniformBuffer* m_ToneMapBuffer;
-
-    Shader* m_DownSampleShader;
-    uint32 m_DownSampleMap;
-
     const static int s_BlurPasses = 2;
-    Shader* m_BlurShaderPass[s_BlurPasses];
-    uint32 m_BlurMapPos[s_BlurPasses];
-    uint32 m_BlurTexelSize[s_BlurPasses];
-        
-    const uint8 m_DownSamples;
+    const static int s_DownSamples = 4;
 
-    bool m_Hdr;
+    he::PrimitiveList<RenderTarget*> m_RenderTarget;
+    he::PrimitiveList<Texture2D*> m_Texture[s_BlurPasses];
 
+    UniformBuffer* m_ToneMapBuffer;
     ModelMesh* m_Mesh;
     View* m_View;
+
+    MaterialInstance* m_DownSampleBrightPassMaterial;
+    MaterialInstance* m_DownSampleMaterial;
+    MaterialInstance* m_BlurPassMaterial[s_BlurPasses];
+
+    int8 m_DownSampleBrightPassMap;
+    int8 m_DownSampleBrightPassLumMap;
+    int8 m_DownSampleBrightPassToneMapData;
+    int8 m_DownSampleMap;
+    int8 m_BlurMapPos[s_BlurPasses];
+    int8 m_BlurTexelSize[s_BlurPasses];
+        
+    bool m_Hdr;
 
     eventCallback0<void> m_ViewportSizeChangedHandler;
 

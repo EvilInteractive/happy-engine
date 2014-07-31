@@ -34,4 +34,140 @@ void toLower(char* const buff)
     }
 }
 
+String::String()
+{
+
+}
+
+String::String( const char* charBuffer, const int len /*= -1*/ )
+    : StdString(charBuffer, len)
+{
+
+}
+
+String::String( const wchar_t* charBuffer )
+    : StdString()
+{
+    const size_t sizeNeeded(wcstombs(NULL, charBuffer, 0));
+    resize(sizeNeeded);
+    wcstombs(&operator[](0), charBuffer, sizeNeeded);
+}
+
+String::String( const he::String& other )
+    : StdString(other)
+{
+
+}
+
+String::String( he::String&& other )
+    : StdString(std::forward<he::String>(other))
+{
+
+}
+
+String::String( std::string&& other )
+    : StdString(std::forward<he::StdString>(other))
+{
+
+}
+
+String::~String()
+{
+
+}
+
+String& String::operator=( he::String&& other )
+{
+    StdString::operator=(std::forward<he::String>(other));
+    return *this;
+}
+
+String& String::operator=( const he::String& other )
+{
+    StdString::operator=(other);
+    return *this;
+}
+
+bool String::operator!=( const he::String& other ) const
+{
+    return compare(other) != 0;
+}
+
+bool String::operator==( const he::String& other ) const
+{
+    return compare(other) == 0;
+}
+
+bool String::operator<( const he::String& other ) const
+{
+    return compare(other) < 0;
+}
+
+bool String::operator!=( const char* const other ) const
+{
+    return compare(other) != 0;
+}
+
+bool String::operator==( const char* const other ) const
+{
+    return compare(other) == 0;
+}
+
+bool String::operator<( const char* const other ) const
+{
+    return compare(other) < 0;
+}
+
+he::String String::clone() const
+{
+    return he::String(c_str(), length());
+}
+
+he::uint32 String::hash() const
+{
+    const char* buff(c_str());
+    if (buff)
+    {
+        uint32 hash(buff[0]);
+        while (!(*++buff))
+        {
+            hash = hash * 101 + *buff;
+        }
+    }
+    return 0;
+}
+
+String& String::operator+=( const he::String& other )
+{
+    StdString::operator+=(other);
+    return *this;
+}
+
+String& String::operator+=( he::String&& other )
+{
+    StdString::operator+=(std::forward<he::String>(other));
+    return *this;
+}
+
+String& String::operator+=( const char* const other )
+{
+    StdString::operator+=(other);
+    return *this;
+}
+
+he::String String::operator+( const he::String& other ) const
+{
+    return clone() += other;
+}
+
+he::String String::operator+( he::String&& other ) const
+{
+    return clone() += other;
+}
+
+he::String String::operator+( const char* const other ) const
+{
+    return clone() += other;
+}
+
 } //end namespace

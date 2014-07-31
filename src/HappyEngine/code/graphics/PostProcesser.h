@@ -36,27 +36,6 @@ class View;
 class RenderTarget;
 class UniformBuffer;
 
-struct ToneMapData
-{
-    ToneMapData()
-    : shoulderStrength(0.2f)
-    , linearStrength(0.52f)
-    , linearAngle(1.14f)
-    , toeStrength(0.81f)
-    , toeNumerator(0.04f)
-    , toeDenominator(1.1f)
-    , exposureBias(0.55f)
-    {}
-
-    float shoulderStrength;
-    float linearStrength;
-    float linearAngle;
-    float toeStrength;
-    float toeNumerator;
-    float toeDenominator;
-    float exposureBias;
-};
-
 class PostProcesser : public IDrawable2D
 {
 public:
@@ -66,8 +45,6 @@ public:
     void init(View* view, const RenderTarget* writeTarget, const RenderTarget* readTarget);
 
     void setFogColor(const he::vec3& color);
-    const ToneMapData& getToneMapData() const { return m_ToneMapData; }
-    ToneMapData& getToneMapDataForEdit() { return m_ToneMapData; }
 
     void setDebugRenderer(Renderer2D* renderer);
 
@@ -126,7 +103,6 @@ private:
     bool m_AOEnabled;
     bool m_FogEnabled;
     vec3 m_FogColor;
-    ToneMapData m_ToneMapData;
 
     //Disable default copy constructor and default assignment operator
     PostProcesser(const PostProcesser&);

@@ -176,7 +176,7 @@ Path Path::getDirectory() const
 bool Path::iterateFiles( const bool recursive, const boost::function1<void, const Path&>& func )
 {
     bool result(false);
-    boost::filesystem::path boostPath(m_Path);
+    boost::filesystem::path boostPath(m_Path.c_str());
     boost::system::error_code error;
     if (boost::filesystem::exists(boostPath, error) && boost::filesystem::is_directory(boostPath, error))
     {
@@ -185,7 +185,7 @@ bool Path::iterateFiles( const bool recursive, const boost::function1<void, cons
         {
             if (boost::filesystem::is_regular_file(it->status()))
             {
-                func(it->path().string());
+                func(he::Path(he::String(it->path().c_str())));
             }
             else if (boost::filesystem::is_directory(it->status()))
             {

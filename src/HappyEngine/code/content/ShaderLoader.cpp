@@ -38,16 +38,25 @@ ShaderLoader::~ShaderLoader()
     factory->garbageCollect();
 }
 
-he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>& outputs)
+he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines /*= nullptr*/)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
     ResourceFactory<gfx::Shader>* factory(ResourceFactory<gfx::Shader>::getInstance());
 
-    he::String key(vsPath + fsPath);
-    if (m_AssetContainer.isAssetPresent(key) && factory->isAlive(m_AssetContainer.getAsset(key)))
+    int32 hash(vsPath.hash());
+    hash = hash * 101 + fsPath.hash();
+    if (defines)
     {
-        ObjectHandle shaderHandle(m_AssetContainer.getAsset(key));
+        defines->forEach([&hash](const he::String& str)
+        {
+            hash = hash * 101 + str.hash();
+        });
+    }
+    
+    if (m_AssetContainer.isAssetPresent(hash) && factory->isAlive(m_AssetContainer.getAsset(hash)))
+    {
+        ObjectHandle shaderHandle(m_AssetContainer.getAsset(hash));
         he::gfx::Shader* const shader(factory->get(shaderHandle));
         shader->instantiate();
         return shader;
@@ -56,16 +65,20 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
     {
         const gfx::RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
         gfx::Shader* shader(factory->get(factory->create()));
-        std::set<he::String> defines;
+        he::ObjectList<he::String> allDefines;
+        if (defines)
+            allDefines.append(*defines);
         if (settings.lightingSettings.enableShadows)
-            defines.insert("SHADOWS");
+            allDefines.add(he::String("SHADOWS"));
         if (settings.lightingSettings.enableSpecular)
-            defines.insert("SPECULAR");
+            allDefines.add(he::String("SPECULAR"));
         if (settings.lightingSettings.enableNormalMap)
-            defines.insert("NORMALMAP");
+            allDefines.add(he::String("NORMALMAP"));
+        if (settings.postSettings.shaderSettings.enableHDR)
+            allDefines.add(he::String("HDR"));
 
-        const bool result(shader->initFromFile(vsPath, fsPath, defines, outputs));
-        m_AssetContainer.addAsset(key, shader->getHandle());
+        const bool result(shader->initFromFile(vsPath, fsPath, &allDefines));
+        m_AssetContainer.addAsset(hash, shader->getHandle());
         shader->setLoaded(result? eLoadResult_Success : eLoadResult_Failed);
 
         return shader;
