@@ -115,7 +115,7 @@ Shader::~Shader()
     glDeleteProgram(m_Id);
 }
 
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     HE_ASSERT(m_Id != -1, "no need to init twice");
 
@@ -146,10 +146,10 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     }
     // <-----------------------------------------------
 
-    return initFromMem(strVS, strFS, vsPath, fsPath, defines);
+    return initFromMem(strVS, strFS, vsPath, fsPath, defines, outputLayout);
 }
 
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines /*= nullptr*/)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     bool succes = true;
 
@@ -187,6 +187,15 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
     glAttachShader(m_Id, m_VsId);
     glAttachShader(m_Id, m_FsId);
     
+    if (outputLayout)
+    {
+        GLuint index(0);
+        outputLayout->forEach([this, &index](const he::String& output)
+        {
+            glBindFragDataLocation(m_Id, index++, output.c_str());
+        });
+    }
+
     glLinkProgram(m_Id);
 
     succes &= validateProgram(m_Id);

@@ -40,8 +40,8 @@ public:
     virtual ~Shader();
 
     // Init
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr);
-    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines = nullptr);
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
+    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
 
     // Use
     void bind();

@@ -38,7 +38,7 @@ public:
     ShaderLoader();
     ~ShaderLoader();
     
-    gfx::Shader* load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr);
+    gfx::Shader* load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
     
 private:
     AssetContainer<ObjectHandle, uint32> m_AssetContainer;

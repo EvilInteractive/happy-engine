@@ -38,7 +38,7 @@ ShaderLoader::~ShaderLoader()
     factory->garbageCollect();
 }
 
-he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines /*= nullptr*/)
+he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
@@ -49,6 +49,13 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
     if (defines)
     {
         defines->forEach([&hash](const he::String& str)
+        {
+            hash = hash * 101 + str.hash();
+        });
+    }
+    if (outputLayout)
+    {
+        outputLayout->forEach([&hash](const he::String& str)
         {
             hash = hash * 101 + str.hash();
         });
@@ -77,7 +84,7 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
         if (settings.postSettings.shaderSettings.enableHDR)
             allDefines.add(he::String("HDR"));
 
-        const bool result(shader->initFromFile(vsPath, fsPath, &allDefines));
+        const bool result(shader->initFromFile(vsPath, fsPath, &allDefines, outputLayout));
         m_AssetContainer.addAsset(hash, shader->getHandle());
         shader->setLoaded(result? eLoadResult_Success : eLoadResult_Failed);
 

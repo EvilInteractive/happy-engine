@@ -181,6 +181,7 @@ void MaterialDesc::visit( he::io::StructuredVisitor* const visitor )
     visitor->visitCasted<he::FixedString, gfx::BlendFunc>(HEFS::strSourceBlend, m_SourceBlend, NULL, ::blendFuncToString, ::blendFuncFromString);
     visitor->visitCasted<he::FixedString, gfx::BlendFunc>(HEFS::strDestBlend, m_DestBlend, NULL, ::blendFuncToString, ::blendFuncFromString);
     visitor->visitList(HEFS::strDefines, m_Defines);
+    visitor->visitList(HEFS::strOutputLayout, m_OutputLayout);
 }
 
 MaterialLoader::MaterialLoader()
@@ -228,7 +229,7 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
             material->setDepthWriteEnabled(desc.m_DepthWrite);
             if (desc.m_FragmentShader.empty() == false && desc.m_VertexShader.empty() == false)
             {
-                gfx::Shader* const shader(CONTENT->loadShader(desc.m_VertexShader, desc.m_FragmentShader, &desc.m_Defines));
+                gfx::Shader* const shader(CONTENT->loadShader(desc.m_VertexShader, desc.m_FragmentShader, &desc.m_Defines, &desc.m_OutputLayout));
                 material->setNormalShader(shader);
                 material->init();
             }
