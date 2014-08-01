@@ -37,8 +37,7 @@ namespace gfx {
 
 #pragma warning(disable:4355) // use of this in member initializer list
 Bloom::Bloom()
-: m_ToneMapBuffer(nullptr)
-, m_Quad(nullptr)
+: m_Quad(nullptr)
 , m_View(nullptr)
 , m_DownSampleBrightPassMaterial(nullptr)
 , m_DownSampleMaterial(nullptr)
@@ -111,9 +110,8 @@ void Bloom::cleanShaders()
 }
 
 
-void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
+void Bloom::init(View* view, bool hdr)
 {
-    m_ToneMapBuffer = toneMapBuffer;
     m_View = view;
     m_View->ViewportSizeChanged += m_ViewportSizeChangedHandler;
     cleanShaders();

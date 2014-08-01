@@ -39,7 +39,7 @@ public:
     Bloom();
     virtual ~Bloom();
 
-    void init(View* view, bool hdr, UniformBuffer* toneMapBuffer);
+    void init(View* view, bool hdr);
 
     const Texture2D* getBloom(uint8 level) const;
 

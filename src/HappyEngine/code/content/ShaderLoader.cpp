@@ -76,13 +76,25 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
         if (defines)
             allDefines.append(*defines);
         if (settings.lightingSettings.enableShadows)
-            allDefines.add(he::String("SHADOWS"));
+            allDefines.add("SHADOWS");
         if (settings.lightingSettings.enableSpecular)
-            allDefines.add(he::String("SPECULAR"));
+            allDefines.add("SPECULAR");
         if (settings.lightingSettings.enableNormalMap)
-            allDefines.add(he::String("NORMALMAP"));
+            allDefines.add("NORMALMAP");
         if (settings.postSettings.shaderSettings.enableHDR)
-            allDefines.add(he::String("HDR"));
+            allDefines.add("HDR");
+        if (settings.postSettings.shaderSettings.enableBloom)
+            allDefines.add("BLOOM");
+        if (settings.postSettings.shaderSettings.enableAO)
+            allDefines.add("AO");
+        if (settings.postSettings.shaderSettings.enableDepthEdgeDetect)
+            allDefines.add("DEPTH_EDGE");
+        if (settings.postSettings.shaderSettings.enableNormalEdgeDetect)
+            allDefines.add("NORMAL_EDGE");
+        if (settings.postSettings.shaderSettings.enableFog)
+            allDefines.add("FOG");
+        if (settings.postSettings.shaderSettings.enableVignette)
+            allDefines.add("VIGNETTE");
 
         const bool result(shader->initFromFile(vsPath, fsPath, &allDefines, outputLayout));
         m_AssetContainer.addAsset(hash, shader->getHandle());

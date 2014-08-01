@@ -27,7 +27,7 @@
 namespace he {
 namespace gfx {
 
-class Shader;
+class MaterialInstance;
 class Bloom;
 class AutoExposure;
 class Texture2D;
@@ -53,7 +53,7 @@ public:
 
 private:
     void initFromSettings();
-    void compileShader();
+    void loadMaterial();
 
     enum PostShaderVar
     {
@@ -87,19 +87,16 @@ private:
 
     Renderer2D* m_DebugRenderer;
 
+    const Texture2D* m_RandomNormals;
     Bloom* m_Bloom;
     AutoExposure* m_AutoExposure;
-    UniformBuffer* m_ToneMapUniformBuffer;
-
-    Shader* m_PostShader;
-    uint32 m_PostShaderVars[MAX_POST_SHADER_VARS];
-
-    const Texture2D* m_RandomNormals;
-
-    bool m_ShowDebugTextures;
-
     ModelMesh* m_Quad;
 
+    MaterialInstance* m_PostMaterial;
+    int8 m_PostShaderVars[MAX_POST_SHADER_VARS];
+
+
+    bool m_ShowDebugTextures;
     bool m_AOEnabled;
     bool m_FogEnabled;
     vec3 m_FogColor;

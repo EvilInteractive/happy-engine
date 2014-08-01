@@ -87,7 +87,6 @@ DEF_FS(UniformType);
 DEF_FS(VariableType);
 DEF_FS(DefaultValue);
 DEF_FS(Uniforms);
-// Occlus barrel distort
 DEF_FS(inPosition);
 DEF_FS(preDistortMap);
 DEF_FS(hmdWarpParam);
@@ -98,6 +97,14 @@ DEF_FS(scaleIn);
 DEF_FS(tcTransform);
 DEF_FS(map);
 DEF_FS(lumMap);
+DEF_FS(colorMap); 
+DEF_FS(fogColor);
+DEF_FS(blur0);
+DEF_FS(blur1);
+DEF_FS(blur2);
+DEF_FS(blur3);
+DEF_FS(noiseMap);
+DEF_FS(viewPortSize);
 
 //////////////////////////////////////////////////////////////////////////
 // Deferred
@@ -119,8 +126,6 @@ DEF_FS(mtxWVP);
 DEF_FS(shadowMap);
 DEF_FS(shadowMatrix);
 DEF_FS(shadowMapInvSize);
-
-
 
 
 //////////////////////////////////////////////////////////////////////////
