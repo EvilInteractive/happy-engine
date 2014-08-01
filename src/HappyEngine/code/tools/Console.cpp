@@ -241,7 +241,7 @@ void Console::displayCmds()
     }
     else
     {
-        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<he::String, boost::function<void()> > p)
+        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<he::String, std::function<void()> > p)
         {
             stream << "'" << p.first << "'\n";
         });
@@ -396,7 +396,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
     }
 }
 
-void Console::registerCmd(const boost::function<void()>& command, const he::String& cmdKey)
+void Console::registerCmd(const std::function<void()>& command, const he::String& cmdKey)
 {
     HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
     {

@@ -32,9 +32,9 @@ class List
 public:
     typedef T* iterator;
     typedef T const* const_iterator;
-    typedef boost::function2<int, const T&, const T&> Sorter;
-    typedef boost::function2<bool, const T&, const T&> Comparer;
-    typedef boost::function1<bool, const T&> Pred;
+    typedef std::function<int(const T&, const T&)> Sorter;
+    typedef std::function<bool(const T&, const T&)> Comparer;
+    typedef std::function<bool(const T&)> Pred;
 
     explicit List(const size_t capacity = 0);
     virtual ~List();
@@ -81,10 +81,10 @@ public:
     inline const_iterator cbegin() const { return m_Buffer; }
     inline const_iterator cend() const { return m_Buffer + m_Size; }
 
-    inline void forEach(const boost::function1<void, const T&>& func) const;
-    inline void forEach(const boost::function1<void, T&>& func);
-    inline void rForEach(const boost::function1<void, const T&>& func) const;
-    inline void rForEach(const boost::function1<void, T&>& func);
+    inline void forEach(const std::function<void(const T&)>& func) const;
+    inline void forEach(const std::function<void(T&)>& func);
+    inline void rForEach(const std::function<void(const T&)>& func) const;
+    inline void rForEach(const std::function<void(T&)>& func);
 
     const static int CAPACITY_INCREMENT = 5;
     
@@ -457,7 +457,7 @@ const T& he::List<T, Creator>::operator[]( const size_t index ) const
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func ) const
+void he::List<T, Creator>::forEach( const std::function<void(const T&)>& func) const
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;
@@ -472,7 +472,7 @@ void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
+void he::List<T, Creator>::forEach( const std::function<void(T&)>& func )
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;
@@ -487,7 +487,7 @@ void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& func ) const
+void he::List<T, Creator>::rForEach( const std::function<void(const T&)>& func ) const
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;
@@ -502,7 +502,7 @@ void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& fun
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::rForEach( const boost::function1<void, T&>& func )
+void he::List<T, Creator>::rForEach( const std::function<void(T&)>& func )
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;

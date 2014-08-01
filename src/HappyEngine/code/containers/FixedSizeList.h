@@ -32,9 +32,9 @@ class FixedSizeList
 public:
     typedef T* iterator;
     typedef T const* const_iterator;
-    typedef boost::function2<int, const T&, const T&> Sorter;
-    typedef boost::function2<bool, const T&, const T&> Comparer;
-    typedef boost::function1<bool, const T&> Pred;
+    typedef std::function<int(const T&, const T&)> Sorter;
+    typedef std::function<bool(const T&, const T&)> Comparer;
+    typedef std::function<bool(const T&)> Pred;
 
     explicit FixedSizeList();
     ~FixedSizeList();
@@ -60,10 +60,10 @@ public:
     inline const_iterator cbegin() const { return m_Buffer; }
     inline const_iterator cend() const { return m_Buffer + SIZE; }
 
-    inline void forEach(const boost::function1<void, const T&>& func) const;
-    inline void forEach(const boost::function1<void, T&>& func);
-    inline void rForEach(const boost::function1<void, const T&>& func) const;
-    inline void rForEach(const boost::function1<void, T&>& func);
+    inline void forEach(const std::function<void(const T&)>& func) const;
+    inline void forEach(const std::function<void(T&)>& func);
+    inline void rForEach(const std::function<void(const T&)>& func) const;
+    inline void rForEach(const std::function<void(T&)>& func);
         
 private:    
     T m_Buffer[SIZE];
@@ -194,28 +194,28 @@ const T& he::FixedSizeList<T, SIZE>::operator[]( const size_t index ) const
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, size_t SIZE> inline
-void he::FixedSizeList<T, SIZE>::forEach( const boost::function1<void, const T&>& func ) const
+void he::FixedSizeList<T, SIZE>::forEach( const std::function<void(const T&)>& func ) const
 {    
     for (size_t i(0); i < SIZE; ++i)
         func(m_Buffer[i]);
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, size_t SIZE> inline
-void he::FixedSizeList<T, SIZE>::forEach( const boost::function1<void, T&>& func )
+void he::FixedSizeList<T, SIZE>::forEach( const std::function<void(T&)>& func )
 {    
     for (size_t i(0); i < SIZE; ++i)
         func(m_Buffer[i]);
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, size_t SIZE> inline
-void he::FixedSizeList<T, SIZE>::rForEach( const boost::function1<void, const T&>& func ) const
+void he::FixedSizeList<T, SIZE>::rForEach( const std::function<void(const T&)>& func ) const
 {    
     for (size_t i(0); i < SIZE; ++i)
         func(m_Buffer[i - 1]);
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, size_t SIZE> inline
-void he::FixedSizeList<T, SIZE>::rForEach( const boost::function1<void, T&>& func )
+void he::FixedSizeList<T, SIZE>::rForEach( const std::function<void(T&)>& func )
 {    
     for (size_t i(0); i < SIZE; ++i)
         func(m_Buffer[i - 1]);

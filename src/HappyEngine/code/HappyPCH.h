@@ -90,7 +90,6 @@ To minimize the possibility of data corruption when exporting a class with __dec
 
 #include <boost/chrono.hpp>
 #include <boost/any.hpp>
-#include <boost/function.hpp>
 #include <boost/date_time.hpp>
 #include <boost/timer.hpp>
 
@@ -119,6 +118,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "FixedString.h"
 #include "HeFixedStrings.h"
 
+#include "HappyGuid.h"
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"

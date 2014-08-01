@@ -52,7 +52,7 @@ public:
     he::Path getDirectory() const;
 
     // Iterators
-    bool iterateFiles(const bool recursive, const boost::function1<void, const Path&>& func);
+    bool iterateFiles(const bool recursive, const std::function<void(const Path&)>& func);
 
     // Static
     static const Path& getBinPath() { return s_BinPath; }

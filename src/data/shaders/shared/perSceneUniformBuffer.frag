@@ -39,7 +39,7 @@ struct PerSceneUniformBuffer
     float __pad_Light
 };
 
-layout(std140) uniform PerSceneUniformBuffer
+layout(std140) uniform SharedPerSceneUniformBuffer
 {
 	PerFrameUniformBuffer perSceneUniformBuffer;
 };

@@ -50,7 +50,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
             {
                 if (error.value() != 0)
                 {
-                    std::string message("Directory creation failed:\n" + error.message());
+                    he::String message("Directory creation failed:\n" + error.message());
                     HappyMessageBox::showExt("Fail!", message.c_str(), HappyMessageBox::Icon_Error);
                 }
             }
@@ -58,7 +58,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
     }
     else if (overrideWarning)
     {
-        std::string message("Are you sure you want to override\n" + path.str() + "?");
+        he::String message("Are you sure you want to override\n" + path.str() + "?");
         success = HappyMessageBox::showExt("Override file?", message.c_str(), 
             HappyMessageBox::Icon_Info, "Yes", "No") == HappyMessageBox::Button_Button1;
     }

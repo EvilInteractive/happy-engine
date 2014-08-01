@@ -135,35 +135,6 @@ struct ObjectHandle
     const static ObjectHandle unassigned;
 };
 
-class String;
-struct HAPPY_ENTRY Guid
-{
-    Guid();
-    ~Guid() {}
-    explicit Guid(const char* const guid);
-
-    he::String toString() const;
-    void toString(char* const charBuffer) const; // charBuffer must be at least s_CharbufferSize in size
-
-    static Guid generateGuid();
-
-    static const int s_CharbufferSize = 37;
-
-    bool operator==(const Guid& other) const;
-    bool operator!=(const Guid& other) const;
-
-    uint32 m_Data1;
-    // -
-    uint16 m_Data2;
-    // -
-    uint16 m_Data3;
-    // -
-    uint16 m_Data4;
-    // -
-    uint16 m_Data5;
-    uint32 m_Data6;
-};
-
 } //end namespace
 
 

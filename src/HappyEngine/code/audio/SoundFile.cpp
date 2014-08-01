@@ -63,7 +63,7 @@ SoundFile::SoundFile() :
 {
 }
 
-SoundFile::SoundFile(const he::String& filePath) :	m_FilePath(filePath.clone()),
+SoundFile::SoundFile(const he::String& filePath) :	m_FilePath(filePath),
                                                     m_SoundFile(nullptr),
                                                     m_NrSamples(0),
                                                     m_Samplerate(0),
@@ -135,7 +135,7 @@ SoundFileProperties SoundFile::getProperties() const
 {
     SoundFileProperties prop;
 
-    prop.filePath = m_FilePath.clone();
+    prop.filePath = m_FilePath;
     prop.channelsCount = m_ChannelsCount;
     prop.samplerate = m_Samplerate;
     prop.samplesCount = m_NrSamples;
@@ -146,7 +146,7 @@ SoundFileProperties SoundFile::getProperties() const
 /* DEFAULT COPY & ASSIGNMENT */
 SoundFile::SoundFile(const SoundFile& second)
     : m_SoundFile(second.m_SoundFile)
-    , m_FilePath(second.m_FilePath.clone())
+    , m_FilePath(second.m_FilePath)
     , m_NrSamples(second.m_NrSamples)
     , m_Samplerate(second.m_Samplerate)
     , m_ChannelsCount(second.m_ChannelsCount)
@@ -156,7 +156,7 @@ SoundFile::SoundFile(const SoundFile& second)
 SoundFile& SoundFile::operator=(const SoundFile& second)
 {
     m_SoundFile = second.m_SoundFile;
-    m_FilePath = second.m_FilePath.clone();
+    m_FilePath = second.m_FilePath;
     m_NrSamples = second.m_NrSamples;
     m_Samplerate = second.m_Samplerate;
     m_ChannelsCount = second.m_ChannelsCount;

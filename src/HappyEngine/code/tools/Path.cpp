@@ -41,7 +41,7 @@ void Path::init( const int argc, const char* const * const argv )
     {
         s_DataPath = s_BinPath;
         size_t index(s_DataPath.m_Path.rfind("/bin/"));
-        if (index != std::string::npos)
+        if (index != he::String::npos)
         {
             s_DataPath.m_Path = s_DataPath.m_Path.substr(0, index);
             s_DataPath.ensureTrailingSlash();
@@ -173,7 +173,7 @@ Path Path::getDirectory() const
         return *this;
 }
 
-bool Path::iterateFiles( const bool recursive, const boost::function1<void, const Path&>& func )
+bool Path::iterateFiles( const bool recursive, const std::function<void(const Path&)>& func )
 {
     bool result(false);
     boost::filesystem::path boostPath(m_Path.c_str());
@@ -185,11 +185,11 @@ bool Path::iterateFiles( const bool recursive, const boost::function1<void, cons
         {
             if (boost::filesystem::is_regular_file(it->status()))
             {
-                func(he::Path(he::String(it->path().c_str())));
+                func(it->path().string());
             }
             else if (boost::filesystem::is_directory(it->status()))
             {
-                Path path(it->path().c_str());
+                Path path(it->path().string());
                 path.iterateFiles(recursive, func);
             }
         }

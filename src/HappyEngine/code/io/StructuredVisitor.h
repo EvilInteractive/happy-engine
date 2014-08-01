@@ -117,13 +117,13 @@ public:
 
     template<typename T>
     bool visitCustomList(const he::FixedString& key, he::ObjectList<T>& list, 
-        const boost::function3<void, StructuredVisitor* const, const size_t, T&>& callback, const char* comment = NULL)
+        const std::function<void(StructuredVisitor* const, const size_t, T&)>& callback, const char* comment = NULL)
     {
         return internalVisitCustomList<he::ObjectList<T>, T>(key, list, callback, comment);
     }
     template<typename T>
     bool visitCustomList(const he::FixedString& key, he::PrimitiveList<T>& list,
-        const boost::function3<void, StructuredVisitor* const, const size_t, T&>& callback, const char* comment = NULL)
+        const std::function<void(StructuredVisitor* const, const size_t, T&)>& callback, const char* comment = NULL)
     {
         return internalVisitCustomList<he::PrimitiveList<T>, T>(key, list, callback, comment);
     }
@@ -207,7 +207,7 @@ private:
 
     template<typename T, typename U>
     bool internalVisitCustomList(const he::FixedString& key, T& list,
-        const boost::function3<void, StructuredVisitor* const, const size_t, U&>& callback, const char* comment = NULL)
+        const std::function<void(StructuredVisitor* const, const size_t, U&)>& callback, const char* comment = NULL)
     {
         bool result(false);
         if (enterArray(key, comment))

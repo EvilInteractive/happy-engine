@@ -113,6 +113,9 @@ void HappyEngine::init(const int argc, const char* const * const argv, const int
     HE_ASSERT(argc > 0, "There must be at least one argument in the argv argument list!");
     Path::init(argc, argv);
     StaticDataManager::init();
+    ThreadTicketManager* const treadTicketMan(ThreadTicketManager::getInstance());
+    treadTicketMan->registerTicket(eThreadTicket_Main, "Main");
+    treadTicketMan->registerTicket(eThreadTicket_Content, "Content");
     CLAIM_THREAD(eThreadTicket_Main);
     HE_INFO("Bin path: %s", Path::getBinPath().str().c_str());
     HE_INFO("Data path: %s", Path::getDataPath().str().c_str());

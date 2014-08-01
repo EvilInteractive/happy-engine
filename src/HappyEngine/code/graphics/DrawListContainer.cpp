@@ -89,7 +89,7 @@ void DrawListContainer::remove( Drawable* drawable )
     m_Dynamics.remove(drawable);
 }
 
-void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc ) const
+void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const std::function<void(Drawable*)>& drawFunc ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 #ifdef HE_USE_OCTREE
@@ -102,7 +102,7 @@ void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const bo
     });
 #endif
 }
-void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
+void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const std::function<void(Drawable*)>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 #ifdef HE_USE_OCTREE

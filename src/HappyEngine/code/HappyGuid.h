@@ -16,26 +16,43 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/10/29
+//Created: 2014/01/08
+
+#ifndef _HE_HAPPY_GUID_H_
+#define _HE_HAPPY_GUID_H_
+#pragma once
 
 namespace he {
-    
-template<typename KEY, typename VALUE>
-void he::Map<KEY, VALUE>::forEach( const std::function<void(std::pair<const KEY, VALUE>&)>& func )
-{
-    typename std::unordered_map<KEY, VALUE>::iterator it(this->begin());
-    typename std::unordered_map<KEY, VALUE>::iterator end(this->end());
-    for (; it != end; ++it)
-    func(*it);
-}
 
-template<typename KEY, typename VALUE>
-void he::Map<KEY, VALUE>::forEach( const std::function1<void(const std::pair<const KEY, VALUE>&)>& func ) const
+struct HAPPY_ENTRY Guid
 {
-    typename std::unordered_map<KEY, VALUE>::const_iterator it(this->cbegin());
-    typename std::unordered_map<KEY, VALUE>::const_iterator end(this->cend());
-    for (; it != end; ++it)
-    func(*it);
-}
+    Guid();
+    ~Guid() {}
+    explicit Guid(const char* const guid);
+
+    he::String toString() const;
+    void toString(char* const charBuffer) const; // charBuffer must be at least s_CharbufferSize in size
+
+    static Guid generateGuid();
+
+    static const int s_CharbufferSize = 37;
+
+    bool operator==(const Guid& other) const;
+    bool operator!=(const Guid& other) const;
+
+    uint32 m_Data1;
+    // -
+    uint16 m_Data2;
+    // -
+    uint16 m_Data3;
+    // -
+    uint16 m_Data4;
+    // -
+    uint16 m_Data5;
+    uint32 m_Data6;
+};
 
 } //end namespace
+
+
+#endif

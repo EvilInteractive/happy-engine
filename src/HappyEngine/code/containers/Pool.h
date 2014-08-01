@@ -45,7 +45,7 @@ public:
 
     size_t capacity() const;
 
-    inline void forEach(const boost::function1<void, T*>& func) const; // all items in pool, also the items in the free list
+    inline void forEach(const std::function<void(T*)>& func) const; // all items in pool, also the items in the free list
 
 private:
     void grow(const size_t amount);

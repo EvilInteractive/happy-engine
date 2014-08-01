@@ -61,7 +61,6 @@ public:
 
 private:
     Map m_HashMap;
-    std::unordered_set<std::string> tes;
 
     //Disable default copy constructor and default assignment operator
     GlobalStringTable(const GlobalStringTable&);

@@ -161,7 +161,7 @@ bool NodeGraphNode<TInput, TOutput>::evaluteMarch(uint8 marchId, he::ObjectList<
 }
 
 template<typename TInput, typename TOutput>
-bool he::NodeGraphNode<TInput, TOutput>::customMarch( uint8 marchId, const boost::function0<NodeGraphNode<TInput, TOutput>* const>& callback )
+bool he::NodeGraphNode<TInput, TOutput>::customMarch( uint8 marchId, const std::function<NodeGraphNode<TInput, TOutput>* const()>& callback )
 {
     bool result(true);
     if (m_LastMarchId != marchId)  // node already passed

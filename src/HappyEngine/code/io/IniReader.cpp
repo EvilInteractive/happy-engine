@@ -42,9 +42,9 @@ bool parseKeyValue(const he::String& line, he::String& key, he::String& value)
 {
     using namespace std;
 
-    std::string::size_type pos(line.find(L'='));
+    he::String::size_type pos(line.find(L'='));
 
-    if (pos != std::string::npos)
+    if (pos != he::String::npos)
     {
         key = line.substr(0, pos);
         value = line.substr(pos + 1, line.size() - (pos + 1));

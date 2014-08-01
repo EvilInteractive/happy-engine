@@ -45,8 +45,8 @@ public:
     CullOctreeNode* rootInsert(Drawable* drawable); // returns current root
     void remove(Drawable* obj);
     void reevaluate(Drawable* obj);
-    void draw(const ICamera* camera, boost::function1<void, Drawable*> drawFunction, bool checkChilderen) const;
-    void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, Drawable*> drawFunction, bool checkChilderen, 
+    void draw(const ICamera* camera, std::function<void(Drawable*)> drawFunction, bool checkChilderen) const;
+    void drawAndCreateDebugMesh(const ICamera* camera, std::function<void(Drawable*)> drawFunction, bool checkChilderen, 
         he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
     CullOctreeNode* getRoot();
 
@@ -85,8 +85,8 @@ public:
     void reevaluate(Drawable* obj);
     void remove(Drawable* obj);
 
-    void draw(const ICamera* camera, boost::function1<void, Drawable*> drawFunction) const;
-    void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, Drawable*> drawFunction, 
+    void draw(const ICamera* camera, std::function<void(Drawable*)> drawFunction) const;
+    void drawAndCreateDebugMesh(const ICamera* camera, std::function<void(Drawable*)> drawFunction, 
         he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
 
     const static float s_MinLeaveSize;

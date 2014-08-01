@@ -46,8 +46,8 @@ public:
     };
 
     void prepareForRendering();
-    void draw(BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc) const;
-    void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc,
+    void draw(BlendFilter blend, const ICamera* camera, const std::function<void(Drawable*)>& drawFunc) const;
+    void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const std::function<void(Drawable*)>& drawFunc,
         he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
 
     void insert(Drawable* drawable);

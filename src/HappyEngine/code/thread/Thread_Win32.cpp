@@ -50,7 +50,7 @@ typedef struct tagTHREADNAME_INFO
 } THREADNAME_INFO;
 #pragma pack(pop)
 
-void Thread::startThread(const boost::function0<void>& threadWorker, const char* name)
+void Thread::startThread(const std::function<void()>& threadWorker, const char* name)
 {
     HE_ASSERT(m_Handle == NULL, "Thread '%s' already started!", name);
     m_Worker = threadWorker;

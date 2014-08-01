@@ -123,7 +123,7 @@ bool BinObjLoader::read(const he::String& path, bool allowByteIndices)
         {
             gfx::Bone bone;
             stream.visit(name);
-            bone.m_Name = name.clone();
+            bone.m_Name = name;
             mat44 matrix;
             stream.visit(matrix);
             bone.m_BaseTransform = matrix;

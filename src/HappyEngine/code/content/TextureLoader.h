@@ -88,7 +88,7 @@ private:
         {
         }
         TextureLoadData(const TextureLoadData& other): 
-            m_Path(other.m_Path.clone()), m_Faces(other.m_Faces), m_TextureFormat(other.m_TextureFormat),
+            m_Path(other.m_Path), m_Faces(other.m_Faces), m_TextureFormat(other.m_TextureFormat),
             m_IlImageId(other.m_IlImageId), m_IsILimage(other.m_IsILimage), 
             m_Color(other.m_Color), m_Tex(other.m_Tex), m_DataLoaded(other.m_DataLoaded)
         {
@@ -100,7 +100,7 @@ private:
         }
         TextureLoadData& operator=(const TextureLoadData& other)
         {
-            m_Path = other.m_Path.clone();
+            m_Path = other.m_Path;
             m_Faces = other.m_Faces;
             for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
             {

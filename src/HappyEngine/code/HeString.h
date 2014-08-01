@@ -107,8 +107,9 @@ namespace he {
 typedef std::allocator<char> THeStringAllocator;
 typedef std::basic_string<char, std::char_traits<char>, THeStringAllocator > StdString;
 typedef std::basic_stringstream<char, std::char_traits<char>, THeStringAllocator > StringStream;
+typedef StdString String;
 
-class HAPPY_ENTRY String : public StdString
+/*class HAPPY_ENTRY String : public StdString
 {
 public:
     String();
@@ -139,9 +140,10 @@ public:
     String operator+(const he::String& other) const;
     String operator+(he::String&& other) const;
     String operator+(const char* const other) const;
-};
+};*/
 
 void toLower(char* const buff);
+uint32 hash(const uint32 oldHash, const he::String& str);
 
 } //end namespace
 
