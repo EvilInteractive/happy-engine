@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 
-#if _FRAG_PERSCENEUNIFORMBUFFER
+#ifndef _FRAG_PERSCENEUNIFORMBUFFER
 #define _FRAG_PERSCENEUNIFORMBUFFER
 
 struct PerSceneUniformBuffer
@@ -30,18 +30,18 @@ struct PerSceneUniformBuffer
 	float toeNumerator;
 	float toeDenominator;
 	float exposureBias;
-	float __pad_HDR;
+	float _pad_HDR;
     
     // Light
     vec4 ambLightColor;
     vec4 dirLightColor;
     vec3 dirLightDirection;
-    float __pad_Light
+    float _pad_Light;
 };
 
 layout(std140) uniform SharedPerSceneUniformBuffer
 {
-	PerFrameUniformBuffer perSceneUniformBuffer;
+	PerSceneUniformBuffer perSceneUniformBuffer;
 };
 
 #endif // _FRAG_PERSCENEUNIFORMBUFFER

@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 
-#if _FRAG_TONEMAP
+#ifndef _FRAG_TONEMAP
 #define _FRAG_TONEMAP
 
 #include "shared/perSceneUniformBuffer.frag"

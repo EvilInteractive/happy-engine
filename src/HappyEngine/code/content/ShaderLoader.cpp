@@ -45,20 +45,20 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
     ResourceFactory<gfx::Shader>* factory(ResourceFactory<gfx::Shader>::getInstance());
 
     int32 hash(0);
-    he::hash(hash, vsPath);
-    he::hash(hash, fsPath);
+    hash = he::hash(hash, vsPath);
+    hash = he::hash(hash, fsPath);
     if (defines)
     {
         defines->forEach([&hash](const he::String& str)
         {
-            he::hash(hash, str);
+            hash = he::hash(hash, str);
         });
     }
     if (outputLayout)
     {
         outputLayout->forEach([&hash](const he::String& str)
         {
-            he::hash(hash, str);
+            hash = he::hash(hash, str);
         });
     }
     

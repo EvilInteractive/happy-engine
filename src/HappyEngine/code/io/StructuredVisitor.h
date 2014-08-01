@@ -139,8 +139,8 @@ public:
             value = castTo(enumValue);
         }
         const bool result(visit(key, value, comment));
-
-        enumValue = castFrom(value);
+        if (result)
+            enumValue = castFrom(value);
 
         return result;
     }

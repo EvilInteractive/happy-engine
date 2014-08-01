@@ -43,7 +43,7 @@ uint32 hash( const uint32 oldHash, const String& str )
         do
         {
             result = result * 101 + *buff;
-        } while (!(*++buff));
+        } while (*++buff);
     }
     return result;
 }

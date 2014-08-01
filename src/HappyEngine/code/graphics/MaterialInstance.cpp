@@ -225,6 +225,7 @@ he::int8 MaterialInstance::findParameter( const FixedString& name ) const
 
 MaterialParameter& MaterialInstance::getParameter( const int8 index )
 {
+    HE_ASSERT(index >= 0, "Gettings parameter that was not found in the material!");
     return m_Parameters[index];
 }
 

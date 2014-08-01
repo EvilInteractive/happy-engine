@@ -280,7 +280,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
         name[nameLen] = '\0'; // Add null terminator
         const GLuint location(glGetUniformLocation( m_Id, name ));
         size_t samplers(0);
-        if (location != -1)
+        if (location != -1) // Can be -1 if it is inside a UBO!
         {
             const he::FixedString fsName(he::GlobalStringTable::getInstance()->add(name, nameLen));
             IShaderUniform* uniform(nullptr);
@@ -305,7 +305,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
                     glUniform1i(location, samplers);
                     uniform = ShaderUniformFactory::create(eShaderUniformType_TextureCube, fsName, samplers++); 
                 } break;
-                default: LOG(LogType_ProgrammerAssert, "Unsupported shader uniform type %d", type);
+                default: LOG(LogType_ProgrammerAssert, "Unsupported shader uniform type %d (%s)", type, fsName.c_str());
                 }
             }
             else
@@ -322,10 +322,6 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
                 uniform->init(this);
                 m_Uniforms.add(uniform);
             }
-        }
-        else
-        {
-            HE_ERROR("Could not get shader location for shadervar: %s in shader: %s", name, m_FragShaderName.c_str());
         }
     }
 

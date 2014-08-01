@@ -144,7 +144,7 @@ he::gfx::BlendFunc blendFuncFromString(const he::FixedString& str)
     }
     else 
     {
-        HE_ERROR("Unknown blendFuncFromString: %s", str.c_str());
+        LOG(he::LogType_ProgrammerAssert, "Unknown blendFuncFromString: %s", str.c_str());
         return he::gfx::BlendFunc_One;
     }
 }
@@ -238,6 +238,8 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
                 material->setLoaded(eLoadResult_Failed);
                 HE_ERROR("Material %s has no shader!", path.str().c_str());
             }
+
+            reader.close();
         }
         return material;
     }

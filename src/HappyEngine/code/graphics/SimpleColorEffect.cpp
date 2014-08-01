@@ -45,7 +45,7 @@ SimpleColorEffect::~SimpleColorEffect()
 /* GENERAL */
 void SimpleColorEffect::init(const VertexLayout& layout)
 {
-    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    Material* mat(CONTENT->loadMaterial("engine/2D/color.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
 

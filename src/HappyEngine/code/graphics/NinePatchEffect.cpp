@@ -48,7 +48,7 @@ NinePatchEffect::~NinePatchEffect()
 
 void NinePatchEffect::init(const VertexLayout& layout)
 {
-    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    Material* mat(CONTENT->loadMaterial("engine/2D/ninePatch.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
 

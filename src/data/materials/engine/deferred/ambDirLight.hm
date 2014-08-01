@@ -5,7 +5,7 @@
     "IsBlended" : true,
     "BlendEquation" : "Add",
     "SourceBlend" : "One",
-    "DestBlend" : "One"
+    "DestBlend" : "One",
     "DepthRead" : false,
-    "DepthWrite" : false,
+    "DepthWrite" : false
 }

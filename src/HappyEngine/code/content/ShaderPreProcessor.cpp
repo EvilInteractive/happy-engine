@@ -88,6 +88,24 @@ he::String ShaderPreProcessor::process(const he::String& code, he::ObjectList<he
             if (discardBlock > ifblocks)
                 discardBlock = 0;
         }
+        else if (line.find("#ifndef ") != he::String::npos)
+        {
+            ++ifblocks;
+            size_t index;
+            if (discardBlock == 0 && defines.find(trimEnd(line.substr(line.find("#ifndef ") + 4)), index))
+            {
+                discardBlock = ifblocks;
+            }
+        }
+        else if (line.find("#ifdef ") != he::String::npos)
+        {
+            ++ifblocks;
+            size_t index;
+            if (discardBlock == 0 && !defines.find(trimEnd(line.substr(line.find("#ifdef ") + 4)), index))
+            {
+                discardBlock = ifblocks;
+            }
+        }
         else if (line.find("#if ") != he::String::npos)
         {
             ++ifblocks;

@@ -49,6 +49,7 @@ AsyncLoadable::AsyncLoadable()
 
 AsyncLoadable::~AsyncLoadable()
 {
+    delete m_LoadContext;
 }
 
 void AsyncLoadable::setLoaded( const ELoadResult result )

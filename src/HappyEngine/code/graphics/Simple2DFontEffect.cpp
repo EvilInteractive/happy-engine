@@ -44,17 +44,13 @@ Simple2DFontEffect::~Simple2DFontEffect()
 
 void Simple2DFontEffect::init(const VertexLayout& layout)
 {
-    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    Material* mat(CONTENT->loadMaterial("engine/2D/font.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
-
-    m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha); // used to be belnd seperate with alpha one, one
-    m_Material->setDepthReadEnabled(false);
-    m_Material->setDepthWriteEnabled(false);
-
-    setWorldMatrix(mat44::Identity);
+    
     m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);
     m_BlendColor = m_Material->findParameter(HEFS::strblendColor);
+    m_WVP = m_Material->findParameter(HEFS::strmatWVP);
 
     setWorldMatrix(mat44::Identity);
 }

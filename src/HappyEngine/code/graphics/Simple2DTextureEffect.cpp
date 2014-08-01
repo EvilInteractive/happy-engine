@@ -47,14 +47,10 @@ Simple2DTextureEffect::~Simple2DTextureEffect()
 
 void Simple2DTextureEffect::init(const VertexLayout& layout)
 {
-    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    Material* mat(CONTENT->loadMaterial("engine/2D/texture.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
     m_Material->calculateMaterialLayout(layout);
-
-    m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    m_Material->setDepthReadEnabled(false);
-    m_Material->setDepthWriteEnabled(false);
-
+    
     m_WVP = m_Material->findParameter(HEFS::strmatWVP);
     m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);
     m_Alpha = m_Material->findParameter(HEFS::strinAlpha);

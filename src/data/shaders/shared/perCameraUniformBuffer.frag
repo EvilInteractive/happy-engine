@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 
-#if _FRAG_CAMERAUNIFORMBUFFER
+#ifndef _FRAG_CAMERAUNIFORMBUFFER
 #define _FRAG_CAMERAUNIFORMBUFFER
 
 struct PerCameraUniformBuffer
@@ -27,7 +27,7 @@ struct PerCameraUniformBuffer
     mat4 viewProjMatrix;
     
     vec3 cameraPosition;
-    float __padCamPos;
+    float _padCamPos;
     
     vec2 cameraNearFar;
     vec2 cameraViewSize;

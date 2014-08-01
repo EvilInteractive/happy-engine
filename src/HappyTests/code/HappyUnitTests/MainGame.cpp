@@ -55,6 +55,7 @@ void MainGame::init()
     //threadSafeQueueMP1CTest();
     //midiTest();
     poolTest();
+    objectHandleTest();
     HAPPYENGINE->quit();
 }
 
@@ -662,6 +663,14 @@ void MainGame::poolTest()
     });
 
     pool.destroy();
+}
+
+void MainGame::objectHandleTest()
+{
+    he::ObjectHandle handle(2, 1, 3);
+    HE_ASSERT(handle.getType() == 2, "Type is not correct! got %d expected %d", handle.getType(), 2);
+    HE_ASSERT(handle.getSalt() == 1, "Salt is not correct! got %d expected %d", handle.getSalt(), 1);
+    HE_ASSERT(handle.getIndex() == 3, "Index is not correct! got %d expected %d", handle.getIndex(), 3);
 }
 
 } //end namespace

@@ -34,6 +34,10 @@ Material::Material()
     , m_DestBlend(BlendFunc_Zero)
     , m_DepthFunc(DepthFunc_LessOrEqual)
 {
+    for (size_t i(0); i < eShaderType_MAX; ++i)
+    {
+        m_Shader[i] = nullptr;
+    }
 }
 
 Material::~Material()

@@ -31,7 +31,8 @@ int main( int argc, char* args[] )
     he::HappyEngine::init(argc, args, he::SubEngine_All);
     hut::HTFS::sdmInit();
 
-    he::ge::Game* game(NEW hut::MainGame());
+    hut::MainGame* game(NEW hut::MainGame());
+    game->objectHandleTest();
     HAPPYENGINE->start(game, true);
     delete game;
 

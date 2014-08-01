@@ -5,5 +5,5 @@
     "IsBlended" : false,
     "CullFrontFace" : false,
     "DepthRead" : false,
-    "DepthWrite" : false,
+    "DepthWrite" : false
 }

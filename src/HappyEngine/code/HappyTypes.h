@@ -116,7 +116,7 @@ struct ObjectHandle
     explicit ObjectHandle(const uint32 handle)
     : m_Handle(handle) {}
     ObjectHandle(const ObjectType type, const SaltType salt, const IndexType index)
-        : m_Handle(type + (salt << s_TypeBits) + (index << (s_TypeBits + s_SaltBits)) ) {}
+        : m_Handle((type & s_TypeMask) + ((salt << s_TypeBits) & s_SaltMask) + ((index << (s_TypeBits + s_SaltBits)) & s_IndexMask) ) {}
     ~ObjectHandle() {}
 
     bool operator==(const ObjectHandle& other) const
@@ -129,8 +129,8 @@ struct ObjectHandle
     }
 
     HE_FORCEINLINE ObjectType getType() const { return m_Handle & s_TypeMask; }
-    HE_FORCEINLINE SaltType getSalt() const { return m_Handle & s_SaltMask; }
-    HE_FORCEINLINE IndexType getIndex() const { return m_Handle & s_IndexMask; }
+    HE_FORCEINLINE SaltType getSalt() const { return (m_Handle & s_SaltMask) >> s_TypeBits ; }
+    HE_FORCEINLINE IndexType getIndex() const { return (m_Handle & s_IndexMask) >> (s_TypeBits + s_SaltBits); }
 
     const static ObjectHandle unassigned;
 };
