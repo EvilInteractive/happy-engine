@@ -29,7 +29,7 @@ HappyPhysicsErrorCallback::~HappyPhysicsErrorCallback(){}
 
 void HappyPhysicsErrorCallback::reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line)
 {
-    std::stringstream stream;
+    he::StringStream stream;
     stream << "PhysicsEngine '";
 
     switch (code)

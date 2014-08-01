@@ -205,7 +205,7 @@ void Console::displayHelp()
 
 void Console::displayVars()
 {
-    std::stringstream stream;
+    he::StringStream stream;
 
     stream << "******** VARS ********\n";
 
@@ -231,7 +231,7 @@ void Console::displayVars()
 
 void Console::displayCmds()
 {
-    std::stringstream stream;
+    he::StringStream stream;
 
     stream << "******** CMDS ********\n";
 

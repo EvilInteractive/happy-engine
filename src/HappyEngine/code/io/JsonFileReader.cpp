@@ -90,7 +90,7 @@ bool JsonFileReader::open( const Path& path )
     io::FileReader freader;
     if (freader.open(path, FileReader::OpenType_ASCII))
     {
-        std::string file(freader.readToEnd());
+        he::String file(freader.readToEnd());
         json::Value root;
         if (m_Reader->getReader().parse(file, root, true))
         {

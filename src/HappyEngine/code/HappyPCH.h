@@ -113,6 +113,8 @@ To minimize the possibility of data corruption when exporting a class with __dec
 
 #include "HappyTargetDefines.h"
 #include "HappyTypes.h"
+#include "HappyMemory.h"
+#include "HappyNew.h"
 #include "HeString.h"
 #include "FixedString.h"
 #include "HeFixedStrings.h"
@@ -135,8 +137,6 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HeAssert.h"
 
 #include "HappyFunctions.h"
-#include "HappyMemory.h"
-#include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
 

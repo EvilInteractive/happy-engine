@@ -48,7 +48,7 @@ private:
     AssetContainer<ObjectHandle> m_AssetContainer;
 
     FT_Library m_FTLibrary;
-    std::stringstream m_TempStream;
+    he::StringStream m_TempStream;
 
     /* DEFAULT COPY & ASSIGNMENT */
     FontLoader(const FontLoader&);

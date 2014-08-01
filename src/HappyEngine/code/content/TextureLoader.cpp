@@ -116,7 +116,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
 {
     ResourceFactory<gfx::Texture2D>* const tex2DFactory(FACTORY_2D);
-    std::stringstream stream;
+    he::StringStream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
     if (m_AssetContainer.isAssetPresent(stream.str()) && tex2DFactory->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
@@ -144,7 +144,7 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
 const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
 {
     ResourceFactory<gfx::Texture2D>* const tex2DFactory(FACTORY_2D);
-    std::stringstream stream;
+    he::StringStream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
     if (m_AssetContainer.isAssetPresent(stream.str()) && tex2DFactory->isAlive(m_AssetContainer.getAsset(stream.str())))
     {

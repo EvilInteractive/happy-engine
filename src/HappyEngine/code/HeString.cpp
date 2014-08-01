@@ -65,7 +65,7 @@ String::String( he::String&& other )
 
 }
 
-String::String( std::string&& other )
+String::String( StdString&& other )
     : StdString(std::forward<he::StdString>(other))
 {
 

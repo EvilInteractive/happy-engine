@@ -34,9 +34,8 @@ namespace ge {
 
 namespace hs {
 
-class EditorComponent : public he::ge::EntityComponent, public he::gfx::IShapeDrawable, public he::Object3D
+class EditorComponent : public he::ge::EntityComponent, public he::gfx::IShapeDrawable
 {
-    IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     EditorComponent();
     virtual ~EditorComponent();

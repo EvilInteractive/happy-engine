@@ -60,9 +60,9 @@ he::String trimBegin(const he::String& str)
 
 he::String ShaderPreProcessor::process(const he::String& code, he::ObjectList<he::String>& defines)
 {
-    std::stringstream stream;
+    he::StringStream stream;
 
-    std::stringstream linesStream;
+    he::StringStream linesStream;
     he::ObjectList<he::String> lines;
     std::for_each(code.cbegin(), code.cend(), [&](const char& c)
     {

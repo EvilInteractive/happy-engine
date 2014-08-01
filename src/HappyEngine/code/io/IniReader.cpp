@@ -61,8 +61,7 @@ inline he::String getSubDivision(const he::String& str)
 }
 void removeSpaces(he::String& str)
 {
-    using namespace std;
-    stringstream stream;
+    he::StringStream stream;
 
     bool stringHalt = false;
     for_each(str.cbegin(), str.cend(), [&](wchar_t c)
@@ -93,7 +92,7 @@ bool IniReader::open(const he::String& path)
     m_Data.clear();
     m_IsOpen = false;
     std::ifstream file;
-    file.open(path, ios::in);
+    file.open(path.c_str(), ios::in);
 
     if (file.is_open())
     {

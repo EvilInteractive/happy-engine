@@ -226,7 +226,7 @@ void ObjLoader::create(bool allowByteIndices)
 
         for (int i = 0; i < 3; ++i)
         {
-            std::stringstream stream;
+            he::StringStream stream;
             stream << face.data[i][0] << " " << face.data[i][1] << " " << face.data[i][2];
             std::map<he::String, uint32>::const_iterator index(m_IndexMap.find(stream.str()));
             if (index == m_IndexMap.cend())

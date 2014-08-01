@@ -231,7 +231,7 @@ physx::PxScene* PhysicsEngine::getScene() const
 
 physx::PxMaterial* PhysicsEngine::createMaterial( float staticFriction, float dynamicFriction, float restitution )
 {
-    std::stringstream key;
+    he::StringStream key;
     key << staticFriction << " " << dynamicFriction << " " << restitution;
     if (m_Materials.isAssetPresent(key.str()))
     {

@@ -42,7 +42,6 @@ EntityManager::EntityManager()
     : m_EntityCreatedCallback(std::bind(&EntityManager::onEntityCreated, this, std::placeholders::_1))
     , m_EntityDestroyedCallback(std::bind(&EntityManager::onEntityDestroyed, this, std::placeholders::_1))
     , m_EntityDesc(nullptr)
-    , m_EntityDesc(nullptr)
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->init();

@@ -493,8 +493,8 @@ void MainGame::jsonUnitTest()
         writer.close();
     }
 
-    std::string resultA;
-    std::string resultB;
+    he::String resultA;
+    he::String resultB;
 
     io::FileReader reader;
     if (reader.open(pathA, io::FileReader::OpenType_ASCII))
