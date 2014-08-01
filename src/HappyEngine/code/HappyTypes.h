@@ -135,6 +135,13 @@ struct ObjectHandle
     const static ObjectHandle unassigned;
 };
 
+template<typename T>
+struct NameValuePair
+{
+    he::FixedString m_Name;
+    T m_Value;
+};
+
 } //end namespace
 
 

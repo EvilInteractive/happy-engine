@@ -132,7 +132,7 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
         entityMan->createComponent(HEFS::strModelComponent)));
     scene->addComponent(sceneModel);
     // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj", "M_Scene");
-    sceneModel->loadModelMeshAndMaterial("white.material", "testScene.binobj", "M_Ground");
+    sceneModel->loadModelMeshAndMaterial("white.hm", "testScene.binobj", "M_Ground");
     // sceneModel->loadModelMeshAndMaterial("testSceneBas.material", "testScene2.binobj", "M_Ground");
     scene->activate();
     m_Entities.add(scene);
@@ -154,9 +154,9 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
             const int obj(rand() % 3);
             switch (obj)
             {
-            case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.material"; name = "TheePot"; break;
-            case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.material"; name = "Cube"; break;
-            case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.material";  name = "Car"; break;
+            case 0: modelName = "testTheepot.binobj"; meshName = "Teapot001"; materialName = "theepot.hm"; name = "TheePot"; break;
+            case 1: modelName = "cube.binobj"; meshName = "M_Cube"; materialName = "cube.hm"; name = "Cube"; break;
+            case 2: modelName = "car.binobj"; meshName = "M_Car"; materialName = "car.hm";  name = "Car"; break;
             }
             model->loadModelMeshAndMaterial(materialName, modelName, meshName);
 

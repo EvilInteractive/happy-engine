@@ -110,6 +110,38 @@ public:
     }
 
     template<typename T>
+    bool visitNameValueList(const he::FixedString& key, he::ObjectList<NameValuePair<T>>& list, const char* comment = NULL)
+    {
+        if (m_OpenType == eOpenType_Read)
+            list.clear();
+        if (enterNode(key, comment))
+        {
+            size_t elements(m_OpenType == eOpenType_Write? list.size() : getArraySize());
+            if (elements > 0)
+            {
+                for (size_t i(0); i < elements; ++i)
+                {
+                    if (m_OpenType == eOpenType_Write)
+                    {
+                        NameValuePair<T>& pair(list[i]);
+                        internalVisit(pair.m_Name, pair.m_Value, NULL);
+                    }
+                    else
+                    {
+                        NameValuePair<T> pair;
+                        pair.m_Name = getMemberName(i);
+                        internalVisit(pair.m_Name, pair.m_Value, NULL);
+                        list.add(pair);
+                    }
+                }
+            }
+            exitNode(key);
+            return true;
+        }
+        return false;
+    }
+
+    template<typename T>
     bool visitObjectList(const he::FixedString& key, he::ObjectList<T>& list, const char* comment = NULL)
     {
         return internalVisitObjectList(key, list, comment);
@@ -152,6 +184,7 @@ protected:
     virtual bool enterArray(const he::FixedString& key, const char* comment = NULL) = 0;
     virtual void exitArray(const he::FixedString& key) = 0;
     virtual size_t getArraySize() = 0;
+    virtual FixedString getMemberName(const size_t index) = 0;
     
     // internal visits
     virtual bool visit(he::String& value, const char* comment = NULL) = 0;

@@ -98,7 +98,7 @@ void PostProcesser::initFromSettings()
     if (settings.postSettings.shaderSettings.enableHDR)
     {
         m_AutoExposure = NEW AutoExposure();
-        m_AutoExposure->init(settings.postSettings.hdrSettings);
+        m_AutoExposure->init(m_View, settings.postSettings.hdrSettings);
     }
     m_AOEnabled = settings.postSettings.shaderSettings.enableAO;
     m_FogEnabled = settings.postSettings.shaderSettings.enableFog;

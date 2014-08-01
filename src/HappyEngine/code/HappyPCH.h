@@ -111,11 +111,11 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #endif
 
 #include "HappyTargetDefines.h"
+#include "FixedString.h"
 #include "HappyTypes.h"
 #include "HappyMemory.h"
 #include "HappyNew.h"
 #include "HeString.h"
-#include "FixedString.h"
 #include "HeFixedStrings.h"
 
 #include "HappyGuid.h"

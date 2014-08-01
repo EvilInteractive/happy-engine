@@ -29,6 +29,8 @@
 #include "ModelMesh.h"
 #include "Texture2D.h"
 #include "RenderTarget.h"
+#include "View.h"
+#include "Window.h"
 
 namespace he {
     namespace gfx {
@@ -68,7 +70,7 @@ AutoExposure::~AutoExposure()
     delete m_LumMaterial;
 }
 
-void AutoExposure::init(const PostSettings::HdrSettings& settings)
+void AutoExposure::init(View* view, const PostSettings::HdrSettings& settings)
 {
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///
@@ -82,7 +84,7 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
     //////////////////////////////////////////////////////////////////////////
-    m_RenderTarget = NEW RenderTarget(GRAPHICS->getSharedContext());
+    m_RenderTarget = NEW RenderTarget(view->getWindow()->getContext());
     m_RenderTarget->setSize(1, 1);
     m_RenderTarget->addTextureTarget(m_LumTexture[0]);
     m_RenderTarget->init();
@@ -131,7 +133,7 @@ void AutoExposure::calculate( const Texture2D* hdrMap)
 
     DrawContext context;
     context.m_VBO = m_Quad->getVBO();
-    context.m_VBO = m_Quad->getIBO();
+    context.m_IBO = m_Quad->getIBO();
     m_LumMaterial->apply(context);
 
     m_Quad->draw();

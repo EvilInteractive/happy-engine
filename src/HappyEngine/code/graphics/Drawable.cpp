@@ -103,12 +103,12 @@ void Drawable::updateMaterialLayout(ModelMesh* const mesh, MaterialInstance* con
                     raiseFlag(eDrawableFlags_IsLoaded);
                     reevaluate();
                 }
-                else
+                else if (m_Material->getLoadResult() == eLoadResult_Unloaded)
                 {
                     m_Material->callbackOnceIfLoaded(this, std::bind(&Drawable::updateMaterialLayout, this, mesh, material));
                 }
             }
-            else
+            else if (m_ModelMesh->getLoadResult() == eLoadResult_Unloaded)
             {
                 m_ModelMesh->callbackOnceIfLoaded(this, std::bind(&Drawable::updateMaterialLayout, this, mesh, material));
             }

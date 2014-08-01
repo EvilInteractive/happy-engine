@@ -44,11 +44,13 @@ struct MaterialDesc
     bool m_CullFrontFace;
     bool m_DepthRead;
     bool m_DepthWrite;
+    bool m_CastShadow;
     gfx::BlendEquation m_BlendEquation;
     gfx::BlendFunc m_SourceBlend;
     gfx::BlendFunc m_DestBlend;
     he::ObjectList<he::String> m_Defines;
     he::ObjectList<he::String> m_OutputLayout;
+    he::ObjectList<NameValuePair<he::String>> m_Params;
 
     // Default values for uniforms go here as well
 

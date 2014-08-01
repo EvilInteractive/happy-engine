@@ -184,7 +184,7 @@ void Bloom::init(View* view, bool hdr)
     m_RenderTarget.resize(s_DownSamples);
     for (int i(0); i < s_DownSamples; ++i)
     {
-        RenderTarget* rt(NEW RenderTarget(gfxEngine->getSharedContext()));
+        RenderTarget* rt(NEW RenderTarget(m_View->getWindow()->getContext()));
         m_RenderTarget[i] = rt;
     }
 

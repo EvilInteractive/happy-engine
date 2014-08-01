@@ -32,6 +32,7 @@
 #include "Property.h"
 #include "PropertyConverter.h"
 #include "PropertyFeel.h"
+#include "MaterialInstance.h"
 
 namespace he {
 namespace ge {
@@ -85,7 +86,19 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
 
     he::gfx::ModelMesh* const mesh(contentManager->asyncLoadModelMesh(modelAsset, meshName));
     m_LoadingDesc->m_Mesh = mesh;
-    mesh->callbackOnceIfLoaded(this, [this](const ELoadResult result)
+
+    // Mesh will probably take the longest
+    mesh->callbackOnceIfLoaded(this, std::bind(&ModelComponent::onLoadingDone, this, std::placeholders::_1));
+}
+
+void ModelComponent::onLoadingDone( const ELoadResult result )
+{
+    if (result == eLoadResult_Success && !m_LoadingDesc->m_Material->isLoaded())
+    {
+        // If the material would take longer to load
+        m_LoadingDesc->m_Material->callbackOnceIfLoaded(this, std::bind(&ModelComponent::onLoadingDone, this, std::placeholders::_1));
+    }
+    else
     {
         // If loading fails, clear the mesh and material
         // This is always done because it is more efficient to reset the drawable first
@@ -95,12 +108,16 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
         {
             m_Drawable->setModelMesh(m_LoadingDesc->m_Mesh);
             m_Drawable->setMaterial(m_LoadingDesc->m_Material);
+            if (m_Parent->isActive() && !m_Drawable->isAttachedToScene())
+            {
+                m_Drawable->attachToScene(m_Parent->getScene());
+            }
         }
         m_LoadingDesc->m_Mesh->release();
         m_LoadingDesc->m_Material->release();
         delete m_LoadingDesc;
         m_LoadingDesc = nullptr;
-    });
+    }
 }
 
 void ModelComponent::unloadModelMeshAndMaterial()
@@ -114,6 +131,8 @@ void ModelComponent::activate()
 {
     HE_IF_ASSERT(m_Drawable->isAttachedToScene() == false, "ModelComponent already active")
     HE_IF_ASSERT(m_Parent != nullptr, "Activating ModelComponent without a parent is not possible!")
+    if (m_Drawable->getModelMesh() && m_Drawable->getModelMesh()->isLoaded() && 
+        m_Drawable->getMaterial() && m_Drawable->getMaterial()->isLoaded())
     {
         m_Drawable->attachToScene(m_Parent->getScene());
     }

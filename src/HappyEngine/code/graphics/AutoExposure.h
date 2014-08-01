@@ -39,7 +39,7 @@ public:
     AutoExposure();
     virtual ~AutoExposure();
 
-    void init(const PostSettings::HdrSettings& settings);
+    void init(View* view, const PostSettings::HdrSettings& settings);
 
     void calculate(const Texture2D* hdrMap );
     void tick(float dTime) override;

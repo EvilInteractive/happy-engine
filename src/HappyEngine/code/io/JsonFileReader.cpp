@@ -23,6 +23,7 @@
 
 #include <json/json.h>
 #include "FileReader.h"
+#include "GlobalStringTable.h"
 
 namespace he {
 namespace io {
@@ -175,15 +176,16 @@ void JsonFileReader::exitArray( const he::FixedString& key )
 
 size_t JsonFileReader::getArraySize()
 {
-    size_t result(0);
     const json::Value& val(m_Reader->getRoot());
-    if (val.isArray() == true)
-    {
-        result = val.size();
-    }
+    size_t result(val.size());
     return result;
 }
 
+he::FixedString JsonFileReader::getMemberName( const size_t index )
+{
+    const json::Value& val(m_Reader->getRoot());
+    return he::GlobalStringTable::getInstance()->add(val.getMemberNames()[index].c_str());
+}
 
 bool JsonFileReader::visit( he::String& value, const char* /*comment*/ /*= NULL*/ )
 {

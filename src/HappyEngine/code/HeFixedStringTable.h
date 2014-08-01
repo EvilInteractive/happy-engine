@@ -162,6 +162,8 @@ DEF_FS(FragmentShader);
 DEF_FS(VertexShader);
 DEF_FS(Defines);
 DEF_FS(OutputLayout);
+DEF_FS(CastShadow);
+DEF_FS(Parameters);
 
 //////////////////////////////////////////////////////////////////////////
 // 2D Effects

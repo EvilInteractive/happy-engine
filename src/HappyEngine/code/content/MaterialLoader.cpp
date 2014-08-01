@@ -161,6 +161,7 @@ MaterialDesc::MaterialDesc()
     , m_CullFrontFace(false)
     , m_DepthRead(true)
     , m_DepthWrite(true)
+    , m_CastShadow(true)
     , m_BlendEquation(gfx::BlendEquation_Add)
     , m_SourceBlend(gfx::BlendFunc_One)
     , m_DestBlend(gfx::BlendFunc_Zero)
@@ -177,11 +178,13 @@ void MaterialDesc::visit( he::io::StructuredVisitor* const visitor )
     visitor->visit(HEFS::strCullFrontFace, m_CullFrontFace);
     visitor->visit(HEFS::strDepthRead, m_DepthRead);
     visitor->visit(HEFS::strDepthWrite, m_DepthWrite);
+    visitor->visit(HEFS::strCastShadow, m_CastShadow);
     visitor->visitCasted<he::FixedString, gfx::BlendEquation>(HEFS::strBlendEquation, m_BlendEquation, NULL, ::blendEquationToString, ::blendEquationFromString);
     visitor->visitCasted<he::FixedString, gfx::BlendFunc>(HEFS::strSourceBlend, m_SourceBlend, NULL, ::blendFuncToString, ::blendFuncFromString);
     visitor->visitCasted<he::FixedString, gfx::BlendFunc>(HEFS::strDestBlend, m_DestBlend, NULL, ::blendFuncToString, ::blendFuncFromString);
     visitor->visitList(HEFS::strDefines, m_Defines);
     visitor->visitList(HEFS::strOutputLayout, m_OutputLayout);
+    visitor->visitNameValueList(HEFS::strParameters, m_Params);
 }
 
 MaterialLoader::MaterialLoader()

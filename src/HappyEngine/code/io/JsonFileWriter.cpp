@@ -23,6 +23,7 @@
 
 #include <json/json.h>
 #include "FileWriter.h"
+#include "GlobalStringTable.h"
 
 namespace he {
 namespace io {
@@ -185,13 +186,15 @@ void JsonFileWriter::exitArray( const he::FixedString& key )
 
 size_t JsonFileWriter::getArraySize()
 {
-    size_t result(0);
     const json::Value& val(m_Writer->getRoot());
-    if (val.isArray() == true)
-    {
-        result = val.size();
-    }
+    size_t result(val.size());
     return result;
+}
+
+he::FixedString JsonFileWriter::getMemberName( const size_t index )
+{
+    const json::Value& val(m_Writer->getRoot());
+    return he::GlobalStringTable::getInstance()->add(val.getMemberNames()[index].c_str());
 }
 
 template<typename T>

@@ -76,6 +76,8 @@ protected:
     Entity* m_Parent;
 
 private:
+    void onLoadingDone(const ELoadResult result);
+
     gfx::Drawable* m_Drawable;
 
     LoadDesc* m_LoadingDesc;
