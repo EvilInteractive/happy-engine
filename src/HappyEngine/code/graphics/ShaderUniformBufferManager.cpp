@@ -42,7 +42,7 @@ ShaderUniformBufferManager::~ShaderUniformBufferManager()
 
 void ShaderUniformBufferManager::init()
 {
-    m_FrameBuffer.init(m_BufferCounter++, PerSceneBuffer(), true);
+    m_SceneBuffer.init(m_BufferCounter++, PerSceneBuffer(), true);
     m_CameraBuffer.init(m_BufferCounter++, PerCameraBuffer(), true);
 }
 
@@ -69,7 +69,7 @@ void ShaderUniformBufferManager::updateSceneBuffer(const Scene* const scene)
     buffer.m_DirectionalLightDirection = dirLight->getDirection();
 
 
-    m_FrameBuffer.updateData(buffer);
+    m_SceneBuffer.updateData(buffer);
 }
 
 void ShaderUniformBufferManager::updateCameraBuffer(const ICamera* const camera)
@@ -88,6 +88,19 @@ void ShaderUniformBufferManager::updateCameraBuffer(const ICamera* const camera)
     buffer.m_ProjParams = vec4(camera->getProjection()(0, 0), camera->getProjection()(1, 1), camera->getNearClip(), camera->getFarClip());
 
     m_CameraBuffer.updateData(buffer);
+}
+
+he::uint32 ShaderUniformBufferManager::findLink( const he::FixedString& name ) const
+{
+    if (name == HEFS::strSharedPerCameraUniformBuffer)
+    {
+        return m_CameraBuffer.getBufferID();
+    }
+    else if (name == HEFS::strSharedPerSceneUniformBuffer)
+    {
+        return m_SceneBuffer.getBufferID();
+    }
+    return UINT32_MAX;
 }
 
 } }

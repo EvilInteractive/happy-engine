@@ -105,6 +105,8 @@ DEF_FS(blur2);
 DEF_FS(blur3);
 DEF_FS(noiseMap);
 DEF_FS(viewPortSize);
+DEF_FS(SharedPerCameraUniformBuffer);
+DEF_FS(SharedPerSceneUniformBuffer);
 
 //////////////////////////////////////////////////////////////////////////
 // Deferred

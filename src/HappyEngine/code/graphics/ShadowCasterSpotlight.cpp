@@ -87,11 +87,6 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
     {
         m_RenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
         GL::heSetViewport(he::RectI(0, 0, m_RenderTarget->getWidth(), m_RenderTarget->getHeight()));
-        GL::heBlendEnabled(false);
-        GL::heSetCullFace(false);
-        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-        GL::heSetDepthWrite(true);
-        GL::heSetDepthRead(true);
 
         DrawContext context;
         context.m_Camera = cam;
@@ -99,9 +94,11 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
         {
             if (drawable->getCastsShadow() == true)
             {
-                context.m_CurrentMesh = drawable->getModelMesh();
+                ModelMesh* const mesh(drawable->getModelMesh());
+                context.m_VBO = mesh->getVBO();
+                context.m_IBO = mesh->getIBO();
                 drawable->getMaterial()->applyShadow(context);
-                drawable->getModelMesh()->draw();
+                mesh->draw();
             }
         });
     }
