@@ -47,6 +47,7 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
+    stricmpTest();
     //listUnitTest();
     //nodeGraphUnitTest();
     //guidUnitTest();
@@ -67,6 +68,15 @@ void MainGame::destroy()
 void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
+}
+
+void MainGame::stricmpTest()
+{
+    const char* test1("Hallo ik ben Bas");
+    const char* test2("hallO Ik BEN bas");
+    const char* test3("Hallo ik ben Sebastiaan");
+    HE_ASSERT(stricmp(test1, test2) == 0, "test1 and test2 are !=");
+    HE_ASSERT(stricmp(test1, test3) != 0, "test1 and test3 are ==");
 }
 
 void MainGame::guidUnitTest()

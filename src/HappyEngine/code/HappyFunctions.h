@@ -80,6 +80,10 @@ int HAPPY_ENTRY hesnprintf_s(char* buffer, const size_t buffSize, const char* fo
 // This one can be used to get the needed size, if you pass in nullptr for the buffer
 int HAPPY_ENTRY hesnprintf(char* buffer, const size_t buffSize, const char* format, ...);
 
+#ifndef stricmp
+int stricmp(const char* s1, const char* s2);
+#endif
+
 } //end namespace
 
 #endif

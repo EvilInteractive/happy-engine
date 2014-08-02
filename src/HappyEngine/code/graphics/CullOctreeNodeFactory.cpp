@@ -87,4 +87,4 @@ void CullOctreeNodeFactory::releaseNode( CullOctreeNode* node )
 
 } } //end namespace
 
-#endif HE_USE_OCTREE
+#endif // HE_USE_OCTREE

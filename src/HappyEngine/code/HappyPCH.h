@@ -87,6 +87,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include <queue>
 #include <set>
 #include <atomic>
+#include <limits.h>
 
 #include <boost/chrono.hpp>
 #include <boost/any.hpp>

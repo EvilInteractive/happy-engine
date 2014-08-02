@@ -36,6 +36,7 @@ public:
     virtual void destroy();
     virtual void tick(float dTime);
 
+    void stricmpTest();
     void nodeGraphUnitTest();
     void listUnitTest();
     void guidUnitTest();

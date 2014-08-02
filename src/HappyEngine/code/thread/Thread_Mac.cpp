@@ -40,7 +40,7 @@ void* threadProc(void* param)
     return nullptr;
 }
 
-void Thread::startThread(const boost::function0<void>& threadWorker, const char* /*name*/)
+void Thread::startThread(const std::function<void()>& threadWorker, const char* /*name*/)
 {
     m_Worker = threadWorker;
     const int fail(pthread_create(&m_ID, 0, threadProc, this));

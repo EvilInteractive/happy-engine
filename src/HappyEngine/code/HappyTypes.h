@@ -23,7 +23,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <intsafe.h>
 #include "BitStream.h"
 
 namespace he {
