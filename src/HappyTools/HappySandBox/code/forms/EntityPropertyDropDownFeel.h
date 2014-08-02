@@ -30,6 +30,7 @@ private slots:
 
 private:
     Ui::EntityPropertyDropDownFeel* m_UI;
+    bool m_HoldEvents;
 };
 
 }

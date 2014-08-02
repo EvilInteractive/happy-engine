@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>392</width>
-    <height>22</height>
+    <height>24</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,18 +17,30 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
-    <widget class="QSlider" name="horizontalSlider">
+    <widget class="QSlider" name="m_Slider">
+     <property name="singleStep">
+      <number>1</number>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QDoubleSpinBox" name="doubleSpinBox">
+    <widget class="QDoubleSpinBox" name="m_SpinBox">
      <property name="frame">
       <bool>true</bool>
      </property>
