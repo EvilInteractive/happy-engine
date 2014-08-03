@@ -67,6 +67,7 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
         gfx::Material* const material(m_LoadingDesc->m_Material);
         if (material != nullptr)
         {
+            material->cancelLoadCallback(this);
             material->release();
         }
         gfx::ModelMesh* const mesh(m_LoadingDesc->m_Mesh);
@@ -123,6 +124,24 @@ void ModelComponent::onLoadingDone( const ELoadResult result )
 void ModelComponent::unloadModelMeshAndMaterial()
 {
     HE_ASSERT(m_Drawable->isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
+    if (m_LoadingDesc != nullptr)
+    {
+        gfx::Material* const material(m_LoadingDesc->m_Material);
+        if (material != nullptr)
+        {
+            material->cancelLoadCallback(this);
+            material->release();
+        }
+        gfx::ModelMesh* const mesh(m_LoadingDesc->m_Mesh);
+        if (mesh != nullptr)
+        {
+            mesh->cancelLoadCallback(this);
+            mesh->release();
+        }
+
+        delete m_LoadingDesc;
+        m_LoadingDesc = nullptr;
+    }
     m_Drawable->setModelMesh(nullptr);
     m_Drawable->setMaterial(nullptr);
 }

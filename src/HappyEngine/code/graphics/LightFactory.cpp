@@ -42,7 +42,7 @@ void LightFactory::destroyLight( const ObjectHandle& handle )
     destroyObject(handle);
 }
 
-Light* LightFactory::get( const ObjectHandle& handle ) const
+Light* LightFactory::get(const ObjectHandle handle ) const
 {
     return ObjectFactory<Light>::get(handle);
 }

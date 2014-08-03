@@ -26,6 +26,7 @@ find_library(ASSIMP NAMES libassimp.dylib)
 find_library(BOOST_CHRONO NAMES libboost_chrono-mt.a)
 find_library(BOOST_DATE NAMES libboost_date_time-mt.a)
 find_library(BOOST_FILESYSTEM NAMES libboost_filesystem-mt.a)
+find_library(BOOST_SYSTEM NAMES libboost_system-mt.a)
 
 find_library(IL NAMES libIL.dylib)
 find_library(ILU NAMES libILU.dylib)
@@ -143,9 +144,7 @@ target_link_libraries(${target} ${ASSIMP})
 
 target_link_libraries(${target} ${BOOST_CHRONO})
 target_link_libraries(${target} ${BOOST_DATE})
-target_link_libraries(${target} ${BOOST_REGEX})
 target_link_libraries(${target} ${BOOST_SYSTEM})
-target_link_libraries(${target} ${BOOST_THREAD})
 target_link_libraries(${target} ${BOOST_FILESYSTEM})
 
 target_link_libraries(${target} ${IL})
