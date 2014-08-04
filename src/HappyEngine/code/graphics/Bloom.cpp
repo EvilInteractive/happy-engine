@@ -75,11 +75,12 @@ void Bloom::cleanTextures()
                 m_Texture[pass][i] = nullptr;
             }
         }
-        m_RenderTarget.forEach([](RenderTarget* renderTarget)
-        {
-            delete renderTarget;
-        });
     }
+    m_RenderTarget.forEach([](RenderTarget* renderTarget)
+    {
+        delete renderTarget;
+    });
+    m_RenderTarget.clear();
 }
 void Bloom::cleanShaders()
 {
