@@ -37,7 +37,7 @@ void EntityPropertySliderFeel::setValueMixed()
 
 }
 
-void EntityPropertySliderFeel::onDirtyChanged(const bool newDirty)
+void EntityPropertySliderFeel::onDirtyChanged(const bool /*newDirty*/)
 {
 
 }
