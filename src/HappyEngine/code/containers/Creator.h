@@ -25,30 +25,52 @@
 namespace he {
 
 template<typename T>
-class PrimitiveCreator
+class PrimitiveObjectAllocator
 {
 public:
-    static inline void create(T* mem) { he_memset(mem, 0, sizeof(T)); }
-    static inline void createArray(T* mem, size_t num) { he_memset(mem, 0, sizeof(T) * num); }
-    static inline void destroy(T* /*mem*/) {}
-    static inline void destroyArray(T* /*mem*/, size_t /*num*/) {}
+    static inline T* allocate(const size_t amount) 
+    { 
+        T* const mem(static_cast<T*>(he_malloc(amount * sizeof(T)))); 
+        he_memset(mem, 0, amount * sizeof(T)); 
+        return mem;
+    }
+    static inline void deallocate(T* mem) 
+    { 
+        he_free(mem); 
+    }
+
+    static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount)
+    {
+        T* const newMem(static_cast<T*>(he_realloc(old, newAmount * sizeof(T))));
+        if (oldAmount < newAmount)
+            he_memset(newMem + oldAmount, 0, sizeof(T) * (newAmount - oldAmount));
+        return newMem;
+    }
 };
 
 template<typename T>
-class ObjectCreator
+class ObjectAllocator
 {
 public:
-    static inline void create(T* mem) { PNEW(mem) T; }
-    static inline void createArray(T* mem, size_t num)
-    {
-        for (size_t i(0); i < num; ++i)
-            create(mem + i);
+    static inline T* allocate(const size_t amount) 
+    { 
+        T* const mem(NEW T[amount]);
+        return mem;
     }
-    static inline void destroy(T* mem) { (void)mem->~T(); }
-    static inline void destroyArray(T* mem, size_t num) 
+    static inline void deallocate(T* mem) 
+    { 
+        delete[] mem;
+    }
+
+    static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount)
     {
-        for (size_t i(0); i < num; ++i)
-            destroy(mem + i);
+        T* const newMem(allocate(newAmount));
+        for (size_t i(0); i < oldAmount; ++i)
+        {
+            newMem[i] = std::move(old[i]);
+        }
+        deallocate(old);
+        return newMem;
     }
 };
 

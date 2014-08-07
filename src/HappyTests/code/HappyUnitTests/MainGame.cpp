@@ -47,8 +47,8 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    stricmpTest();
-    //listUnitTest();
+    //stricmpTest();
+    listUnitTest();
     //nodeGraphUnitTest();
     //guidUnitTest();
     //mat33UnitTest();
@@ -344,6 +344,11 @@ void MainGame::listUnitTest()
         {
             TestStruct() { std::cout << "List Allocated\n"; }
             explicit TestStruct(int test): data(test) { std::cout << "Allocated by user: " << test << "\n"; }
+            TestStruct(TestStruct&& /*other*/) { std::cout << "TestStruct Moved\n"; }
+            TestStruct(const TestStruct& /*other*/) { std::cout << "TestStruct Copied\n"; }
+
+            TestStruct& operator=(const TestStruct& /*other*/) { std::cout << "TestStruct Assign Copied\n"; return *this; }
+            TestStruct& operator=(TestStruct&& /*other*/) { std::cout << "TestStruct Assign Moved\n"; return *this; }
 
             ~TestStruct() { std::cout << "Deallocated\n"; }
 
