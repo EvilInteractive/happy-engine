@@ -44,7 +44,12 @@ struct SpriteData
                     m_CairoPaint(cp),
                     m_ReadyState(0x00)
     {}
-
+    ~SpriteData()
+    {
+        he_free(m_RenderBuffer);
+        cairo_destroy(m_CairoPaint);
+        cairo_surface_destroy(m_CairoSurface);
+    }
         
     SpriteData(const SpriteData& sd)
     {

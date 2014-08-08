@@ -32,7 +32,7 @@ typedef uint32 VaoID;
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
 //http://www.opengl.org/sdk/docs/man3/xhtml/glDepthFunc.xml
-enum DepthFunc
+ENUM(DepthFunc, uint16)
 {
     DepthFunc_Never         =     GL_NEVER,        // Never passes.
     DepthFunc_Less          =     GL_LESS,         // Passes if the incoming depth value is less than the stored depth value.
@@ -46,7 +46,7 @@ enum DepthFunc
 };
 
 //more info check http://www.opengl.org/sdk/docs/man3/xhtml/glBlendFunc.xml
-enum BlendFunc
+ENUM(BlendFunc, uint16)
 {
     BlendFunc_Zero               =  GL_ZERO,	                        // (0, 0, 0, 0)
     BlendFunc_One                =  GL_ONE,	                            // (1, 1, 1, 1)
@@ -71,7 +71,7 @@ enum BlendFunc
 };
 
 //http://www.opengl.org/sdk/docs/man3/xhtml/glBlendEquationSeparate.
-enum BlendEquation
+ENUM(BlendEquation, uint16)
 {
     BlendEquation_Add             =     GL_FUNC_ADD,                // src * srcFunc + dest * destFunc
     BlendEquation_Subtract        =     GL_FUNC_SUBTRACT,           // src * srcFunc - dest * destFunc

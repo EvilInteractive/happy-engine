@@ -55,26 +55,14 @@ Canvas2DRendererCairo::~Canvas2DRendererCairo()
     while (m_SpriteList.empty() == false)
     {
         SpriteData* data(m_SpriteList.back());
-
-        // cleanup
-        he_free(data->m_RenderBuffer);
-        cairo_destroy(data->m_CairoPaint);
-        cairo_surface_destroy(data->m_CairoSurface);
         delete data;
-
         m_SpriteList.pop();
     }
 
     while (m_DynamicSpriteList.empty() == false)
     {
         SpriteData* data(m_DynamicSpriteList.back());
-
-        // cleanup
-        he_free(data->m_RenderBuffer);
-        cairo_destroy(data->m_CairoPaint);
-        cairo_surface_destroy(data->m_CairoSurface);
         delete data;
-
         m_DynamicSpriteList.removeAt(m_DynamicSpriteList.size() - 1);
     }
 }
@@ -496,13 +484,7 @@ void Canvas2DRendererCairo::blit()
 {
     uint32 spriteToBlit(0);
 
-    m_SpriteListBlitLock.lock(FILE_AND_LINE);
-        // check nr sprites to blit
-        spriteToBlit = m_SpriteListBlit.size();
-
-    m_SpriteListBlitLock.unlock();
-
-    while (spriteToBlit > 0)
+    while (m_SpriteListBlit.size() > 0)
     {
         m_SpriteListBlitLock.lock(FILE_AND_LINE);
             // get data from queue
@@ -522,9 +504,6 @@ void Canvas2DRendererCairo::blit()
         if ((data->m_ReadyState & SpriteDynamic) == false)
         {
             // cleanup
-            he_free(data->m_RenderBuffer);
-            cairo_destroy(data->m_CairoPaint);
-            cairo_surface_destroy(data->m_CairoSurface);
             delete data;
         }
 
@@ -536,27 +515,22 @@ void Canvas2DRendererCairo::handleDrawCalls()
 {
     const size_t waitTime(10);
 
-    bool renderSprite(false);
-
     while (m_HandleDrawCalls)
     {
-        uint32 spritesToRender(m_SpriteList.size());
-
-        if (spritesToRender > 0)
+        if (m_SpriteList.size() > 0)
         {
-            while (spritesToRender > 0)
+            while (m_SpriteList.size() > 0 && m_HandleDrawCalls)
             {
                 m_SpriteListLock.lock(FILE_AND_LINE);
 
-                    // check if needs to be rendered
-                    SpriteData* data(m_SpriteList.front());
-
-                m_SpriteListLock.unlock();
-            
-                renderSprite = (data->m_ReadyState & SpriteReadyForRender);
-
+                // check if needs to be rendered
+                SpriteData* data(m_SpriteList.front());          
+                bool renderSprite = (data->m_ReadyState & SpriteReadyForRender);
                 if (renderSprite)
                 {
+                    m_SpriteList.pop();
+                    m_SpriteListLock.unlock();
+
                     // execute all the drawcalls for the sprite
                     while (data->m_DrawCalls.empty() == false)
                     {
@@ -568,22 +542,18 @@ void Canvas2DRendererCairo::handleDrawCalls()
                     data->m_ReadyState |= SpriteReadyForBlit;
 
                     m_SpriteListBlitLock.lock(FILE_AND_LINE);
-
                         // push spritedata to blitting queue
                         m_SpriteListBlit.push(data);
-
                     m_SpriteListBlitLock.unlock();
             
-                    m_SpriteListLock.lock(FILE_AND_LINE);
-            
-                        // pop it off the regular queue
-                        m_SpriteList.pop();
-
+                    // pop it off the regular queue
+                }
+                else
+                {
                     m_SpriteListLock.unlock();
                 }
 
                 renderSprite = false;
-                --spritesToRender;
             }
         }
         else

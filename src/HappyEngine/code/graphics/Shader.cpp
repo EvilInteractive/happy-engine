@@ -222,19 +222,19 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
             he::toLower(name);
 
             EShaderAttribute usage(eShaderAttribute_Invalid);
-            if (strstr(name, "pos") >= 0)
+            if (strstr(name, "pos") != 0)
                 usage = eShaderAttribute_Position;
-            else if (strstr(name, "tex") >= 0)
+            else if (strstr(name, "tex") != 0)
                 usage = eShaderAttribute_TextureCoordiante;
-            else if (strstr(name, "nor") >= 0)
+            else if (strstr(name, "nor") != 0)
                 usage = eShaderAttribute_Normal;
-            else if (strstr(name, "tan") >= 0)
+            else if (strstr(name, "tan") != 0)
                 usage = eShaderAttribute_Tangent;
-            else if (strstr(name, "col") >= 0)
+            else if (strstr(name, "col") != 0)
                 usage = eShaderAttribute_Color;
-            else if (strstr(name, "ind") >= 0)
+            else if (strstr(name, "ind") != 0)
                 usage = eShaderAttribute_BoneIndices;
-            else if (strstr(name, "wei") >= 0)
+            else if (strstr(name, "wei") != 0)
                 usage = eShaderAttribute_BoneWeights;
             else
             {

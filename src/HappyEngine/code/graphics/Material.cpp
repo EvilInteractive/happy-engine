@@ -193,7 +193,7 @@ void Material::calculateMaterialLayout( const VertexLayout& bufferLayout, Materi
 
                     break;
                 }
-                LOG(LogType_ProgrammerAssert, "Invalid vertex buffer, could not find the data I was looking for!");
+                HE_ASSERT(i + 1 < meshElementCount, "Invalid vertex buffer, could not find the data I was looking for!");
             }
         });
     }
