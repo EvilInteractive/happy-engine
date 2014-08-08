@@ -55,7 +55,8 @@ ShapeRenderer::~ShapeRenderer()
     delete m_BillboardEffect;
     if (m_BillboardQuad != nullptr)
         m_BillboardQuad->release();
-    delete m_AABB;
+    if (m_AABB)
+        m_AABB->release();
 }
 
 void ShapeRenderer::createBillboardQuad()

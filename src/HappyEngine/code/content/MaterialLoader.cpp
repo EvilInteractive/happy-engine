@@ -234,6 +234,7 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
             {
                 gfx::Shader* const shader(CONTENT->loadShader(desc.m_VertexShader, desc.m_FragmentShader, &desc.m_Defines, &desc.m_OutputLayout));
                 material->setNormalShader(shader);
+                shader->release();
                 material->init();
             }
             else

@@ -46,6 +46,7 @@ void Simple2DFontEffect::init(const VertexLayout& layout)
 {
     Material* mat(CONTENT->loadMaterial("engine/2D/font.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
+    mat->release();
     m_Material->calculateMaterialLayout(layout);
     
     m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);

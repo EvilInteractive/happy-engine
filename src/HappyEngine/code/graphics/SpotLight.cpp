@@ -50,7 +50,10 @@ SpotLight::SpotLight()
     //m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight"); //HACK: wrong volume
     m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight"); //HACK: wrong volume
     setModelMesh(m_LightVolume);
-    setMaterial(CONTENT->loadMaterial("engine/light/debuglight.material"));
+
+    Material* material(CONTENT->loadMaterial("engine/light/debuglight.material"));
+    setMaterial(material);
+    material->release();
 
     setCastsShadow(false);
 }

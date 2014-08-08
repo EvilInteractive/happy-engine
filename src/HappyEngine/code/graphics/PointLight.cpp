@@ -38,7 +38,10 @@ PointLight::PointLight()
 {
     m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight");
     setModelMesh(m_LightVolume);
-    setMaterial(CONTENT->loadMaterial("engine/light/debuglight.material"));
+    
+    Material* material(CONTENT->loadMaterial("engine/light/debuglight.material"));
+    setMaterial(material);
+    material->release();
 
     setCastsShadow(false);
 }

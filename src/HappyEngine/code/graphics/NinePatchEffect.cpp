@@ -50,6 +50,7 @@ void NinePatchEffect::init(const VertexLayout& layout)
 {
     Material* mat(CONTENT->loadMaterial("engine/2D/ninePatch.hm"));
     m_Material = mat->createMaterialInstance(eShaderType_Normal);
+    mat->release();
     m_Material->calculateMaterialLayout(layout);
 
     m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
