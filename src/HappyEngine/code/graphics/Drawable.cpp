@@ -35,7 +35,7 @@ Drawable::Drawable()
     , m_ModelMesh(nullptr)
     , m_Material(nullptr)
     , m_Scene(nullptr)
-    , m_Flags(eDrawableFlags_None)
+    , m_Flags(eDrawableFlags_IsVisible | eDrawableFlags_CastShadow)
 #ifdef HE_USE_OCTREE
     , m_Node(nullptr)
 #endif

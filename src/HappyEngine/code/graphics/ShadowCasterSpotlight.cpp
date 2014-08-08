@@ -97,6 +97,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
                 ModelMesh* const mesh(drawable->getModelMesh());
                 context.m_VBO = mesh->getVBO();
                 context.m_IBO = mesh->getIBO();
+                context.m_WorldMatrix = drawable->getWorldMatrix();
                 drawable->getMaterial()->applyShadow(context);
                 mesh->draw();
             }

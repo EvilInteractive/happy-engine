@@ -42,8 +42,8 @@ public:
     int8 findParameter(const FixedString& name) const;
     MaterialParameter& getParameter(const int8 index);
     
-    void apply(const DrawContext& context) const;
-    void applyShadow(const DrawContext& context) const;
+    void apply(const DrawContext& context);
+    void applyShadow(const DrawContext& context);
     
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
                       BlendFunc sourceBlend  = BlendFunc_One,
@@ -71,7 +71,7 @@ private:
 
     void init();
 
-    void applyShader(const EShaderType type, const DrawContext& context) const;
+    void applyShader(const EShaderType type, const DrawContext& context);
     void applyMesh(const EShaderType type, const DrawContext& context) const;
 
     EShaderType m_Type : 8;
@@ -83,9 +83,7 @@ private:
     const Material* m_Material;
     MaterialLayout m_Layout;
 
-    // Split for cache friendliness
-    he::ObjectList<MaterialParameter> m_Parameters;     // Hot
-    he::ObjectList<he::FixedString> m_ParameterNames;   // Cold
+    he::ObjectList<MaterialParameter> m_Parameters;
 
 
     //Disable default copy constructor and default assignment operator

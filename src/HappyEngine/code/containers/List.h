@@ -37,6 +37,8 @@ public:
     typedef std::function<bool(const T&)> Pred;
 
     explicit List(const size_t capacity = 0);
+    List(List<T, Allocator>&& other);
+    List<T, Allocator>& operator=(List<T, Allocator>&& other);
     virtual ~List();
 
     inline void add(const T& element); // amortized O(1)
@@ -102,8 +104,8 @@ private:
 #endif
 
     //Disable default copy constructor and default assignment operator
-    List(const List&);
-    List& operator=(const List&);
+    List<T, Allocator>(const List<T, Allocator>&);
+    List<T, Allocator>& operator=(const List<T, Allocator>&);
 };
 
 template<typename T>
@@ -112,6 +114,15 @@ class PrimitiveList : public List<T, PrimitiveObjectAllocator<T>>
 public:
     explicit PrimitiveList(size_t capacity = 0): List<T, PrimitiveObjectAllocator<T>>(capacity) {}
     virtual ~PrimitiveList() {}
+
+    PrimitiveList(PrimitiveList<T>&& other) : List<T, PrimitiveObjectAllocator<T>>(std::forward(other)) 
+    {
+    }
+    PrimitiveList<T>& operator=(PrimitiveList<T>&& other) 
+    { 
+        List<T, PrimitiveObjectAllocator<T>>::operator=(std::forward(other));
+        return *this;
+    }
 };
 template<typename T>
 class ObjectList : public List<T, ObjectAllocator<T>> 
@@ -119,6 +130,15 @@ class ObjectList : public List<T, ObjectAllocator<T>>
 public:
     explicit ObjectList(size_t capacity = 0): List<T, ObjectAllocator<T>>(capacity) {}
     virtual ~ObjectList() {}
+
+    ObjectList(ObjectList<T>&& other) : List<T, ObjectAllocator<T>>(std::forward<List<T, ObjectAllocator<T>>>(other)) 
+    {
+    }
+    ObjectList<T>& operator=(ObjectList<T>&& other)
+    { 
+        List<T, ObjectAllocator<T>>::operator=(std::forward<List<T, ObjectAllocator<T>>>(other));
+        return *this;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -131,6 +151,31 @@ he::List<T, Allocator>::List(const size_t capacity): m_Size(0), m_Capacity(capac
     , m_IsTraversing(false)
 #endif
 {
+}
+
+template<typename T, typename Allocator>
+he::List<T, Allocator>::List( List<T, Allocator>&& other )
+    : m_Size(other.m_Size)
+    , m_Capacity(other.m_Capacity)
+    , m_Buffer(other.m_Buffer)
+{
+    other.m_Size = 0;
+    other.m_Capacity = 0;
+    other.m_Buffer = nullptr;
+}
+
+template<typename T, typename Allocator>
+List<T, Allocator>& he::List<T, Allocator>::operator=( List<T, Allocator>&& other )
+{
+    Allocator::deallocate(m_Buffer);
+    m_Size = other.m_Size;
+    m_Capacity = other.m_Capacity;
+    m_Buffer = other.m_Buffer;
+    other.m_Size = 0;
+    other.m_Capacity = 0;
+    other.m_Buffer = nullptr;
+
+    return *this;
 }
 
 template<typename T, typename Allocator> inline

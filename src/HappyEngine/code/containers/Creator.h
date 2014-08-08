@@ -30,9 +30,16 @@ class PrimitiveObjectAllocator
 public:
     static inline T* allocate(const size_t amount) 
     { 
-        T* const mem(static_cast<T*>(he_malloc(amount * sizeof(T)))); 
-        he_memset(mem, 0, amount * sizeof(T)); 
-        return mem;
+        if (amount != 0)
+        {
+            T* const mem(static_cast<T*>(he_malloc(amount * sizeof(T)))); 
+            he_memset(mem, 0, amount * sizeof(T)); 
+            return mem;
+        }
+        else
+        {
+            return nullptr;
+        }
     }
     static inline void deallocate(T* mem) 
     { 
@@ -54,8 +61,15 @@ class ObjectAllocator
 public:
     static inline T* allocate(const size_t amount) 
     { 
-        T* const mem(NEW T[amount]);
-        return mem;
+        if (amount != 0)
+        {
+            T* const mem(NEW T[amount]);
+            return mem;
+        }
+        else
+        {
+            return nullptr;
+        }
     }
     static inline void deallocate(T* mem) 
     { 
@@ -65,7 +79,8 @@ public:
     static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount)
     {
         T* const newMem(allocate(newAmount));
-        for (size_t i(0); i < oldAmount; ++i)
+        size_t copyAmount(std::min(newAmount, oldAmount));
+        for (size_t i(0); i < copyAmount; ++i)
         {
             newMem[i] = std::move(old[i]);
         }

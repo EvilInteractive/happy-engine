@@ -26,6 +26,11 @@ namespace ge {
 
 void PropertyConverterVec2::fromString( Property* const prop, const he::String& str )
 {
+    prop->set<vec2>(fromString(str));
+}
+
+he::vec2 PropertyConverterVec2::fromString( const he::String& str )
+{
     const char* charBuf(str.c_str());
     vec2 result(0, 0);
     if (charBuf != nullptr)
@@ -55,19 +60,28 @@ void PropertyConverterVec2::fromString( Property* const prop, const he::String& 
             }
         }
     }
-    prop->set<vec2>(result);
+    return result;
 }
 
 he::String PropertyConverterVec2::toString( const Property* const prop )
 {
+    return toString(prop->get<vec2>(), m_Precision);
+}
+
+he::String PropertyConverterVec2::toString( const vec2& value, const uint8 precision )
+{
     char buf[40];
-    const vec2& value(prop->get<vec2>());
-    hesnprintf(buf, 39, "%.*f, %.*f", m_Precision, value.x, m_Precision, value.y);
+    hesnprintf(buf, 39, "%.*f, %.*f", precision, value.x, precision, value.y);
     return he::String(buf);
 }
 
 
 void PropertyConverterVec3::fromString( Property* const prop, const he::String& str )
+{
+    prop->set<vec3>(fromString(str));
+}
+
+vec3 PropertyConverterVec3::fromString( const he::String& str )
 {
     const char* charBuf(str.c_str());
     vec3 result(0, 0, 0);
@@ -109,14 +123,18 @@ void PropertyConverterVec3::fromString( Property* const prop, const he::String& 
             }
         }
     }
-    prop->set<vec3>(result);
+    return result;
 }
 
 he::String PropertyConverterVec3::toString( const Property* const prop )
 {
+    return toString(prop->get<vec3>());
+}
+
+he::String PropertyConverterVec3::toString( const vec3& value, const uint8 precision )
+{
     char buf[60];
-    const vec3& value(prop->get<vec3>());
-    hesnprintf(buf, 59, "%.*f, %.*f, %.*f", m_Precision, value.x, m_Precision, value.y, m_Precision, value.z);
+    hesnprintf(buf, 59, "%.*f, %.*f, %.*f", precision, value.x, precision, value.y, precision, value.z);
     return he::String(buf);
 }
 

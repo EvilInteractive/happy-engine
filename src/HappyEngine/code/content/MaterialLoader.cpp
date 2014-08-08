@@ -230,6 +230,7 @@ gfx::Material* MaterialLoader::load(const he::Path& path)
             material->setCullFrontFace(desc.m_CullFrontFace);
             material->setDepthReadEnabled(desc.m_DepthRead);
             material->setDepthWriteEnabled(desc.m_DepthWrite);
+            material->setDefaultParams(std::move(desc.m_Params));
             if (desc.m_FragmentShader.empty() == false && desc.m_VertexShader.empty() == false)
             {
                 gfx::Shader* const shader(CONTENT->loadShader(desc.m_VertexShader, desc.m_FragmentShader, &desc.m_Defines, &desc.m_OutputLayout));

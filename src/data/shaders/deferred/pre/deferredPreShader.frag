@@ -26,6 +26,7 @@
 #pragma optionNV(unroll all)
 
 #include "packing/encode.frag"
+#include "shared/perCameraUniformBuffer.frag"
 
 in vec2 passTexCoord;
 in vec3 passNormal;
@@ -39,7 +40,6 @@ out vec4 outSG;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D specGlossIllMap;
-uniform vec2 camNearFar;
 
 vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 {
@@ -49,11 +49,11 @@ vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 
     vec3 binormal = cross(tangent, normal);
 
-    mat3 assenstelsel = mat3(binormal, tangent, normal);
+    mat3 axis = mat3(binormal, tangent, normal);
 
     vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
 
-    return normalize(assenstelsel * xyz);
+    return normalize(axis * xyz);
 }
 
 void main()
@@ -69,7 +69,7 @@ void main()
     outColor = vec4(color.rgb, specGlossIll.b);
 
     outNormalDepth.xy = encodeNormal(calcNormal(passNormal, passTangent, normal));
-    outNormalDepth.z = (passDepth - camNearFar.x) / (camNearFar.y - camNearFar.x);
+    outNormalDepth.z = (passDepth - perCameraUniformBuffer.cameraNearFar.x) / (perCameraUniformBuffer.cameraNearFar.y - perCameraUniformBuffer.cameraNearFar.x);
 
     outSG = vec4(specGlossIll.rg, 0.0f, 1.0f);
 }

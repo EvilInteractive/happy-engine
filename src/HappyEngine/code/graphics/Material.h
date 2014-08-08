@@ -61,6 +61,8 @@ public:
     void setDepthReadEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthRead) : clearFlag(eMaterialFlags_DepthRead); }
 
     void setDepthFunc(const DepthFunc func);
+    void setDefaultParams(const he::ObjectList<NameValuePair<he::String>>& params);
+    void setDefaultParams(he::ObjectList<NameValuePair<he::String>>&& params);
     
     MaterialInstance* createMaterialInstance(const EShaderType type) const;
     
@@ -79,6 +81,11 @@ private:
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
     DepthFunc m_DepthFunc;
+
+    // Split for cache friendliness
+    he::ObjectList<MaterialParameter> m_Parameters[eShaderType_MAX];
+    he::ObjectList<he::FixedString> m_ParameterNames[eShaderType_MAX];
+    he::ObjectList<NameValuePair<he::String>> m_DefaultParams;
 
     // Disabled
     Material(const Material* other);

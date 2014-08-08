@@ -40,6 +40,7 @@ struct DrawContext
     const ICamera* m_Camera;
     uint32 m_VBO;
     uint32 m_IBO;
+    mat44 m_WorldMatrix;
 };
 
 } } //end namespace

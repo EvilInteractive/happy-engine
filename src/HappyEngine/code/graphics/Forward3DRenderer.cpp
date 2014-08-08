@@ -59,6 +59,7 @@ Forward3DRenderer::Forward3DRenderer(const RenderPass pass, bool addSceneRendere
                     context.m_Camera = camera;
                     context.m_VBO = mesh->getVBO();
                     context.m_IBO = mesh->getIBO();
+                    context.m_WorldMatrix = drawable->getWorldMatrix();
                     drawable->getMaterial()->apply(context);
                     mesh->draw();
                 }); 

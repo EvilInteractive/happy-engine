@@ -87,6 +87,9 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include <queue>
 #include <set>
 #include <atomic>
+#ifdef HE_WINDOWS
+#include <intsafe.h>
+#endif
 #include <limits.h>
 
 #include <boost/chrono.hpp>

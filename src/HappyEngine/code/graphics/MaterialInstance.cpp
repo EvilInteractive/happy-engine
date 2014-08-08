@@ -26,6 +26,7 @@
 #include "ShaderUniform.h"
 #include "DrawContext.h"
 #include "ModelMesh.h"
+#include "ICamera.h"
 
 namespace
 {
@@ -81,65 +82,7 @@ void MaterialInstance::init()
     m_DepthFunc = m_Material->m_DepthFunc;
     
     m_Parameters.clear();
-    m_ParameterNames.clear();
-    
-    Shader* const shader(m_Material->getShader(m_Type));
-    const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
-    const size_t count(uniforms.size());
-    for (size_t i(0); i < count; ++i)
-    {
-        IShaderUniform* const uniform(uniforms[i]);
-        
-        MaterialParameter param;
-        const ShaderUniformID id(checked_numcast<uint32>(i));
-        
-        switch (uniform->getType())
-        {
-            case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
-            case eShaderUniformType_Int:
-                param.init(id, MaterialParameter::eType_Int);
-                param.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
-                break;
-            case eShaderUniformType_UInt:
-                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
-                break;
-            case eShaderUniformType_Float:
-                param.init(id, MaterialParameter::eType_Float);
-                param.setFloat(checked_cast<ShaderUniformFloat*>(uniform)->getValue());
-                break;
-            case eShaderUniformType_Float2:
-                param.init(id, MaterialParameter::eType_Float2);
-                param.setFloat2(checked_cast<ShaderUniformVec2*>(uniform)->getValue());
-                break;
-            case eShaderUniformType_Float3:
-                param.init(id, MaterialParameter::eType_Float3);
-                param.setFloat3(checked_cast<ShaderUniformVec3*>(uniform)->getValue());
-                break;
-            case eShaderUniformType_Float4:
-                param.init(id, MaterialParameter::eType_Float4);
-                param.setFloat4(checked_cast<ShaderUniformVec4*>(uniform)->getValue());
-                break;
-            case eShaderUniformType_Mat44:
-                param.init(id, MaterialParameter::eType_Float44);
-                param.setFloat44(checked_cast<ShaderUniformMat44*>(uniform)->getValue());
-                break;
-            case eShaderUniformType_Mat44Array:
-                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
-                break;
-            case eShaderUniformType_Texture1D:
-                LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
-            case eShaderUniformType_Texture2D:
-                param.init(id, MaterialParameter::eType_Texture2D);
-                //param.setTexture2D(m_Material->getDefaultTexture2D(uniform->getName()));
-                break;
-            case eShaderUniformType_TextureCube:
-                param.init(id, MaterialParameter::eType_TextureCube);
-                //param.setTextureCube(m_Material->getDefaultTextureCube(uniform->getName()));
-                break;
-        }
-        m_Parameters.add(param);
-        m_ParameterNames.add(uniform->getName());
-    }
+    m_Parameters.append(m_Material->m_Parameters[m_Type]);
 }
 
 MaterialInstance::~MaterialInstance()
@@ -148,7 +91,7 @@ MaterialInstance::~MaterialInstance()
     m_Material->release();
 }
     
-void MaterialInstance::apply( const DrawContext& context ) const
+void MaterialInstance::apply( const DrawContext& context )
 {
     HE_IF_ASSERT(m_Type != eShaderType_Unknown, "You forgot to init this material instance! without the init we cannot draw this!")
     {
@@ -157,7 +100,7 @@ void MaterialInstance::apply( const DrawContext& context ) const
     }
 }
 
-void MaterialInstance::applyShadow( const DrawContext& context ) const
+void MaterialInstance::applyShadow( const DrawContext& context )
 {
     HE_IF_ASSERT(m_Type != eShaderType_Unknown, "You forgot to init this material instance! without the init we cannot draw this!")
     {
@@ -167,8 +110,18 @@ void MaterialInstance::applyShadow( const DrawContext& context ) const
     }
 }
 
-void MaterialInstance::applyShader( const EShaderType type, const DrawContext& /*context*/ ) const
+void MaterialInstance::applyShader( const EShaderType type, const DrawContext& context )
 {
+    if (context.m_Camera)
+    {
+        const int8 wvp(findParameter(HEFS::strmatWVP));
+        if (wvp >= 0)
+            getParameter(wvp).setFloat44(context.m_Camera->getViewProjection() * context.m_WorldMatrix);
+        const int8 wv(findParameter(HEFS::strmatWorldView));
+        if (wv >= 0)
+            getParameter(wv).setFloat44(context.m_Camera->getView() * context.m_WorldMatrix);
+    }
+
     if (checkFlag(eMaterialFlags_Blended))
     {
         GL::heBlendEnabled(true);
@@ -212,7 +165,7 @@ void MaterialInstance::calculateMaterialLayout(const VertexLayout& bufferLayout)
 he::int8 MaterialInstance::findParameter( const FixedString& name ) const
 {
     size_t index;
-    if (m_ParameterNames.find(name, index))
+    if (m_Material->m_ParameterNames[m_Type].find(name, index))
     {
         return checked_numcast<int8>(index);
     }

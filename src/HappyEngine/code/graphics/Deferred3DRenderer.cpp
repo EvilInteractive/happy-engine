@@ -292,6 +292,7 @@ void Deferred3DRenderer::render()
             ModelMesh* const mesh(d->getModelMesh());
             context.m_VBO = mesh->getVBO();
             context.m_IBO = mesh->getIBO();
+            context.m_WorldMatrix = d->getWorldMatrix();
             d->getMaterial()->apply(context);
             d->getModelMesh()->draw();
         });

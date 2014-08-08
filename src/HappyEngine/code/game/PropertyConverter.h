@@ -49,18 +49,28 @@ public:
     }
 };
 
-template<typename T>
 class PropertyConverterInt : public PropertyConverter
 {
 public:
     virtual ~PropertyConverterInt() {}
+    static int fromString(const he::String& str)
+    {
+        return checked_numcast<int>(atol(str.c_str()));
+    }
+    static he::String toString(const int value)
+    {
+        char buf[16];
+        hesnprintf(buf, 15, "%d", value);
+        return he::String(buf);
+    }
+
     virtual void fromString(Property* const prop, const he::String& str)
     {
-        prop->set<T>(checked_cast<T>(atol(str.c_str())));
+        return prop->set<int>(fromString(str));
     }
     virtual he::String toString(const Property* const prop)
     {
-        return he::String(ltoa(checked_cast<long>(prop->get<T>())));
+        return toString(prop->get<int>());
     }
 };
 
@@ -69,15 +79,23 @@ class HAPPY_ENTRY PropertyConverterFloat : public PropertyConverter
 public:
     explicit PropertyConverterFloat(const uint8 precision = 2): m_Precision(precision) {}
     virtual ~PropertyConverterFloat() {}
+    static float fromString(const he::String& str)
+    {
+        return static_cast<float>(atof(str.c_str()));
+    }
+    static he::String toString(const float value, const int precision = 2)
+    {
+        char buf[20];
+        hesnprintf(buf, 19, "%.*f", precision, value);
+        return he::String(buf);
+    }
     virtual void fromString(Property* const prop, const he::String& str)
     {
-        prop->set<float>(static_cast<float>(atof(str.c_str())));
+        prop->set<float>(fromString(str));
     }
     virtual he::String toString(const Property* const prop)
     {
-        char buf[20];
-        hesnprintf(buf, 19, "%.*f", m_Precision, prop->get<float>());
-        return he::String(buf);
+        return toString(prop->get<float>());
     }
 
 private:
@@ -92,6 +110,8 @@ public:
     virtual void fromString(Property* const prop, const he::String& str);
     virtual he::String toString(const Property* const prop);
 
+    static he::vec2 fromString(const he::String& str);
+    static he::String toString(const he::vec2& vec, const uint8 precision = 4);
 private:
     uint8 m_Precision;
 };
@@ -104,6 +124,8 @@ public:
     virtual void fromString(Property* const prop, const he::String& str);
     virtual he::String toString(const Property* const prop);
 
+    static he::vec3 fromString(const he::String& str);
+    static he::String toString(const he::vec3& vec, const uint8 precision = 4);
 private:
     uint8 m_Precision;
 };

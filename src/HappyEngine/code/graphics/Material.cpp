@@ -23,6 +23,8 @@
 #include "Shader.h"
 #include "MaterialInstance.h"
 #include "ShaderUniform.h"
+#include "PropertyConverter.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace gfx {
@@ -85,6 +87,143 @@ void Material::init()
                     }
                     if (loadCompleted)
                     {
+                        for (size_t i(0); i < eShaderType_MAX; ++i)
+                        {
+                            Shader* const shader(m_Shader[i]);
+                            if (shader != nullptr)
+                            {
+                                const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
+                                const size_t count(uniforms.size());
+                                for (size_t j(0); j < count; ++j)
+                                {
+                                    IShaderUniform* const uniform(uniforms[j]);
+
+                                    MaterialParameter param;
+                                    const ShaderUniformID id(checked_numcast<uint32>(j));
+
+                                    size_t defaultIndex(SIZE_T_MAX);
+                                    m_DefaultParams.find_if([uniform](const NameValuePair<he::String>& p) { return p.m_Name == uniform->getName(); }, defaultIndex);
+
+                                    switch (uniform->getType())
+                                    {
+                                    case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
+                                    case eShaderUniformType_Int:
+                                        param.init(id, MaterialParameter::eType_Int);
+                                        if (defaultIndex != SIZE_T_MAX)
+                                        {
+                                            param.setInt32(he::ge::PropertyConverterInt::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                        }
+                                        else
+                                        {
+                                            param.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
+                                        }
+                                        break;
+                                    case eShaderUniformType_UInt:
+                                        LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                        break;
+                                    case eShaderUniformType_Float:
+                                        param.init(id, MaterialParameter::eType_Float);
+                                        if (defaultIndex != SIZE_T_MAX)
+                                        {
+                                            param.setFloat(he::ge::PropertyConverterFloat::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                        }
+                                        else
+                                        {
+                                            param.setFloat(checked_cast<ShaderUniformFloat*>(uniform)->getValue());
+                                        }
+                                        break;
+                                    case eShaderUniformType_Float2:
+                                        param.init(id, MaterialParameter::eType_Float2);
+                                        if (defaultIndex != SIZE_T_MAX)
+                                        {
+                                            param.setFloat2(he::ge::PropertyConverterVec2::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                        }
+                                        else
+                                        {
+                                            param.setFloat2(checked_cast<ShaderUniformVec2*>(uniform)->getValue());
+                                        }
+                                        break;
+                                    case eShaderUniformType_Float3:
+                                        param.init(id, MaterialParameter::eType_Float3);
+                                        if (defaultIndex != SIZE_T_MAX)
+                                        {
+                                            param.setFloat3(he::ge::PropertyConverterVec3::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                        }
+                                        else
+                                        {
+                                            param.setFloat3(checked_cast<ShaderUniformVec3*>(uniform)->getValue());
+                                        }
+                                        break;
+                                    case eShaderUniformType_Float4:
+                                        param.init(id, MaterialParameter::eType_Float4);
+                                        if (defaultIndex != SIZE_T_MAX)
+                                        {
+                                            param.setFloat4(he::ge::PropertyConverterVec4::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                        }
+                                        else
+                                        {
+                                            param.setFloat4(checked_cast<ShaderUniformVec4*>(uniform)->getValue());
+                                        }
+                                        break;
+                                    case eShaderUniformType_Mat44:
+                                        param.init(id, MaterialParameter::eType_Float44);
+                                        param.setFloat44(checked_cast<ShaderUniformMat44*>(uniform)->getValue());
+                                        break;
+                                    case eShaderUniformType_Mat44Array:
+                                        LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                        break;
+                                    case eShaderUniformType_Texture1D:
+                                        LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                    case eShaderUniformType_Texture2D:
+                                        param.init(id, MaterialParameter::eType_Texture2D);
+                                        if (defaultIndex != SIZE_T_MAX)
+                                        {
+                                            const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
+                                            if (defaultValue.empty() == false)
+                                            {
+                                                const Texture2D* tex(nullptr);
+                                                if (isdigit(*defaultValue.c_str()))
+                                                {
+                                                    tex = CONTENT->asyncMakeTexture2D(he::Color(
+                                                        he::ge::PropertyConverterVec4::fromString(defaultValue)));
+                                                }
+                                                else
+                                                {
+                                                    tex = CONTENT->asyncLoadTexture2D(defaultValue);
+                                                }
+                                                param.setTexture2D(tex);
+                                                tex->release();
+                                            }
+                                        }
+                                        break;
+                                    case eShaderUniformType_TextureCube:
+                                        param.init(id, MaterialParameter::eType_TextureCube);
+                                        if (defaultIndex != SIZE_T_MAX)
+                                        {
+                                            const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
+                                            if (defaultValue.empty() == false)
+                                            {
+                                                const TextureCube* tex(nullptr);
+                                                if (isdigit(*defaultValue.c_str()))
+                                                {
+                                                    tex = CONTENT->asyncMakeTextureCube(he::Color(
+                                                        he::ge::PropertyConverterVec4::fromString(defaultValue)));
+                                                }
+                                                else
+                                                {
+                                                    tex = CONTENT->asyncLoadTextureCube(defaultValue);
+                                                }
+                                                param.setTextureCube(tex);
+                                                tex->release();
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    m_Parameters[i].add(param);
+                                    m_ParameterNames[i].add(uniform->getName());
+                                }
+                            }
+                        }
                         setLoaded(eLoadResult_Success);
                     }
                 }
@@ -202,6 +341,17 @@ void Material::calculateMaterialLayout( const VertexLayout& bufferLayout, Materi
 void Material::setDepthFunc( const DepthFunc func )
 {
     m_DepthFunc = func;
+}
+
+void Material::setDefaultParams( const he::ObjectList<NameValuePair<he::String>>& params )
+{
+    m_DefaultParams.clear();
+    m_DefaultParams.append(params);
+}
+
+void Material::setDefaultParams( he::ObjectList<NameValuePair<he::String>>&& params )
+{
+    m_DefaultParams = std::forward<he::ObjectList<NameValuePair<he::String>>>(params);
 }
 
 } } //end namespace
