@@ -42,6 +42,7 @@ ModelComponent::ModelComponent()
     , m_Drawable(NEW gfx::Drawable())
     , m_LoadingDesc(nullptr)
 {
+    attach(m_Drawable);
 }
 
 

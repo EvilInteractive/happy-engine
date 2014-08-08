@@ -57,8 +57,9 @@ MainGame::~MainGame()
 void MainGame::init()
 {
     he::GlobalSettings* const globalSettings(he::GlobalSettings::getInstance());
-    globalSettings->load(he::Path("settings.cfg"));
-    globalSettings->save(he::Path("settings.cfg"));
+    he::Path path(he::Path::getBinPath().str() + "settings.cfg");
+    globalSettings->load(path);
+    globalSettings->save(path);
 
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1, 1));
