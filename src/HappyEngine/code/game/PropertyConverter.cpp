@@ -207,4 +207,27 @@ he::String PropertyConverterVec4::toString( const he::vec4& value, const uint8 p
     return he::String(buf);
 }
 
+void PropertyConverterFloat::fromString(Property* const prop, const he::String& str)
+{
+    return prop->set<float>(fromString(str));
+}
+
+he::String PropertyConverterFloat::toString(const Property* const prop)
+{
+    return toString(prop->get<float>(), m_Precision);
+}
+
+float PropertyConverterFloat::fromString(const he::String& str)
+{
+    return static_cast<float>(atof(str.c_str()));
+}
+
+he::String PropertyConverterFloat::toString(const float val, const int decimals)
+{
+    char buf[20];
+    buf[19] = '\0';
+    hesnprintf(buf, 19, "%.*f", decimals, val);
+    return he::String(buf);
+}
+
 } } //end namespace

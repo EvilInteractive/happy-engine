@@ -100,6 +100,14 @@ void EntityPropertyList::getRowContents( const he::FixedString& component, const
             outWidget = feel;
         } break;
     case he::ge::ePropertyFeel_Slider: // slider
+        {
+            EntityPropertySliderFeel* feel(NEW EntityPropertySliderFeel(m_UI->m_Table));
+            he::ge::PropertyFeelSlider* slider(he::checked_cast<he::ge::PropertyFeelSlider*>(prop.m_Feel));
+            feel->setRange(slider->getMin(), slider->getMax());
+            feel->setTicksInterval((slider->getMax() - slider->getMin()) / 10.0f);
+            outItem = NEW hs::EntityPropertyListItem(component, prop.m_Property->getName(), feel);
+            outWidget = feel;
+        } break;
     case he::ge::ePropertyFeel_Default: //tb
         {
             EntityPropertyDefaultFeel* feel(NEW EntityPropertyDefaultFeel(m_UI->m_Table));

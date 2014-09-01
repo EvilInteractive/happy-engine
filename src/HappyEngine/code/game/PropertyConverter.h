@@ -79,24 +79,11 @@ class HAPPY_ENTRY PropertyConverterFloat : public PropertyConverter
 public:
     explicit PropertyConverterFloat(const uint8 precision = 2): m_Precision(precision) {}
     virtual ~PropertyConverterFloat() {}
-    static float fromString(const he::String& str)
-    {
-        return static_cast<float>(atof(str.c_str()));
-    }
-    static he::String toString(const float value, const int precision = 2)
-    {
-        char buf[20];
-        hesnprintf(buf, 19, "%.*f", precision, value);
-        return he::String(buf);
-    }
-    virtual void fromString(Property* const prop, const he::String& str)
-    {
-        prop->set<float>(fromString(str));
-    }
-    virtual he::String toString(const Property* const prop)
-    {
-        return toString(prop->get<float>());
-    }
+    virtual void fromString(Property* const prop, const he::String& str);
+    virtual he::String toString(const Property* const prop);
+
+    static float fromString(const he::String& str);
+    static he::String toString(const float val, const int decimals);
 
 private:
     uint8 m_Precision;
