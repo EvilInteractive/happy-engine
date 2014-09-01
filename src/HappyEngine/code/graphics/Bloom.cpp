@@ -205,8 +205,8 @@ void Bloom::resize()
     //////////////////////////////////////////////////////////////////////////
     for (int i = 0; i < s_DownSamples; ++i)
     {
-        const int width(m_View->getViewport().width / ((i+2) * 2));
-        const int height(m_View->getViewport().height / ((i+2) * 2));
+        const int width(m_View->getViewport().width / ( (i+i+2) * 2));
+        const int height(m_View->getViewport().height / ((i+i+2) * 2));
         for (int pass = 0; pass < 2; ++pass)
         {
             m_Texture[pass][i]->setData(width, height, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Float, 0 );
@@ -241,14 +241,14 @@ void Bloom::render( const Texture2D* texture, const Texture2D* lumMap )
 
         const Texture2D* const tex(m_Texture[0][fboId - 1]);
         m_DownSampleMaterial->getParameter(m_DownSampleMap).setTexture2D(tex);
-        GL::heSetViewport(he::RectI(0, 0, static_cast<int>(tex->getWidth()), static_cast<int>(tex->getHeight())));
+        GL::heSetViewport(he::RectI(0, 0, static_cast<int>(m_RenderTarget[fboId]->getWidth()), static_cast<int>(m_RenderTarget[fboId]->getHeight())));
         m_DownSampleMaterial->apply(context);
 
         m_Quad->draw();
     }
 
     //Blur
-    for (uint32 fboId(1); fboId < s_DownSamples; ++fboId)
+    for (uint32 fboId(0); fboId < s_DownSamples; ++fboId)
     {
         RenderTarget* const rt(m_RenderTarget[fboId]);
         for (int pass(0); pass < 2; ++pass)

@@ -49,13 +49,13 @@ he::gfx::IShaderUniform* ShaderUniformFactory::create( const EShaderUniformType 
     case eShaderUniformType_Mat44Array: uniform = NEW ShaderUniformMat44Array(name, id); break;
     case eShaderUniformType_Texture2D: 
         {
-            const Texture2D* tex(CONTENT->makeTexture2D(Color(0.0f, 0.0f, 0.0f, 1.0f)));
+            const Texture2D* tex(CONTENT->makeTexture2D(Color(1.0f, 0.0f, 1.0f, 1.0f)));
             uniform = NEW ShaderUniformTexture2D(name, id, tex);
             tex->release();
         } break;
     case eShaderUniformType_TextureCube: 
         {
-            const TextureCube* tex(CONTENT->makeTextureCube(Color(0.0f, 0.0f, 0.0f, 1.0f)));
+            const TextureCube* tex(CONTENT->makeTextureCube(Color(1.0f, 0.0f, 1.0f, 1.0f)));
             uniform = NEW ShaderUniformTextureCube(name, id, tex);
             tex->release();
         } break;

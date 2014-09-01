@@ -103,4 +103,10 @@ he::uint32 ShaderUniformBufferManager::findLink( const he::FixedString& name ) c
     return UINT32_MAX;
 }
 
+void ShaderUniformBufferManager::bind()
+{
+    m_SceneBuffer.bindBuffer();
+    m_CameraBuffer.bindBuffer();
+}
+
 } }

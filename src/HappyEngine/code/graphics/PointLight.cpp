@@ -34,61 +34,11 @@ PointLight::PointLight()
     , m_Attenuation(0.0f, 10.0f)
     , m_ScaledAttenuation(0.0f, 10.0f)
     , m_Color(1.0f, 1.0f, 1.0f)
-    , m_LightVolume(nullptr)
 {
-    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight");
-    setModelMesh(m_LightVolume);
-    
-    Material* material(CONTENT->loadMaterial("engine/light/debuglight.material"));
-    setMaterial(material);
-    material->release();
-
-    setCastsShadow(false);
-}
-
-PointLight::PointLight( const PointLight& other )
-: m_Multiplier(other.m_Multiplier)
-, m_Color(other.m_Color)
-, m_Attenuation(other.m_Attenuation)
-, m_ScaledAttenuation(other.m_ScaledAttenuation)
-, m_LightVolume(other.m_LightVolume)
-{
-    if (m_LightVolume != nullptr)
-        m_LightVolume->instantiate();
-    setModelMesh(other.getModelMesh());
-    setMaterial(other.getMaterial()? other.getMaterial()->getParent() : nullptr);
-
-    setCastsShadow(false);
-}
-
-PointLight& PointLight::operator=( const PointLight& other )
-{
-    m_Multiplier = other.m_Multiplier;
-    m_Color = other.m_Color;
-    m_Attenuation = other.m_Attenuation;
-    m_ScaledAttenuation = other.m_ScaledAttenuation;
-
-    if (m_LightVolume != nullptr)
-        m_LightVolume->release();
-
-    setModelMesh(nullptr);
-    setMaterial(nullptr);
-
-    m_LightVolume = other.m_LightVolume;
-    if (m_LightVolume != nullptr)
-        m_LightVolume->instantiate();
-    setModelMesh(other.getModelMesh());
-    setMaterial(other.getMaterial()? other.getMaterial()->getParent() : nullptr);
-
-    return *this;
 }
 
 PointLight::~PointLight()
 {
-    if (m_LightVolume != nullptr)
-        m_LightVolume->release();
-    setModelMesh(nullptr);
-    setMaterial(nullptr);
 }
 
 void PointLight::setMultiplier(float multiplier)
@@ -139,14 +89,9 @@ const vec3& PointLight::getColor() const
     return m_Color;
 }
   
-const ModelMesh* PointLight::getLightVolume() const
-{
-    return m_LightVolume;
-}
-
 void PointLight::calculateWorldMatrix()
 {
-    Drawable::calculateWorldMatrix();
+    Object3D::calculateWorldMatrix();
     float scale(length(vec3(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0))));
     m_ScaledAttenuation = m_Attenuation * (scale / m_Attenuation.y);
 }

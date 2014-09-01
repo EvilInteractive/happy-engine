@@ -27,7 +27,6 @@ struct PerCameraUniformBuffer
     mat4 viewProjMatrix;
     
     vec3 cameraPosition;
-    float _padCamPos;
     
     vec2 cameraNearFar;
     vec2 cameraViewSize;

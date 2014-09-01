@@ -25,13 +25,13 @@
 #include "Drawable.h"
 #include "Light.h"
 #include "CameraPerspective.h"
-#include "IDrawable2D.h"
+#include "Object3D.h"
 
 namespace he {
 namespace gfx {
 class Texture2D;
 
-class SpotLight : public Drawable, public Light
+class SpotLight : public Object3D, public Light
 {
 private:
     float m_Multiplier;
@@ -44,8 +44,6 @@ private:
 
     vec3 m_Color;
     float m_CosCutoff;
-
-    ModelMesh* m_LightVolume;
 
     ShadowResolution m_ShadowResolution;
     Texture2D* m_ShadowMap;
@@ -87,8 +85,6 @@ public:
     Texture2D* getShadowMap() const { return m_ShadowMap; }
     const CameraPerspective& getShadowCamera() { return m_ShadowCamera;}
     void prepareShadowCamera();
-
-    const ModelMesh* getLightVolume() const;
 
     virtual LightType getType() const { return LightType_Spot; }
 

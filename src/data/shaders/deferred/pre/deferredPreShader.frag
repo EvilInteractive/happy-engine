@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 
-#version 150 core
+#version 330 core
 #pragma optionNV(fastmath on)
 //#pragma optionNV(fastprecision on)
 #pragma optionNV(ifcvt none)
@@ -33,9 +33,9 @@ in vec3 passNormal;
 in vec3 passTangent;
 in float passDepth;
 
-out vec4 outColor;
-out vec3 outNormalDepth;
-out vec4 outSG;
+layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec4 outSG;
+layout(location = 2) out vec3 outNormalDepth;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
@@ -68,8 +68,8 @@ void main()
     
     outColor = vec4(color.rgb, specGlossIll.b);
 
+    outSG = vec4(specGlossIll.rg, 0.0f, 1.0f);
+    
     outNormalDepth.xy = encodeNormal(calcNormal(passNormal, passTangent, normal));
     outNormalDepth.z = (passDepth - perCameraUniformBuffer.cameraNearFar.x) / (perCameraUniformBuffer.cameraNearFar.y - perCameraUniformBuffer.cameraNearFar.x);
-
-    outSG = vec4(specGlossIll.rg, 0.0f, 1.0f);
 }

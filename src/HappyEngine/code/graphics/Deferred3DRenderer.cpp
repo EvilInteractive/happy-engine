@@ -63,7 +63,9 @@ namespace gfx {
 Deferred3DRenderer::Deferred3DRenderer(): 
             m_Quad(nullptr), 
             m_ShowDebugTextures(false),
+            m_PointLightVolume(nullptr),
             m_PointLightMaterial(nullptr),
+            m_SpotLightVolume(nullptr),
             m_SpotLightMaterial(nullptr),
             m_ShadowSpotLightMaterial(nullptr),
             m_AmbDirIllMaterial(nullptr),
@@ -76,13 +78,13 @@ Deferred3DRenderer::Deferred3DRenderer():
 {
     ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
     m_ColorIllTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
-    m_ColorIllTexture->setName("Deferred3DRenderer::m_pColorIllTexture");
+    m_ColorIllTexture->setName("Deferred3DRenderer::m_ColorIllTexture");
     m_ColorIllTexture->init(TextureWrapType_Clamp, TextureFilterType_Nearest, 
         TextureFormat_RGBA8, false);
 
     handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_SGTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
-    m_SGTexture->setName("Deferred3DRenderer::m_pSGTexture");
+    m_SGTexture->setName("Deferred3DRenderer::m_SGTexture");
     m_SGTexture->init(TextureWrapType_Clamp, TextureFilterType_Nearest, 
         TextureFormat_RGBA8, false);
 
@@ -124,7 +126,18 @@ Deferred3DRenderer::~Deferred3DRenderer()
     
     m_Quad->release();
 
+    if (m_PointLightVolume)
+    {
+        m_PointLightVolume->release();
+        m_PointLightVolume = nullptr;
+    }
     delete m_PointLightMaterial;    
+
+    if (m_SpotLightVolume)
+    {
+        m_SpotLightVolume->release();
+        m_SpotLightVolume = nullptr;
+    }
     delete m_SpotLightMaterial;    
     delete m_ShadowSpotLightMaterial;
     delete m_AmbDirIllMaterial;
@@ -136,8 +149,18 @@ void Deferred3DRenderer::loadMaterials()
     //////////////////////////////////////////////////////////////////////////
     ///                                 CLEAN                              ///
     //////////////////////////////////////////////////////////////////////////
+    if (m_PointLightVolume)
+    {
+        m_PointLightVolume->release();
+        m_PointLightVolume = nullptr;
+    }
     delete m_PointLightMaterial;    
     m_PointLightMaterial = nullptr;
+    if (m_SpotLightVolume)
+    {
+        m_SpotLightVolume->release();
+        m_SpotLightVolume = nullptr;
+    }
     delete m_SpotLightMaterial;     
     m_SpotLightMaterial = nullptr;
     delete m_ShadowSpotLightMaterial; 
@@ -159,7 +182,31 @@ void Deferred3DRenderer::loadMaterials()
             m_PointLightMaterial = pointLightMaterial->createMaterialInstance(eShaderType_Normal);
             pointLightMaterial->release();
         }
-        m_PointLightMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
+        // Load mesh
+        {
+            m_PointLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight");
+            m_PointLightVolume->callbackOnceIfLoaded(this, [this](const ELoadResult result)
+            {
+                if (result == eLoadResult_Success)
+                {
+                    if (m_PointLightMaterial->getLoadResult() == eLoadResult_Unloaded)
+                    {
+                        m_PointLightMaterial->callbackOnceIfLoaded(this, [this](const ELoadResult /*result*/)
+                        {
+                            m_PointLightMaterial->calculateMaterialLayout(m_PointLightVolume->getVertexLayout());
+                        });
+                    }
+                    else
+                    {
+                        m_PointLightMaterial->calculateMaterialLayout(m_PointLightVolume->getVertexLayout());
+                    }
+                }
+                else
+                {
+                    HAPPYENGINE->quit(); // fatal if this happen
+                }
+            });
+        }
 
         m_PointLightData.position = m_PointLightMaterial->findParameter(HEFS::strlight_position);
         m_PointLightData.multiplier = m_PointLightMaterial->findParameter(HEFS::strlight_multiplier);
@@ -181,7 +228,31 @@ void Deferred3DRenderer::loadMaterials()
             m_SpotLightMaterial = spotLightMaterial->createMaterialInstance(eShaderType_Normal);
             spotLightMaterial->release();
         }
-        m_SpotLightMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
+        // Load mesh
+        {
+            m_SpotLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight");
+            m_SpotLightVolume->callbackOnceIfLoaded(this, [this](const ELoadResult result)
+            {
+                if (result == eLoadResult_Success)
+                {
+                    if (m_SpotLightMaterial->getLoadResult() == eLoadResult_Unloaded)
+                    {
+                        m_SpotLightMaterial->callbackOnceIfLoaded(this, [this](const ELoadResult /*result*/)
+                        {
+                            m_SpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
+                        });
+                    }
+                    else
+                    {
+                        m_SpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
+                    }
+                }
+                else
+                {
+                    HAPPYENGINE->quit(); // fatal if this happen
+                }
+            });
+        }
 
         m_SpotLightData.position = m_SpotLightMaterial->findParameter(HEFS::strlight_position);
         m_SpotLightData.multiplier = m_SpotLightMaterial->findParameter(HEFS::strlight_multiplier);
@@ -280,6 +351,7 @@ void Deferred3DRenderer::render()
         GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
         m_CollectionRenderTarget->clear(he::Color(0.0f, 1, 0, 0));
         GRAPHICS->getShaderUniformBufferManager()->updateSceneBuffer(m_Scene);
+        GRAPHICS->getShaderUniformBufferManager()->bind();
 
 
         //////////////////////////////////////////////////////////////////////////
@@ -301,16 +373,16 @@ void Deferred3DRenderer::render()
         //////////////////////////////////////////////////////////////////////////
         ///                             POST                                   ///
         //////////////////////////////////////////////////////////////////////////
-        m_OutputRenderTarget->prepareForRendering(1);
-                
-        postPointLights();           
-        postSpotLights();
-        postAmbDirIllLight();
+         m_OutputRenderTarget->prepareForRendering(1);
+                 
+         postPointLights();           
+         postSpotLights();
+         postAmbDirIllLight();
     }
 }
 void Deferred3DRenderer::draw2D(gui::Canvas2D* canvas)
 {
-    if (m_ShowDebugTextures)
+    //if (m_ShowDebugTextures)
     {
         canvas->blitImage(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
         canvas->blitImage(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
@@ -348,7 +420,7 @@ void Deferred3DRenderer::postPointLights()
 
     const LightFactory* lightFactory(LightFactory::getInstance());
 
-    if (lights.size() == 0 || lightFactory->getPointLight(lights.back())->getLightVolume()->isLoaded() == false)
+    if (lights.size() == 0 || m_PointLightVolume->isLoaded() == false)
         return;
 
     m_PointLightMaterial->getParameter(m_PointLightData.colorIllMap).setTexture2D(m_ColorIllTexture);
@@ -384,12 +456,11 @@ void Deferred3DRenderer::postPointLights()
             m_PointLightMaterial->getParameter(m_PointLightData.endAttenuation).setFloat(light->getScaledEndAttenuation());
             m_PointLightMaterial->getParameter(m_PointLightData.wvp).setFloat44(camera.getViewProjection() * light->getWorldMatrix());
 
-            const gfx::ModelMesh* volume(light->getLightVolume());
             DrawContext context;
-            context.m_VBO = volume->getVBO();
-            context.m_IBO = volume->getIBO();
+            context.m_VBO = m_PointLightVolume->getVBO();
+            context.m_IBO = m_PointLightVolume->getIBO();
             m_PointLightMaterial->apply(context);
-            volume->draw();
+            m_PointLightVolume->draw();
         }
     });
     GL::heSetCullFace(false);
@@ -402,7 +473,7 @@ void Deferred3DRenderer::postSpotLights()
 
     const LightFactory* lightFactory(LightFactory::getInstance());
 
-    if (lights.size() == 0 || lightFactory->getSpotLight(lights.back())->getLightVolume()->isLoaded() == false)
+    if (lights.size() == 0 || m_SpotLightVolume->isLoaded() == false)
         return;
 
     const ICamera& camera(*m_View->getCamera());
@@ -490,12 +561,11 @@ void Deferred3DRenderer::postSpotLights()
                     m_SpotLightMaterial->getParameter(m_SpotLightData.cosCutOff).setFloat(light->getCosCutoff());
                 }
 
-                const gfx::ModelMesh* volume(light->getLightVolume());
                 DrawContext context;
-                context.m_VBO = volume->getVBO();
-                context.m_IBO = volume->getIBO();
-                m_PointLightMaterial->apply(context);
-                volume->draw();
+                context.m_VBO = m_SpotLightVolume->getVBO();
+                context.m_IBO = m_SpotLightVolume->getIBO();
+                m_SpotLightMaterial->apply(context);
+                m_SpotLightVolume->draw();
             }
         });
         if (shadowLights == false)

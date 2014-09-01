@@ -41,29 +41,15 @@ SpotLight::SpotLight()
     , m_ScaledAttenuation(MIN_BEGIN_ATTENUATION, 10.0f)
     , m_Color(1.0f, 1.0f, 1.0f)
     , m_CosCutoff(0.5f)
-    , m_LightVolume(nullptr)
     , m_ShadowResolution(ShadowResolution_None)
     , m_ShadowMap(nullptr)
     , m_ShadowLensDirty(true)
     , m_ShadowLookDirty(true)
 {
-    //m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight"); //HACK: wrong volume
-    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight"); //HACK: wrong volume
-    setModelMesh(m_LightVolume);
-
-    Material* material(CONTENT->loadMaterial("engine/light/debuglight.material"));
-    setMaterial(material);
-    material->release();
-
-    setCastsShadow(false);
 }
 
 SpotLight::~SpotLight()
 {
-    if (m_LightVolume != nullptr)
-        m_LightVolume->release();
-    setModelMesh(nullptr);
-    setMaterial(nullptr);
     if (m_ShadowMap != nullptr)
         m_ShadowMap->release();
 }
@@ -142,10 +128,6 @@ float SpotLight::getCosCutoff() const
     return m_CosCutoff;
 }
  
-const ModelMesh* SpotLight::getLightVolume() const
-{
-    return m_LightVolume;
-}
 float SpotLight::getFov() const
 {
     return acosf(m_CosCutoff) * 2.0f;
@@ -153,7 +135,7 @@ float SpotLight::getFov() const
 
 void SpotLight::calculateWorldMatrix()
 {
-    Drawable::calculateWorldMatrix();
+    Object3D::calculateWorldMatrix();
     vec4 direction(m_LocalDirection, 0);
     m_WorldDirection = normalize((m_WorldMatrix * direction).xyz());
     float scale(length(vec4(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0), m_WorldMatrix(3, 0)))); // takes x as uniform scale
@@ -163,7 +145,7 @@ void SpotLight::calculateWorldMatrix()
 
 void SpotLight::setWorldMatrixDirty( const uint8 cause )
 {
-    Drawable::setWorldMatrixDirty(cause);
+    Object3D::setWorldMatrixDirty(cause);
     if ((cause & DirtyFlag_Scale) != 0)
         m_ShadowLensDirty = true;
     if ((cause & (~DirtyFlag_Scale)) != 0)

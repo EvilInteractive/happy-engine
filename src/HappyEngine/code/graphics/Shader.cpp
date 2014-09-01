@@ -192,7 +192,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
         GLuint index(0);
         outputLayout->forEach([this, &index](const he::String& output)
         {
-            glBindFragDataLocation(m_Id, index++, output.c_str());
+            glBindFragDataLocation(m_Id, GL_COLOR_ATTACHMENT0 + index++, output.c_str());
         });
     }
 
@@ -270,6 +270,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
 
     GLint uniformCount(-1);
     glGetProgramiv( m_Id, GL_ACTIVE_UNIFORMS, &uniformCount ); 
+    size_t samplers(0);
     for(GLint i(0); i < uniformCount; ++i)  
     {
         GLint nameLen(-1);
@@ -279,8 +280,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
         glGetActiveUniform( m_Id, i, 99, &nameLen, &num, &type, name );
         name[nameLen] = '\0'; // Add null terminator
         const GLuint location(glGetUniformLocation( m_Id, name ));
-        size_t samplers(0);
-        if (location != -1) // Can be -1 if it is inside a UBO!
+        if (location != -1) // Can be -1 if it is inside an UBO!
         {
             const he::FixedString fsName(he::GlobalStringTable::getInstance()->add(name, nameLen));
             IShaderUniform* uniform(nullptr);
@@ -381,6 +381,7 @@ void Shader::setShaderVar(uint32 id, const he::PrimitiveList<mat44>& matrixArray
 void Shader::setSampler2D(uint32 id, const uint32 sampler) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    // HE_ASSERT(sampler != UINT32_MAX, "Binding unassigned texture!");
     GL::heBindTexture2D(id, sampler);
 }
 void Shader::setSamplerCube( uint32 id, const uint32 sampler ) const

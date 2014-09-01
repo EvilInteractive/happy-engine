@@ -40,6 +40,7 @@
 #include <Canvas2D.h>
 #include <Renderer2D.h>
 #include <GlobalSettings.h>
+#include <PostProcesser.h>
 
 #include "FlyCamera.h"
 #include "VRCamera.h"
@@ -90,9 +91,11 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_View->setWindow(window, he::gfx::View::eViewInsertMode_First);
     m_View->init(cameraSettings);
     m_View->setCamera(m_Camera);
+    if (m_View->getPostProcessor())
+        m_RenderPipeline->get2DRenderer()->attachToRender(m_View->getPostProcessor());
 
     he::gfx::LightManager* lightMan(m_Scene->getLightManager());
-    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 0.4f);
+    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 1.5f);
     lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.2f);
 
     he::gui::Font* const debugFont(contentMan->getDefaultFont(16));

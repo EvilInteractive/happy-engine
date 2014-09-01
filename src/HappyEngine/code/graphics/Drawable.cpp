@@ -100,6 +100,7 @@ void Drawable::updateMaterialLayout(ModelMesh* const mesh, MaterialInstance* con
                 if (m_Material->isLoaded())
                 {
                     m_Material->calculateMaterialLayout(m_ModelMesh->getVertexLayout());
+                    calculateBound();
                     raiseFlag(eDrawableFlags_IsLoaded);
                     reevaluate();
                 }

@@ -75,6 +75,8 @@ public:
 
     uint32 findLink(const he::FixedString& name) const;
 
+    void bind();
+
 private:
     SharedUniformBuffer<PerSceneBuffer> m_SceneBuffer;
     SharedUniformBuffer<PerCameraBuffer> m_CameraBuffer;

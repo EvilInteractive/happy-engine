@@ -1,7 +1,6 @@
 {
     "VertexShader" : "deferred/post/deferredPostShader.vert",
     "FragmentShader" : "deferred/post/deferredPostSLShader.frag",
-    "OutputLayout" : [ "colorIllMap", "normalDepthMap", "sgMap" ],
     "IsBlended" : true,
     "BlendEquation" : "Add",
     "SourceBlend" : "One",

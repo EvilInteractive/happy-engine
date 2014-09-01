@@ -1,14 +1,12 @@
 {
     "VertexShader" : "deferred/pre/deferredPreShader.vert",
     "FragmentShader" : "deferred/pre/deferredPreShader.frag",
+    "OutputLayout" : [ "outColor", "outSG", "outNormalDepth" ],
     "IsBlended" : false,
     "NoPost" : false,
     "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "One",
-    "DestBlend" : "Zero",
+    "DepthRead" : true,
+    "DepthWrite" : true,
     "CastShadow" : true,
     "Parameters" : {
         "diffuseMap" : "tiles_diffuse.png",

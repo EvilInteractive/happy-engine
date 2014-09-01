@@ -1,7 +1,6 @@
 {
     "VertexShader" : "shared/postShaderQuad.vert",
     "FragmentShader" : "deferred/post/deferredPostAmbientIllShader.frag",
-    "OutputLayout" : [ "colorIllMap", "normalDepthMap", "sgMap" ],
     "IsBlended" : true,
     "BlendEquation" : "Add",
     "SourceBlend" : "One",

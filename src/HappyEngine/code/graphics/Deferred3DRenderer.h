@@ -153,10 +153,12 @@ private:
     const Texture2D* m_ColorRampTex;
 
     //Point light
+    ModelMesh* m_PointLightVolume;
     MaterialInstance* m_PointLightMaterial;
     PostPointLightData m_PointLightData;
 
     //Spot light
+    ModelMesh* m_SpotLightVolume;
     MaterialInstance* m_SpotLightMaterial, *m_ShadowSpotLightMaterial;
     PostSpotLightData m_SpotLightData;
     PostShadowSpotLightData m_ShadowSpotLightData;

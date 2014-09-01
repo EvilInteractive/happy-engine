@@ -95,7 +95,7 @@ void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const st
 #ifdef HE_USE_OCTREE
     m_DrawList[blend]->draw(camera, drawFunc);
 #else
-    std::for_each(m_DrawList[blend].cbegin(), m_DrawList[blend].cend(), [camera, drawFunc](Drawable* drawable)
+    m_DrawList[blend].forEach([camera, drawFunc](Drawable* drawable)
     {
         if (drawable->canDraw() && camera->intersect(drawable->getBound()) != IntersectResult_Outside)
             drawFunc(drawable);

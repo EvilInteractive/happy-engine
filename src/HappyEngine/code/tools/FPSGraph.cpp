@@ -222,7 +222,7 @@ void FPSGraph::drawFull(gui::Canvas2D* canvas)
 {
     if (m_FpsHistory.size() == 0)
         return;
-    canvas->setColor(Color(1, 1, 1, 0.5f));
+    canvas->setColor(Color(1, 1, 1, 0.9f));
     canvas->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 }
 

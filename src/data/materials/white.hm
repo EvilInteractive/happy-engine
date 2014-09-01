@@ -1,18 +1,16 @@
 {
     "VertexShader" : "deferred/pre/deferredPreShader.vert",
     "FragmentShader" : "deferred/pre/deferredPreShader.frag",
+    "OutputLayout" : [ "outColor", "outSG", "outNormalDepth" ],
     "IsBlended" : false,
     "NoPost" : false,
     "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "One",
-    "DestBlend" : "Zero",
+    "DepthRead" : true,
+    "DepthWrite" : true,
     "CastShadow" : true,
     "Parameters" : {
-        "diffuseMap" : "0.7, 0.7, 0.7, 1",
-        "normalMap" : "0.5, 0.5, 1.0, 1",
-        "specGlossIllMap" : "0.1, 0.1, 0.0, 1"
+        "diffuseMap" : "0.7, 0.7, 0.7, 1.0",
+        "normalMap" : "0.5, 0.5, 1.0, 1.0",
+        "specGlossIllMap" : "0.1, 0.1, 0.0, 1.0"
     }
 }

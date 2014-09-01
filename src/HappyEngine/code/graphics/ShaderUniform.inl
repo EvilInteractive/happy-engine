@@ -141,11 +141,8 @@ public:
     {
         if (value != nullptr)
         {
-            if (m_Value != value->getID())
-            {
-                m_Value = value->getID();
-                shader->setSampler2D(m_ID, m_Value);
-            }
+            m_Value = value->getID();
+            shader->setSampler2D(m_ID, m_Value);
         }
         else
         {
@@ -207,11 +204,8 @@ public:
     {
         if (value != nullptr)
         {
-            if (m_Value != value->getID())
-            {
-                m_Value = value->getID();
-                shader->setSamplerCube(m_ID, m_Value);
-            }
+            m_Value = value->getID();
+            shader->setSamplerCube(m_ID, m_Value);
         }
         else
         {

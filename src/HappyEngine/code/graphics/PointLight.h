@@ -22,7 +22,7 @@
 #define _HE_PointLight_H_
 #pragma once
 
-#include "Drawable.h"
+#include "Object3D.h"
 #include "Light.h"
 
 namespace he {
@@ -31,7 +31,7 @@ namespace gfx {
 class ModelMesh;
 class MaterialInstance;
 
-class PointLight : public Drawable, public Light
+class PointLight : public Object3D, public Light
 {
 private:
     float m_Multiplier;
@@ -39,16 +39,12 @@ private:
     vec2 m_Attenuation;
     mutable vec2 m_ScaledAttenuation;
 
-    ModelMesh* m_LightVolume;
-
 protected:
     virtual void calculateWorldMatrix(); // override Object3D
 
 public:
     PointLight();
     virtual ~PointLight();
-    PointLight(const PointLight& other);
-    PointLight& operator=(const PointLight& other);
 
     void setMultiplier(float multiplier);
     void setAttenuation(float begin, float end);
@@ -65,6 +61,10 @@ public:
     const ModelMesh* getLightVolume() const;
 
     virtual LightType getType() const { return LightType_Point; }
+
+private:
+    PointLight(const PointLight& other);
+    PointLight& operator=(const PointLight& other);
 };
 
 } } //end namespace
