@@ -23,6 +23,7 @@
 #pragma once
 
 #include "ShaderEnums.h"
+#include "MaterialEnums.h"
 
 namespace he {
 namespace gfx {
@@ -50,9 +51,10 @@ public:
     MaterialParameter& operator=(const MaterialParameter& other);
     MaterialParameter& operator=(MaterialParameter&& other);
     
-    void init(const ShaderUniformID id, const EType type);
+    void init(const EType type);
+    void setShaderUniformID(const ShaderUniformID id, const he::gfx::EShaderPassType pass, const he::gfx::EShaderRenderType rtype);
     
-    ShaderUniformID getID() const { return m_ID; }
+    ShaderUniformID getID(const he::gfx::EShaderPassType pass, const he::gfx::EShaderRenderType rtype) const { return m_ID[pass][rtype]; }
     EType getType() const { return m_Type; }
 
     float getFloat() const;
@@ -74,7 +76,7 @@ public:
     void setTextureCube(const TextureCube* const data);
 
 private:
-    ShaderUniformID m_ID;
+    ShaderUniformID m_ID[eShaderPassType_MAX][eShaderRenderType_MAX];
     EType m_Type;
     union Data
     {
@@ -95,6 +97,8 @@ private:
     // disabled
     MaterialParameter(const MaterialParameter&);
 };
+
+MaterialParameter::EType ShaderUniformTypeToMaterialType(const EShaderUniformType type);
 
 } } //end namespace
 

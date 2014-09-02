@@ -3,7 +3,7 @@
         "Normal" : {
             "VertexShader" : "shared/postShaderQuad.vert",
             "FragmentShader" : "post/downSampleBrightpass.frag",
-            "Defines" : [ "BRIGHTPASS" ],
+            "Defines" : [ "BRIGHTPASS" ]
         }
     },
     "Options" : {

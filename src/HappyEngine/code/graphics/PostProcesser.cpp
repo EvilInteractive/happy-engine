@@ -51,7 +51,7 @@ PostProcesser::PostProcesser():
     m_DebugRenderer(nullptr),
     m_WriteRenderTarget(nullptr),
     m_ReadRenderTarget(nullptr),
-    m_ShowDebugTextures(false),
+    m_ShowDebugTextures(true),
     m_AOEnabled(false),
     m_FogEnabled(false)
 {
@@ -114,7 +114,7 @@ void PostProcesser::loadMaterial()
     {
         delete m_PostMaterial;
         Material* const postMat(CONTENT->loadMaterial("engine/post/post.hm"));
-        m_PostMaterial = postMat->createMaterialInstance(eShaderType_Normal);
+        m_PostMaterial = postMat->createMaterialInstance(eShaderRenderType_Normal);
         postMat->release();
         m_PostMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
     }
@@ -211,12 +211,16 @@ void PostProcesser::draw2D(gui::Canvas2D* canvas)
     if (m_ShowDebugTextures)
     {
         float height(128.0f);
-        float aspect(m_Bloom->getBloom(0)->getWidth() / (float)m_Bloom->getBloom(0)->getHeight());
-        float width(aspect * height);
-        canvas->blitImage(m_Bloom->getBloom(0), vec2(128 + 12 * 1 + width * 0, 256), false, vec2(width, height));
-        canvas->blitImage(m_Bloom->getBloom(1), vec2(128 + 12 * 2 + width * 1, 256), false, vec2(width, height));
-        canvas->blitImage(m_Bloom->getBloom(2), vec2(128 + 12 * 3 + width * 2, 256), false, vec2(width, height));
-        canvas->blitImage(m_Bloom->getBloom(3), vec2(128 + 12 * 4 + width * 3, 256), false, vec2(width, height));
+        float width(128.0f);
+        if (m_Bloom)
+        {
+            float aspect(m_Bloom->getBloom(0)->getWidth() / (float)m_Bloom->getBloom(0)->getHeight());
+            width = aspect * height;
+            canvas->blitImage(m_Bloom->getBloom(0), vec2(128 + 12 * 1 + width * 0, 256), false, vec2(width, height));
+            canvas->blitImage(m_Bloom->getBloom(1), vec2(128 + 12 * 2 + width * 1, 256), false, vec2(width, height));
+            canvas->blitImage(m_Bloom->getBloom(2), vec2(128 + 12 * 3 + width * 2, 256), false, vec2(width, height));
+            canvas->blitImage(m_Bloom->getBloom(3), vec2(128 + 12 * 4 + width * 3, 256), false, vec2(width, height));
+        }
         if (nullptr != m_AutoExposure)
             canvas->drawImage(m_AutoExposure->getLuminanceMap(), vec2(12 * 5 + width * 4, 12), vec2(height, height));
     }

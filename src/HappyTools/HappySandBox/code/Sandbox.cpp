@@ -219,15 +219,7 @@ he::gfx::Window*Sandbox::getMainWindow() const
 
 QGLWidget* Sandbox::getSharedWidget() const
 {
-    QGLWidget* sharedWidget(nullptr);
-    he::gfx::GraphicsEngine* gfxEngine(GRAPHICS);
-
-    if (gfxEngine)
-    {
-        sharedWidget = he::checked_cast<GameWidget*>(gfxEngine->getSharedContext());
-    }
-
-    return nullptr;
+    return m_Window->getGameWidget();
 }
 
 } //end namespace

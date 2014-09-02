@@ -7,12 +7,12 @@
         },
         "Skinned" : {
             "VertexShader" : "deferred/pre/deferredPreShaderSkinned.vert",
-            "FragmentShader" : "deferred/pre/preShadowShader.frag",
+            "FragmentShader" : "deferred/pre/deferredPreShader.frag",
             "OutputLayout" : [ "outColor", "outSG", "outNormalDepth" ]
         },
         "Instanced" : {
             "VertexShader" : "deferred/pre/deferredPreShaderInstanced.vert",
-            "FragmentShader" : "deferred/pre/preShadowShader.frag",
+            "FragmentShader" : "deferred/pre/deferredPreShader.frag",
             "OutputLayout" : [ "outColor", "outSG", "outNormalDepth" ]
         }
     },

@@ -164,6 +164,12 @@ DEF_FS(Defines);
 DEF_FS(OutputLayout);
 DEF_FS(CastShadow);
 DEF_FS(Parameters);
+DEF_FS(Inherit);
+DEF_FS(Normal);
+DEF_FS(Skinned);
+DEF_FS(Instanced);
+DEF_FS(Shadow);
+DEF_FS(Options);
 
 //////////////////////////////////////////////////////////////////////////
 // 2D Effects

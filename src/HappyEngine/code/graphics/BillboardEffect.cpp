@@ -45,7 +45,7 @@ BillboardEffect::~BillboardEffect()
 void BillboardEffect::init(const VertexLayout& layout)
 {
     Material* mat(CONTENT->loadMaterial("engine/2D/billboard.hm"));
-    m_Material = mat->createMaterialInstance(eShaderType_Normal);
+    m_Material = mat->createMaterialInstance(eShaderRenderType_Normal);
     mat->release();
     m_Material->calculateMaterialLayout(layout);
 

@@ -27,7 +27,7 @@ namespace he {
 namespace gfx {
 
 MaterialParameter::MaterialParameter()
-    : m_ID(ShaderUniformID::Unassigned), m_Type(eType_Invalid)
+    : m_Type(eType_Invalid)
 {
     he_memset(&m_Data, 0, sizeof(Data));
 }
@@ -36,7 +36,7 @@ MaterialParameter& MaterialParameter::operator=(const MaterialParameter& other)
 {
     if (this != &other)
     {
-        m_ID = other.m_ID;
+        he_memcpy(m_ID, other.m_ID, sizeof(m_ID));
         if (other.m_Type != eType_Float44)
         {
             if (m_Type == eType_Float44) // If it was a mat44
@@ -60,7 +60,7 @@ MaterialParameter& MaterialParameter::operator=(MaterialParameter&& other)
 {
     if (this != &other)
     {
-        m_ID = other.m_ID;
+        he_memcpy(m_ID, other.m_ID, sizeof(m_ID));
         if (m_Type == eType_Float44) // if it was a float44, cleanup
             he_free(m_Data.m_Matrix);
         m_Type = other.m_Type;
@@ -79,16 +79,19 @@ MaterialParameter::~MaterialParameter()
     release();
 }
     
-void MaterialParameter::init(const ShaderUniformID id, const EType type)
+void MaterialParameter::init(const EType type)
 {
     HE_ASSERT(m_Type == eType_Invalid, "MaterialParam is already initialized!");
-    HE_ASSERT(type != eType_Invalid, "Initializing materialparam with ivalid type!");
-    m_ID = id;
+    HE_ASSERT(type != eType_Invalid, "Initializing materialparam with invalid type!");
     m_Type = type;
     if (m_Type == eType_Float44)
         m_Data.m_Matrix = static_cast<float*>(he_malloc(sizeof(float) * 4 * 4));
 }
-    
+
+void MaterialParameter::setShaderUniformID( const ShaderUniformID id, const he::gfx::EShaderPassType pass, const he::gfx::EShaderRenderType rtype )
+{
+    m_ID[pass][rtype] = id;
+}
 void MaterialParameter::instantiate()
 {
     switch (m_Type)
@@ -298,6 +301,32 @@ const char* MaterialParameter::typeToString( const EType type ) const
     default: LOG(LogType_ProgrammerAssert, "Unknown MaterialParameter::EType %d when converting to string!", type);
     }
     return result;
+}
+
+MaterialParameter::EType ShaderUniformTypeToMaterialType( const EShaderUniformType type )
+{
+    switch (type)
+    {
+    case eShaderUniformType_Int:
+        return MaterialParameter::eType_Int;
+    case eShaderUniformType_Float:
+        return MaterialParameter::eType_Float;
+    case eShaderUniformType_Float2:
+        return MaterialParameter::eType_Float2;
+    case eShaderUniformType_Float3:
+        return MaterialParameter::eType_Float3;
+    case eShaderUniformType_Float4:
+        return MaterialParameter::eType_Float4;
+    case eShaderUniformType_Mat44:
+        return MaterialParameter::eType_Float44;
+    case eShaderUniformType_Texture2D:
+        return MaterialParameter::eType_Texture2D;
+    case eShaderUniformType_TextureCube:
+        return MaterialParameter::eType_TextureCube;
+    default:
+        LOG(LogType_ProgrammerAssert, "Unknown conversion from shader uniformtype %d to materialparamtype", type);
+    }
+    return MaterialParameter::eType_Invalid;
 }
 
 } } //end namespace

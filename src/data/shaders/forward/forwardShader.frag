@@ -84,9 +84,10 @@ void main()
 
     //Specular
     vec3 spec = vec3(0, 0, 0);
+    vec4 specGlossIll = texture(specGlossIllMap, passTexCoord);
 #if SPECULAR
 	vec3 vCamDir = normalize(-position);
-	spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.a * dirLight.color.rgb;
+	spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), specGlossIll.g * 100.0f) * specGlossIll.r) * 5.0f * dirLight.color.a * dirLight.color.rgb;
 #endif
              
     //Albedo
@@ -96,7 +97,6 @@ void main()
     float normalizedDepth = (position.z - perCameraUniformBuffer.cameraNearFar.x) / (perCameraUniformBuffer.cameraNearFar.y - perCameraUniformBuffer.cameraNearFar.x);
      
     //Out         
-    outColor = vec4(((diffuseLight + spec) + ambientLight + vec3(color.a, color.a, color.a) * 10) * color.rgb
-                        , 1.0f);
+    outColor = vec4(((diffuseLight + spec) + ambientLight + vec3(specGlossIll.b) * 10) * color.rgb, color.a);
     outNormalDepth = vec3(encodeNormal(normal), normalizedDepth);
 }

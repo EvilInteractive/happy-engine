@@ -232,13 +232,14 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
                 usage = eShaderAttribute_Tangent;
             else if (strstr(name, "col") != 0)
                 usage = eShaderAttribute_Color;
-            else if (strstr(name, "ind") != 0)
+            else if (strstr(name, "id") != 0)
                 usage = eShaderAttribute_BoneIndices;
             else if (strstr(name, "wei") != 0)
                 usage = eShaderAttribute_BoneWeights;
             else
             {
                 LOG(he::LogType_ProgrammerAssert, "Could not deduce shader attribute usage from name '%s'", fixedName.c_str());
+                continue;
             }
 
             const ShaderLayoutAttribute el(fixedName, usage, location);

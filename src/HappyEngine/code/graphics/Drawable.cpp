@@ -75,7 +75,7 @@ void Drawable::setMaterial(const Material* const material )
     }
     if (material != nullptr)
     {
-        m_Material = material->createMaterialInstance(eShaderType_Normal);
+        m_Material = material->createMaterialInstance(eShaderRenderType_Normal);
         updateMaterialLayout(m_ModelMesh, m_Material);
     }
 }

@@ -25,19 +25,25 @@
 namespace he {
 namespace gfx {
     
-    enum EShaderType
+    enum EShaderRenderType
     {
-        eShaderType_Normal,
-        eShaderType_Skinned,
-        eShaderType_Instanced,
+        eShaderRenderType_Unknown = -1,
 
-        eShaderType_SHADOW,
-        eShaderType_NormalShadow = eShaderType_SHADOW,
-        eShaderType_SkinnedShadow,
-        eShaderType_InstancedShadow,
+        eShaderRenderType_Normal,
+        eShaderRenderType_Skinned,
+        eShaderRenderType_Instanced,
         
-        eShaderType_Unknown,
-        eShaderType_MAX = eShaderType_Unknown
+        eShaderRenderType_MAX
+    };
+
+    enum EShaderPassType
+    {
+        eShaderPassType_Unknown = -1,
+
+        eShaderPassType_Normal,
+        eShaderPassType_Shadow,
+
+        eShaderPassType_MAX
     };
     
     namespace details
@@ -61,7 +67,7 @@ namespace gfx {
     public:
         typedef he::ObjectList<details::MaterialLayoutElement> layout;
     private:
-        layout m_Layout[eShaderType_MAX];
+        layout m_Layout[eShaderPassType_MAX][eShaderRenderType_MAX];
     };
 
     enum EMaterialFlags

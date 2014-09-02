@@ -89,10 +89,6 @@ void Forward3DRenderer::render()
 
         m_RenderTarget->prepareForRendering();
         
-        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-        GL::heSetDepthRead(true);
-        GL::heSetDepthWrite(true);
-        GL::heSetCullFace(false);
         GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
 
         PreRender(camera);

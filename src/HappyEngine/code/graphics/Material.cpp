@@ -36,26 +36,33 @@ Material::Material()
     , m_DestBlend(BlendFunc_Zero)
     , m_DepthFunc(DepthFunc_LessOrEqual)
 {
-    for (size_t i(0); i < eShaderType_MAX; ++i)
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
     {
-        m_Shader[i] = nullptr;
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+        {
+            m_Shader[pass][rtype] = nullptr;
+        }
     }
 }
 
 Material::~Material()
 {
-    for (size_t i(0); i < eShaderType_MAX; ++i)
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
     {
-        if (m_Shader[i] != nullptr)
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
         {
-            m_Shader[i]->cancelLoadCallback(this);
-            m_Shader[i]->release();
-            m_Shader[i] = nullptr;
+            Shader* const shader(m_Shader[pass][rtype]);
+            if (shader != nullptr)
+            {
+                shader->cancelLoadCallback(this);
+                shader->release();
+                m_Shader[pass][rtype] = nullptr;
+            }
         }
     }
 }
     
-MaterialInstance* Material::createMaterialInstance(const EShaderType type) const
+MaterialInstance* Material::createMaterialInstance(const EShaderRenderType type) const
 {
     MaterialInstance* instance(NEW MaterialInstance(this, type));
     return instance;
@@ -64,216 +71,227 @@ MaterialInstance* Material::createMaterialInstance(const EShaderType type) const
 void Material::init()
 {
     HE_ASSERT(isLoaded() == false, "Material is already loaded and cannot be inited again!");
-    for (size_t i(0); i < eShaderType_MAX; ++i)
+
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
     {
-        Shader* const shader(m_Shader[i]);
-        if (shader != nullptr)
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
         {
-            shader->callbackOnceIfLoaded(this, [this, shader](const ELoadResult result)
+            Shader* const shader(m_Shader[pass][rtype]);
+            if (shader != nullptr)
             {
-                if (result == eLoadResult_Success)
+                shader->callbackOnceIfLoaded(this, [this, shader](const ELoadResult result)
                 {
-                    bool loadCompleted(true);
-                    for (size_t i(0); i < eShaderType_MAX; ++i)
+                    if (result == eLoadResult_Success)
                     {
-                        if (m_Shader[i] != nullptr)
+                        bool loadCompleted(true);
+                        for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
                         {
-                            if (m_Shader[i]->isLoaded() == false)
+                            for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
                             {
-                                loadCompleted = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (loadCompleted)
-                    {
-                        for (size_t i(0); i < eShaderType_MAX; ++i)
-                        {
-                            Shader* const shader(m_Shader[i]);
-                            if (shader != nullptr)
-                            {
-                                const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
-                                const size_t count(uniforms.size());
-                                for (size_t j(0); j < count; ++j)
+                                Shader* const loadedShader(m_Shader[pass][rtype]);
+                                if (loadedShader != nullptr)
                                 {
-                                    IShaderUniform* const uniform(uniforms[j]);
-
-                                    MaterialParameter param;
-                                    const ShaderUniformID id(checked_numcast<uint32>(j));
-
-                                    size_t defaultIndex(SIZE_T_MAX);
-                                    m_DefaultParams.find_if([uniform](const NameValuePair<he::String>& p) { return p.m_Name == uniform->getName(); }, defaultIndex);
-
-                                    switch (uniform->getType())
+                                    if (loadedShader->isLoaded() == false)
                                     {
-                                    case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
-                                    case eShaderUniformType_Int:
-                                        param.init(id, MaterialParameter::eType_Int);
-                                        if (defaultIndex != SIZE_T_MAX)
-                                        {
-                                            param.setInt32(he::ge::PropertyConverterInt::fromString(m_DefaultParams[defaultIndex].m_Value));
-                                        }
-                                        else
-                                        {
-                                            param.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
-                                        }
-                                        break;
-                                    case eShaderUniformType_UInt:
-                                        LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
-                                        break;
-                                    case eShaderUniformType_Float:
-                                        param.init(id, MaterialParameter::eType_Float);
-                                        if (defaultIndex != SIZE_T_MAX)
-                                        {
-                                            param.setFloat(he::ge::PropertyConverterFloat::fromString(m_DefaultParams[defaultIndex].m_Value));
-                                        }
-                                        else
-                                        {
-                                            param.setFloat(checked_cast<ShaderUniformFloat*>(uniform)->getValue());
-                                        }
-                                        break;
-                                    case eShaderUniformType_Float2:
-                                        param.init(id, MaterialParameter::eType_Float2);
-                                        if (defaultIndex != SIZE_T_MAX)
-                                        {
-                                            param.setFloat2(he::ge::PropertyConverterVec2::fromString(m_DefaultParams[defaultIndex].m_Value));
-                                        }
-                                        else
-                                        {
-                                            param.setFloat2(checked_cast<ShaderUniformVec2*>(uniform)->getValue());
-                                        }
-                                        break;
-                                    case eShaderUniformType_Float3:
-                                        param.init(id, MaterialParameter::eType_Float3);
-                                        if (defaultIndex != SIZE_T_MAX)
-                                        {
-                                            param.setFloat3(he::ge::PropertyConverterVec3::fromString(m_DefaultParams[defaultIndex].m_Value));
-                                        }
-                                        else
-                                        {
-                                            param.setFloat3(checked_cast<ShaderUniformVec3*>(uniform)->getValue());
-                                        }
-                                        break;
-                                    case eShaderUniformType_Float4:
-                                        param.init(id, MaterialParameter::eType_Float4);
-                                        if (defaultIndex != SIZE_T_MAX)
-                                        {
-                                            param.setFloat4(he::ge::PropertyConverterVec4::fromString(m_DefaultParams[defaultIndex].m_Value));
-                                        }
-                                        else
-                                        {
-                                            param.setFloat4(checked_cast<ShaderUniformVec4*>(uniform)->getValue());
-                                        }
-                                        break;
-                                    case eShaderUniformType_Mat44:
-                                        param.init(id, MaterialParameter::eType_Float44);
-                                        param.setFloat44(checked_cast<ShaderUniformMat44*>(uniform)->getValue());
-                                        break;
-                                    case eShaderUniformType_Mat44Array:
-                                        LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
-                                        break;
-                                    case eShaderUniformType_Texture1D:
-                                        LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
-                                    case eShaderUniformType_Texture2D:
-                                        param.init(id, MaterialParameter::eType_Texture2D);
-                                        if (defaultIndex != SIZE_T_MAX)
-                                        {
-                                            const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
-                                            if (defaultValue.empty() == false)
-                                            {
-                                                const Texture2D* tex(nullptr);
-                                                if (isdigit(*defaultValue.c_str()))
-                                                {
-                                                    tex = CONTENT->asyncMakeTexture2D(he::Color(
-                                                        he::ge::PropertyConverterVec4::fromString(defaultValue)));
-                                                }
-                                                else
-                                                {
-                                                    tex = CONTENT->asyncLoadTexture2D(defaultValue);
-                                                }
-                                                param.setTexture2D(tex);
-                                                tex->release();
-                                            }
-                                        }
-                                        break;
-                                    case eShaderUniformType_TextureCube:
-                                        param.init(id, MaterialParameter::eType_TextureCube);
-                                        if (defaultIndex != SIZE_T_MAX)
-                                        {
-                                            const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
-                                            if (defaultValue.empty() == false)
-                                            {
-                                                const TextureCube* tex(nullptr);
-                                                if (isdigit(*defaultValue.c_str()))
-                                                {
-                                                    tex = CONTENT->asyncMakeTextureCube(he::Color(
-                                                        he::ge::PropertyConverterVec4::fromString(defaultValue)));
-                                                }
-                                                else
-                                                {
-                                                    tex = CONTENT->asyncLoadTextureCube(defaultValue);
-                                                }
-                                                param.setTextureCube(tex);
-                                                tex->release();
-                                            }
-                                        }
+                                        loadCompleted = false;
                                         break;
                                     }
-                                    m_Parameters[i].add(param);
-                                    m_ParameterNames[i].add(uniform->getName());
                                 }
                             }
                         }
-                        setLoaded(eLoadResult_Success);
-                    }
-                }
-                else
-                {
-                    // Shader load failed, fail load material
-                    for (size_t i(0); i < eShaderType_MAX; ++i)
-                    {
-                        Shader* const cancelShader(m_Shader[i]);
-                        if (cancelShader != nullptr && cancelShader != shader)
+                        if (loadCompleted)
                         {
-                            if (cancelShader->isLoaded() == false)
+                            for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
                             {
-                                cancelShader->cancelLoadCallback(this);
+                                for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+                                {
+                                    Shader* const shader(m_Shader[pass][rtype]);
+                                    if (shader != nullptr)
+                                    {
+                                        const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
+                                        const size_t count(uniforms.size());
+                                        for (size_t j(0); j < count; ++j)
+                                        {
+                                            IShaderUniform* const uniform(uniforms[j]);
+                                            MaterialParameter* param;
+                                            size_t index(0);
+                                            if (m_ParameterNames.find(uniform->getName(), index))
+                                            {
+                                                param = &m_Parameters[index];
+                                                HE_ASSERT(param->getType() == ShaderUniformTypeToMaterialType(uniform->getType()), "Material parameter name clash with variable of different type! (%s)", uniform->getName().c_str());
+                                            }
+                                            else
+                                            {
+                                                MaterialParameter tempParam;
+
+                                                size_t defaultIndex(SIZE_T_MAX);
+                                                m_DefaultParams.find_if([uniform](const NameValuePair<he::String>& p) { return p.m_Name == uniform->getName(); }, defaultIndex);
+
+                                                switch (uniform->getType())
+                                                {
+                                                case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
+                                                case eShaderUniformType_Int:
+                                                    tempParam.init(MaterialParameter::eType_Int);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setInt32(he::ge::PropertyConverterInt::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_UInt:
+                                                    LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                                    break;
+                                                case eShaderUniformType_Float:
+                                                    tempParam.init(MaterialParameter::eType_Float);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat(he::ge::PropertyConverterFloat::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat(checked_cast<ShaderUniformFloat*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Float2:
+                                                    tempParam.init(MaterialParameter::eType_Float2);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat2(he::ge::PropertyConverterVec2::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat2(checked_cast<ShaderUniformVec2*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Float3:
+                                                    tempParam.init(MaterialParameter::eType_Float3);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat3(he::ge::PropertyConverterVec3::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat3(checked_cast<ShaderUniformVec3*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Float4:
+                                                    tempParam.init(MaterialParameter::eType_Float4);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat4(he::ge::PropertyConverterVec4::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat4(checked_cast<ShaderUniformVec4*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Mat44:
+                                                    tempParam.init(MaterialParameter::eType_Float44);
+                                                    tempParam.setFloat44(checked_cast<ShaderUniformMat44*>(uniform)->getValue());
+                                                    break;
+                                                case eShaderUniformType_Mat44Array:
+                                                    LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                                    break;
+                                                case eShaderUniformType_Texture1D:
+                                                    LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                                case eShaderUniformType_Texture2D:
+                                                    tempParam.init(MaterialParameter::eType_Texture2D);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
+                                                        if (defaultValue.empty() == false)
+                                                        {
+                                                            const Texture2D* tex(nullptr);
+                                                            if (isdigit(*defaultValue.c_str()))
+                                                            {
+                                                                tex = CONTENT->asyncMakeTexture2D(he::Color(
+                                                                    he::ge::PropertyConverterVec4::fromString(defaultValue)));
+                                                            }
+                                                            else
+                                                            {
+                                                                tex = CONTENT->asyncLoadTexture2D(defaultValue);
+                                                            }
+                                                            tempParam.setTexture2D(tex);
+                                                            tex->release();
+                                                        }
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_TextureCube:
+                                                    tempParam.init(MaterialParameter::eType_TextureCube);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
+                                                        if (defaultValue.empty() == false)
+                                                        {
+                                                            const TextureCube* tex(nullptr);
+                                                            if (isdigit(*defaultValue.c_str()))
+                                                            {
+                                                                tex = CONTENT->asyncMakeTextureCube(he::Color(
+                                                                    he::ge::PropertyConverterVec4::fromString(defaultValue)));
+                                                            }
+                                                            else
+                                                            {
+                                                                tex = CONTENT->asyncLoadTextureCube(defaultValue);
+                                                            }
+                                                            tempParam.setTextureCube(tex);
+                                                            tex->release();
+                                                        }
+                                                    }
+                                                    break;
+                                                }
+
+                                                m_Parameters.add(tempParam);
+                                                m_ParameterNames.add(uniform->getName());
+                                                param = &m_Parameters.back();
+                                            }
+                                            const ShaderUniformID id(checked_numcast<uint32>(j));
+                                            param->setShaderUniformID(id, checked_numcast<EShaderPassType>(pass), checked_numcast<EShaderRenderType>(rtype));
+                                        }
+                                    }
+                                }
                             }
+                            setLoaded(eLoadResult_Success);
                         }
                     }
-                    setLoaded(eLoadResult_Failed);
-                }
-            });
+                    else
+                    {
+                        // Shader load failed, fail load material
+                        for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
+                        {
+                            for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+                            {
+                                Shader* const cancelShader(m_Shader[pass][rtype]);
+                                if (cancelShader != nullptr && cancelShader != shader)
+                                {
+                                    if (cancelShader->isLoaded() == false)
+                                    {
+                                        cancelShader->cancelLoadCallback(this);
+                                    }
+                                }
+                            }
+                        }
+                        setLoaded(eLoadResult_Failed);
+                    }
+                });
+            }
         }
     }
 }
 
-void Material::setNormalShader( Shader* const shader )
+void Material::setShader( const EShaderPassType pass, const EShaderRenderType renderType, Shader* const shader )
 {
     shader->instantiate();
-    HE_ASSERT(m_Shader[eShaderType_Normal] == nullptr, "Normal shader already initialized!");
-    m_Shader[eShaderType_Normal] = shader;
+    HE_ASSERT(m_Shader[pass][renderType] == nullptr, "Shader[%d][%d] already initialized!", pass, renderType);
+    m_Shader[pass][renderType] = shader;
 }
 
-void Material::setSkinnedShader( Shader* const shader )
+Shader* Material::bindShader(const EShaderPassType pass, const EShaderRenderType renderType) const
 {
-    shader->instantiate();
-    HE_ASSERT(m_Shader[eShaderType_Skinned] == nullptr, "Skinned shader already initialized!");
-    m_Shader[eShaderType_Skinned] = shader;
-}
-
-void Material::setInstancedShader( Shader* const shader, const VertexLayout& /*instancingLayout*/ )
-{
-    shader->instantiate();
-    HE_ASSERT(m_Shader[eShaderType_Instanced] == nullptr, "Instanced shader already initialized!");
-    m_Shader[eShaderType_Instanced] = shader;
-    //m_InstanceLayout = instancingLayout;
-}
- 
-Shader* Material::bindShader(const EShaderType type) const
-{
-    Shader* const shader(m_Shader[type]);
-    HE_ASSERT(m_Shader[type] != nullptr, "Trying to apply material %s with type %d but I do not have this type!", getName().c_str(), type);
+    Shader* const shader(m_Shader[pass][renderType]);
+    HE_ASSERT(shader != nullptr, "Trying to apply material %s with type [%d][%d] but I do not have this type!", getName().c_str(), pass, renderType);
     shader->bind();
     return shader;
 }
@@ -300,41 +318,44 @@ void Material::calculateMaterialLayout( const VertexLayout& bufferLayout, Materi
     const VertexLayout::layout& meshElements(bufferLayout.getElements());
     const size_t meshElementCount(meshElements.size());
     const size_t stride(bufferLayout.getSize());
-    
-    for (size_t t(0); t < eShaderType_MAX; ++t)
+
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
     {
-        MaterialLayout::layout& elements(outMaterialLayout.m_Layout[t]);
-        elements.clear();
-        
-        if (m_Shader[t] == nullptr) // If we have a shader of this type
-            continue;
-
-        const ShaderLayout::AttributeLayoutList& shaderElements(m_Shader[t]->getShaderLayout().getAttributes());
-
-        std::for_each(shaderElements.cbegin(), shaderElements.cend(), [&](const ShaderLayoutAttribute& e)
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
         {
-            for (size_t i(0); i < meshElementCount; ++i)
+            MaterialLayout::layout& elements(outMaterialLayout.m_Layout[pass][rtype]);
+            elements.clear();
+        
+            if (m_Shader[pass][rtype] == nullptr) // If we have a shader of this type
+                continue;
+
+            const ShaderLayout::AttributeLayoutList& shaderElements(m_Shader[pass][rtype]->getShaderLayout().getAttributes());
+
+            shaderElements.forEach([&](const ShaderLayoutAttribute& e)
             {
-                const VertexElement& meshElement(meshElements[i]);
-                if (meshElement.getAttribute() == e.getType())
+                for (size_t i(0); i < meshElementCount; ++i)
                 {
-                    details::MaterialLayoutElement matEl;
-                    GLint components(1);
-                    GLenum type(0);
-                    GL::getGLTypesFromVertexElement(meshElement, components, type);
+                    const VertexElement& meshElement(meshElements[i]);
+                    if (meshElement.getAttribute() == e.getType())
+                    {
+                        details::MaterialLayoutElement matEl;
+                        GLint components(1);
+                        GLenum type(0);
+                        GL::getGLTypesFromVertexElement(meshElement, components, type);
 
-                    matEl.m_ElementIndex = checked_numcast<uint16>(e.getElementIndex());
-                    matEl.m_Components = checked_numcast<uint8>(components);
-                    matEl.m_Type = checked_numcast<uint16>(type);
-                    matEl.m_Stride = checked_numcast<uint16>(stride);
-                    matEl.m_ByteOffset = checked_numcast<uint8>(meshElement.getByteOffset());
-                    elements.add(matEl);
+                        matEl.m_ElementIndex = checked_numcast<uint16>(e.getElementIndex());
+                        matEl.m_Components = checked_numcast<uint8>(components);
+                        matEl.m_Type = checked_numcast<uint16>(type);
+                        matEl.m_Stride = checked_numcast<uint16>(stride);
+                        matEl.m_ByteOffset = checked_numcast<uint8>(meshElement.getByteOffset());
+                        elements.add(matEl);
 
-                    break;
+                        break;
+                    }
+                    HE_ASSERT(i + 1 < meshElementCount, "Invalid vertex buffer, could not find the data I was looking for!");
                 }
-                HE_ASSERT(i + 1 < meshElementCount, "Invalid vertex buffer, could not find the data I was looking for!");
-            }
-        });
+            });
+        }
     }
 }
 

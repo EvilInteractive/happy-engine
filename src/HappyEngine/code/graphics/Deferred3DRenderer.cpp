@@ -179,7 +179,7 @@ void Deferred3DRenderer::loadMaterials()
         // Load material
         {
             const Material* const pointLightMaterial(CONTENT->loadMaterial("engine/deferred/pointLight.hm"));
-            m_PointLightMaterial = pointLightMaterial->createMaterialInstance(eShaderType_Normal);
+            m_PointLightMaterial = pointLightMaterial->createMaterialInstance(eShaderRenderType_Normal);
             pointLightMaterial->release();
         }
         // Load mesh
@@ -225,7 +225,7 @@ void Deferred3DRenderer::loadMaterials()
         // Load material
         {
             const Material* const spotLightMaterial(CONTENT->loadMaterial("engine/deferred/spotLight.hm"));
-            m_SpotLightMaterial = spotLightMaterial->createMaterialInstance(eShaderType_Normal);
+            m_SpotLightMaterial = spotLightMaterial->createMaterialInstance(eShaderRenderType_Normal);
             spotLightMaterial->release();
         }
         // Load mesh
@@ -273,7 +273,7 @@ void Deferred3DRenderer::loadMaterials()
         // Load material
         {
             const Material* const shadowSpotLightMaterial(CONTENT->loadMaterial("engine/deferred/spotLightShadow.hm"));
-            m_ShadowSpotLightMaterial = shadowSpotLightMaterial->createMaterialInstance(eShaderType_Normal);
+            m_ShadowSpotLightMaterial = shadowSpotLightMaterial->createMaterialInstance(eShaderRenderType_Normal);
             shadowSpotLightMaterial->release();
         }
         m_ShadowSpotLightMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
@@ -300,7 +300,7 @@ void Deferred3DRenderer::loadMaterials()
         // Load material
         {
             const Material* const ambDirLightMaterial(CONTENT->loadMaterial("engine/deferred/ambDirLight.hm"));
-            m_AmbDirIllMaterial = ambDirLightMaterial->createMaterialInstance(eShaderType_Normal);
+            m_AmbDirIllMaterial = ambDirLightMaterial->createMaterialInstance(eShaderRenderType_Normal);
             ambDirLightMaterial->release();
         }
         m_AmbDirIllMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());

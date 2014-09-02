@@ -227,7 +227,7 @@ he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he:
 //////////////////////////////////////////////////////////////////////////
 he::gfx::Material* ContentManager::loadMaterial(const he::String& asset)
 {
-    return m_MaterialLoader->load(m_MaterialPath.append(asset));
+    return m_MaterialLoader->load(asset);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -45,7 +45,7 @@ Simple2DEffect::~Simple2DEffect()
 void Simple2DEffect::init(const VertexLayout& layout)
 {
     Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
-    m_Material = mat->createMaterialInstance(eShaderType_Normal);
+    m_Material = mat->createMaterialInstance(eShaderRenderType_Normal);
     mat->release();
     m_Material->calculateMaterialLayout(layout);
 

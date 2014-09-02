@@ -34,16 +34,16 @@ class VertexLayout;
 class MaterialInstance : public AsyncLoadable
 {
 public:
-    MaterialInstance(const Material* const parent, const EShaderType type);
+    MaterialInstance(const Material* const parent, const EShaderRenderType type);
     ~MaterialInstance();
 
     const Material* getParent() const { return m_Material; }
 
     int8 findParameter(const FixedString& name) const;
+    int8 tryFindParameter(const FixedString& name) const;
     MaterialParameter& getParameter(const int8 index);
     
-    void apply(const DrawContext& context);
-    void applyShadow(const DrawContext& context);
+    void apply(const DrawContext& context, const EShaderPassType pass = eShaderPassType_Normal);
     
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
                       BlendFunc sourceBlend  = BlendFunc_One,
@@ -71,10 +71,10 @@ private:
 
     void init();
 
-    void applyShader(const EShaderType type, const DrawContext& context);
-    void applyMesh(const EShaderType type, const DrawContext& context) const;
+    void applyShader(const EShaderPassType pass, const DrawContext& context);
+    void applyMesh(const EShaderPassType pass, const DrawContext& context) const;
 
-    EShaderType m_Type : 8;
+    EShaderRenderType m_Type : 8;
     uint8 m_Flags;
     BlendEquation m_BlendEquation : 16;
     BlendFunc m_SourceBlend : 16;

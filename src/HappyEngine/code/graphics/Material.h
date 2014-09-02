@@ -43,12 +43,9 @@ public:
     ~Material();
     
     void init();
-
-    void setNormalShader(Shader* const shader);
-    void setSkinnedShader(Shader* const shader);
-    void setInstancedShader(Shader* const shader, const VertexLayout& instancingLayout);
     
-    Shader* getShader(const EShaderType type) const { return m_Shader[type]; }
+    void setShader(const EShaderPassType pass, const EShaderRenderType renderType, Shader* const shader );
+    Shader* getShader(const EShaderPassType pass, const EShaderRenderType renderType) const { return m_Shader[pass][renderType]; }
     
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
                       BlendFunc sourceBlend  = BlendFunc_One,
@@ -64,17 +61,17 @@ public:
     void setDefaultParams(const he::ObjectList<NameValuePair<he::String>>& params);
     void setDefaultParams(he::ObjectList<NameValuePair<he::String>>&& params);
     
-    MaterialInstance* createMaterialInstance(const EShaderType type) const;
+    MaterialInstance* createMaterialInstance(const EShaderRenderType type) const;
     
 private:
-    Shader* bindShader(const EShaderType type) const;
+    Shader* bindShader(const EShaderPassType pass, const EShaderRenderType renderType) const;
     void calculateMaterialLayout(const VertexLayout& bufferLayout, MaterialLayout& outMaterialLayout) const;
     
     HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }
     HE_FORCEINLINE void raiseFlag(const EMaterialFlags flag) { m_Flags |= flag; }
     HE_FORCEINLINE void clearFlag(const EMaterialFlags flag) { m_Flags &= ~flag; }
     
-    Shader* m_Shader[eShaderType_MAX];
+    Shader* m_Shader[eShaderPassType_MAX][eShaderRenderType_MAX];
     
     uint8 m_Flags;
     
@@ -83,8 +80,8 @@ private:
     DepthFunc m_DepthFunc;
 
     // Split for cache friendliness
-    he::ObjectList<MaterialParameter> m_Parameters[eShaderType_MAX];
-    he::ObjectList<he::FixedString> m_ParameterNames[eShaderType_MAX];
+    he::ObjectList<MaterialParameter> m_Parameters;
+    he::ObjectList<he::FixedString> m_ParameterNames;
     he::ObjectList<NameValuePair<he::String>> m_DefaultParams;
 
     // Disabled

@@ -59,9 +59,8 @@ public:
     {
     }
     
-    void init(Shader* const shader)
+    void init(Shader* const /*shader*/)
     {
-        shader->setShaderVar(m_ID, m_Value);
     }
     
     void set(Shader* const shader, const he::PrimitiveList<mat44>& value)

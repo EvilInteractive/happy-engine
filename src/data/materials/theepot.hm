@@ -2,9 +2,9 @@
     "Inherit" : "base/translucent.hm",
     "Options" : {
         "Parameters" : {
-            "diffuseMap" : "0.7, 0.7, 0.7, 0.75",
+            "diffuseMap" : "0.7, 0.4, 0.7, 0.7",
             "normalMap" : "0.5, 0.5, 1.0, 1",
-            "specGlossIllMap" : "0.8, 0.8, 0.1, 1"
+            "specGlossIllMap" : "0.8, 0.8, 0.8, 1"
         }
     }
 }

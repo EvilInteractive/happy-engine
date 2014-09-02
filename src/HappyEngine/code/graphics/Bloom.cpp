@@ -130,7 +130,7 @@ void Bloom::init(View* view, bool hdr)
     // DownSample
     {
         const Material* const downSampleMaterial(CONTENT->loadMaterial("engine/post/downSample.hm"));
-        m_DownSampleMaterial = downSampleMaterial->createMaterialInstance(eShaderType_Normal);
+        m_DownSampleMaterial = downSampleMaterial->createMaterialInstance(eShaderRenderType_Normal);
         downSampleMaterial->release();
 
         m_DownSampleMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
@@ -140,7 +140,7 @@ void Bloom::init(View* view, bool hdr)
     // DownSampleBrightPass
     {
         const Material* const downSampleBPMaterial(CONTENT->loadMaterial("engine/post/downSampleBrightPass.hm"));
-        m_DownSampleBrightPassMaterial = downSampleBPMaterial->createMaterialInstance(eShaderType_Normal);
+        m_DownSampleBrightPassMaterial = downSampleBPMaterial->createMaterialInstance(eShaderRenderType_Normal);
         downSampleBPMaterial->release();
 
         m_DownSampleBrightPassLumMap = m_DownSampleBrightPassMaterial->findParameter(HEFS::strlumMap);
@@ -148,11 +148,11 @@ void Bloom::init(View* view, bool hdr)
     }
 
     const Material* const blurHMaterial(CONTENT->loadMaterial("engine/post/gaussBlurH.hm"));
-    m_BlurPassMaterial[0] = blurHMaterial->createMaterialInstance(eShaderType_Normal);
+    m_BlurPassMaterial[0] = blurHMaterial->createMaterialInstance(eShaderRenderType_Normal);
     blurHMaterial->release();
 
     const Material* const blurVMaterial(CONTENT->loadMaterial("engine/post/gaussBlurV.hm"));
-    m_BlurPassMaterial[1] = blurVMaterial->createMaterialInstance(eShaderType_Normal);
+    m_BlurPassMaterial[1] = blurVMaterial->createMaterialInstance(eShaderRenderType_Normal);
     blurVMaterial->release();
 
     for (size_t i(0); i < 2; ++i)

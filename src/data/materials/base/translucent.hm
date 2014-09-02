@@ -18,6 +18,9 @@
     },
     "Options" : {
         "IsBlended" : true,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "SrcAlpha",
+        "DestBlend" : "OneMinSrcAlpha",
         "NoPost" : false,
         "CullFrontFace" : false,
         "DepthRead" : true,

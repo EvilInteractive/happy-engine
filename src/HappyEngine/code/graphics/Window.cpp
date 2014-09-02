@@ -83,7 +83,7 @@ struct Window::OculusRiftBarrelDistorter
 void Window::OculusRiftBarrelDistorter::init(const uint32 width, const uint32 height)
 {
     gfx::Material* material(CONTENT->loadMaterial("engine/post/ovrbarreldistort.hm"));
-    m_Material = material->createMaterialInstance(eShaderType_Normal);
+    m_Material = material->createMaterialInstance(eShaderRenderType_Normal);
     material->release();
 
 

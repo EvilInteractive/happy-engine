@@ -98,7 +98,7 @@ void AutoExposure::init(View* view, const PostSettings::HdrSettings& settings)
     ///                          LOAD MATERIAL                             ///
     //////////////////////////////////////////////////////////////////////////
     he::gfx::Material* const mat(CONTENT->loadMaterial("engine/post/autolum.hm"));
-    m_LumMaterial = mat->createMaterialInstance(eShaderType_Normal);
+    m_LumMaterial = mat->createMaterialInstance(eShaderRenderType_Normal);
     mat->release();
     
     m_LumMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());

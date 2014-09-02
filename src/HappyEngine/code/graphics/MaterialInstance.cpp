@@ -30,22 +30,27 @@
 
 namespace
 {
-    void applyShaderVar(he::gfx::Shader* const shader, const he::gfx::MaterialParameter& var)
+    void applyShaderVar(he::gfx::Shader* const shader, const he::gfx::EShaderPassType pass, const he::gfx::EShaderRenderType rtype, 
+                        const he::gfx::MaterialParameter& var)
     {
-        he::gfx::IShaderUniform* uniform(shader->getUniform(var.getID()));
-        HE_ASSERT(uniform != nullptr, "Could not find corresponding shader uniform when trying to set materialparam!");
-        switch (var.getType())
+        he::gfx::ShaderUniformID id(var.getID(pass, rtype));
+        if (id != he::gfx::ShaderUniformID::Unassigned)
         {
-            case he::gfx::MaterialParameter::eType_Float: he::checked_cast<he::gfx::ShaderUniformFloat*>(uniform)->set(shader, var.getFloat()); break;
-            case he::gfx::MaterialParameter::eType_Float2: he::checked_cast<he::gfx::ShaderUniformVec2*>(uniform)->set(shader, var.getFloat2()); break;
-            case he::gfx::MaterialParameter::eType_Float3: he::checked_cast<he::gfx::ShaderUniformVec3*>(uniform)->set(shader, var.getFloat3()); break;
-            case he::gfx::MaterialParameter::eType_Float4: he::checked_cast<he::gfx::ShaderUniformVec4*>(uniform)->set(shader, var.getFloat4()); break;
-            case he::gfx::MaterialParameter::eType_Float44: he::checked_cast<he::gfx::ShaderUniformMat44*>(uniform)->set(shader, var.getFloat44()); break;
-            case he::gfx::MaterialParameter::eType_Int: he::checked_cast<he::gfx::ShaderUniformInt*>(uniform)->set(shader, var.getInt()); break;
-            case he::gfx::MaterialParameter::eType_Texture2D: he::checked_cast<he::gfx::ShaderUniformTexture2D*>(uniform)->set(shader, var.getTexture2D()); break;
-            case he::gfx::MaterialParameter::eType_TextureCube: he::checked_cast<he::gfx::ShaderUniformTextureCube*>(uniform)->set(shader, var.getTextureCube()); break;
-            case he::gfx::MaterialParameter::eType_Invalid: LOG(he::LogType_ProgrammerAssert, "Trying to set invalid material parameter!"); break;
-            default: LOG(he::LogType_ProgrammerAssert, "Trying to set unknown material parameter type, %s", var.typeToString(var.getType())); break;
+            he::gfx::IShaderUniform* uniform(shader->getUniform(id));
+            HE_ASSERT(uniform != nullptr, "Could not find corresponding shader uniform when trying to set materialparam!");
+            switch (var.getType())
+            {
+                case he::gfx::MaterialParameter::eType_Float: he::checked_cast<he::gfx::ShaderUniformFloat*>(uniform)->set(shader, var.getFloat()); break;
+                case he::gfx::MaterialParameter::eType_Float2: he::checked_cast<he::gfx::ShaderUniformVec2*>(uniform)->set(shader, var.getFloat2()); break;
+                case he::gfx::MaterialParameter::eType_Float3: he::checked_cast<he::gfx::ShaderUniformVec3*>(uniform)->set(shader, var.getFloat3()); break;
+                case he::gfx::MaterialParameter::eType_Float4: he::checked_cast<he::gfx::ShaderUniformVec4*>(uniform)->set(shader, var.getFloat4()); break;
+                case he::gfx::MaterialParameter::eType_Float44: he::checked_cast<he::gfx::ShaderUniformMat44*>(uniform)->set(shader, var.getFloat44()); break;
+                case he::gfx::MaterialParameter::eType_Int: he::checked_cast<he::gfx::ShaderUniformInt*>(uniform)->set(shader, var.getInt()); break;
+                case he::gfx::MaterialParameter::eType_Texture2D: he::checked_cast<he::gfx::ShaderUniformTexture2D*>(uniform)->set(shader, var.getTexture2D()); break;
+                case he::gfx::MaterialParameter::eType_TextureCube: he::checked_cast<he::gfx::ShaderUniformTextureCube*>(uniform)->set(shader, var.getTextureCube()); break;
+                case he::gfx::MaterialParameter::eType_Invalid: LOG(he::LogType_ProgrammerAssert, "Trying to set invalid material parameter!"); break;
+                default: LOG(he::LogType_ProgrammerAssert, "Trying to set unknown material parameter type, %s", var.typeToString(var.getType())); break;
+            }
         }
     }
 }
@@ -53,7 +58,7 @@ namespace
 namespace he {
 namespace gfx {
 
-MaterialInstance::MaterialInstance(const Material* const material, const EShaderType type)
+MaterialInstance::MaterialInstance(const Material* const material, const EShaderRenderType type)
     : m_Type(type)
     , m_Flags(0)
     , m_BlendEquation(BlendEquation_Add)
@@ -82,7 +87,7 @@ void MaterialInstance::init()
     m_DepthFunc = m_Material->m_DepthFunc;
     
     m_Parameters.clear();
-    m_Parameters.append(m_Material->m_Parameters[m_Type]);
+    m_Parameters.append(m_Material->m_Parameters);
 }
 
 MaterialInstance::~MaterialInstance()
@@ -91,33 +96,23 @@ MaterialInstance::~MaterialInstance()
     m_Material->release();
 }
     
-void MaterialInstance::apply( const DrawContext& context )
+void MaterialInstance::apply( const DrawContext& context, const EShaderPassType pass /*= eShaderPassType_Normal*/ )
 {
-    HE_IF_ASSERT(m_Type != eShaderType_Unknown, "You forgot to init this material instance! without the init we cannot draw this!")
+    HE_IF_ASSERT(m_Type != eShaderRenderType_Unknown, "You forgot to init this material instance! without the init we cannot draw this!")
     {
-        applyShader(m_Type, context);
-        applyMesh(m_Type, context);
+        applyShader(pass, context);
+        applyMesh(pass, context);
     }
 }
 
-void MaterialInstance::applyShadow( const DrawContext& context )
-{
-    HE_IF_ASSERT(m_Type != eShaderType_Unknown, "You forgot to init this material instance! without the init we cannot draw this!")
-    {
-        const EShaderType type(static_cast<EShaderType>(m_Type + eShaderType_SHADOW));
-        applyShader(type, context);
-        applyMesh(type, context);
-    }
-}
-
-void MaterialInstance::applyShader( const EShaderType type, const DrawContext& context )
+void MaterialInstance::applyShader( const EShaderPassType pass, const DrawContext& context )
 {
     if (context.m_Camera)
     {
-        const int8 wvp(findParameter(HEFS::strmatWVP));
+        const int8 wvp(tryFindParameter(HEFS::strmatWVP));
         if (wvp >= 0)
             getParameter(wvp).setFloat44(context.m_Camera->getViewProjection() * context.m_WorldMatrix);
-        const int8 wv(findParameter(HEFS::strmatWorldView));
+        const int8 wv(tryFindParameter(HEFS::strmatWorldView));
         if (wv >= 0)
             getParameter(wv).setFloat44(context.m_Camera->getView() * context.m_WorldMatrix);
     }
@@ -137,14 +132,15 @@ void MaterialInstance::applyShader( const EShaderType type, const DrawContext& c
     GL::heSetDepthWrite(checkFlag(eMaterialFlags_DepthWrite));
     GL::heSetCullFace(checkFlag(eMaterialFlags_CullFrontFace));
     
-    Shader* shader(m_Material->bindShader(type));
+    EShaderRenderType rtype(m_Type);
+    Shader* shader(m_Material->bindShader(pass, rtype));
 
-    m_Parameters.forEach(std::bind(::applyShaderVar, shader, std::placeholders::_1));
+    m_Parameters.forEach([shader, pass, rtype](const MaterialParameter& param){ ::applyShaderVar(shader, pass, rtype, param); } );
 }
 
-void MaterialInstance::applyMesh( const EShaderType type, const DrawContext& context ) const
+void MaterialInstance::applyMesh( const EShaderPassType pass, const DrawContext& context ) const
 {
-    const MaterialLayout::layout& elements(m_Layout.m_Layout[type]);
+    const MaterialLayout::layout& elements(m_Layout.m_Layout[pass][m_Type]);
     
     glBindBuffer(GL_ARRAY_BUFFER, context.m_VBO);
     elements.forEach([](const details::MaterialLayoutElement& e)
@@ -162,18 +158,24 @@ void MaterialInstance::calculateMaterialLayout(const VertexLayout& bufferLayout)
     m_Material->calculateMaterialLayout(bufferLayout, m_Layout);
 }
 
-he::int8 MaterialInstance::findParameter( const FixedString& name ) const
+he::int8 MaterialInstance::tryFindParameter( const FixedString& name ) const
 {
     size_t index;
-    if (m_Material->m_ParameterNames[m_Type].find(name, index))
+    if (m_Material->m_ParameterNames.find(name, index))
     {
         return checked_numcast<int8>(index);
     }
     else
     {
-        LOG(LogType_ProgrammerAssert, "Could not find parameter with name %s in material %s!", name.c_str(), m_Material->getName().c_str());
         return -1;
     }
+}
+
+he::int8 MaterialInstance::findParameter( const FixedString& name ) const
+{
+    int8 result(tryFindParameter(name));
+    HE_ASSERT(result != -1, "Could not find parameter with name %s in material %s!", name.c_str(), m_Material->getName().c_str());
+    return result;
 }
 
 MaterialParameter& MaterialInstance::getParameter( const int8 index )
