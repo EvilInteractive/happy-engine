@@ -1,10 +1,16 @@
 {
-    "VertexShader" : "deferred/post/deferredPostShader.vert",
-    "FragmentShader" : "deferred/post/deferredPostPLShader.frag",
-    "IsBlended" : true,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "One",
-    "DestBlend" : "One",
-    "DepthRead" : true,
-    "DepthWrite" : false
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "deferred/post/deferredPostShader.vert",
+            "FragmentShader" : "deferred/post/deferredPostPLShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : true,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "One",
+        "DestBlend" : "One",
+        "DepthRead" : true,
+        "DepthWrite" : false
+    }
 }

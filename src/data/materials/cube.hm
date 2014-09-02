@@ -1,17 +1,10 @@
 {
-    "VertexShader" : "deferred/pre/deferredPreShader.vert",
-    "FragmentShader" : "deferred/pre/deferredPreShader.frag",
-    "OutputLayout" : [ "outColor", "outSG", "outNormalDepth" ],
-    "IsBlended" : false,
-    "NoPost" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : true,
-    "DepthWrite" : true,
-    "CastShadow" : true,
-    "Parameters" : {
-        "diffuseMap" : "cube_diff.png",
-        "normalMap" : "cube_normal.png",
-        "specGlossIllMap" : "cube_sgi.png"
-        //"specGlossIllMap" : "0.5, 0.5, 1, 1"
+    "Inherit" : "base/opac.hm",
+    "Options" : {
+        "Parameters" : {
+            "diffuseMap" : "cube_diff.png",
+            "normalMap" : "cube_normal.png",
+            "specGlossIllMap" : "cube_sgi.png"
+        }
     }
 }

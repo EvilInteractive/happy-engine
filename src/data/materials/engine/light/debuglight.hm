@@ -1,12 +1,18 @@
 {
-    "VertexShader" : "forward/forwardShader.vert",
-    "FragmentShader" : "forward/forwardShader.frag",
-    "IsBlended" : false,
-    "NoPost" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "One",
-    "DestBlend" : "Zero"
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "forward/forwardShader.vert",
+            "FragmentShader" : "forward/forwardShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "NoPost" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "One",
+        "DestBlend" : "Zero"
+    }
 }

@@ -1,12 +1,18 @@
 {
-    "VertexShader" : "2D/ninepatchshader.vert",
-    "FragmentShader" : "2D/ninepatchshader.frag",
-    "IsBlended" : true,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "SrcAlpha",
-    "DestBlend" : "OneMinSrcAlpha",
-    "NoPost" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "2D/ninepatchshader.vert",
+            "FragmentShader" : "2D/ninepatchshader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : true,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "SrcAlpha",
+        "DestBlend" : "OneMinSrcAlpha",
+        "NoPost" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false
+    }
 }

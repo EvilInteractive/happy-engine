@@ -1,8 +1,14 @@
 {
-    "VertexShader" : "shared/postShaderQuad.vert",
-    "FragmentShader" : "post/downSampleBrightpass.frag",
-    "IsBlended" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "shared/postShaderQuad.vert",
+            "FragmentShader" : "post/downSampleBrightpass.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false
+    }
 }

@@ -1,9 +1,15 @@
 {
-    "VertexShader" : "shared/postShaderQuad.vert",
-    "FragmentShader" : "post/gaussblur.frag",
-    "Defines" : [ "PASS2" ],
-    "IsBlended" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "shared/postShaderQuad.vert",
+            "FragmentShader" : "post/gaussblur.frag",
+            "Defines" : [ "PASS2" ]
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false
+    }
 }

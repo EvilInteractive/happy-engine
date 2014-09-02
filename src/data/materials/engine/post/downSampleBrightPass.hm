@@ -1,9 +1,15 @@
 {
-    "VertexShader" : "shared/postShaderQuad.vert",
-    "FragmentShader" : "post/downSampleBrightpass.frag",
-    "Defines" : [ "BRIGHTPASS" ],
-    "IsBlended" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "shared/postShaderQuad.vert",
+            "FragmentShader" : "post/downSampleBrightpass.frag",
+            "Defines" : [ "BRIGHTPASS" ],
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false
+    }
 }

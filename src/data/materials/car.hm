@@ -1,16 +1,10 @@
 {
-    "VertexShader" : "deferred/pre/deferredPreShader.vert",
-    "FragmentShader" : "deferred/pre/deferredPreShader.frag",
-    "OutputLayout" : [ "outColor", "outSG", "outNormalDepth" ],
-    "IsBlended" : false,
-    "NoPost" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : true,
-    "DepthWrite" : true,
-    "CastShadow" : true,
-    "Parameters" : {
-        "diffuseMap" : "car/v8_vantage_color.png",
-        "normalMap" : "car/v8_vantage_normal.png",
-        "specGlossIllMap" : "car/v8_vantage_specGlossIll.png"
+    "Inherit" : "base/opac.hm",
+    "Options" : {
+        "Parameters" : {
+            "diffuseMap" : "car/v8_vantage_color.png",
+            "normalMap" : "car/v8_vantage_normal.png",
+            "specGlossIllMap" : "car/v8_vantage_specGlossIll.png"
+        }
     }
 }

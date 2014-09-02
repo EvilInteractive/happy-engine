@@ -1,12 +1,18 @@
 {
-    "VertexShader" : "2D/billboardShader.vert",
-    "FragmentShader" : "2D/billboardShader.frag",
-    "IsBlended" : false,
-    "NoPost" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "One",
-    "DestBlend" : "Zero"
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "2D/billboardShader.vert",
+            "FragmentShader" : "2D/billboardShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "NoPost" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "One",
+        "DestBlend" : "Zero"
+    }
 }

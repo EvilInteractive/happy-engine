@@ -1,12 +1,18 @@
 {
-    "VertexShader" : "2D/simple2DTextureShader.vert",
-    "FragmentShader" : "2D/simple2DTextureShader.frag",
-    "IsBlended" : false,
-    "NoPost" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "One",
-    "DestBlend" : "Zero"
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "2D/simple2DTextureShader.vert",
+            "FragmentShader" : "2D/simple2DTextureShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "NoPost" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "One",
+        "DestBlend" : "Zero"
+    }
 }

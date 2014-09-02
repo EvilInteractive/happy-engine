@@ -1,12 +1,18 @@
 {    
-    "VertexShader" : "2D/simple2DFontShader.vert",
-    "FragmentShader" : "2D/simple2DFontShader.frag",
-    "IsBlended" : true,
-    "NoPost" : false,
-    "CullFrontFace" : false,
-    "DepthRead" : false,
-    "DepthWrite" : false,
-    "BlendEquation" : "Add",
-    "SourceBlend" : "SrcAlpha",
-    "DestBlend" : "OneMinSrcAlpha"
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "2D/simple2DFontShader.vert",
+            "FragmentShader" : "2D/simple2DFontShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : true,
+        "NoPost" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "SrcAlpha",
+        "DestBlend" : "OneMinSrcAlpha"
+    }
 }
