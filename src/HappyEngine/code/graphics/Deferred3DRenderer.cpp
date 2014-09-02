@@ -463,7 +463,6 @@ void Deferred3DRenderer::postPointLights()
             m_PointLightVolume->draw();
         }
     });
-    GL::heSetCullFace(false);
 }
 
 void Deferred3DRenderer::postSpotLights()
@@ -564,7 +563,7 @@ void Deferred3DRenderer::postSpotLights()
                 DrawContext context;
                 context.m_VBO = m_SpotLightVolume->getVBO();
                 context.m_IBO = m_SpotLightVolume->getIBO();
-                m_SpotLightMaterial->apply(context);
+                material->apply(context);
                 m_SpotLightVolume->draw();
             }
         });
