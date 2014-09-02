@@ -114,6 +114,7 @@ void ModelComponent::onLoadingDone( const ELoadResult result )
             {
                 m_Drawable->attachToScene(m_Parent->getScene());
             }
+            OnModelMeshLoaded();
         }
         m_LoadingDesc->m_Mesh->release();
         m_LoadingDesc->m_Material->release();
