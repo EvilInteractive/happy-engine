@@ -134,7 +134,7 @@ void Bloom::init(View* view, bool hdr)
         downSampleMaterial->release();
 
         m_DownSampleMaterial->calculateMaterialLayout(m_Quad->getVertexLayout());
-        m_DownSampleBrightPassMap = m_DownSampleMaterial->findParameter(HEFS::strmap);
+        m_DownSampleMap = m_DownSampleMaterial->findParameter(HEFS::strmap);
     }
 
     // DownSampleBrightPass
@@ -144,7 +144,7 @@ void Bloom::init(View* view, bool hdr)
         downSampleBPMaterial->release();
 
         m_DownSampleBrightPassLumMap = m_DownSampleBrightPassMaterial->findParameter(HEFS::strlumMap);
-        m_DownSampleMap = m_DownSampleMaterial->findParameter(HEFS::strmap);
+        m_DownSampleBrightPassMap = m_DownSampleBrightPassMaterial->findParameter(HEFS::strmap);
     }
 
     const Material* const blurHMaterial(CONTENT->loadMaterial("engine/post/gaussBlurH.hm"));
