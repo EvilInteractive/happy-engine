@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 
-#version 330 core
+#version 150 core
 #pragma optionNV(fastmath on)
 //#pragma optionNV(fastprecision on)
 #pragma optionNV(ifcvt none)
@@ -33,9 +33,9 @@ in vec3 passNormal;
 in vec3 passTangent;
 in float passDepth;
 
-layout(location = 0) out vec4 outColor;
-layout(location = 1) out vec4 outSG;
-layout(location = 2) out vec3 outNormalDepth;
+out vec4 outColor;
+out vec4 outSG;
+out vec3 outNormalDepth;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;

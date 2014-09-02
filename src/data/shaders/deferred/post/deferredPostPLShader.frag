@@ -57,6 +57,7 @@ void main()
     vec3 lightDir = light.position - position;
     float lightDist = length(lightDir);
 
+    // Check end attenuation
     if (lightDist > light.endAttenuation) //pixel is too far from light
         discard;
 
