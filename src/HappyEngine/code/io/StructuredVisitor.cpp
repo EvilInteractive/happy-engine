@@ -20,13 +20,14 @@
 #include "HappyPCH.h"
 
 #include "StructuredVisitor.h"
+#include "GlobalStringTable.h"
 
 namespace he {
 namespace io {
 
 bool StructuredVisitor::visit( const he::FixedString& key, Guid& value, const char* comment /*= NULL*/ )
 {
-    std::string guid(m_OpenType == eOpenType_Write? value.toString() : "");
+    he::String guid(m_OpenType == eOpenType_Write? value.toString() : "");
     if (visit(key, guid, comment))
     {
         if (m_OpenType == eOpenType_Read)
@@ -109,6 +110,27 @@ bool StructuredVisitor::visit( const he::FixedString& key, vec4& value, const ch
         return true;
     }
     return false;
+}
+
+bool StructuredVisitor::visit( const he::FixedString& key, he::FixedString& value, const char* comment /*= NULL*/ )
+{
+    bool result(false);
+    if (m_OpenType == eOpenType_Read)
+    {
+        he::String str;
+        if (visit(key, str, comment))
+        {
+            value = GlobalStringTable::getInstance()->add(str.c_str(), str.size());
+            result = true;
+        }
+    }
+    else
+    {
+        HE_ASSERT(m_OpenType == eOpenType_Write, "open type is not write when serializing fixedstring");
+        he::String str(value.c_str());
+        result = visit(key, str, comment);
+    }
+    return result;
 }
 
 } } //end namespace

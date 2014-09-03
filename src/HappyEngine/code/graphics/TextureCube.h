@@ -28,6 +28,9 @@
 namespace he {
 namespace gfx {
     
+class TextureCube;
+    
+typedef ResourceFactory<TextureCube> TextureCubeFactory;
 
 class TextureCube : public Resource<TextureCube>
 {
@@ -52,9 +55,7 @@ public:
 
     void setCompressedData(uint32 width, uint32 height, const Face& face, 
         const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
-
-    bool isInitialized() const { return m_Id != UINT32_MAX; }
-
+   
     void generateMipMaps() const;
 
     uint32 getID() const { return m_Id; }  

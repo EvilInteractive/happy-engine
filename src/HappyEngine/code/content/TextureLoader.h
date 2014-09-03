@@ -46,7 +46,8 @@ public:
     virtual ~TextureLoader();
     
     /* GENERAL */
-    void tick(float dTime); //checks for new load operations, if true start thread
+    void tick(float dTime);
+    bool loadTick();
     void glThreadInvoke();  //needed for all of the gl operations
 
     const gfx::Texture2D* asyncLoadTexture2D(const he::String& path);
@@ -127,10 +128,7 @@ private:
         ObjectHandle m_Tex;
         bool m_DataLoaded;
     };
-
-    bool m_isLoadThreadRunning;
-    void TextureLoadThread();
-
+    
     bool loadData(TextureLoadData& data);
     bool makeData(TextureLoadData& data);
     bool createTexture(const TextureLoadData& data);
@@ -140,8 +138,6 @@ private:
     /* DATAMEMBERS */
     he::ThreadSafeQueueMP1C<TextureLoadData> m_TextureLoadQueue;
     he::ThreadSafeQueueMP1C<TextureLoadData> m_TextureInvokeQueue;
-
-    he::Thread m_TextureLoadThread;
 
     AssetContainer<ObjectHandle> m_AssetContainer;
 

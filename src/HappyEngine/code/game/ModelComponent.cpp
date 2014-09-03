@@ -32,25 +32,25 @@
 #include "Property.h"
 #include "PropertyConverter.h"
 #include "PropertyFeel.h"
+#include "MaterialInstance.h"
 
 namespace he {
 namespace ge {
     
 ModelComponent::ModelComponent()
-    : m_ModelMesh(nullptr)
-    , m_NewModelMesh(nullptr)
-    , m_Parent(nullptr)
-    , m_Material(nullptr)
-    , m_IsAttached(false)
+    : m_Parent(nullptr)
+    , m_Drawable(NEW gfx::Drawable())
+    , m_LoadingDesc(nullptr)
 {
+    attach(m_Drawable);
 }
 
 
 ModelComponent::~ModelComponent()
 {
-    if (isAttachedToScene())
-        detachFromScene();
-    unloadModelMeshAndMaterial();
+    if (m_Drawable->isAttachedToScene())
+        m_Drawable->detachFromScene();
+    delete m_Drawable;
 }
 
 void ModelComponent::init(Entity* parent)
@@ -59,108 +59,111 @@ void ModelComponent::init(Entity* parent)
     m_Parent = parent;
 }
 
-const gfx::Material* ModelComponent::getMaterial() const
-{
-    return m_Material;
-}
-
-const gfx::ModelMesh* ModelComponent::getModelMesh() const
-{
-    return m_ModelMesh;
-}
-
 void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName )
 {
-    he::ct::ContentManager* contentManager(CONTENT);
+    he::ct::ContentManager* const contentManager(CONTENT);
 
-    ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
-    gfx::Material* newMaterial(he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle));
-    const gfx::BufferLayout& layout(newMaterial->getCompatibleVertexLayout());
-
-    if (m_NewModelMesh != nullptr)
+    if (m_LoadingDesc != nullptr)
     {
-        m_NewModelMesh->cancelLoadCallback(this);
-        m_NewModelMesh->release();
+        gfx::Material* const material(m_LoadingDesc->m_Material);
+        if (material != nullptr)
+        {
+            material->cancelLoadCallback(this);
+            material->release();
+        }
+        gfx::ModelMesh* const mesh(m_LoadingDesc->m_Mesh);
+        if (mesh != nullptr)
+        {
+            mesh->cancelLoadCallback(this);
+            mesh->release();
+        }
     }
-    
-    m_NewModelMesh = contentManager->asyncLoadModelMesh(modelAsset, meshName, layout);
-    m_NewModelMesh->callbackOnceIfLoaded(this, [this, materialAsset](const ELoadResult /*result*/)
+    else
     {
-        bool reactivate(false);
-        if (m_IsAttached)
+        m_LoadingDesc = NEW LoadDesc();
+    }
+
+    he::gfx::Material* const material(contentManager->loadMaterial(materialAsset));
+    m_LoadingDesc->m_Material = material;
+
+    he::gfx::ModelMesh* const mesh(contentManager->asyncLoadModelMesh(modelAsset, meshName));
+    m_LoadingDesc->m_Mesh = mesh;
+
+    // Mesh will probably take the longest
+    mesh->callbackOnceIfLoaded(this, std::bind(&ModelComponent::onLoadingDone, this, std::placeholders::_1));
+}
+
+void ModelComponent::onLoadingDone( const ELoadResult result )
+{
+    if (result == eLoadResult_Success && !m_LoadingDesc->m_Material->isLoaded())
+    {
+        // If the material would take longer to load
+        m_LoadingDesc->m_Material->callbackOnceIfLoaded(this, std::bind(&ModelComponent::onLoadingDone, this, std::placeholders::_1));
+    }
+    else
+    {
+        // If loading fails, clear the mesh and material
+        // This is always done because it is more efficient to reset the drawable first
+        m_Drawable->setMaterial(nullptr);
+        m_Drawable->setModelMesh(nullptr);
+        if (result == eLoadResult_Success)
         {
-            deactivate();
-            reactivate = true;
+            m_Drawable->setModelMesh(m_LoadingDesc->m_Mesh);
+            m_Drawable->setMaterial(m_LoadingDesc->m_Material);
+            if (m_Parent->isActive() && !m_Drawable->isAttachedToScene())
+            {
+                m_Drawable->attachToScene(m_Parent->getScene());
+            }
+            OnModelMeshLoaded();
         }
-
-        gfx::ModelMesh* const newMesh(m_NewModelMesh);
-        m_NewModelMesh = nullptr;
-
-        unloadModelMeshAndMaterial();
-
-        m_ModelMesh = newMesh;
-
-        he::ct::ContentManager* contentManager(CONTENT);
-        ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
-        m_Material = he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle);
-
-        if (reactivate == true)
-        {
-            activate();
-        }
-
-        OnModelMeshLoaded();
-    });
-
-    newMaterial->release();
+        m_LoadingDesc->m_Mesh->release();
+        m_LoadingDesc->m_Material->release();
+        delete m_LoadingDesc;
+        m_LoadingDesc = nullptr;
+    }
 }
 
 void ModelComponent::unloadModelMeshAndMaterial()
 {
-    HE_ASSERT(m_IsAttached == false && isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
-    if (m_NewModelMesh != nullptr)
+    HE_ASSERT(m_Drawable->isAttachedToScene() == false, "Trying to unload model while still attached to the scene!");
+    if (m_LoadingDesc != nullptr)
     {
-        m_NewModelMesh->cancelLoadCallback(this);
-        m_NewModelMesh->release();
-        m_NewModelMesh = nullptr;
+        gfx::Material* const material(m_LoadingDesc->m_Material);
+        if (material != nullptr)
+        {
+            material->cancelLoadCallback(this);
+            material->release();
+        }
+        gfx::ModelMesh* const mesh(m_LoadingDesc->m_Mesh);
+        if (mesh != nullptr)
+        {
+            mesh->cancelLoadCallback(this);
+            mesh->release();
+        }
+
+        delete m_LoadingDesc;
+        m_LoadingDesc = nullptr;
     }
-    if (m_ModelMesh != nullptr)
-    {
-        m_ModelMesh->cancelLoadCallback(this);
-        m_ModelMesh->release();
-        m_ModelMesh = nullptr;
-    }
-    if (m_Material != nullptr)
-    {
-        m_Material->release();
-        m_Material = nullptr;
-    }
-    m_MaterialAsset.clear();
-    m_ModelAsset.clear();
+    m_Drawable->setModelMesh(nullptr);
+    m_Drawable->setMaterial(nullptr);
 }
 
 void ModelComponent::activate()
 {
-    HE_IF_ASSERT(m_IsAttached == false, "ModelComponent already active")
+    HE_IF_ASSERT(m_Drawable->isAttachedToScene() == false, "ModelComponent already active")
     HE_IF_ASSERT(m_Parent != nullptr, "Activating ModelComponent without a parent is not possible!")
+    if (m_Drawable->getModelMesh() && m_Drawable->getModelMesh()->isLoaded() && 
+        m_Drawable->getMaterial() && m_Drawable->getMaterial()->isLoaded())
     {
-        m_IsAttached = true;
-        if (m_ModelMesh != nullptr && isAttachedToScene() == false)
-        {
-            attachToScene(m_Parent->getScene());
-        }
+        m_Drawable->attachToScene(m_Parent->getScene());
     }
 }
 
 void ModelComponent::deactivate()
 {
-    HE_IF_ASSERT(m_IsAttached == true, "ModelComponent not active")
+    HE_IF_ASSERT( m_Drawable->isAttachedToScene() == true, "ModelComponent not active")
     {
-        m_IsAttached = false;
-        if (isAttachedToScene())
-        {
-            detachFromScene();
-        }
+        m_Drawable->detachFromScene();
     }
 }
 

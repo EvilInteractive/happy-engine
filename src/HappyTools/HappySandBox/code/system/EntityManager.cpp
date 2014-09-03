@@ -39,8 +39,8 @@ namespace hs {
 #pragma warning(disable:4355) // this in constructor
 /* CONSTRUCTOR - DESTRUCTOR */
 EntityManager::EntityManager() 
-    : m_EntityCreatedCallback(boost::bind(&EntityManager::onEntityCreated, this, _1))
-    , m_EntityDestroyedCallback(boost::bind(&EntityManager::onEntityDestroyed, this, _1))
+    : m_EntityCreatedCallback(std::bind(&EntityManager::onEntityCreated, this, std::placeholders::_1))
+    , m_EntityDestroyedCallback(std::bind(&EntityManager::onEntityDestroyed, this, std::placeholders::_1))
     , m_EntityDesc(nullptr)
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
@@ -113,7 +113,7 @@ he::ge::Entity* EntityManager::createEntity()
     ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
         entityMan->createComponent(he::HEFS::strModelComponent)));
     newEntity->addComponent(modelComp);
-    modelComp->loadModelMeshAndMaterial("testSceneBas.material", "box.binobj", "M_Box");    
+    modelComp->loadModelMeshAndMaterial("testScene.material", "box.binobj", "M_Box");    
 
     he::vec3 translation(camera->getLook() * 10.0f);
     newEntity->setLocalTranslate(camera->getPosition() + translation);

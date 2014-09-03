@@ -40,6 +40,12 @@
 #define FILE_AND_LINE
 #endif
 
+#ifdef HE_DEBUG
+#define _DEBUG 1
+#else
+#define NDEBUG 1
+#endif
+
 #ifdef HE_WINDOWS
     #ifdef HappyEngine_EXPORTS
         #define HAPPY_ENTRY __declspec(dllexport)
@@ -50,6 +56,18 @@
     #define HAPPY_ENTRY
     #define APIENTRY
 #endif
+
+#ifdef _MSC_VER
+#define HE_FORCEINLINE __forceinline
+#else
+#define HE_FORCEINLINE __inline__ __attribute__((always_inline))
+#endif
+
+
+#define CONCAT(a, b) CONCAT2(a, b)
+#define CONCAT2(a, b) a##b
+#define STR(a) #a
+#define EVAL(a) a
 
 /*
 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
@@ -69,11 +87,13 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include <queue>
 #include <set>
 #include <atomic>
+#ifdef HE_WINDOWS
+#include <intsafe.h>
+#endif
+#include <limits.h>
 
-#include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/any.hpp>
-#include <boost/function.hpp>
 #include <boost/date_time.hpp>
 #include <boost/timer.hpp>
 
@@ -94,11 +114,15 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #define ENUM(name, size) enum name : size
 #endif
 
-#include "HeString.h"
+#include "HappyTargetDefines.h"
 #include "FixedString.h"
+#include "HappyTypes.h"
+#include "HappyMemory.h"
+#include "HappyNew.h"
+#include "HeString.h"
 #include "HeFixedStrings.h"
 
-#include "HappyTypes.h"
+#include "HappyGuid.h"
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"
@@ -112,14 +136,11 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "thread/Thread.h"
 #include "thread/Mutex.h"
 
-
 #include "Logger.h"
 #include "HappyInfo.h"
 #include "HeAssert.h"
 
 #include "HappyFunctions.h"
-#include "HappyMemory.h"
-#include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
 
@@ -128,6 +149,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "GLContext.h"
 
 #include "List.h"
+#include "thread/ThreadTicket.h"
 #include "FixedSizeList.h"
 
 #include "ObjectFactory.h"

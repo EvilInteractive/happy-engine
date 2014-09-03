@@ -57,8 +57,9 @@ MainGame::~MainGame()
 void MainGame::init()
 {
     he::GlobalSettings* const globalSettings(he::GlobalSettings::getInstance());
-    globalSettings->load(he::Path("settings.cfg"));
-    globalSettings->save(he::Path("settings.cfg"));
+    he::Path path(he::Path::getBinPath().str() + "settings.cfg");
+    globalSettings->load(path);
+    globalSettings->save(path);
 
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1, 1));
@@ -74,7 +75,7 @@ void MainGame::init()
     m_Window->setWindowTitle("HappyPluginTest");
     m_Window->setFullscreen(false);
     m_Window->setOculusRiftEnabled(oculus);
-    he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
+    he::eventCallback0<void> quitHandler(std::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create(true);
 

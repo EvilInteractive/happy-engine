@@ -1,0 +1,10 @@
+{
+    "Inherit" : "base/opac.hm",
+    "Options" : {
+        "Parameters" : {
+            "diffuseMap" : "car/v8_vantage_color.png",
+            "normalMap" : "car/v8_vantage_normal.png",
+            "specGlossIllMap" : "car/v8_vantage_specGlossIll.png"
+        }
+    }
+}

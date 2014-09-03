@@ -24,6 +24,7 @@
 
 #include "Bone.h"
 #include "IModelLoader.h"
+#include "VertexLayout.h"
 
 namespace he {
 namespace ct {
@@ -63,27 +64,29 @@ public:
     };
 
     BinObjLoader();
-    virtual ~BinObjLoader();
+    ~BinObjLoader();
 
-    virtual bool load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
+    bool load(const he::String& path, bool allowByteIndices = true);
 
-    virtual size_t getNumMeshes() const;
-    virtual const he::String& getMeshName(uint32 mesh) const;
+    size_t getNumMeshes() const;
+    const he::String& getMeshName(uint32 mesh) const;
     
-    virtual const he::ObjectList<gfx::Bone>& getBones(uint32 mesh) const;
+    const he::ObjectList<gfx::Bone>& getBones(uint32 mesh) const;
 
-    virtual const void* getVertices(uint32 mesh) const;
-    virtual size_t getNumVertices(uint32 mesh) const;
+    const void* getVertices(uint32 mesh) const;
+    size_t getNumVertices(uint32 mesh) const;
 
-    virtual const void* getIndices(uint32 mesh) const;
-    virtual gfx::IndexStride getIndexStride(uint32 mesh) const;
-    virtual size_t getNumIndices(uint32 mesh) const;
+    const void* getIndices(uint32 mesh) const;
+    gfx::IndexStride getIndexStride(uint32 mesh) const;
+    size_t getNumIndices(uint32 mesh) const;
+
+    const gfx::VertexLayout& getVertexLayout() const { return m_VertexLayout; }
 
 
 private:
     bool read(const he::String& path, bool allowByteIndices);
-    void fill(const gfx::BufferLayout& vertLayout) const;
-
+    void fill();
+    
     he::PrimitiveList<he::ObjectList<InternalVertex>*> m_VertexData;
     he::PrimitiveList<he::ObjectList<gfx::Bone>*> m_BoneData;
     
@@ -94,6 +97,8 @@ private:
 
     he::PrimitiveList<uint32> m_NumIndices;
     he::PrimitiveList<gfx::IndexStride> m_IndexStride;
+
+    gfx::VertexLayout m_VertexLayout;
 
     //Disable default copy constructor and default assignment operator
     BinObjLoader(const BinObjLoader&);

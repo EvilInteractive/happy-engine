@@ -42,6 +42,8 @@ ContentManager::ContentManager():
     m_FontLoader(NEW FontLoader()),
     m_ShaderLoader(NEW ShaderLoader()), 
     m_MaterialLoader(NEW MaterialLoader()), 
+    m_LoadThread(NEW Thread()),
+    m_LoadThreadRunning(true),
 
     m_TextureFolder("textures/"), 
     m_ModelFolder("models/"), 
@@ -51,14 +53,14 @@ ContentManager::ContentManager():
     m_MaterialFolder("materials/"),
     m_FxFolder("fx/"),
 
-    m_ContentRootDir(""),
-    m_TexturePath(""), 
-    m_ModelPath(""), 
-    m_PhysicsPath(""), 
-    m_FontPath(""),
-    m_ShaderPath(""), 
-    m_MaterialPath(""),
-    m_FxPath(""),
+    m_ContentRootDir(he::String("")),
+    m_TexturePath(he::String("")), 
+    m_ModelPath(he::String("")), 
+    m_PhysicsPath(he::String("")), 
+    m_FontPath(he::String("")),
+    m_ShaderPath(he::String("")), 
+    m_MaterialPath(he::String("")),
+    m_FxPath(he::String("")),
 
     m_ParticleQuad(nullptr),
     m_FullscreenQuad(nullptr)
@@ -71,6 +73,8 @@ ContentManager::ContentManager():
     setPhysicsFolder(getPhysicsFolder());
     setShaderFolder(getShaderFolder());
     setTextureFolder(getTextureFolder());
+
+    m_LoadThread->startThread(std::bind(&ContentManager::loadTick, this), "ContentLoadThread");
 }
 
 ContentManager::~ContentManager()
@@ -79,6 +83,11 @@ ContentManager::~ContentManager()
 
 void ContentManager::destroy()
 {
+    m_LoadThreadRunning = false;
+    m_LoadThread->join();
+    delete m_LoadThread;
+    m_LoadThread = nullptr;
+
     if (m_ParticleQuad != nullptr)
     {
         m_ParticleQuad->release();
@@ -109,14 +118,25 @@ void ContentManager::destroy()
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    PROFILER_BEGIN("Model Loader loop");
     m_ModelLoader->tick(dTime);
-    PROFILER_END();
-
-    PROFILER_BEGIN("Texture Loader loop");
     m_TextureLoader->tick(dTime);
-    PROFILER_END();
 }
+
+void ContentManager::loadTick()
+{
+    CLAIM_THREAD(he::eThreadTicket_Content);
+    while (m_LoadThreadRunning)
+    {
+        bool sleep(true);
+        sleep &= !m_ModelLoader->loadTick();
+        sleep &= !m_TextureLoader->loadTick();
+        if (sleep)
+        {
+            Thread::sleep(100);
+        }
+    }
+}
+
 void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 {
     m_ModelLoader->glThreadInvoke();
@@ -124,21 +144,21 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Model* ContentManager::asyncLoadModel(const he::String& asset, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::asyncLoadModel(const he::String& asset)
 {
-    return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout, true);
+    return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, true);
 }
-gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const he::String& asset, const he::String& meshName, const gfx::BufferLayout& vertexLayout )
+gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const he::String& asset, const he::String& meshName )
 {
-    return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
+    return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, true);
 }
-gfx::Model* ContentManager::loadModel(const he::String& asset, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::loadModel(const he::String& asset)
 {
-    return m_ModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout, true);
+    return m_ModelLoader->loadModel(m_ModelPath.str() + asset, true);
 }
-gfx::ModelMesh* ContentManager::loadModelMesh(const he::String& asset, const he::String& meshName, const gfx::BufferLayout& vertexLayout)
+gfx::ModelMesh* ContentManager::loadModelMesh(const he::String& asset, const he::String& meshName)
 {
-    return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
+    return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -154,6 +174,11 @@ const gfx::Texture2D* ContentManager::asyncMakeTexture2D(const Color& color)
 {
     return m_TextureLoader->asyncMakeTexture2D(color);
 }
+const gfx::TextureCube* ContentManager::asyncMakeTextureCube( const Color& /*color*/ )
+{
+    HE_NOT_IMPLEMENTED;
+    return nullptr;
+}
 const gfx::Texture2D* ContentManager::loadTexture2D(const he::String& path)
 {
     return m_TextureLoader->loadTexture2D(m_TexturePath.str()  + path);
@@ -165,6 +190,11 @@ const gfx::TextureCube* ContentManager::loadTextureCube( const he::String& path 
 const gfx::Texture2D* ContentManager::makeTexture2D(const Color& color)
 {
     return m_TextureLoader->makeTexture2D(color);
+}
+const gfx::TextureCube* ContentManager::makeTextureCube( const Color& /*color*/ )
+{
+    HE_NOT_IMPLEMENTED;
+    return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -185,19 +215,19 @@ gui::Font* ContentManager::loadFont(const he::String& asset, uint16 size, uint8 
 
 gui::Font* ContentManager::getDefaultFont(uint16 size)
 {
-    return loadFont("Ubuntu-Bold.ttf", size);
+    return loadFont(he::String("Ubuntu-Bold.ttf"), size);
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
+he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
-    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
+    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, defines, outputLayout);
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadMaterial(const he::String& asset)
+he::gfx::Material* ContentManager::loadMaterial(const he::String& asset)
 {
-    return m_MaterialLoader->load(m_MaterialPath.str() + asset);
+    return m_MaterialLoader->load(asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -303,12 +333,12 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
     using namespace gfx;
     if (m_FullscreenQuad == nullptr)
     {
-        BufferLayout layout;
-        layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+        VertexLayout layout;
+        layout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_FullscreenQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
-        m_FullscreenQuad->setName("Full screen quad");
+        m_FullscreenQuad->setName(he::String("Full screen quad"));
 
         he::ObjectList<VertexPos> vertices(4);
         vertices.add(VertexPos(vec3(-1, 1, 1.0f)));
@@ -342,8 +372,8 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
     if (m_ParticleQuad == nullptr)
     {    
         using namespace gfx;
-        BufferLayout layout;
-        layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+        VertexLayout layout;
+        layout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
 
         he::ObjectList<VertexPos> vertices(4);
         vertices.add(VertexPos(vec3(-1, 1, 0.0f)));
@@ -357,7 +387,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_ParticleQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
-        m_ParticleQuad->setName("Particle quad");
+        m_ParticleQuad->setName(he::String("Particle quad"));
 
         m_ParticleQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
@@ -365,7 +395,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         m_ParticleQuad->setLoaded(eLoadResult_Success);
     }
 
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_ParticleQuad->getHandle());
+    m_ParticleQuad->instantiate();
     return m_ParticleQuad;
 }
 //////////////////////////////////////////////////////////////////////////

@@ -196,7 +196,7 @@ void PhysicsEngine::startSimulation()
 {
     m_Timer = 0.0f;
     m_Simulate = true;
-    //m_PhysXThread = he::Thread(boost::bind(&PhysicsEngine::physXThread, this));
+    //m_PhysXThread = he::Thread(std::bind(&PhysicsEngine::physXThread, this));
 }
 void PhysicsEngine::stopSimulation()
 {
@@ -231,7 +231,7 @@ physx::PxScene* PhysicsEngine::getScene() const
 
 physx::PxMaterial* PhysicsEngine::createMaterial( float staticFriction, float dynamicFriction, float restitution )
 {
-    std::stringstream key;
+    he::StringStream key;
     key << staticFriction << " " << dynamicFriction << " " << restitution;
     if (m_Materials.isAssetPresent(key.str()))
     {

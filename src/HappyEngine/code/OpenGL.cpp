@@ -21,7 +21,7 @@
 
 #include "OpenGL.h"
 #include "GLContext.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "GraphicsEngine.h"
 #include "ExternalError.h"
 #include <GL/glew.h>
@@ -336,21 +336,10 @@ const RectI& GL::heGetViewport()
     return s_CurrentContext->m_Viewport;
 }
 
-void GL::getGLTypesFromBufferElement( const BufferElement& element, GLint& components, GLenum& type )
+void GL::getGLTypesFromVertexElement(const VertexElement& element, GLint& components, GLenum& type)
 {
-    switch (element.getType())
-    {
-    case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
-    case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
-    case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
-    case BufferElement::Type_Float: type = GL_FLOAT; break;
-
-    case BufferElement::Type_Int: type = GL_INT; break;
-    case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
-    case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
-
-    default: LOG(LogType_ProgrammerAssert, "unknown/unsupported BufferElement"); break;
-    }
+    type = element.getType();
+    components = element.getComponents();
 }
 
 float GL::getMaxAnisotropicFilteringSupport()

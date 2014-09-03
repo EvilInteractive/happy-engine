@@ -26,11 +26,16 @@
 
 namespace he {
 
+const vec4 vec4::one(1, 1, 1, 1);
+const vec4 vec4::zero(0, 0, 0, 0);
 
 vec4::vec4(): x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 {
 }
 vec4::vec4(const physx::PxVec4& vec) : x(vec.x), y(vec.y), z(vec.z), w(vec.w)
+{
+}
+vec4::vec4(const float val): x(val), y(val), z(val), w(val)
 {
 }
 vec4::vec4(const vec3& vec, float w_): x(vec.x), y(vec.y), z(vec.z), w(w_)

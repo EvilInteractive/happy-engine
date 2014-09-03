@@ -39,7 +39,7 @@ public:
 
     void destroyLight(const ObjectHandle& handle);
 
-    virtual Light* get(const ObjectHandle& handle) const;
+    virtual Light* get(const ObjectHandle handle) const override;
     ObjectHandle createPointLight();
     ObjectHandle createSpotLight();
 

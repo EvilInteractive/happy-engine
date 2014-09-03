@@ -19,14 +19,13 @@
 
 #version 150 core
 
+#include "shared/spotLightUniformBuffer.frag"
+
 in vec3 passPos;
-
-uniform vec2 lightNearFar;
-
 out float outShadow;
   
 void main()
 {
-    float depth = (length(passPos) - lightNearFar.x) / (lightNearFar.y - lightNearFar.x);
+    float depth = (length(passPos) - 1.0f) / (20.0f - 1.0);
     outShadow = clamp(depth, 0, 1);
 }

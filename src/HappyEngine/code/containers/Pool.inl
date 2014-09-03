@@ -103,7 +103,7 @@ void he::Pool<T>::releaseElement( T* const element )
 }
 
 template<typename T>
-void he::Pool<T>::forEach( const boost::function1<void, T*>& func ) const
+void he::Pool<T>::forEach( const std::function<void(T*)>& func ) const
 {
     const size_t pools(m_Pool.size());
     for (size_t i(0); i < pools; ++i)

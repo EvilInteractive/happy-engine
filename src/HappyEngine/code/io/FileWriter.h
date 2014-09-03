@@ -34,9 +34,6 @@ public:
     FileWriter& operator<<(const char* const str);
     FileWriter& operator<<(const he::String& str);
 
-    FileWriter& operator<<(const wchar_t* const str);
-    FileWriter& operator<<(const std::wstring& str);
-
     template<typename T>
     void operator<<(const T value)
     {
@@ -45,7 +42,7 @@ public:
     }
 
 private:
-    std::wfstream m_Stream;
+    std::ofstream m_Stream;
 
     //Disable default copy constructor and default assignment operator
     FileWriter(const FileWriter&);

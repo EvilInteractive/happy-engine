@@ -48,7 +48,7 @@ enum IntersectResult
     
 enum ELoadResult
 {
-    eLoadResult_Unknown,
+    eLoadResult_Unloaded,
     eLoadResult_Success,
     eLoadResult_Failed
 };
@@ -84,63 +84,61 @@ struct NetworkObjectTypeID
 #define TRUE 1
 #define FALSE 0
 
-#define OBJECTHANDLE_MAX 0xffff
 struct ObjectHandle
 {
-    typedef uint16 ObjectType;
+    static const int s_UnassignedType = 0;
+
+    static const int s_MaxTypes = 64;
+    static const int s_MaxSalts = 1024;
+    static const int s_MaxIndices = 65536;
+
+    static const int s_TypeMask = 0x3f;
+    static const int s_SaltMask = 0xffc0;
+    static const int s_IndexMask = 0xffff0000;
+
+    static const int s_TypeBits = 6;
+    static const int s_SaltBits = 10;
+    static const int s_IndexBits = 16;
+
+    typedef uint32 ObjectType;
     typedef uint32 SaltType;
-    typedef uint16 IndexType;
+    typedef uint32 IndexType;
+    
+    uint32 m_Handle;
+    // 32 bit
+    // 6 bit : types
+    // 10 bit : salts
+    // 16 bit : objects
 
-    static const int MAX_INDEX = UINT16_MAX;
-    static const int MAX_SALT = UINT32_MAX;
-    static const int MAX_TYPE = UINT16_MAX;
-
-    static const int UNASSIGNED_TYPE = 0;
-
-    IndexType   index;
-    SaltType    salt;
-    ObjectType  type;
-
-    ObjectHandle(): index(0), salt(0), type(UNASSIGNED_TYPE)  {}
+    ObjectHandle()
+    : m_Handle(0) {}
+    explicit ObjectHandle(const uint32 handle)
+    : m_Handle(handle) {}
+    ObjectHandle(const ObjectType type, const SaltType salt, const IndexType index)
+        : m_Handle((type & s_TypeMask) + ((salt << s_TypeBits) & s_SaltMask) + ((index << (s_TypeBits + s_SaltBits)) & s_IndexMask) ) {}
     ~ObjectHandle() {}
 
     bool operator==(const ObjectHandle& other) const
     {
-        return type == other.type && index == other.index && salt == other.salt;
+        return m_Handle == other.m_Handle;
     }
     bool operator!=(const ObjectHandle& other) const
     {
-        return type != other.type || index != other.index || salt != other.salt;
+        return m_Handle != other.m_Handle;
     }
+
+    HE_FORCEINLINE ObjectType getType() const { return m_Handle & s_TypeMask; }
+    HE_FORCEINLINE SaltType getSalt() const { return (m_Handle & s_SaltMask) >> s_TypeBits ; }
+    HE_FORCEINLINE IndexType getIndex() const { return (m_Handle & s_IndexMask) >> (s_TypeBits + s_SaltBits); }
 
     const static ObjectHandle unassigned;
 };
 
-struct HAPPY_ENTRY Guid
+template<typename T>
+struct NameValuePair
 {
-    Guid();
-    ~Guid() {}
-    explicit Guid(const char* const guid);
-    Guid(const Guid& other);
-    Guid& operator=(const Guid& other); // 921E39A0-F8A8-4131-BB74-31968CF5A9E6
-
-    he::String toString() const;
-
-    static Guid generateGuid();
-
-    bool operator==(const Guid& other) const;
-    bool operator!=(const Guid& other) const;
-
-    uint32 m_Data1;
-    // -
-    uint16 m_Data2;
-    // -
-    uint16 m_Data3;
-    // -
-    uint16 m_Data4;
-    // -
-    uint16 m_Data5;
-    uint32 m_Data6;
+    he::FixedString m_Name;
+    T m_Value;
 };
 
 } //end namespace

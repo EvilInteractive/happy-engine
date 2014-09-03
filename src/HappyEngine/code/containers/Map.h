@@ -34,8 +34,8 @@ public:
     // do nothing special in here!
 
 
-    inline void forEach(const boost::function1<void, const std::pair<const KEY, VALUE>&>& func) const;
-    inline void forEach(const boost::function1<void, std::pair<const KEY, VALUE>&>& func);
+    inline void forEach(const std::function<void(const std::pair<const KEY, VALUE>&)>& func) const;
+    inline void forEach(const std::function<void(std::pair<const KEY, VALUE>&)>& func);
 
 private:
     Map(const Map&);

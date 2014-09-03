@@ -84,15 +84,15 @@ private:
                               const he::gui::Font* const font,
                               const Color& color);
 
-    /* STATIC */
-    static Simple2DEffect* s_ColorEffect;
-    static Simple2DTextureEffect* s_TextureEffect;
-    static Simple2DFontEffect* s_FontEffect;
-    static NinePatchEffect* s_NinePatchEffect;
+    // For Quad
+    Simple2DEffect* m_ColorEffectShape;
+    Simple2DTextureEffect* m_TextureEffectQuad;
+    NinePatchEffect* m_NinePatchEffectQuad;
 
-    static ObjectHandle s_TextureQuadHandle;
+    // For dynamic font mesh
+    Simple2DFontEffect* m_FontEffectDynFont;
 
-    static uint16 s_Renderers;
+    uint16 s_Renderers;
 
     /* MEMBERS */
     vec2 m_Size;

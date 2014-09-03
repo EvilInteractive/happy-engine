@@ -18,14 +18,11 @@
 //Author:  Bastian Damman
 //Created: 30/09/2011
 #include "HappyPCH.h" 
-
 #include "ShaderLoader.h"
-#include "HappyNew.h"
-#include "IniReader.h"
-#include "HappyEngine.h"
-#include "BufferLayout.h"
+
 #include "Shader.h"
 #include "GlobalSettings.h"
+
 
 namespace he {
 namespace ct {
@@ -41,34 +38,70 @@ ShaderLoader::~ShaderLoader()
     factory->garbageCollect();
 }
 
-ObjectHandle ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
+he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
     ResourceFactory<gfx::Shader>* factory(ResourceFactory<gfx::Shader>::getInstance());
 
-    he::String key(vsPath + fsPath);
-    if (m_AssetContainer.isAssetPresent(key) && factory->isAlive(m_AssetContainer.getAsset(key)))
+    int32 hash(0);
+    hash = he::hash(hash, vsPath);
+    hash = he::hash(hash, fsPath);
+    if (defines)
     {
-        ObjectHandle shader(m_AssetContainer.getAsset(key));
-        factory->instantiate(shader);
+        defines->forEach([&hash](const he::String& str)
+        {
+            hash = he::hash(hash, str);
+        });
+    }
+    if (outputLayout)
+    {
+        outputLayout->forEach([&hash](const he::String& str)
+        {
+            hash = he::hash(hash, str);
+        });
+    }
+    
+    if (m_AssetContainer.isAssetPresent(hash) && factory->isAlive(m_AssetContainer.getAsset(hash)))
+    {
+        ObjectHandle shaderHandle(m_AssetContainer.getAsset(hash));
+        he::gfx::Shader* const shader(factory->get(shaderHandle));
+        shader->instantiate();
         return shader;
     }
     else
     {
         const gfx::RenderSettings& settings(GlobalSettings::getInstance()->getRenderSettings());
         gfx::Shader* shader(factory->get(factory->create()));
-        std::set<he::String> defines;
+        he::ObjectList<he::String> allDefines;
+        if (defines)
+            allDefines.append(*defines);
         if (settings.lightingSettings.enableShadows)
-            defines.insert("SHADOWS");
+            allDefines.add("SHADOWS");
         if (settings.lightingSettings.enableSpecular)
-            defines.insert("SPECULAR");
+            allDefines.add("SPECULAR");
         if (settings.lightingSettings.enableNormalMap)
-            defines.insert("NORMALMAP");
+            allDefines.add("NORMALMAP");
+        if (settings.postSettings.shaderSettings.enableHDR)
+            allDefines.add("HDR");
+        if (settings.postSettings.shaderSettings.enableBloom)
+            allDefines.add("BLOOM");
+        if (settings.postSettings.shaderSettings.enableAO)
+            allDefines.add("AO");
+        if (settings.postSettings.shaderSettings.enableDepthEdgeDetect)
+            allDefines.add("DEPTH_EDGE");
+        if (settings.postSettings.shaderSettings.enableNormalEdgeDetect)
+            allDefines.add("NORMAL_EDGE");
+        if (settings.postSettings.shaderSettings.enableFog)
+            allDefines.add("FOG");
+        if (settings.postSettings.shaderSettings.enableVignette)
+            allDefines.add("VIGNETTE");
 
-        shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
-        m_AssetContainer.addAsset(key, shader->getHandle());
-        return shader->getHandle();
+        const bool result(shader->initFromFile(vsPath, fsPath, &allDefines, outputLayout));
+        m_AssetContainer.addAsset(hash, shader->getHandle());
+        shader->setLoaded(result? eLoadResult_Success : eLoadResult_Failed);
+
+        return shader;
     }
 }
 

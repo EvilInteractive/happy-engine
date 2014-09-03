@@ -36,7 +36,7 @@ public:
     virtual void destroy();
     virtual void tick(float dTime);
 
-private:
+    void stricmpTest();
     void nodeGraphUnitTest();
     void listUnitTest();
     void guidUnitTest();
@@ -45,6 +45,8 @@ private:
     void threadSafeQueueMP1CTest();
     void midiTest();
     void poolTest();
+    void objectHandleTest();
+private:
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

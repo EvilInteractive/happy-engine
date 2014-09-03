@@ -47,7 +47,8 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    //listUnitTest();
+    //stricmpTest();
+    listUnitTest();
     //nodeGraphUnitTest();
     //guidUnitTest();
     //mat33UnitTest();
@@ -55,6 +56,7 @@ void MainGame::init()
     //threadSafeQueueMP1CTest();
     //midiTest();
     poolTest();
+    objectHandleTest();
     HAPPYENGINE->quit();
 }
 
@@ -66,6 +68,15 @@ void MainGame::destroy()
 void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
+}
+
+void MainGame::stricmpTest()
+{
+    const char* test1("Hallo ik ben Bas");
+    const char* test2("hallO Ik BEN bas");
+    const char* test3("Hallo ik ben Sebastiaan");
+    HE_ASSERT(stricmp(test1, test2) == 0, "test1 and test2 are !=");
+    HE_ASSERT(stricmp(test1, test3) != 0, "test1 and test3 are ==");
 }
 
 void MainGame::guidUnitTest()
@@ -333,6 +344,11 @@ void MainGame::listUnitTest()
         {
             TestStruct() { std::cout << "List Allocated\n"; }
             explicit TestStruct(int test): data(test) { std::cout << "Allocated by user: " << test << "\n"; }
+            TestStruct(TestStruct&& /*other*/) { std::cout << "TestStruct Moved\n"; }
+            TestStruct(const TestStruct& /*other*/) { std::cout << "TestStruct Copied\n"; }
+
+            TestStruct& operator=(const TestStruct& /*other*/) { std::cout << "TestStruct Assign Copied\n"; return *this; }
+            TestStruct& operator=(TestStruct&& /*other*/) { std::cout << "TestStruct Assign Moved\n"; return *this; }
 
             ~TestStruct() { std::cout << "Deallocated\n"; }
 
@@ -493,8 +509,8 @@ void MainGame::jsonUnitTest()
         writer.close();
     }
 
-    std::string resultA;
-    std::string resultB;
+    he::String resultA;
+    he::String resultB;
 
     io::FileReader reader;
     if (reader.open(pathA, io::FileReader::OpenType_ASCII))
@@ -662,6 +678,14 @@ void MainGame::poolTest()
     });
 
     pool.destroy();
+}
+
+void MainGame::objectHandleTest()
+{
+    he::ObjectHandle handle(2, 1, 3);
+    HE_ASSERT(handle.getType() == 2, "Type is not correct! got %d expected %d", handle.getType(), 2);
+    HE_ASSERT(handle.getSalt() == 1, "Salt is not correct! got %d expected %d", handle.getSalt(), 1);
+    HE_ASSERT(handle.getIndex() == 3, "Index is not correct! got %d expected %d", handle.getIndex(), 3);
 }
 
 } //end namespace

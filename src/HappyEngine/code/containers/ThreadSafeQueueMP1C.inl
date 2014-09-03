@@ -132,7 +132,7 @@ bool ThreadSafeQueueMP1C<T>::pop(T& outObj)
 }
 
 template<typename T>
-bool ThreadSafeQueueMP1C<T>::empty()
+bool ThreadSafeQueueMP1C<T>::empty() const
 {
     return m_Head == m_Tail;
 }

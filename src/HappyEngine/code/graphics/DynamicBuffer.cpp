@@ -24,7 +24,7 @@
 namespace he {
 namespace gfx {
 
-DynamicBuffer::DynamicBuffer(const BufferLayout& bufferLayout): m_Layout(bufferLayout), m_Buffer(nullptr)
+DynamicBuffer::DynamicBuffer(const VertexLayout& bufferLayout): m_Layout(bufferLayout), m_Buffer(nullptr)
 {
 }
 

@@ -27,69 +27,24 @@
 namespace he {
 namespace gfx {
 
-#pragma warning(disable:4355) // use of this in initializer list
-Mesh2D::Mesh2D(bool staticDraw) :  
+VertexLayout Mesh2D::s_VertexLayout;
+
+Mesh2D::Mesh2D(bool staticDraw) :
     m_Polygon(NEW Polygon()),
-    m_WorldMatrix(mat44::Identity),
-    m_ContextCreatedHandler(boost::bind(&Mesh2D::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&Mesh2D::destroyVao, this, _1)),
     m_StaticDraw(staticDraw),
-    m_HasBuffer(false)
+    m_HasBuffer(false),
+    m_VertexVboID(0),
+    m_IndexVboID(0),
+    m_DrawMode(MeshDrawMode_LineLoop)
 {
-    glGenBuffers(1, &m_VBOID);
-    glGenBuffers(1, &m_IBOID);
-
-    he_memset(m_VAOID, 0xffffffff, sizeof(VaoID) * MAX_VERTEX_ARRAY_OBJECTS);
-
-    const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
-    contexts.forEach([&](GLContext* context)
-    {
-        initVao(context);
-    });
-
-    GRAPHICS->ContextCreated += m_ContextCreatedHandler;
-    GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
-}
-#pragma warning(default:4355)
-
-void Mesh2D::initVao( GLContext* context )
-{
-    GRAPHICS->setActiveContext(context);
-    const uint32 contextID(context->getID());
-    HE_IF_ASSERT(m_VAOID[contextID] == UINT32_MAX, "vao already assigned on context")
-    {
-        glGenVertexArrays(1, m_VAOID + contextID);
-        GL::heBindVao(m_VAOID[contextID]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-        glEnableVertexAttribArray(0);
-    }
-}
-
-void Mesh2D::destroyVao( GLContext* context )
-{
-    GRAPHICS->setActiveContext(context);
-    const uint32 contextID(context->getID());
-    HE_IF_ASSERT(m_VAOID[contextID] != UINT32_MAX, "vao not alive on context")
-    {
-        glDeleteVertexArrays(1, m_VAOID + contextID);
-        m_VAOID[contextID] = UINT32_MAX;
-    }
+    glGenBuffers(1, &m_VertexVboID);
+    glGenBuffers(1, &m_IndexVboID);
 }
 
 Mesh2D::~Mesh2D()
 {
-    GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
-    GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
-    const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
-    contexts.forEach([&](GLContext* context)
-    {
-        destroyVao(context);
-    });
-
-    glDeleteBuffers(1, &m_VBOID);
-    glDeleteBuffers(1, &m_IBOID);
+    glDeleteBuffers(1, &m_VertexVboID);
+    glDeleteBuffers(1, &m_IndexVboID);
 
     delete m_Polygon;
 }
@@ -109,6 +64,7 @@ void Mesh2D::clear()
 
 bool Mesh2D::triangulate()
 {
+    m_DrawMode = MeshDrawMode_Triangles;
     return m_Polygon->triangulate();
 }
 
@@ -129,30 +85,22 @@ void Mesh2D::createBuffer(bool outline)
         }
     }
 
-    GL::heBindVao(getBufferID());
-
     GLenum drawType(m_StaticDraw == true ? GL_STATIC_DRAW : GL_STREAM_DRAW);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
-    glBufferData(GL_ARRAY_BUFFER, m_Polygon->getVertexCount() * sizeof(vec2), &m_Polygon->getVertices()[0], drawType);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Polygon->getIndexCount() * sizeof(uint32), &m_Polygon->getIndices()[0], drawType);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
+    const size_t vbSize(m_Polygon->getVertexCount() * sizeof(vec2));
+    glBufferData(GL_ARRAY_BUFFER, vbSize, nullptr, drawType);
+    glBufferData(GL_ARRAY_BUFFER, vbSize, &m_Polygon->getVertices()[0], drawType);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
+    const size_t ibSize(m_Polygon->getIndexCount() * sizeof(uint32));
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibSize, nullptr, drawType);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibSize, &m_Polygon->getIndices()[0], drawType);
 
     m_HasBuffer = true;
 }
 
 /* GETTERS */
-uint32 Mesh2D::getBufferID() const
-{
-    return m_VAOID[GL::s_CurrentContext->getID()];
-}
-
-const mat44& Mesh2D::getWorldMatrix() const
-{
-    return m_WorldMatrix;
-}
-
 const he::PrimitiveList<vec2>& Mesh2D::getVertices() const
 {
     return m_Polygon->getVertices();
@@ -163,10 +111,20 @@ const he::PrimitiveList<uint32>& Mesh2D::getIndices() const
     return m_Polygon->getIndices();
 }
 
-/* SETTERS */
-void Mesh2D::setWorldMatrix(const mat44& mat)
+void Mesh2D::draw()
 {
-    m_WorldMatrix = mat;
+    glDrawElements(m_DrawMode, m_Polygon->getIndexCount(), GL_UNSIGNED_INT, 0);
 }
+
+void Mesh2D::sdmInit()
+{
+    s_VertexLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+}
+
+void Mesh2D::sdmDestroy()
+{
+
+}
+
 
 } } //end namespace

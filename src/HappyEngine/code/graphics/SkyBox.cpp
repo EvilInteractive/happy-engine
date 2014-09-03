@@ -24,25 +24,21 @@
 
 #include "ModelMesh.h"
 #include "Shader.h"
-#include "ShaderVar.h"
 #include "Texture2D.h"
 #include "Material.h"
+#include "MaterialInstance.h"
 #include "TextureCube.h"
 
 #include "Entity.h"
 #include "ModelComponent.h"
-#include "ShaderVar.h"
 
 namespace he {
 namespace gfx {
 
 SkyBox::SkyBox()
     : m_CubeMap(nullptr)
-    , m_Cube(nullptr)
-    , m_Material(nullptr)
+    , m_Drawable(nullptr)
 {
-    const float largeNumber(1000000000);
-    m_Bound.fromAABB(AABB(vec3(-largeNumber, -largeNumber, -largeNumber), vec3(largeNumber, largeNumber, largeNumber)));
 }
 
 
@@ -58,25 +54,21 @@ void SkyBox::unload()
         m_CubeMap->release();
         m_CubeMap = nullptr;
     }
-    if (m_Cube != nullptr)
-    {
-        m_Cube->release();
-        m_Cube = nullptr;
-    }
-    if (m_Material != nullptr)
-    {
-        m_Material->release();
-        m_Material = nullptr;
-    }
+    delete m_Drawable;
+    m_Drawable = nullptr;
 }
 
 void SkyBox::load( const he::String& asset )
 {
+    HE_ASSERT(m_Drawable == nullptr, "Skybox is loaded twice!");
+    m_Drawable = NEW Drawable();
+    m_Drawable->setLocalScale(vec3(1000000000)); // bounds must be huge
     //////////////////////////////////////////////////////////////////////////
     /// Load Model
     //////////////////////////////////////////////////////////////////////////
-    m_Cube = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
-    m_Cube->setName("skybox");
+    ModelMesh* const cube(
+        ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create()));
+    cube->setName(he::String("skybox-") + asset);
     he::PrimitiveList<vec3> vertices(8);
     vertices.add(vec3(-1,  1, -1));
     vertices.add(vec3( 1,  1, -1));
@@ -107,22 +99,26 @@ void SkyBox::load( const he::String& asset )
     indices.add(3); indices.add(7); indices.add(2); //bottom
     indices.add(7); indices.add(6); indices.add(2);
 
-    BufferLayout layout;
-    layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, sizeof(vec3), 0));
-    m_Cube->init(layout, MeshDrawMode_Triangles);
-    m_Cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
-    m_Cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);
-    m_Cube->setLoaded(eLoadResult_Success);
+    VertexLayout layout;
+    layout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
+    cube->init(layout, MeshDrawMode_Triangles);
+    cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
+    cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);
+    cube->setLoaded(eLoadResult_Success);
+    m_Drawable->setModelMesh(cube);
+    cube->release();
 
-    m_Material = he::ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/sky.material"));
-    ShaderUserVar<const TextureCube*>* cubeMap(static_cast<ShaderUserVar<const gfx::TextureCube*>*>(m_Material->getVar("cubeMap")));
-    if (cubeMap != nullptr)
+    Material* const material(CONTENT->loadMaterial("engine/sky.material"));
+    m_Drawable->setMaterial(material);
+    material->release();
+
+    const int8 cubeMap(m_Drawable->getMaterial()->findParameter(HEFS::strcubeMap));
+    if (cubeMap >= 0)
     {
         const TextureCube* cube(CONTENT->asyncLoadTextureCube(asset));
-        cubeMap->setData(cube);
+        m_Drawable->getMaterial()->getParameter(cubeMap).setTextureCube(cube);
         cube->release();
     }
-
 }
 
 } } //end namespace

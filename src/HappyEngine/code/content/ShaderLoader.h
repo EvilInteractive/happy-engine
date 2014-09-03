@@ -27,6 +27,7 @@
 namespace he {
 namespace gfx {
     class ShaderLayout;
+    class Shader;
 }
 
 namespace ct {
@@ -37,10 +38,10 @@ public:
     ShaderLoader();
     ~ShaderLoader();
     
-    ObjectHandle load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
+    gfx::Shader* load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
     
 private:
-    AssetContainer<ObjectHandle> m_AssetContainer;
+    AssetContainer<ObjectHandle, uint32> m_AssetContainer;
     
     //Disable default copy constructor and default assignment operator
     ShaderLoader(const ShaderLoader&);

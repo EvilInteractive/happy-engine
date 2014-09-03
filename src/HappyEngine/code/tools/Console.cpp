@@ -85,9 +85,9 @@ Console::Console() :	m_Shortcut(io::Key_F1),
     registerVar<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
 
     // console commands
-    registerCmd(boost::bind(&he::tools::Console::displayHelp, this), "help");
-    registerCmd(boost::bind(&he::tools::Console::displayVars, this), "listvars");
-    registerCmd(boost::bind(&he::tools::Console::displayCmds, this), "listcmds");
+    registerCmd(std::bind(&he::tools::Console::displayHelp, this), "help");
+    registerCmd(std::bind(&he::tools::Console::displayVars, this), "listvars");
+    registerCmd(std::bind(&he::tools::Console::displayCmds, this), "listcmds");
 }
 void Console::load()
 {
@@ -205,7 +205,7 @@ void Console::displayHelp()
 
 void Console::displayVars()
 {
-    std::stringstream stream;
+    he::StringStream stream;
 
     stream << "******** VARS ********\n";
 
@@ -231,7 +231,7 @@ void Console::displayVars()
 
 void Console::displayCmds()
 {
-    std::stringstream stream;
+    he::StringStream stream;
 
     stream << "******** CMDS ********\n";
 
@@ -241,7 +241,7 @@ void Console::displayCmds()
     }
     else
     {
-        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<he::String, boost::function<void()> > p)
+        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<he::String, std::function<void()> > p)
         {
             stream << "'" << p.first << "'\n";
         });
@@ -374,7 +374,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
             const size_t lineSize(i - lineCharStart);
             if (lineSize > 0)
             {
-                m_MsgHistory.add(std::make_pair(type, he::String(buff, lineCharStart, lineSize)));
+                m_MsgHistory.add(std::make_pair(type, he::String(buff + lineCharStart, lineSize)));
             }
 
             lineCharStart = i + 1;
@@ -386,7 +386,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
         const size_t lineSize(size - lineCharStart);
         if (lineSize > 0)
         {
-            m_MsgHistory.add(std::make_pair(type, he::String(buff, lineCharStart, lineSize)));
+            m_MsgHistory.add(std::make_pair(type, he::String(buff + lineCharStart, lineSize)));
         }
     }
 
@@ -396,7 +396,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
     }
 }
 
-void Console::registerCmd(const boost::function<void()>& command, const he::String& cmdKey)
+void Console::registerCmd(const std::function<void()>& command, const he::String& cmdKey)
 {
     HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
     {
@@ -455,7 +455,7 @@ void Console::attachToRenderer(gfx::Renderer2D* renderer)
         m_Renderer = renderer;
 
         gfx::View* view(renderer->getView());
-        m_ResizeHandler = eventCallback0<void>(boost::bind(&he::tools::Console::onResize, this));
+        m_ResizeHandler = eventCallback0<void>(std::bind(&he::tools::Console::onResize, this));
         view->ViewportSizeChanged += m_ResizeHandler;
 
         m_ScrollBar->setPosition(vec2(static_cast<float>(view->getViewport().width) - 20.0f, 0.0f));

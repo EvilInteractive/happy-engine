@@ -27,7 +27,7 @@
 
 namespace he {
 namespace gfx {
-    class ModelMesh;
+    class ShapeMesh;
 }
 namespace tools {
 
@@ -54,8 +54,8 @@ private:
     Color m_Color;
     Color m_Color2;
 
-    gfx::ModelMesh* m_ModelMesh;
-    gfx::ModelMesh* m_ModelMesh2;
+    gfx::ShapeMesh* m_GridShape;
+    gfx::ShapeMesh* m_BaseLineShape;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Grid(const Grid&);

@@ -31,7 +31,8 @@ namespace details {
 class ShaderPreProcessor
 {
 public:
-    static he::String process(const he::String& file, const std::set<he::String>& defines);
+    // defines is not const it can generate new ones
+    static he::String process(const he::String& file, he::ObjectList<he::String>& defines);
 
 };
 

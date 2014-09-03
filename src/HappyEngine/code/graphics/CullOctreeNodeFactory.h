@@ -22,6 +22,7 @@
 #define _HE_CullOctreeNodeFactory_H_
 #pragma once
 
+#ifdef HE_USE_OCTREE
 #include "Singleton.h"
 
 namespace he {
@@ -48,4 +49,6 @@ private:
 
 } } //end namespace
 
-#endif
+#endif //HE_USE_OCTREE
+
+#endif //_HE_CullOctreeNodeFactory_H_

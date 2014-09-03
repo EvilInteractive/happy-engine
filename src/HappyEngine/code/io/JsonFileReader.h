@@ -52,6 +52,7 @@ protected:
     virtual bool enterArray(const he::FixedString& key, const char* comment = NULL);
     virtual void exitArray(const he::FixedString& key);
     virtual size_t getArraySize();
+    virtual FixedString getMemberName(const size_t index);
     
     virtual bool visit(he::String& value, const char* comment = NULL);
     virtual bool visit(bool& value, const char* comment = NULL);

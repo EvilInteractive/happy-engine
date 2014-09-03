@@ -23,15 +23,25 @@
 #pragma once
 
 #include "EntityComponent.h"
-#include "DefaultSingleDrawable.h"
+#include "Drawable.h"
 
 namespace he {
+namespace gfx {
+    class Drawable;
+}
+
 namespace ge {
  
 struct EntityComponentDesc;   
-class HAPPY_ENTRY ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
+class HAPPY_ENTRY ModelComponent : public EntityComponent
 {
-    IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
+    struct LoadDesc
+    {
+        LoadDesc(): m_Mesh(nullptr), m_Material(nullptr) {}
+        gfx::ModelMesh* m_Mesh;
+        gfx::Material* m_Material;
+    };
+
 public:
     ModelComponent();
     virtual ~ModelComponent();
@@ -39,31 +49,24 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* parent);
+    void init(Entity* parent);  // override, final
 
-    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    void visit(he::io::BinaryVisitor* const /*visitor*/) {} // override, final
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate(); // override, final
+    void deactivate(); // override, final
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strModelComponent; }
+    const he::FixedString& getComponentID() const { return HEFS::strModelComponent; } // override, final
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
-    virtual bool setProperty(const Property* const inProperty);
-    virtual bool getProperty(Property* const inOutProperty);
+    bool setProperty(const Property* const inProperty); // override, final
+    bool getProperty(Property* const inOutProperty); // override, final
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
-    
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                         IDrawable                                  ///
-    //////////////////////////////////////////////////////////////////////////
-    virtual const gfx::Material* getMaterial() const;
-    virtual const gfx::ModelMesh* getModelMesh() const;
-    //////////////////////////////////////////////////////////////////////////
-       
+          
+    const gfx::Drawable* getDrawable() const { return m_Drawable; }
     void loadModelMeshAndMaterial(const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName);
     void unloadModelMeshAndMaterial();
 
@@ -73,12 +76,12 @@ protected:
     Entity* m_Parent;
 
 private:
-    bool m_IsAttached;
+    void onLoadingDone(const ELoadResult result);
 
-    gfx::ModelMesh* m_ModelMesh;
-    gfx::ModelMesh* m_NewModelMesh; // Will be fixed with the NewMaterialSystem
-    const gfx::Material* m_Material;
+    gfx::Drawable* m_Drawable;
 
+    LoadDesc* m_LoadingDesc;
+    
     he::String m_MaterialAsset;
     he::String m_ModelAsset;
 

@@ -223,7 +223,7 @@ void TextBox::draw(gui::Canvas2D* canvas)
 
                 RectF cursorRect(textRect);
 
-                if (cursorText != "")
+                if (!cursorText.empty())
                 {
                     uint32 cursorX((uint32)m_Font->getStringWidth(cursorText));
                     cursorX -= 1;

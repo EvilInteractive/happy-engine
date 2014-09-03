@@ -85,7 +85,7 @@ void ShaderGeneratorVariable::setExposedVar( const ShaderGeneratorVariableType t
 
 void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariableType type)
 {
-    setLocalName(getGlobalInputVariableName(type));
+    setLocalName(he::String(getGlobalInputVariableName(type)));
     setType(getGlobalInputVariableType(type));
     setHasDeclaration(true);
     setForceDeclare(true);
@@ -93,7 +93,7 @@ void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariable
 }
 void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVariableType type)
 {
-    setLocalName(getGlobalFragmentVariableName(type));
+    setLocalName(he::String(getGlobalFragmentVariableName(type)));
     setType(getGlobalFragmentVariableType(type));
     setHasDeclaration(true);
     setForceDeclare(true);
@@ -101,7 +101,7 @@ void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVaria
 }
 void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableType type)
 {
-    setLocalName(getGlobalCodeVariableName(type));
+    setLocalName(he::String(getGlobalCodeVariableName(type)));
     setType(getGlobalCodeVariableType(type));
     setHasDeclaration(true);
     setForceDeclare(true);
@@ -109,7 +109,7 @@ void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableT
 }
 void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorOutVariableType type)
 {
-    setLocalName(getOutVariableName(type));
+    setLocalName(he::String(getOutVariableName(type)));
     setType(getOutVariableType(type));
     setForceInline(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;

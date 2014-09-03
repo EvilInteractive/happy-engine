@@ -1,0 +1,10 @@
+{
+    "Inherit" : "base/opac.hm",
+    "Options" : {
+        "Parameters" : {
+            "diffuseMap" : "cube_diff.png",
+            "normalMap" : "cube_normal.png",
+            "specGlossIllMap" : "cube_sgi.png"
+        }
+    }
+}

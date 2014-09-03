@@ -22,36 +22,34 @@
 #define _HE_BILLBOARD_EFFECT_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "Shader.h"
-#include "mat44.h"
-#include "vec2.h"
-#include "vec3.h"
-#include "Texture2D.h"
-
 namespace he {
 namespace gfx {
+
+class Texture2D;
+struct DrawContext;
+class VertexLayout;
+class MaterialInstance;
+class MaterialParameter;
 
 class BillboardEffect
 {
 public:
-	BillboardEffect();
-    virtual ~BillboardEffect();
+    BillboardEffect();
+    ~BillboardEffect();
 
-	void load();
-	void begin() const;
-	void end() const;
+    void init(const VertexLayout& layout);
+    void apply(const he::gfx::DrawContext& context) const;
 
-	void setWorldViewProjection(const he::mat44& mat) const;
-	void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;
-	void setTCScale(const vec2& scale) const;
+    void setWorldViewProjection(const he::mat44& mat) const;
+    void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;
+    void setTCScale(const vec2& scale) const;
 
 private:
-	gfx::Shader* m_pShader;
+    MaterialInstance* m_Material;
 
-	uint32 m_ShaderWVPPos;
-	uint32 m_ShaderDiffTexPos;
-	uint32 m_ShaderTCScalePos;
+    int8 m_WVP;
+    int8 m_DiffTex;
+    int8 m_TcScale;
 
     //Disable default copy constructor and default assignment operator
     BillboardEffect(const BillboardEffect&);

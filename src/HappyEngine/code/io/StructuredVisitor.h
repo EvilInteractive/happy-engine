@@ -96,6 +96,7 @@ public:
     bool visit(const he::FixedString& key, vec3& value, const char* comment = NULL);
     bool visit(const he::FixedString& key, vec4& value, const char* comment = NULL);
     bool visit(const he::FixedString& key, Guid& value, const char* comment = NULL);
+    bool visit(const he::FixedString& key, he::FixedString& value, const char* comment = NULL);
 
     template<typename T>
     bool visitList(const he::FixedString& key, he::ObjectList<T>& list, const char* comment = NULL)
@@ -109,6 +110,38 @@ public:
     }
 
     template<typename T>
+    bool visitNameValueList(const he::FixedString& key, he::ObjectList<NameValuePair<T>>& list, const char* comment = NULL)
+    {
+        if (m_OpenType == eOpenType_Read)
+            list.clear();
+        if (enterNode(key, comment))
+        {
+            size_t elements(m_OpenType == eOpenType_Write? list.size() : getArraySize());
+            if (elements > 0)
+            {
+                for (size_t i(0); i < elements; ++i)
+                {
+                    if (m_OpenType == eOpenType_Write)
+                    {
+                        NameValuePair<T>& pair(list[i]);
+                        internalVisit(pair.m_Name, pair.m_Value, NULL);
+                    }
+                    else
+                    {
+                        NameValuePair<T> pair;
+                        pair.m_Name = getMemberName(i);
+                        internalVisit(pair.m_Name, pair.m_Value, NULL);
+                        list.add(pair);
+                    }
+                }
+            }
+            exitNode(key);
+            return true;
+        }
+        return false;
+    }
+
+    template<typename T>
     bool visitObjectList(const he::FixedString& key, he::ObjectList<T>& list, const char* comment = NULL)
     {
         return internalVisitObjectList(key, list, comment);
@@ -116,29 +149,30 @@ public:
 
     template<typename T>
     bool visitCustomList(const he::FixedString& key, he::ObjectList<T>& list, 
-        const boost::function3<void, StructuredVisitor* const, const size_t, T&>& callback, const char* comment = NULL)
+        const std::function<void(StructuredVisitor* const, const size_t, T&)>& callback, const char* comment = NULL)
     {
         return internalVisitCustomList<he::ObjectList<T>, T>(key, list, callback, comment);
     }
     template<typename T>
     bool visitCustomList(const he::FixedString& key, he::PrimitiveList<T>& list,
-        const boost::function3<void, StructuredVisitor* const, const size_t, T&>& callback, const char* comment = NULL)
+        const std::function<void(StructuredVisitor* const, const size_t, T&)>& callback, const char* comment = NULL)
     {
         return internalVisitCustomList<he::PrimitiveList<T>, T>(key, list, callback, comment);
     }
-    
-    template<typename EnumType, typename CastType>
-    bool visitEnum(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL)
+    template<typename CastType, typename EnumType>
+    bool visitCasted(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL, 
+        const std::function<CastType(EnumType)>& castTo = (checked_numcast<CastType, EnumType>),
+        const std::function<EnumType(CastType)>& castFrom = (checked_numcast<EnumType, CastType>))
     {
         HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
         CastType value;
         if (m_OpenType == eOpenType_Write)
         {
-            value = checked_numcast<CastType>(enumValue);
+            value = castTo(enumValue);
         }
         const bool result(visit(key, value, comment));
-
-        enumValue = checked_numcast<EnumType>(value);
+        if (result)
+            enumValue = castFrom(value);
 
         return result;
     }
@@ -150,6 +184,7 @@ protected:
     virtual bool enterArray(const he::FixedString& key, const char* comment = NULL) = 0;
     virtual void exitArray(const he::FixedString& key) = 0;
     virtual size_t getArraySize() = 0;
+    virtual FixedString getMemberName(const size_t index) = 0;
     
     // internal visits
     virtual bool visit(he::String& value, const char* comment = NULL) = 0;
@@ -205,7 +240,7 @@ private:
 
     template<typename T, typename U>
     bool internalVisitCustomList(const he::FixedString& key, T& list,
-        const boost::function3<void, StructuredVisitor* const, const size_t, U&>& callback, const char* comment = NULL)
+        const std::function<void(StructuredVisitor* const, const size_t, U&)>& callback, const char* comment = NULL)
     {
         bool result(false);
         if (enterArray(key, comment))

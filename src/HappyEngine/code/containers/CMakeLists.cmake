@@ -10,7 +10,5 @@ addFilter(CODE_SRCS src/containers code/containers/
                 Map.h                       Map.inl
                 ObjectFactory.h
                 Pool.h                      Pool.inl
-                Resource.h
-                ResourceFactory.h
                 SlotPContainer.h
 )

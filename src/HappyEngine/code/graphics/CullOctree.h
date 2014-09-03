@@ -22,11 +22,13 @@
 #define _HE_CullOctree_H_
 #pragma once
 
+#ifdef HE_USE_OCTREE
+
 #include "Bound.h"
 
 namespace he {
 namespace gfx {
-class IDrawable;
+class Drawable;
 class CullOctree;
 class ICamera;
 
@@ -40,11 +42,11 @@ public:
     inline const Bound& getStrictBound() const { return m_StrictBound; }
     inline const Bound& getLooseBound() const { return m_LooseBound; }
 
-    CullOctreeNode* rootInsert(IDrawable* drawable); // returns current root
-    void remove(IDrawable* obj);
-    void reevaluate(IDrawable* obj);
-    void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen) const;
-    void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
+    CullOctreeNode* rootInsert(Drawable* drawable); // returns current root
+    void remove(Drawable* obj);
+    void reevaluate(Drawable* obj);
+    void draw(const ICamera* camera, std::function<void(Drawable*)> drawFunction, bool checkChilderen) const;
+    void drawAndCreateDebugMesh(const ICamera* camera, std::function<void(Drawable*)> drawFunction, bool checkChilderen, 
         he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
     CullOctreeNode* getRoot();
 
@@ -59,13 +61,13 @@ private:
 
     void createChilds();
     void createChilds(CullOctreeNode* child, uint8 xIndex, uint8 yIndex, uint8 zIndex);
-    void rinsert(IDrawable* obj);
+    void rinsert(Drawable* obj);
     void createBounds(const vec3& pos, float strictSize);
-    void insert(IDrawable* drawable);
+    void insert(Drawable* drawable);
 
     CullOctreeNode* m_ChildNodes[8];
     CullOctreeNode* m_Parent;
-    IDrawable** m_ObjectChilds;
+    Drawable** m_ObjectChilds;
     uint16 m_NumObjectChilds, m_ObjectChildsCapacity;
     Bound m_StrictBound, m_LooseBound;
     bool m_IsLeafe;
@@ -79,12 +81,12 @@ public:
     explicit CullOctree(); 
     ~CullOctree();
 
-    void insert(IDrawable* obj);
-    void reevaluate(IDrawable* obj);
-    void remove(IDrawable* obj);
+    void insert(Drawable* obj);
+    void reevaluate(Drawable* obj);
+    void remove(Drawable* obj);
 
-    void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction) const;
-    void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, 
+    void draw(const ICamera* camera, std::function<void(Drawable*)> drawFunction) const;
+    void drawAndCreateDebugMesh(const ICamera* camera, std::function<void(Drawable*)> drawFunction, 
         he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
 
     const static float s_MinLeaveSize;
@@ -98,5 +100,7 @@ private:
 };
 
 } } //end namespace
+
+#endif // HE_USE_OCTREE
 
 #endif

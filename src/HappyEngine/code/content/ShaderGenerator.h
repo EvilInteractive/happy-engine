@@ -154,7 +154,7 @@ private:
 
     uint8 m_ScopeDepth;
 
-    std::stringstream m_ShaderFile;
+    he::StringStream m_ShaderFile;
     
     he::ObjectList<ObjectHandle> m_Variables;
     he::ObjectList<ObjectHandle> m_InternalVariables;

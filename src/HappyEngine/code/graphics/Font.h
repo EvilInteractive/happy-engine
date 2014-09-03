@@ -27,6 +27,7 @@
 #include FT_FREETYPE_H
 
 struct _cairo_font_face;
+typedef _cairo_font_face cairo_font_face_t;
 
 namespace he {
 
@@ -88,7 +89,7 @@ public:
 
     bool isPreCached() const;
 
-    _cairo_font_face* getCairoFontFace() const;
+    cairo_font_face_t* getCairoFontFace() const;
 
     uint32 getGlyphIndex(const char c) const;
     float getAdvance(const char c) const;
@@ -116,7 +117,7 @@ private:
     bool m_Init;
 
     // needed for rendering with cairo to sprites
-    _cairo_font_face* m_CairoFontFace;
+    cairo_font_face_t* m_CairoFontFace;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Font(const Font&);

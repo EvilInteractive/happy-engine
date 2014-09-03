@@ -27,6 +27,7 @@
 #pragma optionNV(unroll all)
 
 #include "packing/decode.frag"
+#include "shared/perCameraUniformBuffer.frag"
 
 noperspective in vec2 texCoord;
 
@@ -46,11 +47,6 @@ struct DirectionalLight
 uniform AmbientLight ambLight;
 uniform DirectionalLight dirLight;
 
-layout(shared) uniform SharedBuffer
-{
-    vec4 projParams;
-};
-
 uniform sampler2D colorIllMap;
 uniform sampler2D normalDepthMap;
 #if SPECULAR
@@ -68,7 +64,7 @@ void main()
 #endif
     
     vec3 normalDepth = texture(normalDepthMap, texCoord).xyz;       
-    vec3 position = getPosition( normalDepth.z, ndc, projParams );
+    vec3 position = getPosition( normalDepth.z, ndc, perCameraUniformBuffer.projParams );
 
     vec3 lightDir = normalize(dirLight.direction);       
     vec3 normal = decodeNormal(normalDepth.xy);
@@ -93,6 +89,5 @@ void main()
      
     //Out         
     outColor = vec4(((diffuseLight + spec) + ambientLight + vec3(color.a, color.a, color.a) * 10) * color.rgb
-                        , 1.0f);		
-    //outColor *= vec4(cascade, 1);
+                        , 1.0f);
 }

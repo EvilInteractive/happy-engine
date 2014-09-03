@@ -43,8 +43,8 @@ void UIMain::load()
     HE_IF_ASSERT(m_WebView == nullptr, "UIMain already loaded!")
     {
 #ifdef USE_WEB
-		Sandbox* const sandbox(Sandbox::getInstance());
-		UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
+        Sandbox* const sandbox(Sandbox::getInstance());
+        UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
         m_WebView = renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true);
         m_WebView->setTransparent(true);
         he::eventCallback0<void> onUrlLoaded([this, renderer]()
@@ -56,7 +56,7 @@ void UIMain::load()
             listener->addObjectCallback("HE", "test", callbackTest);
 
             // Create Entity
-            he::eventCallback1<void, const Awesomium::JSArray&> menuCreateEntityCallback(boost::bind(&UIMain::createEntityHandler, this, _1));
+            he::eventCallback1<void, const Awesomium::JSArray&> menuCreateEntityCallback(std::bind(&UIMain::createEntityHandler, this, std::placeholders::_1));
             listener->addObjectCallback("HE", "menuCreateEntity", menuCreateEntityCallback);
         });
         m_WebView->OnUrlLoaded += onUrlLoaded;

@@ -26,7 +26,7 @@ namespace ct {
 
 ShaderGeneratorVariableFactory::ShaderGeneratorVariableFactory()
 {
-    init(32, 32, "ShaderGeneratorVariableFactory");
+    init(32, 32, he::String("ShaderGeneratorVariableFactory"));
 }
 
 

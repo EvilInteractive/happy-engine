@@ -27,26 +27,28 @@ DEF_FS(Y);
 DEF_FS(Z);
 DEF_FS(W);
 
+DEF_FS(Error);
 DEF_FS(SDLWindow);
 
+//////////////////////////////////////////////////////////////////////////
 // Components
+//////////////////////////////////////////////////////////////////////////
+DEF_FS(Entity);
 DEF_FS(CharacterPhysicsComponent);
 DEF_FS(DynamicPhysicsComponent);
-DEF_FS(InstancedModelComponent);
 DEF_FS(PointLightComponent);
 DEF_FS(SpotLightComponent);
 DEF_FS(ModelComponent);
 DEF_FS(PickingComponent);
-DEF_FS(SkinnedModelComponent);
 DEF_FS(StaticPhysicsComponent);
 DEF_FS(TriggerComponent);
 
+//////////////////////////////////////////////////////////////////////////
 // Component Properties
-DEF_FS(Entity);
+//////////////////////////////////////////////////////////////////////////
 DEF_FS(Translate);
 DEF_FS(Rotate);
 DEF_FS(Scale);
-DEF_FS(Name);
 
 DEF_FS(Multiplier);
 DEF_FS(Attenuation);
@@ -70,8 +72,130 @@ DEF_FS(FromOutput);
 DEF_FS(To);
 DEF_FS(ToInput);
 
+//////////////////////////////////////////////////////////////////////////
+// Shader
+//////////////////////////////////////////////////////////////////////////
+DEF_FS(dTime);
+DEF_FS(prevLumMap);
+DEF_FS(hdrMap);
+DEF_FS(cubeMap);
 
-//Config
+DEF_FS(Name);
+DEF_FS(AttributeType);
+DEF_FS(Attributes);
+DEF_FS(UniformType);
+DEF_FS(VariableType);
+DEF_FS(DefaultValue);
+DEF_FS(Uniforms);
+DEF_FS(inPosition);
+DEF_FS(preDistortMap);
+DEF_FS(hmdWarpParam);
+DEF_FS(lensCenter);
+DEF_FS(screenCenter);
+DEF_FS(scale);
+DEF_FS(scaleIn);
+DEF_FS(tcTransform);
+DEF_FS(map);
+DEF_FS(lumMap);
+DEF_FS(colorMap); 
+DEF_FS(fogColor);
+DEF_FS(blur0);
+DEF_FS(blur1);
+DEF_FS(blur2);
+DEF_FS(blur3);
+DEF_FS(noiseMap);
+DEF_FS(viewPortSize);
+DEF_FS(SharedPerCameraUniformBuffer);
+DEF_FS(SharedPerSceneUniformBuffer);
+DEF_FS(SharedSpotLightUniformBuffer);
+DEF_FS(SharedPointLightUniformBuffer);
+
+//////////////////////////////////////////////////////////////////////////
+// Deferred
+//////////////////////////////////////////////////////////////////////////
+_DEF_FS(strlight_position, "light.position");
+_DEF_FS(strlight_multiplier, "light.multiplier");
+_DEF_FS(strlight_direction, "light.direction");
+_DEF_FS(strlight_color, "light.color");
+_DEF_FS(strlight_beginAttenuation, "light.beginAttenuation");
+_DEF_FS(strlight_endAttenuation, "light.endAttenuation");
+_DEF_FS(strlight_cosCutoff, "light.cosCutoff");
+_DEF_FS(strambLight_color, "ambLight.color");
+_DEF_FS(strdirLight_color, "dirLight.color");
+_DEF_FS(strdirLight_direction, "dirLight.direction");
+DEF_FS(colorIllMap);
+DEF_FS(normalDepthMap);
+DEF_FS(sgMap);
+DEF_FS(mtxWVP);
+DEF_FS(shadowMap);
+DEF_FS(shadowMatrix);
+DEF_FS(shadowMapInvSize);
+
+
+//////////////////////////////////////////////////////////////////////////
+// Material
+//////////////////////////////////////////////////////////////////////////
+DEF_FS(Add);
+DEF_FS(Subtract);
+DEF_FS(ReverseSubtract);
+DEF_FS(Min);
+DEF_FS(Max);
+DEF_FS(Zero);
+DEF_FS(One);
+DEF_FS(SrcColor);
+DEF_FS(OneMinSrcColor);
+DEF_FS(DestColor);
+DEF_FS(OneMinDestColor);
+DEF_FS(SrcAlpha);
+DEF_FS(OneMinSrcAlpha);
+DEF_FS(DestAlpha);
+DEF_FS(OneMinDestAlpha);
+DEF_FS(SrcAlphaSaturate);
+DEF_FS(Shader);
+DEF_FS(IsBlended);
+DEF_FS(NoPost);
+DEF_FS(CullFrontFace);
+DEF_FS(DepthRead);
+DEF_FS(DepthWrite);
+DEF_FS(BlendEquation);
+DEF_FS(SourceBlend);
+DEF_FS(DestBlend);
+DEF_FS(FragmentShader);
+DEF_FS(VertexShader);
+DEF_FS(Defines);
+DEF_FS(OutputLayout);
+DEF_FS(CastShadow);
+DEF_FS(Parameters);
+DEF_FS(Inherit);
+DEF_FS(Normal);
+DEF_FS(Skinned);
+DEF_FS(Instanced);
+DEF_FS(Shadow);
+DEF_FS(Options);
+
+//////////////////////////////////////////////////////////////////////////
+// 2D Effects
+//////////////////////////////////////////////////////////////////////////
+DEF_FS(matWVP);
+DEF_FS(color);
+DEF_FS(depth);
+DEF_FS(matVP);
+DEF_FS(matW);
+DEF_FS(diffuseMap);
+DEF_FS(inAlpha);
+DEF_FS(texCoordOffset);
+DEF_FS(texCoordScale);
+DEF_FS(center);
+DEF_FS(size);
+DEF_FS(originalSize);
+DEF_FS(blendColor);
+
+DEF_FS(matWV);
+DEF_FS(lightNearFar);
+
+//////////////////////////////////////////////////////////////////////////
+// Config
+//////////////////////////////////////////////////////////////////////////
 DEF_FS(HDRSettings);
 DEF_FS(ExposureSpeed);
 DEF_FS(AOSettings);

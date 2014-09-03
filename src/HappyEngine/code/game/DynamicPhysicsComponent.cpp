@@ -87,15 +87,10 @@ px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const
     return m_DynamicActor;
 }
 
-void DynamicPhysicsComponent::calculateWorldMatrix()
-{
-    Object3D::calculateWorldMatrix();
-}
-
 void DynamicPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
     desc.m_ID = HEFS::strDynamicPhysicsComponent;
-    desc.m_DisplayName = "Dynamic physics component";
+    desc.m_DisplayName = he::String("Dynamic physics component");
 
     EntityComponent::fillEntityComponentDesc(desc);
 }

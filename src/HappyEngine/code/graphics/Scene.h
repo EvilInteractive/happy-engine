@@ -34,7 +34,7 @@ namespace gfx {
 class LightManager;
 class InstancingManager;
 class Picker;
-class IDrawable;
+class Drawable;
 class Scene;
 class ShadowCaster;
 class SkyBox;
@@ -42,22 +42,21 @@ class SkyBox;
 class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
 {
     friend Singleton;
-    SceneFactory() { init(1, 2, "SceneFactory"); }
+    SceneFactory() { init(1, 2, he::String("SceneFactory")); }
     virtual ~SceneFactory() { }
 };
 
 class HAPPY_ENTRY Scene
 {
     DECLARE_OBJECT(Scene)
+    friend class Drawable;
 public:
     Scene();
     virtual ~Scene();
 
     // Drawlist
-    void attachToScene(IDrawable* drawable);
-    void detachFromScene(IDrawable* drawable);
-    void forceReevalute(IDrawable* drawable);
-    void doReevalute(IDrawable* drawable);
+    void forceReevalute(Drawable* drawable);
+    void doReevalute(Drawable* drawable);
     void prepareForRendering();
     
     // Getters
@@ -65,11 +64,12 @@ public:
     InstancingManager* getInstancingManager() const { return m_InstancingManager; }
     ge::CameraManager* getCameraManager() const { return m_CameraManager; }
     const DrawListContainer& getDrawList() const { return m_DrawList; }
+    ShadowCaster*      getShadowRenderer() const { return m_ShadowCaster; }
     
     // Visual Picking
     //void initPicking(); // only init picking when needed, because it requires extra FBO & shader
     //uint pick(const vec2& screenPoint);
-    //uint pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
+    //uint pick(const vec2& screenPoint, const he::PrimitiveList<Drawable*>& drawList);
     
     // Active
     void setActive(bool active) { m_Active =  active; }
@@ -79,6 +79,10 @@ public:
     void loadSkybox(const he::String& asset);
 
 private:  
+    // Drawable friends
+    void attachToScene(Drawable* drawable);
+    void detachFromScene(Drawable* drawable);
+
     // Managers
     LightManager* m_LightManager;
     InstancingManager* m_InstancingManager;

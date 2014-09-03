@@ -294,7 +294,7 @@ bool Font::isPreCached() const
     return m_Cached;
 }
 
-_cairo_font_face* Font::getCairoFontFace() const
+cairo_font_face_t* Font::getCairoFontFace() const
 {
     return m_CairoFontFace;
 }

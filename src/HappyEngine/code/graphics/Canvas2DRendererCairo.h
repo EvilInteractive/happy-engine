@@ -103,7 +103,6 @@ private:
     };
 
     void blit();
-    float normalizeAngle(float a);
     void handleDrawCalls();
     void transformY();
 

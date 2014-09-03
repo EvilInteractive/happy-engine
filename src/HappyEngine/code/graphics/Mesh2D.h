@@ -22,17 +22,20 @@
 #define _HE_MESH2D_H_
 #pragma once
 
+#include "VertexLayout.h"
+#include "MeshEnums.h"
+
 namespace he {
 class Polygon;
 namespace gfx {
 
 class HAPPY_ENTRY Mesh2D
 {
+    static VertexLayout s_VertexLayout;
 public:
-
     /* CONSTRUCTOR - DESTRUCTOR */
-    Mesh2D(bool staticDraw = false);
-    virtual ~Mesh2D();
+    explicit Mesh2D(bool staticDraw = false);
+    ~Mesh2D();
 
     /* GENERAL */
     void addVertex(const vec2& point);
@@ -43,33 +46,30 @@ public:
     void createBuffer(bool outline = false);
 
     /* GETTERS */
-    uint32 getBufferID() const;
-    const mat44& getWorldMatrix() const;
+    inline uint32 getVBOID() const { return m_VertexVboID; }
+    inline uint32 getVBOIndexID() const { return m_IndexVboID; }
+    const VertexLayout& getVertexLayout() const { return s_VertexLayout; }
+
     const he::PrimitiveList<vec2>& getVertices() const;
     const he::PrimitiveList<uint32>& getIndices() const;
     bool hasBuffer() const { return m_HasBuffer; }
 
-    /* SETTERS */
-    void setWorldMatrix(const mat44& mat);
+    void draw();
+
+    /* SDM */
+    static void sdmInit();
+    static void sdmDestroy();
 
 private:
-
-    /* INTERNAL */
-    void initVao(GLContext* context);
-    void destroyVao(GLContext* context);
-
     /* DATAMEMBERS */
     Polygon* m_Polygon;
-    mat44 m_WorldMatrix;
-    uint32 m_VBOID;
-    uint32 m_IBOID;
-    VaoID m_VAOID[MAX_VERTEX_ARRAY_OBJECTS];
+    uint32 m_VertexVboID;
+    uint32 m_IndexVboID;
 
-    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
-    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
+    bool m_StaticDraw : 4;
+    bool m_HasBuffer : 4;
 
-    bool m_StaticDraw;
-    bool m_HasBuffer;
+    MeshDrawMode m_DrawMode;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Mesh2D(const Mesh2D&);

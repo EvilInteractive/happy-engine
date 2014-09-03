@@ -22,7 +22,7 @@
 #define _HE_DYNAMIC_BUFFER_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 
 namespace he {
 namespace gfx {
@@ -30,7 +30,7 @@ namespace gfx {
 class DynamicBuffer
 {
 public:
-    DynamicBuffer(const BufferLayout& bufferLayout);
+    DynamicBuffer(const VertexLayout& bufferLayout);
     virtual ~DynamicBuffer();
 
     void setValue(uint32 element, float value);
@@ -49,7 +49,7 @@ public:
 private:
 
     char* m_Buffer;
-    BufferLayout m_Layout;
+    VertexLayout m_Layout;
 
     //Disable default copy constructor and default assignment operator
     DynamicBuffer(const DynamicBuffer&);

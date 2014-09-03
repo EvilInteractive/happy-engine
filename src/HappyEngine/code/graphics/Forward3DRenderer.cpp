@@ -20,13 +20,18 @@
 //Created: 06/11/2011
 
 #include "HappyPCH.h" 
-
 #include "Forward3DRenderer.h"
-#include "RenderTarget.h"
+
 #include "CameraPerspective.h"
-#include "IDrawable.h"
-#include "View.h"
+#include "DrawContext.h"
+#include "Drawable.h"
+#include "MaterialInstance.h"
+#include "ModelMesh.h"
+#include "RenderTarget.h"
 #include "Scene.h"
+#include "View.h"
+#include "GraphicsEngine.h"
+#include "ShaderUniformBufferManager.h"
 
 namespace he {
 namespace gfx {
@@ -47,10 +52,16 @@ Forward3DRenderer::Forward3DRenderer(const RenderPass pass, bool addSceneRendere
             HE_IF_ASSERT(m_Scene != nullptr, "Assign a scene to the renderer before rendering!")
             {
                 const DrawListContainer& drawList(m_Scene->getDrawList());
-                drawList.draw(blendFilter, camera, [&camera](IDrawable* drawable)
+                drawList.draw(blendFilter, camera, [&camera](Drawable* drawable)
                 {
-                    drawable->applyMaterial(camera);
-                    drawable->draw();
+                    ModelMesh* const mesh(drawable->getModelMesh());
+                    DrawContext context;
+                    context.m_Camera = camera;
+                    context.m_VBO = mesh->getVBO();
+                    context.m_IBO = mesh->getIBO();
+                    context.m_WorldMatrix = drawable->getWorldMatrix();
+                    drawable->getMaterial()->apply(context);
+                    mesh->draw();
                 }); 
             }
         });
@@ -74,12 +85,10 @@ void Forward3DRenderer::render()
     const ICamera* camera(m_View->getCamera());
     if (camera != nullptr)
     {
+        GRAPHICS->getShaderUniformBufferManager()->updateSceneBuffer(m_Scene);
+
         m_RenderTarget->prepareForRendering();
         
-        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-        GL::heSetDepthRead(true);
-        GL::heSetDepthWrite(true);
-        GL::heSetCullFace(false);
         GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
 
         PreRender(camera);

@@ -203,10 +203,10 @@ void main()
     vec3 color = sampleColor.rgb;
     
 #if BLOOM
-    color += texture(blur0, texCoord).rgb * 0.25f;  
-    color += texture(blur1, texCoord).rgb * 0.25f;  
-    color += texture(blur2, texCoord).rgb * 0.25f;  
-    color += texture(blur3, texCoord).rgb * 0.25f;  
+    color += texture(blur0, texCoord).rgb * 0.1f;  
+    color += texture(blur1, texCoord).rgb * 0.1f;  
+    color += texture(blur2, texCoord).rgb * 0.3f;  
+    color += texture(blur3, texCoord).rgb * 0.5f;  
 #endif
 	bool post = sampleColor.a > 0.01f;
 

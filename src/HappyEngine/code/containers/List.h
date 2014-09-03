@@ -26,22 +26,24 @@
 
 namespace he {
     
-template<typename T, typename Creator>
+template<typename T, typename Allocator>
 class List
 {
 public:
     typedef T* iterator;
     typedef T const* const_iterator;
-    typedef boost::function2<int, const T&, const T&> Sorter;
-    typedef boost::function2<bool, const T&, const T&> Comparer;
-    typedef boost::function1<bool, const T&> Pred;
+    typedef std::function<int(const T&, const T&)> Sorter;
+    typedef std::function<bool(const T&, const T&)> Comparer;
+    typedef std::function<bool(const T&)> Pred;
 
     explicit List(const size_t capacity = 0);
+    List(List<T, Allocator>&& other);
+    List<T, Allocator>& operator=(List<T, Allocator>&& other);
     virtual ~List();
 
     inline void add(const T& element); // amortized O(1)
     inline void add(T&& element); // amortized O(1)
-    inline void append(const List<T, Creator>& list); // amortized O(n) (n = parameter list count)
+    inline void append(const List<T, Allocator>& list); // amortized O(n) (n = parameter list count)
     inline void insert(const T& element, const size_t index); // O(n)
     inline void insert(T&& element, const size_t index); // O(n)
     
@@ -81,10 +83,10 @@ public:
     inline const_iterator cbegin() const { return m_Buffer; }
     inline const_iterator cend() const { return m_Buffer + m_Size; }
 
-    inline void forEach(const boost::function1<void, const T&>& func) const;
-    inline void forEach(const boost::function1<void, T&>& func);
-    inline void rForEach(const boost::function1<void, const T&>& func) const;
-    inline void rForEach(const boost::function1<void, T&>& func);
+    inline void forEach(const std::function<void(const T&)>& func) const;
+    inline void forEach(const std::function<void(T&)>& func);
+    inline void rForEach(const std::function<void(const T&)>& func) const;
+    inline void rForEach(const std::function<void(T&)>& func);
 
     const static int CAPACITY_INCREMENT = 5;
     
@@ -102,63 +104,104 @@ private:
 #endif
 
     //Disable default copy constructor and default assignment operator
-    List(const List&);
-    List& operator=(const List&);
+    List<T, Allocator>(const List<T, Allocator>&);
+    List<T, Allocator>& operator=(const List<T, Allocator>&);
 };
 
 template<typename T>
-class PrimitiveList : public List<T, PrimitiveCreator<T>> 
+class PrimitiveList : public List<T, PrimitiveObjectAllocator<T>> 
 {
 public:
-    explicit PrimitiveList(size_t capacity = 0): List<T, PrimitiveCreator<T>>(capacity) {}
+    explicit PrimitiveList(size_t capacity = 0): List<T, PrimitiveObjectAllocator<T>>(capacity) {}
     virtual ~PrimitiveList() {}
+
+    PrimitiveList(PrimitiveList<T>&& other) : List<T, PrimitiveObjectAllocator<T>>(std::forward(other)) 
+    {
+    }
+    PrimitiveList<T>& operator=(PrimitiveList<T>&& other) 
+    { 
+        List<T, PrimitiveObjectAllocator<T>>::operator=(std::forward(other));
+        return *this;
+    }
 };
 template<typename T>
-class ObjectList : public List<T, ObjectCreator<T>> 
+class ObjectList : public List<T, ObjectAllocator<T>> 
 {
 public:
-    explicit ObjectList(size_t capacity = 0): List<T, ObjectCreator<T>>(capacity) {}
+    explicit ObjectList(size_t capacity = 0): List<T, ObjectAllocator<T>>(capacity) {}
     virtual ~ObjectList() {}
+
+    ObjectList(ObjectList<T>&& other) : List<T, ObjectAllocator<T>>(std::forward<List<T, ObjectAllocator<T>>>(other)) 
+    {
+    }
+    ObjectList<T>& operator=(ObjectList<T>&& other)
+    { 
+        List<T, ObjectAllocator<T>>::operator=(std::forward<List<T, ObjectAllocator<T>>>(other));
+        return *this;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Creator> inline
-he::List<T, Creator>::List(const size_t capacity): m_Size(0), m_Capacity(capacity), 
-    m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
+template<typename T, typename Allocator> inline
+he::List<T, Allocator>::List(const size_t capacity): m_Size(0), m_Capacity(capacity), 
+    m_Buffer(Allocator::allocate(capacity))
 #ifdef HE_DEBUG
     , m_IsTraversing(false)
 #endif
 {
-    Creator::createArray(m_Buffer, m_Capacity);
 }
 
-template<typename T, typename Creator> inline
-he::List<T, Creator>::~List()
+template<typename T, typename Allocator>
+he::List<T, Allocator>::List( List<T, Allocator>&& other )
+    : m_Size(other.m_Size)
+    , m_Capacity(other.m_Capacity)
+    , m_Buffer(other.m_Buffer)
 {
-    Creator::destroyArray(m_Buffer, m_Capacity);
-    he_free(m_Buffer);
+    other.m_Size = 0;
+    other.m_Capacity = 0;
+    other.m_Buffer = nullptr;
 }
 
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::add( const T& element )
+template<typename T, typename Allocator>
+List<T, Allocator>& he::List<T, Allocator>::operator=( List<T, Allocator>&& other )
+{
+    Allocator::deallocate(m_Buffer);
+    m_Size = other.m_Size;
+    m_Capacity = other.m_Capacity;
+    m_Buffer = other.m_Buffer;
+    other.m_Size = 0;
+    other.m_Capacity = 0;
+    other.m_Buffer = nullptr;
+
+    return *this;
+}
+
+template<typename T, typename Allocator> inline
+he::List<T, Allocator>::~List()
+{
+    Allocator::deallocate(m_Buffer);
+}
+
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::add( const T& element )
 {
     HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to add an element already in this list without a copy");
     if (m_Size == m_Capacity)
         reserve(m_Capacity + CAPACITY_INCREMENT);
     m_Buffer[m_Size++] = element;
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::add( T&& element )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::add( T&& element )
 {
     HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to add an element already in this list without a copy");
     if (m_Size == m_Capacity)
         reserve(m_Capacity + CAPACITY_INCREMENT);
     m_Buffer[m_Size++] = std::forward<T>(element);
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::append( const List<T, Creator>& list )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::append( const List<T, Allocator>& list )
 {
     if (m_Size + list.size() > m_Capacity)
         reserve(m_Size + list.size());
@@ -166,8 +209,8 @@ void he::List<T, Creator>::append( const List<T, Creator>& list )
         m_Buffer[m_Size + i] = list.m_Buffer[i];
     resize(m_Size + list.size());
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::insert( const T& element, const size_t index )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::insert( const T& element, const size_t index )
 {
     HE_ASSERT(!m_IsTraversing, "Inserting element into list, but we are currently traversing the list! Bad things will happen.");
     HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to insert an element already in this list without a copy");
@@ -179,8 +222,8 @@ void he::List<T, Creator>::insert( const T& element, const size_t index )
     m_Buffer[index] = element;
     ++m_Size;
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::insert( T&& element, const size_t index )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::insert( T&& element, const size_t index )
 {
     HE_ASSERT(!m_IsTraversing, "Inserting element into list, but we are currently traversing the list! Bad things will happen.");
     HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to insert an element already in this list without a copy");
@@ -191,30 +234,26 @@ void he::List<T, Creator>::insert( T&& element, const size_t index )
     ++m_Size;
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::reserve( const size_t capacity )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::reserve( const size_t capacity )
 {
     HE_ASSERT(m_Size <= m_Capacity, "Warning reserving size smaller than used size");
     if (m_Capacity != capacity)
     {
-        if (capacity < m_Capacity)
-            Creator::destroyArray(m_Buffer + capacity, m_Capacity - capacity);
-        m_Buffer = static_cast<T*>(he_realloc(m_Buffer, capacity * sizeof(T)));
-        if (capacity > m_Capacity)
-            Creator::createArray(m_Buffer + m_Capacity, capacity - m_Capacity);
+        m_Buffer = Allocator::reallocate(m_Buffer, m_Capacity, capacity);
         m_Capacity = capacity;
     }
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::resize( const size_t size )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::resize( const size_t size )
 {
     HE_ASSERT(!m_IsTraversing || m_Size <= size, "Resizing list, but we are currently traversing the list! Bad things will happen.");
     if (m_Capacity < size)
         reserve(size);
     m_Size = size;
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::trim()
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::trim()
 {
     if (m_Size < m_Capacity)
     {
@@ -222,8 +261,8 @@ void he::List<T, Creator>::trim()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator>
-void he::List<T, Creator>::pop()
+template<typename T, typename Allocator>
+void he::List<T, Allocator>::pop()
 {
     HE_ASSERT(!m_IsTraversing, "Popping element from list, but we are currently traversing the list! Bad things will happen.");
     HE_IF_ASSERT(m_Size > 0, "Index out of bounds! cannot pop an item of the list when there are not items!")
@@ -232,8 +271,8 @@ void he::List<T, Creator>::pop()
     }
 }
 
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::remove( const T& element )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::remove( const T& element )
 {
     HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     size_t index(0);
@@ -242,8 +281,8 @@ void he::List<T, Creator>::remove( const T& element )
         removeAt(index);
     }
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::removeAt( const size_t index )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::removeAt( const size_t index )
 {
     HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     HE_IF_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size)
@@ -252,8 +291,8 @@ void he::List<T, Creator>::removeAt( const size_t index )
         --m_Size;
     }
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::orderedRemove( const T& element )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::orderedRemove( const T& element )
 {
     HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     size_t index(0);
@@ -262,8 +301,8 @@ void he::List<T, Creator>::orderedRemove( const T& element )
         orderedRemoveAt(index);
     }
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::orderedRemoveAt( const size_t index )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::orderedRemoveAt( const size_t index )
 {
     HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     HE_IF_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size)
@@ -272,21 +311,21 @@ void he::List<T, Creator>::orderedRemoveAt( const size_t index )
         --m_Size;
     }
 }
-template<typename T, typename Creator>
-void he::List<T, Creator>::clear()
+template<typename T, typename Allocator>
+void he::List<T, Allocator>::clear()
 {
     HE_ASSERT(!m_IsTraversing, "Clearing list, but we are currently traversing the list! Bad things will happen.");
     m_Size = 0;
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator>
-bool he::List<T, Creator>::contains( const T& element ) const
+template<typename T, typename Allocator>
+bool he::List<T, Allocator>::contains( const T& element ) const
 {
     size_t i(0);
     return find(element, i);
 }
-template<typename T, typename Creator> inline
-bool he::List<T, Creator>::find( const T& element, size_t& outIndex ) const
+template<typename T, typename Allocator> inline
+bool he::List<T, Allocator>::find( const T& element, size_t& outIndex ) const
 {
     bool result(false);
     for (size_t i(0); i < m_Size; ++i)
@@ -300,8 +339,8 @@ bool he::List<T, Creator>::find( const T& element, size_t& outIndex ) const
     }
     return result;
 }
-template<typename T, typename Creator> inline
-bool he::List<T, Creator>::find_if( const Pred& condition, size_t& outIndex ) const
+template<typename T, typename Allocator> inline
+bool he::List<T, Allocator>::find_if( const Pred& condition, size_t& outIndex ) const
 {
     bool result(false);
     for (size_t i(0); i < m_Size; ++i)
@@ -315,8 +354,8 @@ bool he::List<T, Creator>::find_if( const Pred& condition, size_t& outIndex ) co
     }
     return result;
 }
-template<typename T, typename Creator> inline
-bool he::List<T, Creator>::rfind_if( const Pred& condition, size_t& outIndex ) const
+template<typename T, typename Allocator> inline
+bool he::List<T, Allocator>::rfind_if( const Pred& condition, size_t& outIndex ) const
 {
     bool result(false);
     for (int i(m_Size - 1); i >= 0; --i)
@@ -330,8 +369,8 @@ bool he::List<T, Creator>::rfind_if( const Pred& condition, size_t& outIndex ) c
     }
     return result;
 }
-template<typename T, typename Creator> inline
-bool he::List<T, Creator>::rfind( const T& element, size_t& outIndex ) const
+template<typename T, typename Allocator> inline
+bool he::List<T, Allocator>::rfind( const T& element, size_t& outIndex ) const
 {
     for (int i(m_Size - 1); i >= 0; --i)
     {
@@ -343,15 +382,15 @@ bool he::List<T, Creator>::rfind( const T& element, size_t& outIndex ) const
     }
     return false;
 }
-template<typename T, typename Creator> inline
-bool he::List<T, Creator>::binFind( const T& element, const Sorter& sorter, size_t& outIndex ) const
+template<typename T, typename Allocator> inline
+bool he::List<T, Allocator>::binFind( const T& element, const Sorter& sorter, size_t& outIndex ) const
 {
     if (m_Size == 0)
         return false;
     return internalBinFind(0, m_Size, element, sorter, outIndex);
 }
-template<typename T, typename Creator>
-bool he::List<T, Creator>::internalBinFind( const size_t begin, const size_t end, const T& element, const Sorter& sorter, size_t& outIndex ) const
+template<typename T, typename Allocator>
+bool he::List<T, Allocator>::internalBinFind( const size_t begin, const size_t end, const T& element, const Sorter& sorter, size_t& outIndex ) const
 {
     if (begin == end)
         return false;
@@ -373,15 +412,15 @@ bool he::List<T, Creator>::internalBinFind( const size_t begin, const size_t end
         return internalBinFind(currentIndex + 1, end, element, sorter, outIndex);
     }
 }
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::sort( const Sorter& sorter )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::sort( const Sorter& sorter )
 {
     HE_ASSERT(!m_IsTraversing, "Sorting list, but we are currently traversing the list! Bad things will happen.");
     if (m_Size < 2) return; // already sorted
     internalSort(0, static_cast<int>(m_Size - 1), sorter);
 }
-template<typename T, typename Creator>
-void he::List<T, Creator>::internalSort( const int begin, const int end, const Sorter& sorter )
+template<typename T, typename Allocator>
+void he::List<T, Allocator>::internalSort( const int begin, const int end, const Sorter& sorter )
 {
     T centerObject(m_Buffer[(begin + end) / 2]);
     int b(begin);
@@ -416,48 +455,48 @@ void he::List<T, Creator>::internalSort( const int begin, const int end, const S
 }
 
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator> inline
-const T& he::List<T, Creator>::front() const
+template<typename T, typename Allocator> inline
+const T& he::List<T, Allocator>::front() const
 {
     HE_ASSERT(m_Size > 0, "No elements in List! Index out of bounds exception");
     return m_Buffer[0];
 }
 
-template<typename T, typename Creator> inline
-const T& he::List<T, Creator>::back() const
+template<typename T, typename Allocator> inline
+const T& he::List<T, Allocator>::back() const
 {
     HE_ASSERT(m_Size > 0, "No elements in List! Index out of bounds exception");
     return m_Buffer[m_Size - 1];
 }
-template<typename T, typename Creator>
-T& he::List<T, Creator>::front()
+template<typename T, typename Allocator>
+T& he::List<T, Allocator>::front()
 {
     HE_ASSERT(m_Size > 0, "No elements in List! Index out of bounds exception");
     return m_Buffer[0];
 }
-template<typename T, typename Creator>
-T& he::List<T, Creator>::back()
+template<typename T, typename Allocator>
+T& he::List<T, Allocator>::back()
 {
     HE_ASSERT(m_Size > 0, "No elements in List! Index out of bounds exception");
     return m_Buffer[m_Size - 1];
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator> inline
-T& he::List<T, Creator>::operator[]( const size_t index )
+template<typename T, typename Allocator> inline
+T& he::List<T, Allocator>::operator[]( const size_t index )
 {
     HE_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size);
     return m_Buffer[index];
 }
 
-template<typename T, typename Creator> inline
-const T& he::List<T, Creator>::operator[]( const size_t index ) const
+template<typename T, typename Allocator> inline
+const T& he::List<T, Allocator>::operator[]( const size_t index ) const
 {
     HE_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size);
     return m_Buffer[index];
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func ) const
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::forEach( const std::function<void(const T&)>& func) const
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;
@@ -471,8 +510,8 @@ void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func
 #endif
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::forEach( const std::function<void(T&)>& func )
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;
@@ -486,8 +525,8 @@ void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
 #endif
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& func ) const
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::rForEach( const std::function<void(const T&)>& func ) const
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;
@@ -501,8 +540,8 @@ void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& fun
 #endif
 }
 //////////////////////////////////////////////////////////////////////////
-template<typename T, typename Creator> inline
-void he::List<T, Creator>::rForEach( const boost::function1<void, T&>& func )
+template<typename T, typename Allocator> inline
+void he::List<T, Allocator>::rForEach( const std::function<void(T&)>& func )
 {    
 #ifdef HE_DEBUG
     m_IsTraversing = true;

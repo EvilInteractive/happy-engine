@@ -18,72 +18,68 @@
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
 #include "HappyPCH.h" 
-
 #include "Simple2DEffect.h"
-#include "HappyNew.h"
-#include "HeAssert.h"
 
 #include "ContentManager.h"
+#include "Material.h"
+#include "MaterialInstance.h"
+#include "MaterialParameter.h"
 
 namespace he {
 namespace gfx {
 
-Simple2DEffect::Simple2DEffect() : m_Shader(nullptr)
+Simple2DEffect::Simple2DEffect() 
+    : m_Material(nullptr)
+    , m_WVP(-1)
+    , m_Color(-1)
+    , m_Depth(-1)
 { 
 }
 
 
 Simple2DEffect::~Simple2DEffect()
 {
-    m_Shader->release();
+    delete m_Material;
 }
 
-void Simple2DEffect::load()
+void Simple2DEffect::init(const VertexLayout& layout)
 {
+    Material* mat(CONTENT->loadMaterial("engine/2D/simple.hm"));
+    m_Material = mat->createMaterialInstance(eShaderRenderType_Normal);
+    mat->release();
+    m_Material->calculateMaterialLayout(layout);
 
-    ShaderLayout layout;
-    layout.addElement(ShaderLayoutElement(0, "inPosition"));
+    m_Material->setIsBlended(true, BlendEquation_Add, BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    m_Material->setDepthReadEnabled(false);
+    m_Material->setDepthWriteEnabled(false);
 
-    m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<he::String> shaderOutputs;
-    shaderOutputs.add("outColor");
-    const he::String& folder(CONTENT->getShaderFolderPath().str());
-    const bool shaderInited(m_Shader->initFromFile(folder + "2D/simple2DShader.vert", 
-                                              folder + "2D/simple2DShader.frag", layout, shaderOutputs)); shaderInited;
-    HE_ASSERT(shaderInited == true, "simple2DShader init failed");
+    m_WVP = m_Material->findParameter(HEFS::strmatWVP);
+    m_Color = m_Material->findParameter(HEFS::strcolor);
+    m_Depth = m_Material->findParameter(HEFS::strdepth);
 
-    m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
-    m_ShaderColorPos = m_Shader->getShaderVarId("color");
-    m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
-
-    m_Shader->bind();
-    mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
-    m_Shader->setShaderVar(m_ShaderWVPPos, MatWVP);
-    m_Shader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
+    setWorldMatrix(mat44::Identity);
+    setColor(Color(1.0f,1.0f,1.0f,1.0f));
+    setDepth(0.0f);
 }
 
-void Simple2DEffect::begin() const
+void Simple2DEffect::apply(const DrawContext& context) const
 {
-    m_Shader->bind();
-}
-
-void Simple2DEffect::end() const
-{
+    m_Material->apply(context);
 }
 
 void Simple2DEffect::setColor(const Color& color) const
 {
-    m_Shader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
+    m_Material->getParameter(m_Color).setFloat4(color.rgba());
 }
 
 void Simple2DEffect::setWorldMatrix(const he::mat44 &mat) const
 {
-    m_Shader->setShaderVar(m_ShaderWVPPos, mat);
+    m_Material->getParameter(m_WVP).setFloat44(mat);
 }
 
 void Simple2DEffect::setDepth(float depth) const
 {
-    m_Shader->setShaderVar(m_ShaderDepthPos, depth);
+    m_Material->getParameter(m_Depth).setFloat(depth);
 }
 
 } } //end namespace

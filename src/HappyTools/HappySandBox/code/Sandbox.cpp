@@ -154,8 +154,7 @@ void Sandbox::init()
 
     m_RenderPipeline = NEW SandboxRenderPipeline();
     m_RenderPipeline->init(m_View);
-    m_View->init(cameraSettings)
-;
+    m_View->init(cameraSettings);
     m_EntityManager = NEW EntityManager();
 
     GameStateMachine* const stateMachine(GameStateMachine::getInstance());
@@ -220,15 +219,7 @@ he::gfx::Window*Sandbox::getMainWindow() const
 
 QGLWidget* Sandbox::getSharedWidget() const
 {
-    QGLWidget* sharedWidget(nullptr);
-    he::gfx::GraphicsEngine* gfxEngine(GRAPHICS);
-
-    if (gfxEngine)
-    {
-        sharedWidget = he::checked_cast<GameWidget*>(gfxEngine->getSharedContext());
-    }
-
-    return nullptr;
+    return m_Window? m_Window->getGameWidget() : nullptr;
 }
 
 } //end namespace

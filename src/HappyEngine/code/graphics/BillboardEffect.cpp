@@ -18,75 +18,63 @@
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
 #include "HappyPCH.h" 
-
 #include "BillboardEffect.h"
-#include "HappyNew.h"
-#include "HeAssert.h"
+
 #include "ContentManager.h"
+#include "Material.h"
+#include "MaterialInstance.h"
+#include "MaterialParameter.h"
 
 namespace he {
 namespace gfx {
 
-BillboardEffect::BillboardEffect() : m_pShader(nullptr)
+BillboardEffect::BillboardEffect()
+    : m_Material(nullptr)
+    , m_WVP(-1)
+    , m_DiffTex(-1)
+    , m_TcScale(-1)
 {
 }
 
 
 BillboardEffect::~BillboardEffect()
 {
-    if (m_pShader != nullptr)
-        m_pShader->release();
+    delete m_Material;
 }
 
-void BillboardEffect::load()
+void BillboardEffect::init(const VertexLayout& layout)
 {
-    using namespace he;
-    using namespace gfx;
+    Material* mat(CONTENT->loadMaterial("engine/2D/billboard.hm"));
+    m_Material = mat->createMaterialInstance(eShaderRenderType_Normal);
+    mat->release();
+    m_Material->calculateMaterialLayout(layout);
 
-    ShaderLayout layout;
-    layout.addElement(ShaderLayoutElement(0, "inPosition"));
-    layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
+    m_WVP = m_Material->findParameter(HEFS::strmatWVP);
+    m_DiffTex = m_Material->findParameter(HEFS::strdiffuseMap);
+    m_TcScale = m_Material->findParameter(HEFS::strtexCoordScale);
 
-    m_pShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<he::String> shaderOutputs;
-    shaderOutputs.add("outColor");
-    const he::String& folder(CONTENT->getShaderFolderPath().str());
-    const bool compiled = m_pShader->initFromFile(folder + "2D/billboardShader.vert", 
-                                            folder + "2D/billboardShader.frag", layout, shaderOutputs);
-    HE_ASSERT(compiled, ""); compiled;
-
-    m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
-    m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
-    m_ShaderTCScalePos = m_pShader->getShaderVarId("texCoordScale");
-
-    m_pShader->bind();
-    mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
-    setWorldViewProjection(MatWVP);
+    setWorldViewProjection(mat44::Identity);
     setTCScale(vec2(1.0f,1.0f));
 }
 
-void BillboardEffect::begin() const
+void BillboardEffect::apply(const DrawContext& context) const
 {
-    m_pShader->bind();
-}
-
-void BillboardEffect::end() const
-{
+    m_Material->apply(context);
 }
 
 void BillboardEffect::setWorldViewProjection(const he::mat44& mat) const
 {
-    m_pShader->setShaderVar(m_ShaderWVPPos, mat);
+    m_Material->getParameter(m_WVP).setFloat44(mat);
 }
 
 void BillboardEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const
 {
-    m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
+    m_Material->getParameter(m_DiffTex).setTexture2D(diffuseMap);
 }
 
 void BillboardEffect::setTCScale(const vec2& scale) const
 {
-    m_pShader->setShaderVar(m_ShaderTCScalePos, scale);
+    m_Material->getParameter(m_TcScale).setFloat2(scale);
 }
 
 } } //end namespace

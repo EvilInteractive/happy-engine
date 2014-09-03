@@ -44,11 +44,25 @@ he::String trimEnd(const he::String& str)
     }
     return str.substr(0, i + 1);
 }
-he::String ShaderPreProcessor::process(const he::String& code, const std::set<he::String>& defines)
+he::String trimBegin(const he::String& str)
 {
-    std::stringstream stream;
+    const size_t size(str.size());
+    size_t i(0);
+    for (; i < size; ++i)
+    {
+        if (str[i] != ' ')
+        {
+            break;
+        }
+    }
+    return str.substr(i);
+}
 
-    std::stringstream linesStream;
+he::String ShaderPreProcessor::process(const he::String& code, he::ObjectList<he::String>& defines)
+{
+    he::StringStream stream;
+
+    he::StringStream linesStream;
     he::ObjectList<he::String> lines;
     std::for_each(code.cbegin(), code.cend(), [&](const char& c)
     {
@@ -74,10 +88,29 @@ he::String ShaderPreProcessor::process(const he::String& code, const std::set<he
             if (discardBlock > ifblocks)
                 discardBlock = 0;
         }
+        else if (line.find("#ifndef ") != he::String::npos)
+        {
+            ++ifblocks;
+            size_t index;
+            if (discardBlock == 0 && defines.find(trimEnd(line.substr(line.find("#ifndef ") + 4)), index))
+            {
+                discardBlock = ifblocks;
+            }
+        }
+        else if (line.find("#ifdef ") != he::String::npos)
+        {
+            ++ifblocks;
+            size_t index;
+            if (discardBlock == 0 && !defines.find(trimEnd(line.substr(line.find("#ifdef ") + 4)), index))
+            {
+                discardBlock = ifblocks;
+            }
+        }
         else if (line.find("#if ") != he::String::npos)
         {
             ++ifblocks;
-            if (discardBlock == 0 && defines.find(trimEnd(line.substr(line.find("#if ") + 4))) == defines.cend())
+            size_t index;
+            if (discardBlock == 0 && !defines.find(trimEnd(line.substr(line.find("#if ") + 4)), index))
             {
                 discardBlock = ifblocks;
             }
@@ -86,7 +119,15 @@ he::String ShaderPreProcessor::process(const he::String& code, const std::set<he
         {
             if (discardBlock == 0)
             {
-                if (line.find("#include ") != he::String::npos)
+                if (line.find("#define") != he::String::npos)
+                {
+                    he::String defineName(line.substr(7));
+                    defineName = trimBegin(defineName);
+                    defineName = trimEnd(defineName);
+                    if (!defines.contains(defineName))
+                        defines.add(defineName);
+                }
+                else if (line.find("#include ") != he::String::npos)
                 {
                     const he::String& includeRelativePath(CONTENT->getShaderFolderPath().str());
                     HE_ASSERT(includeRelativePath.back() == '/', "includeRelativePath does not end with trailing slash");
@@ -110,7 +151,9 @@ he::String ShaderPreProcessor::process(const he::String& code, const std::set<he
 
                 }
                 else
+                {
                     stream << line << "\n";
+                }
             }
         }
     });

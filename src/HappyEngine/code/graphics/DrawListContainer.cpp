@@ -20,9 +20,9 @@
 #include "HappyPCH.h"
 
 #include "DrawListContainer.h"
-#include "IDrawable.h"
-#include "Material.h"
-#ifdef USE_OCTREE
+#include "Drawable.h"
+#include "MaterialInstance.h"
+#ifdef HE_USE_OCTREE
 #include "CullOctree.h"
 #endif
 #include "ICamera.h"
@@ -32,7 +32,7 @@ namespace gfx {
 
 DrawListContainer::DrawListContainer()
 {
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         m_DrawList[blend] = NEW CullOctree();
 #endif
@@ -41,7 +41,7 @@ DrawListContainer::DrawListContainer()
 
 DrawListContainer::~DrawListContainer()
 {
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         delete m_DrawList[blend];
 #else
@@ -51,9 +51,9 @@ DrawListContainer::~DrawListContainer()
 }
 
 
-void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter& blend)
+void DrawListContainer::getContainerIndex(const Drawable* drawable, BlendFilter& blend)
 {
-    const gfx::Material* material(drawable->getMaterial());
+    const gfx::MaterialInstance* material(drawable->getMaterial());
     HE_IF_ASSERT(material != nullptr, "Material is nullptr!")
     {
         if (material->isBlended() || material->noPost())
@@ -62,23 +62,26 @@ void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter
             blend = BlendFilter_Opac;
     }
 }
-void DrawListContainer::insert( IDrawable* drawable )
+void DrawListContainer::insert( Drawable* drawable )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);
-#ifdef USE_OCTREE
-    m_DrawList[blend]->insert(drawable);
+#ifdef HE_USE_OCTREE
+    if (drawable->calculateBound())
+    {
+        m_DrawList[blend]->insert(drawable);
+    }
 #else
     HE_IF_ASSERT(m_DrawList[blend].contains(drawable) == false, "Drawable already attached")
         m_DrawList[blend].add(drawable);
 #endif
 }
 
-void DrawListContainer::remove( IDrawable* drawable )
+void DrawListContainer::remove( Drawable* drawable )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);  
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     m_DrawList[blend]->remove(drawable);
 #else
     m_DrawList[blend].remove(drawable);
@@ -86,23 +89,23 @@ void DrawListContainer::remove( IDrawable* drawable )
     m_Dynamics.remove(drawable);
 }
 
-void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc ) const
+void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const std::function<void(Drawable*)>& drawFunc ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     m_DrawList[blend]->draw(camera, drawFunc);
 #else
-    std::for_each(m_DrawList[blend].cbegin(), m_DrawList[blend].cend(), [camera, drawFunc](IDrawable* drawable)
+    m_DrawList[blend].forEach([camera, drawFunc](Drawable* drawable)
     {
-        if (camera->intersect(drawable->getBound()) != IntersectResult_Outside)
+        if (drawable->canDraw() && camera->intersect(drawable->getBound()) != IntersectResult_Outside)
             drawFunc(drawable);
     });
 #endif
 }
-void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
+void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const std::function<void(Drawable*)>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     m_DrawList[blend]->drawAndCreateDebugMesh(camera, drawFunc, vertices, indices);
 #else
     vertices; indices; camera;
@@ -116,23 +119,25 @@ void DrawListContainer::prepareForRendering()
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_Dynamics.empty() == false)
     {
-        m_Dynamics.forEach([&](IDrawable* drawable)
+        m_Dynamics.forEach([&](Drawable* drawable)
         {
-            BlendFilter blend;
-            getContainerIndex(drawable, blend);
-            drawable->calculateBound();
-#ifdef USE_OCTREE
-            m_DrawList[blend]->reevaluate(drawable);
+            if (drawable->calculateBound())
+            {
+#ifdef HE_USE_OCTREE
+                BlendFilter blend;
+                getContainerIndex(drawable, blend);
+                m_DrawList[blend]->reevaluate(drawable);
 #endif
+            }
             drawable->nodeReevaluated();
         });
         m_Dynamics.clear();
     }
 }
 
-void DrawListContainer::forceReevalute( IDrawable* drawable )
+void DrawListContainer::forceReevalute( Drawable* drawable )
 {
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     BlendFilter blend;
     getContainerIndex(drawable, blend);  
     m_DrawList[blend]->reevaluate(drawable);
@@ -141,12 +146,12 @@ void DrawListContainer::forceReevalute( IDrawable* drawable )
 #endif
 }
 
-void DrawListContainer::doReevalute( IDrawable* drawable )
+void DrawListContainer::doReevalute( Drawable* drawable )
 {
     m_Dynamics.add(drawable);
 }
 
-const PrimitiveList<IDrawable*>* DrawListContainer::getList() const
+const PrimitiveList<Drawable*>* DrawListContainer::getList() const
 {
     return &m_DrawList[0];
 }

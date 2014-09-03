@@ -1,0 +1,10 @@
+{
+    "Inherit" : "base/opac.hm",
+    "Options" : {
+        "Parameters" : {
+            "diffuseMap" : "tiles_diffuse.png",
+            "normalMap" : "tiles_normal.png",
+            "specGlossIllMap" : "tiles_sgi.png"
+        }
+    }
+}

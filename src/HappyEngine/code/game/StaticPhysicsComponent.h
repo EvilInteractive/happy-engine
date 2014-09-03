@@ -25,7 +25,6 @@
 #include "EntityComponent.h"
 #include "ITickable.h"
 
-
 namespace he {
 namespace px {
     class PhysicsStaticActor;
@@ -35,7 +34,7 @@ namespace px {
 namespace ge {
 
 struct EntityComponentDesc;
-class HAPPY_ENTRY StaticPhysicsComponent : public EntityComponent, public Object3D
+class HAPPY_ENTRY StaticPhysicsComponent : public EntityComponent
 {
 public:
     StaticPhysicsComponent();
@@ -44,17 +43,17 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    void visit(he::io::BinaryVisitor* const /*visitor*/) {}  // override, final
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate(); // override, final
+    void deactivate(); // override, final
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strStaticPhysicsComponent; }
+    const he::FixedString& getComponentID() const { return HEFS::strStaticPhysicsComponent; } // override, final
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
-    virtual bool setProperty(const Property* const inProperty);
-    virtual bool getProperty(Property* const inOutProperty);
+    bool setProperty(const Property* const inProperty); // override, final
+    bool getProperty(Property* const inOutProperty); // override, final
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
@@ -64,43 +63,16 @@ public:
     px::PhysicsStaticActor* getStaticActor() const;
 
 protected:
-    virtual void init(Entity* parent);
+    void init(Entity* parent); // override, final
+    void calculateWorldMatrix(); // override, final
 
 private:
     px::PhysicsStaticActor* m_StaticActor;    
     Entity* m_Parent;
-    
 
     //Disable default copy constructor and default assignment operator
     StaticPhysicsComponent(const StaticPhysicsComponent&);
     StaticPhysicsComponent& operator=(const StaticPhysicsComponent&);
-
-    //////////////////////////////////////////////////////////////////////////
-    /// Object3D
-    //////////////////////////////////////////////////////////////////////////
-public:
-    virtual void setLocalTranslate(const vec3& translate)  { Object3D::setLocalTranslate(translate); } 
-    virtual void setLocalRotate(const mat33& rotate) { Object3D::setLocalRotate(rotate); } 
-    virtual void setLocalScale(const vec3& scale) { Object3D::setLocalScale(scale); } 
-
-    virtual const vec3&  getLocalTranslate() const { return Object3D::getLocalTranslate(); } 
-    virtual const mat33& getLocalRotate() const { return Object3D::getLocalRotate(); } 
-    virtual const vec3&  getLocalScale() const { return Object3D::getLocalScale(); } 
-
-    virtual const mat44& getLocalMatrix() const { return Object3D::getLocalMatrix(); } 
-    virtual const mat44& getWorldMatrix() const { return Object3D::getWorldMatrix(); } 
-
-    virtual void attach(IObject3D* child) { Object3D::attach(child); }
-    virtual void detach(IObject3D* child) { Object3D::detach(child); }
-
-protected:
-    virtual IObject3D* getParent() const { return Object3D::getParent(); } 
-    virtual void setParent(IObject3D* parent) { Object3D::setParent(parent); } 
-
-    virtual void setWorldMatrixDirty(uint8 cause) { Object3D::setWorldMatrixDirty(cause); } 
-    virtual void setLocalMatrixDirty(uint8 cause) { Object3D::setLocalMatrixDirty(cause); } 
-
-    virtual void calculateWorldMatrix();
 };
 
 } } //end namespace

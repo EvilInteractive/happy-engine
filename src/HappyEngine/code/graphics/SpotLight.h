@@ -22,16 +22,16 @@
 #define _HE_SpotLight_H_
 #pragma once
 
-#include "DefaultSingleDrawable.h"
+#include "Drawable.h"
 #include "Light.h"
 #include "CameraPerspective.h"
-#include "IDrawable2D.h"
+#include "Object3D.h"
 
 namespace he {
 namespace gfx {
 class Texture2D;
 
-class SpotLight : public DefaultSingleDrawable, public Light
+class SpotLight : public Object3D, public Light
 {
 private:
     float m_Multiplier;
@@ -45,10 +45,6 @@ private:
     vec3 m_Color;
     float m_CosCutoff;
 
-    ModelMesh* m_LightVolume;
-    ModelMesh* m_Model;
-    Material* m_Material;
-
     ShadowResolution m_ShadowResolution;
     Texture2D* m_ShadowMap;
     CameraPerspective m_ShadowCamera;
@@ -57,7 +53,7 @@ private:
 
 protected:
     virtual void calculateWorldMatrix(); // override Object3D
-    virtual void setWorldMatrixDirty(uint8 cause); // override Object3D
+    virtual void setWorldMatrixDirty(const uint8 cause); // override Object3D
 
 public:
     SpotLight();
@@ -89,13 +85,6 @@ public:
     Texture2D* getShadowMap() const { return m_ShadowMap; }
     const CameraPerspective& getShadowCamera() { return m_ShadowCamera;}
     void prepareShadowCamera();
-
-    const ModelMesh* getLightVolume() const;
-
-    virtual bool getCastsShadow() const { return false; }
-    
-    virtual const Material* getMaterial() const;
-    virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Spot; }
 

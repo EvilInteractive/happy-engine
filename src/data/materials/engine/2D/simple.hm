@@ -1,0 +1,18 @@
+{
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "2D/simple2DShader.vert",
+            "FragmentShader" : "2D/simple2DShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : true,
+        "NoPost" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "SrcAlpha",
+        "DestBlend" : "OneMinSrcAlpha"
+    }
+}

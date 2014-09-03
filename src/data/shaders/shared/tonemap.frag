@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -17,35 +17,30 @@
 //
 //Author: Bastian Damman
 
-struct ToneMapData
-{
-	float shoulderStrength;
-	float linearStrength;
-	float linearAngle;
-	float toeStrength;
-	float toeNumerator;
-	float toeDenominator;
-	float exposureBias;
-};
-layout(std140) uniform SharedToneMapBuffer
-{
-	ToneMapData toneMapData;
-};
+#ifndef _FRAG_TONEMAP
+#define _FRAG_TONEMAP
+
+#include "shared/perSceneUniformBuffer.frag"
 
 float getWhite(in sampler2D lumMap, in float min, in float max)
 {
     return clamp(textureLod(lumMap, vec2(0.5f, 0.5f), 0).r, min, max);
 }
-vec3 tonemapFunc(in vec3 x, in ToneMapData data)
+vec3 tonemapFunc(in vec3 x)
 {
-	return ((x * (data.shoulderStrength * x + data.linearAngle * data.linearStrength) + data.toeStrength * data.toeNumerator) / 
-			(x * (data.shoulderStrength * x + data.linearStrength) + data.toeStrength * data.toeDenominator)) - data.toeNumerator / data.toeDenominator;
+	return ((x * (perSceneUniformBuffer.shoulderStrength * x + perSceneUniformBuffer.linearAngle * perSceneUniformBuffer.linearStrength) + 
+            perSceneUniformBuffer.toeStrength * perSceneUniformBuffer.toeNumerator) / 
+			(x * (perSceneUniformBuffer.shoulderStrength * x + perSceneUniformBuffer.linearStrength) + 
+            perSceneUniformBuffer.toeStrength * perSceneUniformBuffer.toeDenominator)) - 
+            perSceneUniformBuffer.toeNumerator / perSceneUniformBuffer.toeDenominator;
 }
 vec3 tonemap(in vec3 hdr, in vec3 whitePoint)
 {
 	vec3 ldr = hdr;
 		
-	ldr = tonemapFunc(ldr*toneMapData.exposureBias, toneMapData) / tonemapFunc(whitePoint, toneMapData);
+	ldr = tonemapFunc(ldr*perSceneUniformBuffer.exposureBias) / tonemapFunc(whitePoint);
 	
 	return ldr;
 }
+
+#endif // _FRAG_TONEMAP

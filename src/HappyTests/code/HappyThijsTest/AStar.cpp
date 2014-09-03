@@ -92,7 +92,7 @@ void AStar::ProcessNode( const int nodeIndex )
 	}
 
 	m_ClosedNodes.add(nodeIndex);
-	m_OpenNodes.sort(boost::bind(&ht::AStar::nodeSorter, this, _1, _2));
+	m_OpenNodes.sort(std::bind(&ht::AStar::nodeSorter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void AStar::SetGoal( const int column, const int row )

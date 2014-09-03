@@ -34,7 +34,7 @@ enum CommandType
 class Command
 {
 public:
-    typedef boost::function1<void, const CommandType> CommandFunction;
+    typedef std::function<void(const CommandType)> CommandFunction;
     Command() {}
     Command(const CommandFunction& command);
     ~Command() {}

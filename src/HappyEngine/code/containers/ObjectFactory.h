@@ -34,20 +34,20 @@ public: \
     inline const he::ObjectHandle& getHandle() const { return m_Handle; } \
     inline void setHandle(const he::ObjectHandle& handle) { m_Handle = handle; }
 #define IMPLEMENT_OBJECT(Type) \
-    he::ObjectHandle::ObjectType Type::s_ObjectType = he::ObjectHandle::UNASSIGNED_TYPE;
+    he::ObjectHandle::ObjectType Type::s_ObjectType = he::ObjectHandle::s_UnassignedType;
 
 namespace details {
 class ObjectFactoryTypeManager : public Singleton<ObjectFactoryTypeManager>
 {
-    friend Singleton;
+    friend class Singleton<ObjectFactoryTypeManager>;
     ObjectFactoryTypeManager(): m_LastType(0) {}
-    virtual ~ObjectFactoryTypeManager() {}
+    ~ObjectFactoryTypeManager() {}
 public:
     template<typename T>
     ObjectHandle::ObjectType getObjectType()
     {
         m_Mutex.lock(FILE_AND_LINE);
-        if (T::s_ObjectType != ObjectHandle::UNASSIGNED_TYPE)
+        if (T::s_ObjectType != ObjectHandle::s_UnassignedType)
         {
             m_Mutex.unlock();
             return T::s_ObjectType;
@@ -90,7 +90,7 @@ public:
     {
     }
 
-    void init(size_t startSize, size_t increaseSize, const he::String& displayName)
+    void init(const size_t startSize, const size_t increaseSize, const he::String& displayName)
     {
         m_IncreaseSize = increaseSize;
         m_DisplayName = displayName;
@@ -115,7 +115,8 @@ public:
     }
     virtual void destroyAll()
     {
-        for (ObjectHandle::IndexType i(0); i < m_Pool.size(); ++i)
+        const size_t poolSize(m_Pool.size());
+        for (ObjectHandle::IndexType i(0); i < poolSize; ++i)
         {
             if (m_Pool[i] != nullptr)
             {
@@ -125,47 +126,47 @@ public:
     }
     virtual ObjectHandle create()
     {
-        ObjectHandle handle(getFreeHandle());
-        T* obj(Allocator::allocate());
+        const ObjectHandle handle(getFreeHandle());
+        T* const obj(Allocator::allocate());
         HE_ASSERT(obj != nullptr, "Object allocator returned nullptr! (%s)", m_DisplayName.c_str());
         obj->setHandle(handle);
-        m_Pool[handle.index] = obj;
+        m_Pool[handle.getIndex()] = obj;
         return handle;
     }
-    virtual ObjectHandle registerObject(T* obj)
+    virtual ObjectHandle registerObject(T* const obj)
     {
-        ObjectHandle handle(getFreeHandle());
-        m_Pool[handle.index] = obj;
+        const ObjectHandle handle(getFreeHandle());
+        m_Pool[handle.getIndex()] = obj;
         obj->setHandle(handle);
         return handle;
     }
-    virtual void unregisterObject(const ObjectHandle& handle)
+    virtual void unregisterObject(const ObjectHandle handle)
     {
        HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): unregistering unassigned handle", m_DisplayName.c_str());
-       HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
-       if (m_Salt[handle.index] != handle.salt)
+       HE_ASSERT(handle.getType() == m_Type, "ObjectHandle does not belong to this factory!");
+       if (m_Salt[handle.getIndex()] != handle.getSalt())
        {
            HE_ERROR("ObjectFactory (%s): salt mismatch when unregistering object", m_DisplayName.c_str());
        }
        else
        {
-           unregisterAt(handle.index);
+           unregisterAt(handle.getIndex());
        }
     }
-    virtual void destroyObject(const ObjectHandle& handle)
+    virtual void destroyObject(const ObjectHandle handle)
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): destroying unassigned handle", m_DisplayName.c_str());
-        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
-        if (m_Salt[handle.index] != handle.salt)
+        HE_ASSERT(handle.getType() == m_Type, "ObjectHandle does not belong to this factory!");
+        if (m_Salt[handle.getIndex()] != handle.getSalt())
         {
             HE_ERROR("ObjectFactory (%s): salt mismatch when destroying object", m_DisplayName.c_str());
         }
         else
         {
-            destroyAt(handle.index);
+            destroyAt(handle.getIndex());
         }
     }
-   virtual void unregisterAt(ObjectHandle::IndexType index)
+   virtual void unregisterAt(const ObjectHandle::IndexType index)
    {
        HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): unregistering non existing handle", m_DisplayName.c_str())
        {
@@ -173,9 +174,9 @@ public:
            ++m_Salt[index];
            m_FreeHandles.push(index);
        }
-       HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
+       HE_ASSERT(m_Salt[index] + 1 < ObjectHandle::s_MaxSalts, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
    }
-    virtual void destroyAt(ObjectHandle::IndexType index)
+    virtual void destroyAt(const ObjectHandle::IndexType index)
     {
         HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str())
         {
@@ -184,26 +185,26 @@ public:
             ++m_Salt[index];
             m_FreeHandles.push(index);
         }
-        HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
+        HE_ASSERT(m_Salt[index] + 1 < ObjectHandle::s_MaxSalts, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
     }
 
-    virtual T* get(const ObjectHandle& handle) const
+    virtual T* get(const ObjectHandle handle) const
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): getting unassigned handle", m_DisplayName.c_str());
-        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
-        HE_ASSERT(m_Salt[handle.index] == handle.salt, "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
-        return m_Pool[handle.index];
+        HE_ASSERT(handle.getType() == m_Type, "ObjectHandle does not belong to this factory!");
+        HE_ASSERT(m_Salt[handle.getIndex()] == handle.getSalt(), "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
+        return m_Pool[handle.getIndex()];
     }
-    virtual T* getAt(ObjectHandle::IndexType index) const
+    virtual T* getAt(const ObjectHandle::IndexType index) const
     {
         return m_Pool[index];
     }
 
-    virtual bool isAlive(const ObjectHandle& handle) const
+    virtual bool isAlive(const ObjectHandle handle) const
     {
-        return m_Salt[handle.index] == handle.salt;
+        return m_Salt[handle.getIndex()] == handle.getSalt();
     }
-    virtual bool isAliveAt(size_t index) const
+    virtual bool isAliveAt(const size_t index) const
     {
         return m_Pool[index] != nullptr;
     }
@@ -211,11 +212,11 @@ public:
     size_t getSize() const { return m_Pool.size() - m_FreeHandles.size(); }
 
 protected:
-    virtual void resize(size_t newSize)
+    virtual void resize(const size_t newSize)
     {
-        HE_ASSERT(newSize < OBJECTHANDLE_MAX, "ObjectFactory (%s): resize out of range: %d", m_DisplayName.c_str(), (int)newSize);
-        HE_CONDITIONAL_WARNING(m_Pool.size() != 0, "ObjectFactory (%s): increasing pool to %d", m_DisplayName.c_str(), (int)newSize);
-        ObjectHandle::IndexType oldSize(static_cast<ObjectHandle::IndexType>(m_Pool.size()));
+        HE_ASSERT(newSize < ObjectHandle::s_MaxIndices, "ObjectFactory (%s): resize out of range: %d", m_DisplayName.c_str(), static_cast<int>(newSize));
+        HE_CONDITIONAL_WARNING(m_Pool.size() != 0, "ObjectFactory (%s): increasing pool to %d", m_DisplayName.c_str(), static_cast<int>(newSize));
+        const ObjectHandle::IndexType oldSize(static_cast<ObjectHandle::IndexType>(m_Pool.size()));
         m_Pool.resize(newSize);
         m_Salt.resize(newSize);
         for (ObjectHandle::IndexType i(oldSize); i < newSize; ++i)
@@ -239,12 +240,9 @@ private:
             resize(m_Pool.size() + m_IncreaseSize);
         }
 
-        ObjectHandle::IndexType index(m_FreeHandles.front());
+        const ObjectHandle::IndexType index(m_FreeHandles.front());
         m_FreeHandles.pop();
-        ObjectHandle handle;
-        handle.index = index;
-        handle.salt = m_Salt[index];    
-        handle.type = m_Type;
+        const ObjectHandle handle(m_Type, m_Salt[index], index);
         return handle;
     }
 

@@ -75,8 +75,8 @@ FPSGraph::FPSGraph(float visualScale, float interval, uint16 recordTime) :
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
-    m_Sprites[0] = cr->createSprite(vec2(visualScale * (WIDTH + XMARGE * 2.0f), visualScale * HEIGHT), gui::Sprite::DYNAMIC_DRAW);
-    m_Sprites[1] = cr->createSprite(vec2(visualScale * (WIDTH + XMARGE * 2.0f), visualScale * HEIGHT), gui::Sprite::DYNAMIC_DRAW);
+    m_Sprites[0] = cr->createSprite(vec2(visualScale * (WIDTH + XMARGE * 2.0f), visualScale * HEIGHT), gui::Sprite::DYNAMIC_DRAW | gui::Sprite::UNIFORM_SCALE);
+    m_Sprites[1] = cr->createSprite(vec2(visualScale * (WIDTH + XMARGE * 2.0f), visualScale * HEIGHT), gui::Sprite::DYNAMIC_DRAW | gui::Sprite::UNIFORM_SCALE);
 }
 
 FPSGraph::~FPSGraph()
@@ -222,7 +222,7 @@ void FPSGraph::drawFull(gui::Canvas2D* canvas)
 {
     if (m_FpsHistory.size() == 0)
         return;
-    canvas->setColor(Color(1, 1, 1, 0.5f));
+    canvas->setColor(Color(1, 1, 1, 0.9f));
     canvas->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 }
 

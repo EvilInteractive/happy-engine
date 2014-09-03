@@ -20,11 +20,14 @@
 #include "HappyPCH.h" 
 
 #include "StaticDataManager.h"
+#include "thread/ThreadTicket.h"
 #include "ResourceFactory.h"
 #include "Texture2D.h"
 #include "TextureCube.h"
 #include "Model.h"
 #include "ModelMesh.h"
+#include "Mesh2D.h"
+#include "ShapeMesh.h"
 #include "Font.h"
 #include "PhysicsConcaveMesh.h"
 #include "PhysicsConvexMesh.h"
@@ -59,6 +62,7 @@ void StaticDataManager::init()
 #ifdef USE_WEB
     Awesomium::WebCore::Initialize(Awesomium::WebConfig());
 #endif
+    he::ThreadTicketManager::sdmInit();
     he::Path msbbox(he::Path::getDataPath().append("gui/messageBox.html"));
     he::HappyMessageBox::init(msbbox.str().c_str(), 1024, 512);
     he::HappyEngine::sdmInit();
@@ -90,22 +94,30 @@ void StaticDataManager::init()
     gfx::SceneFactory::sdmInit();
     gfx::WindowFactory::sdmInit();
     gfx::LightFactory::sdmInit();
+#ifdef HE_USE_OCTREE
     gfx::CullOctreeNodeFactory::sdmInit();
+#endif
     ct::ShaderGeneratorVariableFactory::sdmInit();
     tools::MaterialGeneratorNodeFactory::sdmInit();
     ge::PickingManager::sdmInit();
     ge::EntityManager::sdmInit();
     GlobalSettings::sdmInit();
+    gfx::Mesh2D::sdmInit();
+    gfx::ShapeMesh::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    gfx::ShapeMesh::sdmDestroy();
+    gfx::Mesh2D::sdmDestroy();
     GlobalSettings::sdmDestroy();
     ge::EntityManager::sdmDestroy();
     ge::PickingManager::sdmDestroy();
     tools::MaterialGeneratorNodeFactory::sdmDestroy();
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
+#ifdef HE_USE_OCTREE
     gfx::CullOctreeNodeFactory::sdmDestroy();
+#endif
     gfx::LightFactory::sdmDestroy();
     ResourceFactory<gui::Font>::sdmDestroy();
     ResourceFactory<gfx::Material>::sdmDestroy();
@@ -127,6 +139,7 @@ void StaticDataManager::destroy()
     tools::Logger::sdmDestroy();
     he::HappyEngine::sdmDestroy();
     he::HappyMessageBox::destroy();
+    he::ThreadTicketManager::sdmDestroy();
 #ifdef USE_WEB
     Awesomium::WebCore::Shutdown();
 #endif

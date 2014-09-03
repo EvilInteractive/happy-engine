@@ -20,22 +20,21 @@
 #version 150 core
 
 #include "packing/encode.frag"
+#include "shared/perCameraUniformBuffer.frag"
 
 out vec4 outColor;
-out vec2 outNormal;
+out vec3 outNormalDepth;
 
 in vec2 passTexCoord;
 in vec3 passNormal;
 in vec3 passTangent;
 in vec3 passPosition;
 
-
 uniform sampler2D diffuseMap;
 #if NORMALMAP
 uniform sampler2D normalMap;
 #endif
 uniform sampler2D specGlossIllMap;
-uniform sampler2D colorRamp;
 
 struct AmbientLight
 {
@@ -50,46 +49,6 @@ struct DirectionalLight
 
 uniform DirectionalLight dirLight;
 uniform AmbientLight ambLight;
-
-#if SHADOWS
-uniform mat4 mtxDirLight0;
-uniform mat4 mtxDirLight1;
-uniform mat4 mtxDirLight2;
-uniform mat4 mtxDirLight3;
-
-uniform sampler2D shadowMap0;
-uniform sampler2D shadowMap1;
-uniform sampler2D shadowMap2;
-uniform sampler2D shadowMap3;
-#endif
-
-float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
-{
-    vec4 coord = lightMatrix * vec4(position, 1.0f);
-    coord.xyz /= coord.w;
-    if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1)
-        return 1.0f;
-
-    //NDC -> texturespace
-    coord.x = coord.x * 0.5f + 0.5f;
-    coord.y = coord.y * 0.5f + 0.5f;
-
-    vec2 map = texture(sampler, coord.xy).rg;
-
-    float fAvgZ = map.x;
-    float fAvgZ2 = map.y;
-
-    if (coord.z <= fAvgZ) return 1.0f;
-    if (coord.z >= 1.0f) return 0.0f;
-
-    float variance = fAvgZ2 - (fAvgZ * fAvgZ);
-    variance = min(max(variance, 0.0f) + 0.001f, 1.0f);
-
-    float mean = fAvgZ;
-    float d = coord.z - mean;
-    
-    return pow(variance / (variance + d*d), 50);
-}
 
 vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 {
@@ -107,61 +66,37 @@ vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 }
 
 void main()
-{
-    vec2 ndc = passTexCoord * 2.0f - 1.0f;
-        
+{       
     vec3 position = passPosition;
-
-    vec3 lightDir = normalize(dirLight.direction);
-          
+    vec3 lightDir = normalize(dirLight.direction);      
     vec3 normal = passNormal;
 #if NORMALMAP
     normal = calcNormal(passNormal, passTangent, texture(normalMap, passTexCoord).rgb);
 #endif
-
-    //Lambert
-    float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);
-
-    //Ramp
-    vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.0f)).rgb;
-
-    //HalfLambert
-    float halfLambert = dotLightNormal * 0.5f + 0.5f;
-    halfLambert *= halfLambert;
-
-    //Light
-    vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f, 0.3f, 0.3f)) * dirLight.color.rgb * dirLight.color.a;
-    vec3 ambientLight = ambLight.color.a * ambLight.color.rgb;
     
-    //Shadow
-    float shadow = 1;
-#if SHADOWS
-    if (position.z < 30)
-        shadow *= shadowCheck(position, shadowMap0, mtxDirLight0);
-    if (position.z > 20 && position.z < 80)
-        shadow *= shadowCheck(position, shadowMap1, mtxDirLight1);
-    if (position.z > 70 && position.z < 155)
-        shadow *= shadowCheck(position, shadowMap2, mtxDirLight2);
-    if (position.z > 145)
-        shadow *= shadowCheck(position, shadowMap3, mtxDirLight3);
-#endif
+    //Lambert
+    float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);   
+	float ambHalfLambert = clamp(dot(-lightDir, normal), 0.0f, 1.0f) * 0.5f + 0.5f;
+    
+    //Light
+    vec3 diffuseLight = dotLightNormal * dirLight.color.rgb * dirLight.color.a;
+    vec3 ambientLight = ambLight.color.a * ambLight.color.rgb * ambHalfLambert; 
 
     //Specular
-    vec3 spec = vec3(0.0f, 0.0f, 0.0f);
-    vec4 sgi = texture(specGlossIllMap, passTexCoord);
+    vec3 spec = vec3(0, 0, 0);
+    vec4 specGlossIll = texture(specGlossIllMap, passTexCoord);
 #if SPECULAR
-    if (shadow > 0.001f && halfLambert > 0.001f)
-    {	
-        vec3 vCamDir = normalize(-position);
-        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sgi.g * 100.0f) * sgi.r) * 10.0f * dirLight.color.rgb;
-    }
+	vec3 vCamDir = normalize(-position);
+	spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), specGlossIll.g * 100.0f) * specGlossIll.r) * 5.0f * dirLight.color.a * dirLight.color.rgb;
 #endif
-
+             
     //Albedo
     vec4 color = texture(diffuseMap, passTexCoord);
+    
+    // Depth
+    float normalizedDepth = (position.z - perCameraUniformBuffer.cameraNearFar.x) / (perCameraUniformBuffer.cameraNearFar.y - perCameraUniformBuffer.cameraNearFar.x);
      
     //Out         
-    outNormal = encodeNormal(normal);
-    outColor = vec4(((diffuseLight + spec) * shadow + ambientLight + vec3(sgi.b, sgi.b, sgi.b) * 10) * color.rgb
-                        , 1.0f);
+    outColor = vec4(((diffuseLight + spec) + ambientLight + vec3(specGlossIll.b) * 10) * color.rgb, color.a);
+    outNormalDepth = vec3(encodeNormal(normal), normalizedDepth);
 }

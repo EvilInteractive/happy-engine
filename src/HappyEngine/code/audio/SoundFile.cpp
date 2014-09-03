@@ -26,6 +26,33 @@
 namespace he {
 namespace sfx {
 
+SoundFileProperties::SoundFileProperties()
+    : samplesCount(0)
+    , channelsCount(0)
+    , samplerate(0)
+{
+
+}
+
+SoundFileProperties::SoundFileProperties( SoundFileProperties&& other )
+    : filePath(std::move(other.filePath))
+    , samplesCount(samplesCount)
+    , channelsCount(channelsCount)
+    , samplerate(samplerate)
+{
+
+}
+
+SoundFileProperties& SoundFileProperties::operator=( SoundFileProperties&& other )
+{
+    filePath = std::move(other.filePath);
+    samplesCount = other.samplesCount;
+    channelsCount = other.channelsCount;
+    samplerate = other.samplerate;
+    return *this;
+}
+
+
 /* CONSTRUCTOR - DESTRUCTOR */
 SoundFile::SoundFile() :	
     m_FilePath(""),
@@ -113,7 +140,7 @@ SoundFileProperties SoundFile::getProperties() const
     prop.samplerate = m_Samplerate;
     prop.samplesCount = m_NrSamples;
 
-    return prop;
+    return std::move(prop);
 }
 
 /* DEFAULT COPY & ASSIGNMENT */

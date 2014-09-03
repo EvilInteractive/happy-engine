@@ -1,0 +1,14 @@
+{
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "shared/postShaderQuad.vert",
+            "FragmentShader" : "post/postEffects.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false
+    }
+}

@@ -52,7 +52,7 @@ public:
     he::Path getDirectory() const;
 
     // Iterators
-    bool iterateFiles(const bool recursive, const boost::function1<void, const Path&>& func);
+    bool iterateFiles(const bool recursive, const std::function<void(const Path&)>& func);
 
     // Static
     static const Path& getBinPath() { return s_BinPath; }
@@ -60,6 +60,10 @@ public:
     static const Path& getUserDir() { return s_UserDataFolder; }
 
     static void init(const int argc, const char* const * const argv);
+
+    bool operator==(const Path& other) const;
+    bool operator!=(const Path& other) const;
+    int operator<(const Path& other) const;
 
 private:
     void convertBackslashesToForward();

@@ -43,7 +43,7 @@ public:
 
     void push(const T& obj);
     bool pop(T& outObj);
-    bool empty();
+    bool empty() const;
 
 private:
     void enlargePool(const size_t amount);

@@ -30,7 +30,7 @@ in vec3 inNormal;
 in mat4 inWorld;
 
 
-uniform mat4 matWorldView;
+uniform mat4 matWV;
 uniform mat4 matView;
 uniform mat4 matProj;
 
@@ -42,7 +42,7 @@ void main()
         discard;
     }
     
-    passNormal = (matWorldView * vec4(inNormal, 0)).xyz;
+    passNormal = (matWV * vec4(inNormal, 0)).xyz;
     gl_Position = (matProj * ((matView * inWorld) * vec4(inPosition, 1)));
     
 }

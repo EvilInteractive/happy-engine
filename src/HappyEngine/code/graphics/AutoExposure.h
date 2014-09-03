@@ -30,6 +30,8 @@ namespace he {
 namespace gfx {
 class Texture2D;
 class ModelMesh;
+class RenderTarget;
+class MaterialInstance;
 
 class AutoExposure : public ge::ITickable
 {
@@ -37,31 +39,30 @@ public:
     AutoExposure();
     virtual ~AutoExposure();
 
-    void init(const PostSettings::HdrSettings& settings);
+    void init(View* view, const PostSettings::HdrSettings& settings);
 
-    void calculate(const Texture2D* pHdrMap );
-    virtual void tick(float dTime);
+    void calculate(const Texture2D* hdrMap );
+    void tick(float dTime) override;
 
     const Texture2D* getLuminanceMap() const;
 
 private:
 
-    Shader* m_LumShader;
-    uint32 m_HDRmapPos;
-    uint32 m_PrevLumMapPos;
-    uint32 m_DTimePos;
+    MaterialInstance* m_LumMaterial;
+
+    int8 m_MaterialparamHDRmapIndex;
+    int8 m_MaterialparamPrevLumMapIndex;
+    int8 m_MaterialparamDTimeIndex;
+    bool m_FirstBuffer : 1;
+    bool m_IsInitialized : 1;
     
-    float m_DTime;
     float m_ExposureSpeed;
 
     Texture2D* m_LumTexture[2]; //double buffered
-    bool m_FirstBuffer;
 
-    uint32 m_FboID;
-
+    RenderTarget* m_RenderTarget;
     ModelMesh* m_Quad;
 
-    bool m_bOnce;
 
     //Disable default copy constructor and default assignment operator
     AutoExposure(const AutoExposure&);

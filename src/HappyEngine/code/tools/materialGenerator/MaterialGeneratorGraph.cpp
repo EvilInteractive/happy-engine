@@ -179,7 +179,7 @@ void MaterialGeneratorGraph::init()
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(cameraSettings, true);
 
-    he::eventCallback0<void> viewResizedHandler(boost::bind(&MaterialGeneratorGraph::onViewResized, this));
+    he::eventCallback0<void> viewResizedHandler(std::bind(&MaterialGeneratorGraph::onViewResized, this));
     m_View->ViewportSizeChanged += viewResizedHandler;
 
     m_Renderer->attachToRender(this);
@@ -239,7 +239,7 @@ void MaterialGeneratorGraph::init()
 
     m_WebViewGui->OnUrlLoaded += loadedCallback;
 
-    CONSOLE->registerCmd(boost::bind(&MaterialGeneratorGraph::loadGui, this), "reloadMaterialGeneratorGui");
+    CONSOLE->registerCmd(std::bind(&MaterialGeneratorGraph::loadGui, this), "reloadMaterialGeneratorGui");
 
     eventCallback0<void> lostfocusCallback([this]()
     {
@@ -866,7 +866,7 @@ void MaterialGeneratorGraph::visit( he::io::StructuredVisitor* const visitor )
             [isLoading, factory, this](io::StructuredVisitor* const visitor, const size_t /*index*/, MaterialGeneratorNode*& node)
         {
             MaterialGeneratorNodeType type(isLoading? MaterialGeneratorNodeType_Unassigned : node->getType());
-            visitor->visitEnum<MaterialGeneratorNodeType, uint16>(HEFS::strType, type);
+            visitor->visitCasted<uint16>(HEFS::strType, type);
             if (isLoading)
             {
                 node = factory->create(type);

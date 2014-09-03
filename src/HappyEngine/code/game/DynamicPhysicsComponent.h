@@ -34,26 +34,26 @@ namespace px {
 namespace ge {
 
 struct EntityComponentDesc;
-class HAPPY_ENTRY DynamicPhysicsComponent : public EntityComponent, public Object3D, public ITickable
+class HAPPY_ENTRY DynamicPhysicsComponent : public EntityComponent, public ITickable
 {
 public:
     DynamicPhysicsComponent();
-    virtual ~DynamicPhysicsComponent();
+    ~DynamicPhysicsComponent();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    void visit(he::io::BinaryVisitor* const /*visitor*/) {} // override, final
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate(); // override, final
+    void deactivate(); // override, final
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strDynamicPhysicsComponent; }
+    const he::FixedString& getComponentID() const { return HEFS::strDynamicPhysicsComponent; } // override, final
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
-    virtual bool setProperty(const Property* const inProperty);
-    virtual bool getProperty(Property* const inOutProperty);
+    bool setProperty(const Property* const inProperty); // override, final
+    bool getProperty(Property* const inOutProperty); // override, final
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                            ITickable                               ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void tick(float dTime);
+    void tick(float dTime); // override, final
     //////////////////////////////////////////////////////////////////////////
     
     void addShape( const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, float mass, 
@@ -69,10 +69,9 @@ public:
 
     px::PhysicsDynamicActor* getDynamicActor() const;
 
-protected:
-    virtual void init(Entity* parent);
-
 private:
+    void init(Entity* parent); // override, final
+
     px::PhysicsDynamicActor* m_DynamicActor;
     
     Entity* m_Parent;
@@ -82,32 +81,6 @@ private:
     DynamicPhysicsComponent& operator=(const DynamicPhysicsComponent&);
 
 
-    //////////////////////////////////////////////////////////////////////////
-    /// Object3D
-    //////////////////////////////////////////////////////////////////////////
-public:
-    virtual void setLocalTranslate(const vec3& translate)  { Object3D::setLocalTranslate(translate); } 
-    virtual void setLocalRotate(const mat33& rotate) { Object3D::setLocalRotate(rotate); } 
-    virtual void setLocalScale(const vec3& scale) { Object3D::setLocalScale(scale); } 
-
-    virtual const vec3&  getLocalTranslate() const { return Object3D::getLocalTranslate(); } 
-    virtual const mat33& getLocalRotate() const { return Object3D::getLocalRotate(); } 
-    virtual const vec3&  getLocalScale() const { return Object3D::getLocalScale(); } 
-
-    virtual const mat44& getLocalMatrix() const { return Object3D::getLocalMatrix(); } 
-    virtual const mat44& getWorldMatrix() const { return Object3D::getWorldMatrix(); } 
-
-    virtual void attach(IObject3D* child) { Object3D::attach(child); }
-    virtual void detach(IObject3D* child) { Object3D::detach(child); }
-
-protected:
-    virtual IObject3D* getParent() const { return Object3D::getParent(); } 
-    virtual void setParent(IObject3D* parent) { Object3D::setParent(parent); } 
-
-    virtual void setWorldMatrixDirty(uint8 cause) { Object3D::setWorldMatrixDirty(cause); } 
-    virtual void setLocalMatrixDirty(uint8 cause) { Object3D::setLocalMatrixDirty(cause); } 
-
-    virtual void calculateWorldMatrix();
 };
 
 } } //end namespace

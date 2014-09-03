@@ -1,0 +1,18 @@
+{
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "shared/postShaderQuad.vert",
+            "FragmentShader" : "post/vrbarreldistort.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : false,
+        "NoPost" : false,
+        "CullFrontFace" : false,
+        "DepthRead" : false,
+        "DepthWrite" : false,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "One",
+        "DestBlend" : "Zero"
+    }
+}

@@ -33,7 +33,7 @@ public:
     Thread();
     ~Thread();
 
-    void startThread(const boost::function0<void>& threadWorker, const char* name);
+    void startThread(const std::function<void()>& threadWorker, const char* name);
     void join();
     bool isRunning() const { return m_IsRunning; }
 
@@ -45,7 +45,7 @@ private:
     ThreadID m_ID;
     details::ThreadHandle m_Handle;
     bool m_IsRunning;
-    boost::function0<void> m_Worker;
+    std::function<void()> m_Worker;
 
     //Disable default copy constructor and default assignment operator
     Thread(const Thread&);

@@ -24,7 +24,6 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include "limits.h"
 
 namespace he {
 namespace io {
@@ -38,13 +37,13 @@ IniReader::~IniReader()
 {
 }
 
-bool parseKeyValue(const std::wstring& line, std::wstring& key, std::wstring& value)
+bool parseKeyValue(const he::String& line, he::String& key, he::String& value)
 {
     using namespace std;
 
-    wstring::size_type pos(line.find(L'='));
+    he::String::size_type pos(line.find(L'='));
 
-    if (pos != wstring::npos)
+    if (pos != he::String::npos)
     {
         key = line.substr(0, pos);
         value = line.substr(pos + 1, line.size() - (pos + 1));
@@ -55,31 +54,30 @@ bool parseKeyValue(const std::wstring& line, std::wstring& key, std::wstring& va
         return false;
     }
 }
-inline std::wstring getSubDivision(const std::wstring& str)
+inline he::String getSubDivision(const he::String& str)
 {
     return str.substr(1, str.size() - 2);
 }
-void removeSpaces(std::wstring& str)
+void removeSpaces(he::String& str)
 {
-    using namespace std;
-    wstringstream stream;
+    he::StringStream stream;
 
     bool stringHalt = false;
     for_each(str.cbegin(), str.cend(), [&](wchar_t c)
     {
         if (stringHalt)
         {
-            if (stringHalt && c == L'"')
+            if (stringHalt && c == '"')
                 stringHalt = false;
 
             stream << c;
         }
         else
         {
-            if (c != L' ')
+            if (c != ' ')
             {
                 stream << c;
-                if (c == L'"')
+                if (c == '"')
                     stringHalt = true;
             }
         }
@@ -92,14 +90,14 @@ bool IniReader::open(const he::String& path)
 
     m_Data.clear();
     m_IsOpen = false;
-    std::wifstream file;
-    file.open(path, ios::in);
+    std::ifstream file;
+    file.open(path.c_str(), ios::in);
 
     if (file.is_open())
     {
-        map<wstring, wstring> subData;
-        wstring line;
-        wstring sub = L"";
+        InitReadSubData subData;
+        he::String line;
+        he::String sub = "";
         while(file.eof() == false)
         {
             getline(file, line);
@@ -112,21 +110,21 @@ bool IniReader::open(const he::String& path)
                 }
                 else if (line[0] == '[')
                 {
-                    if (sub != L"")
+                    if (!sub.empty())
                         m_Data.insert(make_pair(sub, subData));
                     sub = getSubDivision(line);
-                    subData = map<wstring, wstring>();
+                    subData = InitReadSubData();
                 }
                 else
                 {
-                    wstring key, value;
+                    he::String key, value;
                     if (parseKeyValue(line, key, value))
                         subData.insert(make_pair(key, value));
                 }
             }
         }
 
-        if (sub != L"")
+        if (sub.empty() == false)
             m_Data.insert(make_pair(sub, subData));
         file.close();
         m_IsOpen = true;
@@ -146,12 +144,12 @@ bool IniReader::isOpen() const
 //-------------------------------------------------------
 // Getters
 //-----------------------------------------------
-bool IniReader::readBool(const std::wstring& root, const std::wstring& node, bool defaultReturn) const
+bool IniReader::readBool(const he::String& root, const he::String& node, bool defaultReturn) const
 {
-    std::wstring raw(L"");
+    he::String raw("");
     if (readRaw(root, node, raw))
     {
-        if (raw == L"true" || raw == L"True" || raw == L"TRUE" || raw == L"1")
+        if (strcmp(raw.c_str(), "1") == 0 || stricmp(raw.c_str(), "true") == 0)
             return true;
         else
             return false;
@@ -161,12 +159,11 @@ bool IniReader::readBool(const std::wstring& root, const std::wstring& node, boo
         return defaultReturn;
     }
 }
-int IniReader::readInt(const std::wstring& root, const std::wstring& node, int defaultReturn) const
+int IniReader::readInt(const he::String& root, const he::String& node, int defaultReturn) const
 {
-    std::wstring wraw(L"");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         int ret = INT_MAX;
         if (sscanf(raw.c_str(), "%d", &ret) == EOF || ret == INT_MAX)
             return defaultReturn;
@@ -178,12 +175,11 @@ int IniReader::readInt(const std::wstring& root, const std::wstring& node, int d
         return defaultReturn;
     }
 }
-float IniReader::readFloat(const std::wstring& root, const std::wstring& node, float defaultReturn) const
+float IniReader::readFloat(const he::String& root, const he::String& node, float defaultReturn) const
 {
-    std::wstring wraw(L"");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         float ret = FLT_MAX;
         if (sscanf(raw.c_str(), "%f", &ret) == EOF || ret == FLT_MAX)
             return defaultReturn;
@@ -196,12 +192,11 @@ float IniReader::readFloat(const std::wstring& root, const std::wstring& node, f
     }
 }
 
-vec2 IniReader::readVector2(const std::wstring& root, const std::wstring& node, const vec2& defaultReturn) const
+vec2 IniReader::readVector2(const he::String& root, const he::String& node, const vec2& defaultReturn) const
 {
-    std::wstring wraw(L"");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         vec2 ret(FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f", &ret.x, &ret.y) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX)
             return defaultReturn;
@@ -213,12 +208,11 @@ vec2 IniReader::readVector2(const std::wstring& root, const std::wstring& node, 
         return defaultReturn;
     }
 }
-vec3 IniReader::readVector3(const std::wstring& root, const std::wstring& node, const vec3& defaultReturn) const
+vec3 IniReader::readVector3(const he::String& root, const he::String& node, const vec3& defaultReturn) const
 {
-    std::wstring wraw(L"");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         vec3 ret(FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f,%f", &ret.x, &ret.y, &ret.z) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || ret.z == FLT_MAX)
             return defaultReturn;
@@ -230,12 +224,11 @@ vec3 IniReader::readVector3(const std::wstring& root, const std::wstring& node, 
         return defaultReturn;
     }
 }
-vec4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, const vec4& defaultReturn) const
+vec4 IniReader::readVector4(const he::String& root, const he::String& node, const vec4& defaultReturn) const
 {
-    std::wstring wraw(L"");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         vec4 ret(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f,%f,%f", &ret.x, &ret.y, &ret.z, &ret.w) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX ||
                                                                                            ret.z == FLT_MAX || ret.w == FLT_MAX)
@@ -249,12 +242,11 @@ vec4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, 
     }
 }
 
-he::String IniReader::readString(const std::wstring& root, const std::wstring& node, const he::String& defaultReturn) const
+he::String IniReader::readString(const he::String& root, const he::String& node, const he::String& defaultReturn) const
 {
-    std::wstring wraw(L"");
-    if (readRaw(root, node, wraw))
+    he::String raw("");
+    if (readRaw(root, node, raw))
     {
-        he::String raw(wraw.cbegin(), wraw.cend());
         if (raw.front() == '"')
         {
             raw = raw.substr(1, raw.size() - 1);
@@ -268,33 +260,15 @@ he::String IniReader::readString(const std::wstring& root, const std::wstring& n
         return defaultReturn;
     }
 }
-std::wstring IniReader::readWString(const std::wstring& root, const std::wstring& node, const std::wstring& defaultReturn) const
-{
-    std::wstring raw(L"");
-    if (readRaw(root, node, raw))
-    {
-        if (raw.front() == L'"')
-        {
-            raw = raw.substr(1, raw.size() - 1);
-            if (raw.back() == L'"')
-                raw = raw.substr(0, raw.size() - 1);
-        }
-        return raw;
-    }
-    else
-    {
-        return defaultReturn;
-    }
-}
 
-bool IniReader::readRaw(const std::wstring& root, const std::wstring& node, std::wstring& returnValue) const
+bool IniReader::readRaw(const he::String& root, const he::String& node, he::String& returnValue) const
 {
     HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 
     IniReadData::const_iterator itRoot = m_Data.find(root);
     if (itRoot != m_Data.cend())
     {
-        std::map<std::wstring, std::wstring>::const_iterator itNode = itRoot->second.find(node);
+        std::map<he::String, he::String>::const_iterator itNode = itRoot->second.find(node);
         if (itNode != itRoot->second.cend())
         {
             returnValue = itNode->second;
@@ -310,14 +284,14 @@ bool IniReader::readRaw(const std::wstring& root, const std::wstring& node, std:
         return false;
     }
 }
-const std::map<std::wstring, std::wstring>& IniReader::getNodes(const std::wstring& root) const
+const std::map<he::String, he::String>& IniReader::getNodes(const he::String& root) const
 {
     HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 
     IniReadData::const_iterator itRoot = m_Data.find(root);
     return itRoot->second;
 }
-bool IniReader::containsRoot(const std::wstring& root) const
+bool IniReader::containsRoot(const he::String& root) const
 {
     HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 

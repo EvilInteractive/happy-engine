@@ -39,10 +39,9 @@ ObjLoader::~ObjLoader()
 {
     he_free(m_Vertices);
 }
-bool ObjLoader::load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
+bool ObjLoader::load(const he::String& path, bool allowByteIndices)
 {
     std::cout << "reading...\n";
-    m_VertexLayout = vertLayout;
 
     if (read(path) == false)
     {
@@ -54,12 +53,12 @@ bool ObjLoader::load(const he::String& path, const gfx::BufferLayout& vertLayout
     create(allowByteIndices);
 
     he_free(m_Vertices);
-    m_Vertices = he_malloc(vertLayout.getSize() * m_NumVertices);
-    std::cout << "malloc " << vertLayout.getSize() * m_NumVertices << " bytes\n";
+    m_Vertices = he_malloc(m_VertexLayout.getSize() * m_NumVertices);
+    std::cout << "malloc " << m_VertexLayout.getSize() * m_NumVertices << " bytes\n";
     HE_ASSERT(m_Vertices != nullptr, "not enough memory!");
 
     std::cout << "filling...\n";
-    fill(m_Vertices, vertLayout);
+    fill(m_Vertices);
 
     return true;
 }
@@ -86,7 +85,7 @@ bool ObjLoader::read(const he::String& path)
         return false;
     }
     
-    for_each(objData.cbegin(), objData.cend(), [&](const string& line)
+    for_each(objData.cbegin(), objData.cend(), [&](const he::String& line)
     {
         if (line[0] == 'v' && line[1] == ' ')
         {
@@ -138,6 +137,21 @@ bool ObjLoader::read(const he::String& path)
         r.begin = 0;
     r.end = static_cast<uint32>(m_FaceData.size());
     m_FaceDataMeshRange.add(r);
+
+
+    HE_ASSERT(m_VertexLayout.getSize() == 0, "vertexlayout not empty!");
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_Position, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_3, 0));
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_TextureCoordiante, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_2, 12));
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_Normal, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_3, 20));
+    m_VertexLayout.addElement(gfx::VertexElement(
+        gfx::eShaderAttribute_Tangent, gfx::eShaderAttributeType_Float, 
+        gfx::eShaderAttributeTypeComponents_3, 32));
 
     return true;
 }
@@ -212,7 +226,7 @@ void ObjLoader::create(bool allowByteIndices)
 
         for (int i = 0; i < 3; ++i)
         {
-            std::stringstream stream;
+            he::StringStream stream;
             stream << face.data[i][0] << " " << face.data[i][1] << " " << face.data[i][2];
             std::map<he::String, uint32>::const_iterator index(m_IndexMap.find(stream.str()));
             if (index == m_IndexMap.cend())
@@ -269,31 +283,31 @@ void ObjLoader::addIndex(uint32 index, uint32 group)
         default: LOG(LogType_ProgrammerAssert, "unknown type: %d", m_IndexStride[group]); break;
     }
 }
-void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) const
+void ObjLoader::fill(void* pVertexData) const
 {
     int pOff = -1;
     int tOff = -1;
     int nOff = -1;
     int tanOff = -1;
 
-    vertLayout.getElements().forEach([&](const gfx::BufferElement& element)
+    m_VertexLayout.getElements().forEach([&](const gfx::VertexElement& element)
     {
-        if (element.getUsage() == gfx::BufferElement::Usage_Position)
+        if (element.getAttribute() == gfx::eShaderAttribute_Position)
             pOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_TextureCoordinate)
+        else if (element.getAttribute() == gfx::eShaderAttribute_TextureCoordiante)
             tOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_Normal)
+        else if (element.getAttribute() == gfx::eShaderAttribute_Normal)
             nOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::BufferElement::Usage_Tangent)
+        else if (element.getAttribute() == gfx::eShaderAttribute_Tangent)
             tanOff = element.getByteOffset();
     });
 
     //optimazation for struct == internal struct
-    if (sizeof(InternalVertex) == vertLayout.getSize())
+    if (sizeof(InternalVertex) == m_VertexLayout.getSize())
     {
         if (pOff == 0 && tOff == 12 && nOff == 20)
         {
-            he_memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getSize());
+            he_memcpy(pVertexData, &m_VertexData[0], m_NumVertices * m_VertexLayout.getSize());
             return;
         }
     }
@@ -305,17 +319,17 @@ void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) con
     {
         if (pOff != -1)
         {
-            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getSize() + pOff]) = vert.pos;
+            *reinterpret_cast<vec3*>(&pCharData[count * m_VertexLayout.getSize() + pOff]) = vert.pos;
             bytecount += 12;
         }
         if (tOff != -1)
         {
-            *reinterpret_cast<vec2*>(&pCharData[count * vertLayout.getSize() + tOff]) = vert.tex;
+            *reinterpret_cast<vec2*>(&pCharData[count * m_VertexLayout.getSize() + tOff]) = vert.tex;
             bytecount += 8;
         }
         if (nOff != -1)
         {
-            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getSize() + nOff]) = vert.norm;
+            *reinterpret_cast<vec3*>(&pCharData[count * m_VertexLayout.getSize() + nOff]) = vert.norm;
             bytecount += 12;
         }
         ++count;
@@ -340,7 +354,7 @@ void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) con
             count = 0;
             tangents.forEach([&](const vec3& tan)
             {
-                *reinterpret_cast<vec3*>(&pCharData[(m_VertexMeshRange[i].begin + count++) * vertLayout.getSize() + tanOff]) = tan;
+                *reinterpret_cast<vec3*>(&pCharData[(m_VertexMeshRange[i].begin + count++) * m_VertexLayout.getSize() + tanOff]) = tan;
                 bytecount += 12;
             });
             std::cout << "    DONE\n";

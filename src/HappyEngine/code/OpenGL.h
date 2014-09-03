@@ -29,8 +29,10 @@ namespace gfx {
 #define MAX_VERTEX_ARRAY_OBJECTS MAX_OPENGL_CONTEXT
 typedef uint32 VaoID;
 
+#define BUFFER_OFFSET(i) ((char*)nullptr + (i))
+
 //http://www.opengl.org/sdk/docs/man3/xhtml/glDepthFunc.xml
-enum DepthFunc
+ENUM(DepthFunc, uint16)
 {
     DepthFunc_Never         =     GL_NEVER,        // Never passes.
     DepthFunc_Less          =     GL_LESS,         // Passes if the incoming depth value is less than the stored depth value.
@@ -44,7 +46,7 @@ enum DepthFunc
 };
 
 //more info check http://www.opengl.org/sdk/docs/man3/xhtml/glBlendFunc.xml
-enum BlendFunc
+ENUM(BlendFunc, uint16)
 {
     BlendFunc_Zero               =  GL_ZERO,	                        // (0, 0, 0, 0)
     BlendFunc_One                =  GL_ONE,	                            // (1, 1, 1, 1)
@@ -69,7 +71,7 @@ enum BlendFunc
 };
 
 //http://www.opengl.org/sdk/docs/man3/xhtml/glBlendEquationSeparate.
-enum BlendEquation
+ENUM(BlendEquation, uint16)
 {
     BlendEquation_Add             =     GL_FUNC_ADD,                // src * srcFunc + dest * destFunc
     BlendEquation_Subtract        =     GL_FUNC_SUBTRACT,           // src * srcFunc - dest * destFunc
@@ -79,7 +81,7 @@ enum BlendEquation
     BlendEquation_Unassigned      =     0xffff
 };
 
-class BufferElement;
+class VertexElement;
 class GLContext;
 class GL
 {
@@ -93,7 +95,7 @@ public:
     // Misc
     static void heSetViewport(const RectI& viewport);
     static const RectI& heGetViewport();
-    static void getGLTypesFromBufferElement(const BufferElement& element, GLint& components, GLenum& type);
+    static void getGLTypesFromVertexElement(const VertexElement& element, GLint& components, GLenum& type);
     static int getMaxMultiSamples();
 
     // Clear

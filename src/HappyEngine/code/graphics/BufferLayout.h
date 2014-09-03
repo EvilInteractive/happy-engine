@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _HE_VERTEXLAYOUT_H_
-#define _HE_VERTEXLAYOUT_H_
+#ifndef _HE_BUFFERLAYOUT_H_
+#define _HE_BUFFERLAYOUT_H_
 #pragma once
 
 
@@ -36,32 +36,18 @@ public:
         Type_IVec4,
         Type_UInt,
     };
-    enum Usage
-    {
-        Usage_Position,
-        Usage_TextureCoordinate,
-        Usage_Normal,
-        Usage_Tangent,
-        Usage_BoneIDs,
-        Usage_BoneWeights,
-        Usage_Instancing,
-        Usage_Other
-    };
+
     BufferElement();
-    BufferElement(uint32 elementIndex, Type type, Usage usage, uint32 size, uint32 byteOffset);
-    virtual ~BufferElement() {}
+    BufferElement(const Type type, const uint32 size, const uint32 byteOffset);
+    ~BufferElement() {}
     //default copy constructor and assignment operator are fine
 
-    uint32 getElementIndex() const;
     uint32 getSize() const; 
     uint32 getByteOffset() const; 
     Type getType() const;
-    Usage getUsage() const;
 
 private:
-    uint32 m_ElementIndex;
     Type m_Type;
-    Usage m_Usage;
     uint32 m_Size;
     uint32 m_ByteOffset;
 };

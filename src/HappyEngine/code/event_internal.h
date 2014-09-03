@@ -18,7 +18,6 @@
 //Author:  Bastian Damman
 //Created: 28/10/2012
 
-#define CONCAT(a, b) a##b
 #define CONCAT_EXT(a, b) CONCAT(a, b)
 #define EVALUATE(x) x
 #define EVENTCALLBACK CONCAT_EXT(eventCallback, ARGS)
@@ -54,7 +53,7 @@ struct EVENTCALLBACK
 {
     template<typename ReturnTypeA COMMA TEMPLATE_EXTRA_ARGS_PREDCL> friend class EVENT;
     template<typename ReturnTypeB COMMA TEMPLATE_EXTRA_ARGS_PREDCL> friend class details::EVENTBASE;
-    typedef typename CONCAT_EXT(boost::function,ARGS)<ReturnType COMMA TEMPLATE_TYPEDEF_ARGS> Function;
+    typedef typename std::function<ReturnType(TEMPLATE_TYPEDEF_ARGS)> Function;
 
 public:
     EVENTCALLBACK(): m_Connection(UINT16_MAX) {}
@@ -150,7 +149,7 @@ public:
     /// \param[in] value to ultimately return from the event
     /// \param[in] last received return value from a callback
     /// \return true to eat event
-    typedef boost::function2<bool, ReturnType&, const ReturnType&> EventCombiner;
+    typedef std::function<bool(ReturnType&, const ReturnType&)> EventCombiner;
 
     EVENT(): 
         m_Combiner(&details::defaultEventCombiner<ReturnType>),

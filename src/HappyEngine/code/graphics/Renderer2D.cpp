@@ -132,6 +132,7 @@ void Renderer2D::render()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_RenderTarget->prepareForRendering();
+    GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
     if (m_View->getStereo() == StereoSetting_None)
     {
         m_DefaultCanvas->draw();

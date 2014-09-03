@@ -29,13 +29,21 @@
 #include "Text.h"
 #include "Font.h"
 
+namespace
+{
+    float normalizeAngle(float a)
+    {
+        return (a * -1.0f);
+    }
+}
+
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Canvas2DRendererCairo::Canvas2DRendererCairo() : m_HandleDrawCalls(true)
 {
-    m_DrawThread.startThread(boost::bind(&Canvas2DRendererCairo::handleDrawCalls, this), "CairoDrawThread");
+    m_DrawThread.startThread(std::bind(&Canvas2DRendererCairo::handleDrawCalls, this), "CairoDrawThread");
 }
 
 Canvas2DRendererCairo::~Canvas2DRendererCairo()
@@ -47,26 +55,14 @@ Canvas2DRendererCairo::~Canvas2DRendererCairo()
     while (m_SpriteList.empty() == false)
     {
         SpriteData* data(m_SpriteList.back());
-
-        // cleanup
-        he_free(data->m_RenderBuffer);
-        cairo_destroy(data->m_CairoPaint);
-        cairo_surface_destroy(data->m_CairoSurface);
         delete data;
-
         m_SpriteList.pop();
     }
 
     while (m_DynamicSpriteList.empty() == false)
     {
         SpriteData* data(m_DynamicSpriteList.back());
-
-        // cleanup
-        he_free(data->m_RenderBuffer);
-        cairo_destroy(data->m_CairoPaint);
-        cairo_surface_destroy(data->m_CairoSurface);
         delete data;
-
         m_DynamicSpriteList.removeAt(m_DynamicSpriteList.size() - 1);
     }
 }
@@ -127,10 +123,10 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
                 4 * w * h,
                 sizeof(unsigned char))));
 
-            _cairo_surface* surf(
+            cairo_surface_t* surf(
                 cairo_image_surface_create_for_data(rBuff, CAIRO_FORMAT_ARGB32, w, h, 4 * w));
 
-            _cairo* cp(cairo_create(surf));
+            cairo_t* cp(cairo_create(surf));
 
             data->m_RenderBuffer = rBuff;
             data->m_CairoPaint = cp;
@@ -154,10 +150,10 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
             4 * w * h,
             sizeof(unsigned char))));
 
-        _cairo_surface* surf(
+        cairo_surface_t* surf(
             cairo_image_surface_create_for_data(rBuff, CAIRO_FORMAT_ARGB32, w, h, 4 * w));
 
-        _cairo* cp(cairo_create(surf));
+        cairo_t* cp(cairo_create(surf));
 
         SpriteData* data(NEW SpriteData(
                 id, size,
@@ -203,8 +199,8 @@ void Canvas2DRendererCairo::setLineWidth(float width)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
-        &cairo_set_line_width,
+        std::bind(
+        ::cairo_set_line_width,
         sData->m_CairoPaint,
         static_cast<double>(width)));
 
@@ -222,7 +218,7 @@ void Canvas2DRendererCairo::setColor(const Color& col)
     if (col.a() == 1.0f)
     {
         sData->m_DrawCalls.push(
-            boost::bind(
+            std::bind(
             &cairo_set_source_rgb,
             sData->m_CairoPaint,
             static_cast<double>(col.r()),
@@ -232,7 +228,7 @@ void Canvas2DRendererCairo::setColor(const Color& col)
     else
     {
         sData->m_DrawCalls.push(
-            boost::bind(
+            std::bind(
             &cairo_set_source_rgba,
             sData->m_CairoPaint,
             static_cast<double>(col.r()),
@@ -252,7 +248,7 @@ void Canvas2DRendererCairo::setLineCap(gui::LINE_CAP cap)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_set_line_cap,
         sData->m_CairoPaint,
         static_cast<cairo_line_cap_t>(cap)));
@@ -268,7 +264,7 @@ void Canvas2DRendererCairo::setLineJoin(gui::LINE_JOIN join)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_set_line_join,
         sData->m_CairoPaint,
         static_cast<cairo_line_join_t>(join)));
@@ -286,23 +282,23 @@ void Canvas2DRendererCairo::clear()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_save,
         sData->m_CairoPaint));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_set_operator,
         sData->m_CairoPaint,
         CAIRO_OPERATOR_CLEAR));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_paint,
         sData->m_CairoPaint));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_restore,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -317,7 +313,7 @@ void Canvas2DRendererCairo::moveTo(const vec2& pos)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_move_to,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
@@ -334,7 +330,7 @@ void Canvas2DRendererCairo::lineTo(const vec2& pos)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_line_to,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
@@ -354,7 +350,7 @@ void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_rectangle,
         sData->m_CairoPaint,
         static_cast<double>(pos.x),
@@ -371,16 +367,13 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadSta
 
     HE_ASSERT((sData->m_ReadyState & SpriteReadyForRender) == false,
         "Sprite is already marked for rendering, can't draw!");
-
-    sData->m_DrawCalls.push(
-        boost::bind(
-        &cairo_arc,
-        sData->m_CairoPaint,
-        static_cast<double>(pos.x),
-        static_cast<double>(pos.y),
-        static_cast<double>(radius),
-        static_cast<double>(normalizeAngle(angleRadStart)),
-        static_cast<double>(normalizeAngle(angleRadEnd))));
+    cairo_t* paintPtr(sData->m_CairoPaint);
+    sData->m_DrawCalls.push([paintPtr, pos, radius, angleRadStart, angleRadEnd]()
+        {
+            ::cairo_arc(paintPtr, static_cast<double>(pos.x), static_cast<double>(pos.y),
+                static_cast<double>(radius), static_cast<double>(normalizeAngle(angleRadStart)),
+                static_cast<double>(normalizeAngle(angleRadEnd)));
+        });
     m_SpriteListLock.unlock();
 }
 void Canvas2DRendererCairo::curveTo(const vec2& controlP1, const vec2& controlP2, const vec2& end)
@@ -392,16 +385,14 @@ void Canvas2DRendererCairo::curveTo(const vec2& controlP1, const vec2& controlP2
     HE_ASSERT((sData->m_ReadyState & SpriteReadyForRender) == false,
         "Sprite is already marked for rendering, can't draw!");
 
-    sData->m_DrawCalls.push(
-        boost::bind(
-        &cairo_curve_to,
-        sData->m_CairoPaint,
-        static_cast<double>(controlP1.x),
-        static_cast<double>(controlP1.y),
-        static_cast<double>(controlP2.x),
-        static_cast<double>(controlP2.y),
-        static_cast<double>(end.x),
-        static_cast<double>(end.y)));
+    cairo_t* paintPtr(sData->m_CairoPaint);
+    sData->m_DrawCalls.push([paintPtr, controlP1, controlP2, end]()
+    {
+        cairo_curve_to(paintPtr,
+            static_cast<double>(controlP1.x), static_cast<double>(controlP1.y),
+            static_cast<double>(controlP2.x), static_cast<double>(controlP2.y),
+            static_cast<double>(end.x), static_cast<double>(end.y));
+    });
     m_SpriteListLock.unlock();
 }
 void Canvas2DRendererCairo::newPath()
@@ -414,7 +405,7 @@ void Canvas2DRendererCairo::newPath()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_new_path,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -429,7 +420,7 @@ void Canvas2DRendererCairo::closePath()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_close_path,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -445,7 +436,7 @@ void Canvas2DRendererCairo::text(const gui::Text& text, const vec2& pos)
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &Canvas2DRendererCairo::_text,
         this,
         text,
@@ -464,7 +455,7 @@ void Canvas2DRendererCairo::stroke()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_stroke_preserve,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -479,7 +470,7 @@ void Canvas2DRendererCairo::fill()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_fill_preserve,
         sData->m_CairoPaint));
     m_SpriteListLock.unlock();
@@ -493,13 +484,7 @@ void Canvas2DRendererCairo::blit()
 {
     uint32 spriteToBlit(0);
 
-    m_SpriteListBlitLock.lock(FILE_AND_LINE);
-        // check nr sprites to blit
-        spriteToBlit = m_SpriteListBlit.size();
-
-    m_SpriteListBlitLock.unlock();
-
-    while (spriteToBlit > 0)
+    while (m_SpriteListBlit.size() > 0)
     {
         m_SpriteListBlitLock.lock(FILE_AND_LINE);
             // get data from queue
@@ -519,44 +504,33 @@ void Canvas2DRendererCairo::blit()
         if ((data->m_ReadyState & SpriteDynamic) == false)
         {
             // cleanup
-            he_free(data->m_RenderBuffer);
-            cairo_destroy(data->m_CairoPaint);
-            cairo_surface_destroy(data->m_CairoSurface);
             delete data;
         }
 
         --spriteToBlit;
     }
 }
-float Canvas2DRendererCairo::normalizeAngle(float a)
-{
-    return (a * -1.0f);
-}
+
 void Canvas2DRendererCairo::handleDrawCalls()
 {
     const size_t waitTime(10);
 
-    bool renderSprite(false);
-
     while (m_HandleDrawCalls)
     {
-        uint32 spritesToRender(m_SpriteList.size());
-
-        if (spritesToRender > 0)
+        if (m_SpriteList.size() > 0)
         {
-            while (spritesToRender > 0)
+            while (m_SpriteList.size() > 0 && m_HandleDrawCalls)
             {
                 m_SpriteListLock.lock(FILE_AND_LINE);
 
-                    // check if needs to be rendered
-                    SpriteData* data(m_SpriteList.front());
-
-                m_SpriteListLock.unlock();
-            
-                renderSprite = (data->m_ReadyState & SpriteReadyForRender);
-
+                // check if needs to be rendered
+                SpriteData* data(m_SpriteList.front());          
+                bool renderSprite = (data->m_ReadyState & SpriteReadyForRender);
                 if (renderSprite)
                 {
+                    m_SpriteList.pop();
+                    m_SpriteListLock.unlock();
+
                     // execute all the drawcalls for the sprite
                     while (data->m_DrawCalls.empty() == false)
                     {
@@ -568,22 +542,18 @@ void Canvas2DRendererCairo::handleDrawCalls()
                     data->m_ReadyState |= SpriteReadyForBlit;
 
                     m_SpriteListBlitLock.lock(FILE_AND_LINE);
-
                         // push spritedata to blitting queue
                         m_SpriteListBlit.push(data);
-
                     m_SpriteListBlitLock.unlock();
             
-                    m_SpriteListLock.lock(FILE_AND_LINE);
-            
-                        // pop it off the regular queue
-                        m_SpriteList.pop();
-
+                    // pop it off the regular queue
+                }
+                else
+                {
                     m_SpriteListLock.unlock();
                 }
 
                 renderSprite = false;
-                --spritesToRender;
             }
         }
         else
@@ -603,14 +573,14 @@ void Canvas2DRendererCairo::transformY()
         "Sprite is already marked for rendering, can't draw!");
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_scale,
         sData->m_CairoPaint,
         1.0,
         -1.0));
 
     sData->m_DrawCalls.push(
-        boost::bind(
+        std::bind(
         &cairo_translate,
         sData->m_CairoPaint,
         0.0,

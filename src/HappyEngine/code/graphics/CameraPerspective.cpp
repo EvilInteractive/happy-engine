@@ -23,6 +23,8 @@
 
 #include "CameraPerspective.h"
 #include "Bound.h"
+#include "GraphicsEngine.h"
+#include "ShaderUniformBufferManager.h"
 
 namespace he {
 namespace gfx {
@@ -189,6 +191,7 @@ void CameraPerspective::prepareForRendering()
         m_RegenViewMatrix = false;
         m_RegenProjMatrix = false;
     }
+    GRAPHICS->getShaderUniformBufferManager()->updateCameraBuffer(this);
 }
 
 void CameraPerspective::setFov( const float fov )

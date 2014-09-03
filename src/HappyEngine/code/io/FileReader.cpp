@@ -73,7 +73,7 @@ he::String FileReader::readToEnd()
 {
     HE_ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open errors? or did you open it for unicode?");
 
-    std::stringstream file;
+    he::StringStream file;
 
     while (m_fstream.eof() == false)
     {

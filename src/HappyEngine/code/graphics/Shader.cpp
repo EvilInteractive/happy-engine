@@ -19,17 +19,81 @@
 #include "Shader.h"
 
 #include "FileReader.h"
-#include "ShaderPreProcessor.h"
-
-#include "Texture2D.h"
-#include "TextureCube.h"
+#include "GraphicsEngine.h"
 #include "ExternalError.h"
+#include "GlobalStringTable.h"
+
+#include "ShaderPreProcessor.h"
+#include "ShaderUniform.h"
+#include "ShaderUniformFactory.h"
+#include "ShaderUniformBufferManager.h"
+
+
+namespace 
+{
+    bool validateShader(GLuint shaderID, const he::String& file)
+    {
+        GLint compiled;
+        glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
+        if (compiled == GL_FALSE)
+        {
+            const he::uint32 BUFFER_SIZE = 512;
+            char buffer[BUFFER_SIZE];
+            GLsizei length = 0;
+
+            glGetShaderInfoLog(shaderID, BUFFER_SIZE, &length, buffer);
+
+            HE_ERROR("Shader %d(%s) compile err:", shaderID, file.c_str());
+            HE_ERROR(buffer);
+        }
+        return compiled == GL_TRUE;
+    }
+    bool validateProgram(GLuint programID)
+    {
+        bool succes = true;
+
+        GLint linkStatus;
+        glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
+
+        if (linkStatus == GL_FALSE)
+        {
+            const he::uint32 BUFFER_SIZE = 512;
+            char buffer[BUFFER_SIZE];
+            GLsizei length = 0;
+
+            glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
+            if (length > 0)
+            {
+                HE_ERROR("Program %d link err:", (int)programID);
+                HE_ERROR(buffer);
+            }
+            succes = false;
+        }
+
+        glValidateProgram(programID);
+        GLint validateStatus;
+        glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
+        if (validateStatus == GL_FALSE)
+        {
+            const he::uint32 BUFFER_SIZE(512);
+            char buffer[BUFFER_SIZE];
+            he_memset(buffer, 0, BUFFER_SIZE);
+            GLsizei length(0);
+        
+            glGetProgramInfoLog(programID, BUFFER_SIZE - 1, &length, buffer);   
+        
+            HE_ERROR("Error validating shader %d\n%s", programID, buffer);
+            succes = false;
+        }
+
+        return succes;
+    }
+}
 
 namespace he {
 namespace gfx {
 
 uint32 Shader::s_CurrentBoundShader = 0;
-uint32 UniformBuffer::s_UniformBufferCount = 0;
 
 Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 {
@@ -37,11 +101,12 @@ Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 
 Shader::~Shader()
 {
-    std::for_each(m_UniformBufferMap.cbegin(), m_UniformBufferMap.cend(), [](const std::pair<uint32, UniformBuffer*>& p)
+    size_t unitformCount(m_Uniforms.size());
+    for (size_t i(0); i < unitformCount; ++i)
     {
-        delete p.second;
-    });
-
+        ShaderUniformFactory::destroy(m_Uniforms[i]);
+    }
+    
     glDetachShader(m_Id, m_VsId);
     glDetachShader(m_Id, m_FsId);
 
@@ -49,73 +114,8 @@ Shader::~Shader()
     glDeleteShader(m_FsId);
     glDeleteProgram(m_Id);
 }
-bool validateShader(GLuint shaderID, const he::String& file)
-{
-    GLint compiled;
-    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
-    if (compiled == GL_FALSE)
-    {
-        const uint32 BUFFER_SIZE = 512;
-        char buffer[BUFFER_SIZE];
-        GLsizei length = 0;
 
-        glGetShaderInfoLog(shaderID, BUFFER_SIZE, &length, buffer);
-
-        HE_ERROR("Shader %d(%s) compile err:", shaderID, file.c_str());
-        HE_ERROR(buffer);
-    }
-    return compiled == GL_TRUE;
-}
-bool validateProgram(GLuint programID)
-{
-    bool succes = true;
-
-    GLint linkStatus;
-    glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
-
-    if (linkStatus == GL_FALSE)
-    {
-        const uint32 BUFFER_SIZE = 512;
-        char buffer[BUFFER_SIZE];
-        GLsizei length = 0;
-
-        glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
-        if (length > 0)
-        {
-            HE_ERROR("Program %d link err:", (int)programID);
-            HE_ERROR(buffer);
-        }
-        succes = false;
-    }
-
-    glValidateProgram(programID);
-    GLint validateStatus;
-    glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
-    if (validateStatus == GL_FALSE)
-    {
-        const uint32 BUFFER_SIZE(512);
-        char buffer[BUFFER_SIZE];
-        he_memset(buffer, 0, BUFFER_SIZE);
-        GLsizei length(0);
-        
-        glGetProgramInfoLog(programID, BUFFER_SIZE - 1, &length, buffer);
-        
-        HE_ERROR("Error validating shader %d\n%s", programID, buffer);
-        
-        succes = false;
-    }
-
-    return succes;
-}
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout)
-{
-    return initFromFile(vsPath, fsPath, shaderLayout, std::set<he::String>(), he::ObjectList<he::String>());
-}
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
-{
-    return initFromFile(vsPath, fsPath, shaderLayout, std::set<he::String>(), outputs);
-}
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     HE_ASSERT(m_Id != -1, "no need to init twice");
 
@@ -146,28 +146,29 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     }
     // <-----------------------------------------------
 
-    return initFromMem(strVS, strFS, shaderLayout, vsPath, fsPath, defines, outputs);
+    return initFromMem(strVS, strFS, vsPath, fsPath, defines, outputLayout);
 }
 
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName)
-{
-    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<he::String>(), he::ObjectList<he::String>());
-}
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName , const he::ObjectList<he::String>& outputs)
-{
-    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<he::String>(), outputs);
-}
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     bool succes = true;
 
-    setName(debugFragName);
+    setName(debugVertName+"/"+debugFragName);
 
     m_VertShaderName = debugVertName;
     m_FragShaderName = debugFragName;
 
-    he::String vsPost = ct::details::ShaderPreProcessor::process(vs, defines);
-    he::String fsPost = ct::details::ShaderPreProcessor::process(fs, defines);
+    he::ObjectList<he::String> shaderDefines;
+
+    if (defines)
+        shaderDefines.append(*defines);
+    he::String vsPost = ct::details::ShaderPreProcessor::process(vs, shaderDefines);
+
+    shaderDefines.clear();
+
+    if (defines)
+        shaderDefines.append(*defines);
+    he::String fsPost = ct::details::ShaderPreProcessor::process(fs, shaderDefines);
 
     m_VsId = glCreateShader(GL_VERTEX_SHADER);
     m_FsId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -185,29 +186,145 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
     m_Id = glCreateProgram();
     glAttachShader(m_Id, m_VsId);
     glAttachShader(m_Id, m_FsId);
-
-    const ShaderLayout::layout& layout(shaderLayout.getElements());
-    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
+    
+    if (outputLayout)
     {
-        glBindAttribLocation(m_Id, e.getElementIndex(), e.getShaderVariableName().c_str());
-    });
-
-    for (uint32 i = 0; i < outputs.size(); ++i)
-    {
-        glBindFragDataLocation(m_Id, i, outputs[i].c_str());
+        GLuint index(0);
+        outputLayout->forEach([this, &index](const he::String& output)
+        {
+            glBindFragDataLocation(m_Id, GL_COLOR_ATTACHMENT0 + index++, output.c_str());
+        });
     }
 
     glLinkProgram(m_Id);
 
-    #ifdef HE_DEBUG
-    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
-    {
-        HE_ASSERT(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()) == (GLint)e.getElementIndex(), 
-            "Attribute (%s) bind failed! requested:%d - got:%d", e.getShaderVariableName().c_str(), e.getElementIndex(), glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()));
-    });
-    #endif
+    succes &= validateProgram(m_Id);
 
-    succes = succes && validateProgram(m_Id);
+    bind();
+
+    GlobalStringTable* const stringTable(GlobalStringTable::getInstance());
+    
+    GLint attribCount(-1);
+    glGetProgramiv( m_Id, GL_ACTIVE_ATTRIBUTES, &attribCount );
+    for (GLint i(0); i < attribCount; ++i)
+    {
+        GLint nameLen(-1);
+        GLint size(0);
+        GLenum type(GL_ZERO);
+        GLchar name[100];
+        glGetActiveAttrib(m_Id, i, 99, &nameLen, &size, &type, name);
+        name[nameLen] = '\0';
+        const GLuint location(glGetAttribLocation( m_Id, name ));
+        if (location != -1)
+        {
+            const FixedString fixedName(stringTable->add(name, nameLen));
+
+            he::toLower(name);
+
+            EShaderAttribute usage(eShaderAttribute_Invalid);
+            if (strstr(name, "pos") != 0)
+                usage = eShaderAttribute_Position;
+            else if (strstr(name, "tex") != 0)
+                usage = eShaderAttribute_TextureCoordiante;
+            else if (strstr(name, "nor") != 0)
+                usage = eShaderAttribute_Normal;
+            else if (strstr(name, "tan") != 0)
+                usage = eShaderAttribute_Tangent;
+            else if (strstr(name, "col") != 0)
+                usage = eShaderAttribute_Color;
+            else if (strstr(name, "id") != 0)
+                usage = eShaderAttribute_BoneIndices;
+            else if (strstr(name, "wei") != 0)
+                usage = eShaderAttribute_BoneWeights;
+            else
+            {
+                LOG(he::LogType_ProgrammerAssert, "Could not deduce shader attribute usage from name '%s'", fixedName.c_str());
+                continue;
+            }
+
+            const ShaderLayoutAttribute el(fixedName, usage, location);
+            m_Layout.addAttribute(el);
+        }
+        else
+        {
+            LOG(he::LogType_ProgrammerAssert, "Could not bind shader attribute: %s to shader: %s", name, debugVertName.c_str());
+        }
+    }
+
+    GLint uniformBlockCount(-1);
+    glGetProgramiv( m_Id, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount );
+    for(GLint i(0); i < uniformBlockCount; ++i)  
+    {
+        GLchar buffer[100];
+        GLsizei size(0);
+        glGetActiveUniformBlockName(m_Id, i, 99, &size, buffer);
+        const he::FixedString uboName(he::GlobalStringTable::getInstance()->add(buffer, size));
+
+        const GLuint location(glGetUniformBlockIndex(m_Id, uboName.c_str()));
+        ShaderUniformBufferManager* uboMan(GRAPHICS->getShaderUniformBufferManager());
+        uint32 uboLink(uboMan->findLink(uboName));
+        if (uboLink != UINT32_MAX)
+        {
+            glUniformBlockBinding(m_Id, location, uboLink);
+        }
+    }
+
+    GLint uniformCount(-1);
+    glGetProgramiv( m_Id, GL_ACTIVE_UNIFORMS, &uniformCount ); 
+    size_t samplers(0);
+    for(GLint i(0); i < uniformCount; ++i)  
+    {
+        GLint nameLen(-1);
+        GLint num(1);
+        GLenum type(GL_ZERO);
+        GLchar name[100];
+        glGetActiveUniform( m_Id, i, 99, &nameLen, &num, &type, name );
+        name[nameLen] = '\0'; // Add null terminator
+        const GLuint location(glGetUniformLocation( m_Id, name ));
+        if (location != -1) // Can be -1 if it is inside an UBO!
+        {
+            const he::FixedString fsName(he::GlobalStringTable::getInstance()->add(name, nameLen));
+            IShaderUniform* uniform(nullptr);
+            if (num == 1)
+            {
+                switch (type)
+                {
+                case GL_FLOAT: uniform = ShaderUniformFactory::create(eShaderUniformType_Float, fsName, location); break;
+                case GL_FLOAT_VEC2: uniform = ShaderUniformFactory::create(eShaderUniformType_Float2, fsName, location); break;
+                case GL_FLOAT_VEC3: uniform = ShaderUniformFactory::create(eShaderUniformType_Float3, fsName, location); break;
+                case GL_FLOAT_VEC4: uniform = ShaderUniformFactory::create(eShaderUniformType_Float4, fsName, location); break;
+                case GL_INT: uniform = ShaderUniformFactory::create(eShaderUniformType_Int, fsName, location); break;
+                case GL_UNSIGNED_INT: uniform = ShaderUniformFactory::create(eShaderUniformType_UInt, fsName, location); break;
+                case GL_FLOAT_MAT4: uniform = ShaderUniformFactory::create(eShaderUniformType_Mat44, fsName, location); break;
+                case GL_SAMPLER_2D: 
+                {
+                    glUniform1i(location, samplers);
+                    uniform = ShaderUniformFactory::create(eShaderUniformType_Texture2D, fsName, samplers++);
+                } break;
+                case GL_SAMPLER_CUBE: 
+                {
+                    glUniform1i(location, samplers);
+                    uniform = ShaderUniformFactory::create(eShaderUniformType_TextureCube, fsName, samplers++); 
+                } break;
+                default: LOG(LogType_ProgrammerAssert, "Unsupported shader uniform type %d (%s)", type, fsName.c_str());
+                }
+            }
+            else
+            {
+                HE_ASSERT(num > 1, "GL returned a uniform with an array size of 0?");
+                switch (type)
+                {
+                case GL_FLOAT_MAT4: uniform = ShaderUniformFactory::create(eShaderUniformType_Mat44Array, fsName, location); break;
+                default: LOG(LogType_ProgrammerAssert, "Unsupported shader uniform array type %d", type);
+                }
+            }
+            if (nullptr != uniform)
+            {
+                uniform->init(this);
+                m_Uniforms.add(uniform);
+            }
+        }
+    }
 
     return succes;
 }
@@ -221,56 +338,17 @@ void Shader::bind()
     }
 }
 
-uint32 Shader::getBufferId( const he::String& name ) const
-{
-    uint32 loc(glGetUniformBlockIndex(m_Id, name.c_str()));
-    if (loc == -1)
-    {
-        HE_ERROR("Uniform buffer: '%s' not found!", name.c_str());
-        HE_ERROR("In shader: %s", m_FragShaderName.c_str());
-    }
-    return loc;
-}
-
-uint32 Shader::getShaderVarId(const he::String& name) const
-{
-    uint32 loc(glGetUniformLocation(m_Id, name.c_str()));
-    if (loc == -1)
-    {
-        HE_ERROR("Shader var: '%s' not found!", name.c_str());
-        HE_ERROR("In shader: %s", m_FragShaderName.c_str());
-    }
-    return loc;
-}
-uint32 Shader::getShaderSamplerId(const he::String& name)
-{
-    std::map<he::String, uint32>::const_iterator loc(m_SamplerLocationMap.find(name));
-    if (loc != m_SamplerLocationMap.cend())
-    {
-        return loc->second;
-    }
-    else
-    {
-        uint32 texLoc(getShaderVarId(name));
-        uint32 samplerIndex(static_cast<uint32>(m_SamplerLocationMap.size()));
-        bind();
-        glUniform1i(texLoc, samplerIndex);
-        m_SamplerLocationMap[name] = samplerIndex;
-        return samplerIndex;
-    }
-}
-
-void Shader::setShaderVar(uint32 id, int value) const
+void Shader::setShaderVar(uint32 id, const int value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1i(id, value);
 }
-void Shader::setShaderVar(uint32 id, uint32 value) const
+void Shader::setShaderVar(uint32 id, const uint32 value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1ui(id, value);
 }
-void Shader::setShaderVar(uint32 id, float value) const
+void Shader::setShaderVar(uint32 id, const float value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1f(id, value);
@@ -301,30 +379,41 @@ void Shader::setShaderVar(uint32 id, const he::PrimitiveList<mat44>& matrixArray
     HE_ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");
     glUniformMatrix4fv(id, static_cast<uint32>(matrixArray.size()), GL_FALSE, matrixArray[0].toFloatArray());
 }
-void Shader::setShaderVar(uint32 id, const gfx::Texture2D* tex2D) const
+void Shader::setSampler2D(uint32 id, const uint32 sampler) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    GL::heBindTexture2D(id, tex2D->getID());
+    // HE_ASSERT(sampler != UINT32_MAX, "Binding unassigned texture!");
+    GL::heBindTexture2D(id, sampler);
 }
-void Shader::setShaderVar( uint32 id, const gfx::TextureCube* texCube ) const
+void Shader::setSamplerCube( uint32 id, const uint32 sampler ) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    GL::heBindTextureCube(id, texCube->getID());
+    GL::heBindTextureCube(id, sampler);
 }
 
-void Shader::setBuffer( uint32 id, UniformBuffer* buffer )
+ShaderUniformID Shader::getUniformID( const he::FixedString& name ) const
 {
-    glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
+    ShaderUniformID id;
+    size_t unitformCount(m_Uniforms.size());
+    for (size_t i(0); i < unitformCount; ++i)
+    {
+        if (m_Uniforms[i]->getName() == name)
+        {
+            id.m_ID = i;
+            break;
+        }
+    }
+    return id;
 }
 
-UniformBuffer* Shader::setBuffer( uint32 id )
+IShaderUniform* Shader::getUniform( const ShaderUniformID id ) const
 {
-    int blockSize;
-    glGetActiveUniformBlockiv(m_Id, id, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-    UniformBuffer* buffer(NEW UniformBuffer(blockSize));
-    glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
-    m_UniformBufferMap[buffer->m_BufferId] = buffer;
-    return buffer;
+    return m_Uniforms[id.m_ID];
+}
+
+he::int8 Shader::getOutputIndex( const he::FixedString& outputName ) const
+{
+    return checked_numcast<int8>(glGetFragDataLocation(m_Id, outputName.c_str()));
 }
 
 } } //end namespace

@@ -83,7 +83,7 @@ void Object3D::detach( IObject3D* child )
     }
 }
 
-void Object3D::setWorldMatrixDirty(uint8 cause)
+void Object3D::setWorldMatrixDirty(const uint8 cause)
 {
     if ( (m_WorldMatrixDirty & cause) != cause)
     {

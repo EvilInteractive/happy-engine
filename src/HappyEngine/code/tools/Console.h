@@ -82,7 +82,7 @@ public:
         }
     }
 
-    void registerCmd(const boost::function<void()>& command, const he::String& cmdKey);
+    void registerCmd(const std::function<void()>& command, const he::String& cmdKey);
 
     void addTypeHandler(ITypeHandler* typeHandler);
     void flushMessageHistory();
@@ -109,7 +109,7 @@ private:
 
     /* DATAMEMBERS */
     std::map<he::String, boost::any> m_ValueContainer;
-    std::map<he::String, boost::function<void()> > m_FunctionContainer;
+    std::map<he::String, std::function<void()> > m_FunctionContainer;
     std::map<CMSG_TYPE, Color> m_MsgColors;
     std::map<he::String, ITypeHandler*> m_TypeHandlers;
     he::ObjectList<std::pair<CMSG_TYPE, he::String> > m_MsgHistory;

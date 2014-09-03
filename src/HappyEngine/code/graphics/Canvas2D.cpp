@@ -50,7 +50,7 @@ Canvas2D::Canvas2D(gfx::Renderer2D* parent,const RectF& relativeViewport) :
         (parent->getView()->getViewport().width * relativeViewport.width),
         (parent->getView()->getViewport().height * relativeViewport.height));
 
-    he::eventCallback0<void> viewResizedHandler(boost::bind(&Canvas2D::viewResized, this));
+    he::eventCallback0<void> viewResizedHandler(std::bind(&Canvas2D::viewResized, this));
     parent->getView()->ViewportSizeChanged += viewResizedHandler;
 }
 
@@ -68,7 +68,7 @@ Canvas2D::Canvas2D(gfx::Renderer2D* parent, const RectI& absoluteViewport) :
         static_cast<float>(absoluteViewport.width),
         static_cast<float>(absoluteViewport.height));
 
-    he::eventCallback0<void> viewResizedHandler(boost::bind(&Canvas2D::viewResized, this));
+    he::eventCallback0<void> viewResizedHandler(std::bind(&Canvas2D::viewResized, this));
     parent->getView()->ViewportSizeChanged += viewResizedHandler;
 }
 

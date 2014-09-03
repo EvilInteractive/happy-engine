@@ -32,12 +32,12 @@ class Model : public Resource<Model>
 {
 public:
     Model();
-    virtual ~Model();
+    ~Model();
 
     //////////////////////////////////////////////////////////////////////////
     /// Resource
-    virtual void release() const;
-    virtual bool canBeGarbageCollected() const;
+    void release() const; // override
+    bool canBeGarbageCollected() const; // override
 
     //////////////////////////////////////////////////////////////////////////
     /// Model
@@ -46,6 +46,8 @@ public:
     ModelMesh* getMesh(const uint32 index) const;
     ModelMesh* instantiateMesh(uint32 index) const;
     ModelMesh* instantiateMesh(const he::String& name) const;
+
+
     ModelMesh* tryInstantiateMesh(const he::String& name) const;
     Model* instantiateMeshesWithPrefix(const he::String& prefix) const;
 

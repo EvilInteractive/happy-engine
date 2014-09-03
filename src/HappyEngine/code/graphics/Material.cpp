@@ -18,349 +18,368 @@
 //Author:  Bastian Damman
 //Created: 30/09/2011
 #include "HappyPCH.h" 
-
 #include "Material.h"
-#include "IDrawable.h"
-
-#include "LightManager.h"
-#include "AmbientLight.h"
-#include "DirectionalLight.h"
 
 #include "Shader.h"
-#include "ShaderVar.h"
-
-#include "ICamera.h"
-#include "Scene.h"
+#include "MaterialInstance.h"
+#include "ShaderUniform.h"
+#include "PropertyConverter.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace gfx {
 
-Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(false), m_IsBackground(false),
-    m_DepthRead(true), m_DepthWrite(true), m_ShaderHandle(ObjectHandle::unassigned), m_CullFrontFace(false)
+Material::Material()
+    : m_Flags(0)
+    , m_BlendEquation(BlendEquation_Add)
+    , m_SourceBlend(BlendFunc_One)
+    , m_DestBlend(BlendFunc_Zero)
+    , m_DepthFunc(DepthFunc_LessOrEqual)
 {
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
+    {
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+        {
+            m_Shader[pass][rtype] = nullptr;
+        }
+    }
 }
 
 Material::~Material()
 {
-    m_ShaderVars.forEach([](ShaderVar* var)
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
     {
-        delete var;
-    });
-    if (m_ShaderHandle != ObjectHandle::unassigned)
-        ResourceFactory<Shader>::getInstance()->release(m_ShaderHandle);
-}
-
-void Material::registerVar(ShaderVar* var)
-{
-    HE_ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
-    m_ShaderVars.add(var);
-}
-
-void Material::setShader(const ObjectHandle& shaderHandle, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout)
-{
-    m_UsedForInstancing = compatibleInstancingLayout.getSize() > 0;
-    if (m_ShaderHandle != ObjectHandle::unassigned)
-        ResourceFactory<Shader>::getInstance()->release(m_ShaderHandle);
-    ResourceFactory<Shader>::getInstance()->instantiate(shaderHandle);
-    m_ShaderHandle = shaderHandle;
-    HE_ASSERT(compatibleVertexLayout.getSize() > 0, "VertexLayout size == 0!");
-    m_CompatibleVL = compatibleVertexLayout;
-    m_CompatibleIL = compatibleInstancingLayout;
-}
-ShaderVar* Material::getVar( const he::String& var )
-{
-    he::PrimitiveList<ShaderVar*>::const_iterator it(m_ShaderVars.cbegin());
-    for (; it != m_ShaderVars.cend(); ++it)
-    {
-        if ((*it)->getName() == var)
-        {          
-            return *it;
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+        {
+            Shader* const shader(m_Shader[pass][rtype]);
+            if (shader != nullptr)
+            {
+                shader->cancelLoadCallback(this);
+                shader->release();
+                m_Shader[pass][rtype] = nullptr;
+            }
         }
     }
-    HE_ERROR("Unable to find var: %s", var.c_str());
-    return nullptr;
 }
-
-
-void Material::apply( const SingleDrawable* drawable, const ICamera* camera ) const
+    
+MaterialInstance* Material::createMaterialInstance(const EShaderRenderType type) const
 {
-    HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
+    MaterialInstance* instance(NEW MaterialInstance(this, type));
+    return instance;
+}
+    
+void Material::init()
+{
+    HE_ASSERT(isLoaded() == false, "Material is already loaded and cannot be inited again!");
+
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
     {
-        if (m_IsBlended)
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
         {
-            GL::heBlendEquation(m_BlendEquation);
-            GL::heBlendFunc(m_SourceBlend, m_DestBlend);
-        }
-        GL::heSetDepthRead(m_DepthRead);
-        GL::heSetDepthWrite(m_DepthWrite);
-
-        GL::heSetCullFace(m_CullFrontFace);
-
-        Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
-
-        shader->bind();
-        m_ShaderVars.forEach([&](ShaderVar* pVar)
-        {
-            if (pVar->getType() == ShaderVarType_User)
+            Shader* const shader(m_Shader[pass][rtype]);
+            if (shader != nullptr)
             {
-                pVar->assignData(shader);
-            }
-            else
-            {
-                switch (pVar->getType())
-                {      
-                    case ShaderVarType_WorldViewProjection: 
-                        shader->setShaderVar(pVar->getId(), camera->getViewProjection() * drawable->getWorldMatrix()); 
-                        break;
-                    case ShaderVarType_ViewProjection: 
-                        shader->setShaderVar(pVar->getId(), camera->getViewProjection()); 
-                        break;
-                    case ShaderVarType_World: 
-                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
-                        break;
-                    case ShaderVarType_WorldView: 
-                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
-                        break;   
-                    case ShaderVarType_View: 
-                        shader->setShaderVar(pVar->getId(), camera->getView()); 
-                        break;             
-                    case ShaderVarType_WorldPosition: 
+                shader->callbackOnceIfLoaded(this, [this, shader](const ELoadResult result)
+                {
+                    if (result == eLoadResult_Success)
+                    {
+                        bool loadCompleted(true);
+                        for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
                         {
-                            vec3 worldPos;
-                            drawable->getWorldMatrix().getTranslationComponent(worldPos);
-                            shader->setShaderVar(pVar->getId(), worldPos); 
-                            break;
+                            for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+                            {
+                                Shader* const loadedShader(m_Shader[pass][rtype]);
+                                if (loadedShader != nullptr)
+                                {
+                                    if (loadedShader->isLoaded() == false)
+                                    {
+                                        loadCompleted = false;
+                                        break;
+                                    }
+                                }
+                            }
                         }
-                    
-                    case ShaderVarType_AmbientColor: 
-                        shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getAmbientLight()->color, drawable->getScene()->getLightManager()->getAmbientLight()->multiplier)); 
-                        break;
-                    case ShaderVarType_DirectionalColor: 
-                        shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
-                        break;
-                    case ShaderVarType_DirectionalDirection: 
-                        shader->setShaderVar(pVar->getId(), (camera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
-                        break;
-                    case ShaderVarType_NearFar: 
-                        shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
-                        break;
-
-                    default: LOG(LogType_ProgrammerAssert, "unkown shaderVartype for single"); break;
-                }
-            }
-        });
-    }
-}
-void Material::apply( const InstancedDrawable* drawable, const ICamera* camera ) const
-{
-    HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
-    HE_IF_ASSERT(m_UsedForInstancing, "shader not capable for instancing!")
-    {
-        if (m_IsBlended)
-        {
-            GL::heBlendEquation(m_BlendEquation);
-            GL::heBlendFunc(m_SourceBlend, m_DestBlend);
-        }
-        GL::heSetDepthRead(m_DepthRead);
-        GL::heSetDepthWrite(m_DepthWrite);
-
-        GL::heSetCullFace(m_CullFrontFace);
-
-        Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
-        shader->bind();
-        m_ShaderVars.forEach([&](ShaderVar* pVar)
-        {
-            if (pVar->getType() == ShaderVarType_User)
-            {
-                pVar->assignData(shader);
-            }
-            else
-            {
-                switch (pVar->getType())
-                {      
-                    case ShaderVarType_ViewProjection: 
-                        shader->setShaderVar(pVar->getId(), camera->getViewProjection()); 
-                        break;
-                    case ShaderVarType_View: 
-                        shader->setShaderVar(pVar->getId(), camera->getView()); 
-                        break;  
-
-                    case ShaderVarType_AmbientColor: 
-                        shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getAmbientLight()->color, drawable->getScene()->getLightManager()->getAmbientLight()->multiplier)); 
-                        break;
-                    case ShaderVarType_DirectionalColor: 
-                        shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
-                        break;
-                    case ShaderVarType_DirectionalDirection: 
-                        shader->setShaderVar(pVar->getId(), (camera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
-                        break;
-
-                    case ShaderVarType_NearFar: 
-                        shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
-                        break;
-
-                    default: LOG(LogType_ProgrammerAssert, "unkown shaderVartype for instancing"); break;
-                }
-            }
-        });
-    }
-}
-void Material::apply( const SkinnedDrawable* drawable, const ICamera* camera ) const
-{
-    HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
-    {
-        if (m_IsBlended)
-        {
-            GL::heBlendEquation(m_BlendEquation);
-            GL::heBlendFunc(m_SourceBlend, m_DestBlend);
-        }
-
-        GL::heSetDepthRead(m_DepthRead);
-        GL::heSetDepthWrite(m_DepthWrite);
-
-        GL::heSetCullFace(m_CullFrontFace);
-
-        Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
-        shader->bind();
-        m_ShaderVars.forEach([&](ShaderVar* pVar)
-        {
-            if (pVar->getType() == ShaderVarType_User)
-            {
-                pVar->assignData(shader);
-            }
-            else
-            {
-                switch (pVar->getType())
-                {      
-                    case ShaderVarType_WorldViewProjection: 
-                        shader->setShaderVar(pVar->getId(), camera->getViewProjection() * drawable->getWorldMatrix()); 
-                        break;
-                    case ShaderVarType_ViewProjection: 
-                        shader->setShaderVar(pVar->getId(), camera->getViewProjection()); 
-                        break;
-                    case ShaderVarType_View: 
-                        shader->setShaderVar(pVar->getId(), camera->getView()); 
-                        break;  
-                    case ShaderVarType_World: 
-                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
-                        break;
-                    case ShaderVarType_WorldView: 
-                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
-                        break;
-                    case ShaderVarType_BoneTransforms: 
-                        shader->setShaderVar(pVar->getId(), drawable->getBoneTransforms()); 
-                        break;
-
-                    case ShaderVarType_WorldPosition: 
+                        if (loadCompleted)
                         {
-                            vec3 worldPos;
-                            drawable->getWorldMatrix().getTranslationComponent(worldPos);
-                            shader->setShaderVar(pVar->getId(), worldPos); 
-                            break;
+                            for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
+                            {
+                                for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+                                {
+                                    Shader* const shader(m_Shader[pass][rtype]);
+                                    if (shader != nullptr)
+                                    {
+                                        const PrimitiveList<IShaderUniform*>& uniforms(shader->getUniforms());
+                                        const size_t count(uniforms.size());
+                                        for (size_t j(0); j < count; ++j)
+                                        {
+                                            IShaderUniform* const uniform(uniforms[j]);
+                                            MaterialParameter* param(nullptr);
+                                            size_t index(0);
+                                            if (m_ParameterNames.find(uniform->getName(), index))
+                                            {
+                                                param = &m_Parameters[index];
+                                                HE_ASSERT(param->getType() == ShaderUniformTypeToMaterialType(uniform->getType()), "Material parameter name clash with variable of different type! (%s)", uniform->getName().c_str());
+                                            }
+                                            else
+                                            {
+                                                MaterialParameter tempParam;
+
+                                                size_t defaultIndex(SIZE_T_MAX);
+                                                m_DefaultParams.find_if([uniform](const NameValuePair<he::String>& p) { return p.m_Name == uniform->getName(); }, defaultIndex);
+
+                                                switch (uniform->getType())
+                                                {
+                                                case eShaderUniformType_Invalid: LOG(LogType_ProgrammerAssert, "Found invalid shader uniform? %s", uniform->getName().c_str()); break;
+                                                case eShaderUniformType_Int:
+                                                    tempParam.init(MaterialParameter::eType_Int);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setInt32(he::ge::PropertyConverterInt::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setInt32(checked_cast<ShaderUniformInt*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_UInt:
+                                                    LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                                    break;
+                                                case eShaderUniformType_Float:
+                                                    tempParam.init(MaterialParameter::eType_Float);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat(he::ge::PropertyConverterFloat::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat(checked_cast<ShaderUniformFloat*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Float2:
+                                                    tempParam.init(MaterialParameter::eType_Float2);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat2(he::ge::PropertyConverterVec2::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat2(checked_cast<ShaderUniformVec2*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Float3:
+                                                    tempParam.init(MaterialParameter::eType_Float3);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat3(he::ge::PropertyConverterVec3::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat3(checked_cast<ShaderUniformVec3*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Float4:
+                                                    tempParam.init(MaterialParameter::eType_Float4);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        tempParam.setFloat4(he::ge::PropertyConverterVec4::fromString(m_DefaultParams[defaultIndex].m_Value));
+                                                    }
+                                                    else
+                                                    {
+                                                        tempParam.setFloat4(checked_cast<ShaderUniformVec4*>(uniform)->getValue());
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_Mat44:
+                                                    tempParam.init(MaterialParameter::eType_Float44);
+                                                    tempParam.setFloat44(checked_cast<ShaderUniformMat44*>(uniform)->getValue());
+                                                    break;
+                                                case eShaderUniformType_Mat44Array:
+                                                    LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                                    break;
+                                                case eShaderUniformType_Texture1D:
+                                                    LOG(LogType_ProgrammerAssert, "Found not implemented material parameter, ignoring... (%s)", uniform->getName().c_str()); break;
+                                                case eShaderUniformType_Texture2D:
+                                                    tempParam.init(MaterialParameter::eType_Texture2D);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
+                                                        if (defaultValue.empty() == false)
+                                                        {
+                                                            const Texture2D* tex(nullptr);
+                                                            if (isdigit(*defaultValue.c_str()))
+                                                            {
+                                                                tex = CONTENT->asyncMakeTexture2D(he::Color(
+                                                                    he::ge::PropertyConverterVec4::fromString(defaultValue)));
+                                                            }
+                                                            else
+                                                            {
+                                                                tex = CONTENT->asyncLoadTexture2D(defaultValue);
+                                                            }
+                                                            tempParam.setTexture2D(tex);
+                                                            tex->release();
+                                                        }
+                                                    }
+                                                    break;
+                                                case eShaderUniformType_TextureCube:
+                                                    tempParam.init(MaterialParameter::eType_TextureCube);
+                                                    if (defaultIndex != SIZE_T_MAX)
+                                                    {
+                                                        const he::String& defaultValue(m_DefaultParams[defaultIndex].m_Value);
+                                                        if (defaultValue.empty() == false)
+                                                        {
+                                                            const TextureCube* tex(nullptr);
+                                                            if (isdigit(*defaultValue.c_str()))
+                                                            {
+                                                                tex = CONTENT->asyncMakeTextureCube(he::Color(
+                                                                    he::ge::PropertyConverterVec4::fromString(defaultValue)));
+                                                            }
+                                                            else
+                                                            {
+                                                                tex = CONTENT->asyncLoadTextureCube(defaultValue);
+                                                            }
+                                                            tempParam.setTextureCube(tex);
+                                                            tex->release();
+                                                        }
+                                                    }
+                                                    break;
+                                                }
+
+                                                if (tempParam.getType() != MaterialParameter::eType_Invalid)
+                                                {
+                                                    m_Parameters.add(tempParam);
+                                                    m_ParameterNames.add(uniform->getName());
+                                                    param = &m_Parameters.back();
+                                                }
+                                            }
+                                            if (param)
+                                            {
+                                                const ShaderUniformID id(checked_numcast<uint32>(j));
+                                                param->setShaderUniformID(id, checked_numcast<EShaderPassType>(pass), checked_numcast<EShaderRenderType>(rtype));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            setLoaded(eLoadResult_Success);
                         }
-
-                    case ShaderVarType_AmbientColor: 
-                        shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getAmbientLight()->color, drawable->getScene()->getLightManager()->getAmbientLight()->multiplier)); 
-                        break;
-                    case ShaderVarType_DirectionalColor: 
-                        shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
-                        break;
-                    case ShaderVarType_DirectionalDirection: 
-                        shader->setShaderVar(pVar->getId(), (camera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
-                        break;
-
-                    case ShaderVarType_NearFar: 
-                        shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
-                        break;
-
-                    default: LOG(LogType_ProgrammerAssert, "unkown shaderVartype for skinning"); break;
-                }
+                    }
+                    else
+                    {
+                        // Shader load failed, fail load material
+                        for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
+                        {
+                            for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+                            {
+                                Shader* const cancelShader(m_Shader[pass][rtype]);
+                                if (cancelShader != nullptr && cancelShader != shader)
+                                {
+                                    if (cancelShader->isLoaded() == false)
+                                    {
+                                        cancelShader->cancelLoadCallback(this);
+                                    }
+                                }
+                            }
+                        }
+                        setLoaded(eLoadResult_Failed);
+                    }
+                });
             }
-        });
+        }
     }
 }
 
-
-const BufferLayout& Material::getCompatibleVertexLayout() const
+void Material::setShader( const EShaderPassType pass, const EShaderRenderType renderType, Shader* const shader )
 {
-    return m_CompatibleVL;
-}
-const BufferLayout& Material::getCompatibleInstancingLayout() const
-{
-    return m_CompatibleIL;
+    shader->instantiate();
+    HE_ASSERT(m_Shader[pass][renderType] == nullptr, "Shader[%d][%d] already initialized!", pass, renderType);
+    m_Shader[pass][renderType] = shader;
 }
 
-
+Shader* Material::bindShader(const EShaderPassType pass, const EShaderRenderType renderType) const
+{
+    Shader* const shader(m_Shader[pass][renderType]);
+    HE_ASSERT(shader != nullptr, "Trying to apply material %s with type [%d][%d] but I do not have this type!", getName().c_str(), pass, renderType);
+    shader->bind();
+    return shader;
+}
 
 void Material::setIsBlended( bool isBlended, BlendEquation equation/* = BlendEquation_Add*/, 
                                              BlendFunc sourceBlend/*  = BlendFunc_One*/,
                                              BlendFunc destBlend/*    = BlendFunc_Zero*/ )
 {
-    m_IsBlended = isBlended;
-    m_BlendEquation = equation;
-    m_SourceBlend = sourceBlend;
-    m_DestBlend = destBlend;
+    if (isBlended)
+    {
+        raiseFlag(eMaterialFlags_Blended);
+        m_BlendEquation = equation;
+        m_SourceBlend = sourceBlend;
+        m_DestBlend = destBlend;
+    }
+    else
+    {
+        clearFlag(eMaterialFlags_Blended);
+    }
 }
 
-bool Material::isBlended() const
+void Material::calculateMaterialLayout( const VertexLayout& bufferLayout, MaterialLayout& outMaterialLayout ) const
 {
-    return m_IsBlended;
-}
-BlendEquation Material::getBlendEquation() const
-{
-    return m_BlendEquation;
-}
-BlendFunc Material::getSourceBlend() const
-{
-    return m_SourceBlend;
-}
-BlendFunc Material::getDestBlend() const
-{
-    return m_DestBlend;
+    const VertexLayout::layout& meshElements(bufferLayout.getElements());
+    const size_t meshElementCount(meshElements.size());
+    const size_t stride(bufferLayout.getSize());
+
+    for (size_t pass(0); pass < eShaderPassType_MAX; ++pass)
+    {
+        for (size_t rtype(0); rtype < eShaderRenderType_MAX; ++rtype)
+        {
+            MaterialLayout::layout& elements(outMaterialLayout.m_Layout[pass][rtype]);
+            elements.clear();
+        
+            if (m_Shader[pass][rtype] == nullptr) // If we have a shader of this type
+                continue;
+
+            const ShaderLayout::AttributeLayoutList& shaderElements(m_Shader[pass][rtype]->getShaderLayout().getAttributes());
+
+            shaderElements.forEach([&](const ShaderLayoutAttribute& e)
+            {
+                for (size_t i(0); i < meshElementCount; ++i)
+                {
+                    const VertexElement& meshElement(meshElements[i]);
+                    if (meshElement.getAttribute() == e.getType())
+                    {
+                        details::MaterialLayoutElement matEl;
+                        GLint components(1);
+                        GLenum type(0);
+                        GL::getGLTypesFromVertexElement(meshElement, components, type);
+
+                        matEl.m_ElementIndex = checked_numcast<uint16>(e.getElementIndex());
+                        matEl.m_Components = checked_numcast<uint8>(components);
+                        matEl.m_Type = checked_numcast<uint16>(type);
+                        matEl.m_Stride = checked_numcast<uint16>(stride);
+                        matEl.m_ByteOffset = checked_numcast<uint8>(meshElement.getByteOffset());
+                        elements.add(matEl);
+
+                        break;
+                    }
+                    HE_ASSERT(i + 1 < meshElementCount, "Invalid vertex buffer, could not find the data I was looking for!");
+                }
+            });
+        }
+    }
 }
 
-bool Material::isUsedForInstancing() const
+void Material::setDepthFunc( const DepthFunc func )
 {
-    return m_UsedForInstancing;
-}
-void Material::setNoPost( bool noPost )
-{
-    m_NoPost = noPost;
+    m_DepthFunc = func;
 }
 
-bool Material::noPost() const
+void Material::setDefaultParams( const he::ObjectList<NameValuePair<he::String>>& params )
 {
-    return m_NoPost;
+    m_DefaultParams.clear();
+    m_DefaultParams.append(params);
 }
 
-void Material::setIsBackground( bool isBackground )
+void Material::setDefaultParams( he::ObjectList<NameValuePair<he::String>>&& params )
 {
-    m_IsBackground = isBackground;
-    if (m_IsBackground)
-        m_NoPost = true;
+    m_DefaultParams = std::forward<he::ObjectList<NameValuePair<he::String>>>(params);
 }
-
-bool Material::isBackground() const
-{
-    return m_IsBackground;
-}
-
-void Material::setDepthWriteEnabled( bool enable )
-{
-    m_DepthWrite = enable;
-}
-
-void Material::setDepthReadEnabled( bool enable )
-{
-    m_DepthRead = enable;
-}
-
-void Material::setCullFrontFace( bool enable )
-{
-    m_CullFrontFace = enable;
-}
-
-
-
 
 } } //end namespace
+

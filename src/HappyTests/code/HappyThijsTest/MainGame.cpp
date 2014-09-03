@@ -77,7 +77,7 @@ void MainGame::init()
     m_Window->setVSync(true);
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("HappyThijsTest");
-    he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
+    he::eventCallback0<void> quitHandler(std::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create(true);
 

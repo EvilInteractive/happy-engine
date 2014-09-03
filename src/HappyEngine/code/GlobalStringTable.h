@@ -57,10 +57,10 @@ public:
     virtual ~GlobalStringTable();
 
     FixedString add(const char* const str, const int len = -1);
+    bool contains(const char* const handle);
 
 private:
     Map m_HashMap;
-    std::unordered_set<std::string> tes;
 
     //Disable default copy constructor and default assignment operator
     GlobalStringTable(const GlobalStringTable&);

@@ -41,7 +41,7 @@ void Path::init( const int argc, const char* const * const argv )
     {
         s_DataPath = s_BinPath;
         size_t index(s_DataPath.m_Path.rfind("/bin/"));
-        if (index != std::string::npos)
+        if (index != he::String::npos)
         {
             s_DataPath.m_Path = s_DataPath.m_Path.substr(0, index);
             s_DataPath.ensureTrailingSlash();
@@ -173,10 +173,10 @@ Path Path::getDirectory() const
         return *this;
 }
 
-bool Path::iterateFiles( const bool recursive, const boost::function1<void, const Path&>& func )
+bool Path::iterateFiles( const bool recursive, const std::function<void(const Path&)>& func )
 {
     bool result(false);
-    boost::filesystem::path boostPath(m_Path);
+    boost::filesystem::path boostPath(m_Path.c_str());
     boost::system::error_code error;
     if (boost::filesystem::exists(boostPath, error) && boost::filesystem::is_directory(boostPath, error))
     {
@@ -210,9 +210,24 @@ bool Path::isDirectory() const
 
 bool Path::exists() const
 {
-    boost::filesystem::path boostPath(m_Path);
+    boost::filesystem::path boostPath(m_Path.c_str());
     boost::system::error_code error;
     return boost::filesystem::exists(boostPath, error);
 }
-
+    
+bool Path::operator==(const Path& other) const
+{
+    return m_Path == other.m_Path;
+}
+    
+bool Path::operator!=(const Path& other) const
+{
+    return m_Path != other.m_Path;
+}
+    
+int Path::operator<(const Path& other) const
+{
+    return m_Path < other.m_Path;
+}
+    
 } //end namespace

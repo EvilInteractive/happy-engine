@@ -19,31 +19,30 @@
 //Created: 06/11/2011
 
 #include "HappyPCH.h" 
-
 #include "ShapeRenderer.h"
 
-#include "GraphicsEngine.h"
-#include "Renderer2D.h"
-#include "Vertex.h"
-#include "SimpleColorEffect.h"
 #include "BillboardEffect.h"
-#include "CameraPerspective.h"
-#include "ModelMesh.h"
-#include "RenderTarget.h"
-#include "Scene.h"
-#include "View.h"
-#include "CameraManager.h"
+#include "DrawContext.h"
 #include "ICamera.h"
 #include "IShapeDrawable.h"
+#include "ModelMesh.h"
+#include "RenderTarget.h"
+#include "ShapeMesh.h"
+#include "SimpleColorEffect.h"
+#include "Vertex.h"
+#include "VertexLayout.h"
+#include "View.h"
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
 ShapeRenderer::ShapeRenderer() :	
-    m_ColorEffect(NEW SimpleColorEffect()),
+    m_ShapeEffect(NEW SimpleColorEffect()),
+    m_AABBEffect(NEW SimpleColorEffect()),
     m_BillboardEffect(NEW BillboardEffect()),
     m_BillboardQuad(nullptr),
+    m_AABB(nullptr),
     m_View(nullptr),
     m_RenderTarget(nullptr)
 {
@@ -51,19 +50,20 @@ ShapeRenderer::ShapeRenderer() :
 
 ShapeRenderer::~ShapeRenderer()
 {
-    delete m_ColorEffect;
+    delete m_ShapeEffect;
+    delete m_AABBEffect;
     delete m_BillboardEffect;
     if (m_BillboardQuad != nullptr)
         m_BillboardQuad->release();
-    if (m_AABB != nullptr)
+    if (m_AABB)
         m_AABB->release();
 }
 
 void ShapeRenderer::createBillboardQuad()
 {
-    BufferLayout vertexLayoutBillboard;
-    vertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    vertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
+    VertexLayout vertexLayoutBillboard;
+    vertexLayoutBillboard.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
+    vertexLayoutBillboard.addElement(VertexElement(eShaderAttribute_TextureCoordiante, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 12));
 
     m_BillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_BillboardQuad->init(vertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
@@ -91,13 +91,14 @@ void ShapeRenderer::createBillboardQuad()
 
     m_BillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, true);
     m_BillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_BillboardQuad->setName("ShapeRenderer-BillboardQuad");
     m_BillboardQuad->setLoaded(eLoadResult_Success);
 }
 
 void ShapeRenderer::createAABB()
 {
-    BufferLayout vertexLayoutBillboard;
-    vertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    VertexLayout vertexLayoutBillboard;
+    vertexLayoutBillboard.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
 
     m_AABB = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_AABB->init(vertexLayoutBillboard, gfx::MeshDrawMode_Lines);
@@ -131,6 +132,7 @@ void ShapeRenderer::createAABB()
 
     m_AABB->setVertices(vertices, 8, gfx::MeshUsage_Static, true);
     m_AABB->setIndices(indices, 24, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_AABB->setName("ShapeRenderer-AABB");
     m_AABB->setLoaded(eLoadResult_Success);
 }
 
@@ -143,71 +145,53 @@ void ShapeRenderer::init(View* view, const RenderTarget* target)
     createBillboardQuad();
     createAABB();
 
-    m_ColorEffect->load();
-    m_BillboardEffect->load();
+    m_ShapeEffect->init(ShapeMesh::getVertexLayout());
+    m_AABBEffect->init(m_AABB->getVertexLayout());
+    m_BillboardEffect->init(m_BillboardQuad->getVertexLayout());
 }
 
 /* DRAW METHODS */
 
 void ShapeRenderer::drawAABB( const vec3& position, const vec3& dimensions, const Color& color ) const
 {
-    drawColored(m_AABB, mat44::createTranslation(position) * mat44::createScale(dimensions), color);
+    m_AABBEffect->setWorld(mat44::createTranslation(position) * mat44::createScale(dimensions));
+    m_AABBEffect->setColor(color);
+    m_AABBEffect->setViewProjection(m_ViewProjection);
+
+    DrawContext context;
+    context.m_VBO = m_AABB->getVBO();
+    context.m_IBO = m_AABB->getIBO();
+    m_AABBEffect->apply(context);
+    m_AABB->draw();
 }
 
-void ShapeRenderer::drawColored(const ModelMesh* model, const mat44& world, const Color& color) const
+void ShapeRenderer::drawShape( const ShapeMesh* shape, const mat44& world, const Color& color ) const
 {
-    m_ColorEffect->begin();
-    m_ColorEffect->setViewProjection(m_ViewProjection);
-    m_ColorEffect->setWorld(world);
-    m_ColorEffect->setColor(color);
+    m_ShapeEffect->setWorld(world);
+    m_ShapeEffect->setColor(color);
+    m_ShapeEffect->setViewProjection(m_ViewProjection);
 
-    GL::heBindVao(model->getVertexArraysID());
-    glDrawElements(model->getDrawMode(), model->getNumIndices(), model->getIndexType(), 0);
-}
-
-void ShapeRenderer::drawColoredNoDepth(const ModelMesh* model, const mat44& world, const Color& color) const
-{
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
-    m_ColorEffect->begin();
-    m_ColorEffect->setViewProjection(m_ViewProjection);
-    m_ColorEffect->setWorld(world);
-    m_ColorEffect->setColor(color);
-
-    GL::heBindVao(model->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, model->getNumIndices(), model->getIndexType(), 0);
-
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-}
-
-void ShapeRenderer::drawMeshColor(const ModelMesh* spline, const mat44& world, const Color& color) const
-{
-    m_ColorEffect->begin();
-    m_ColorEffect->setViewProjection(m_ViewProjection);
-    m_ColorEffect->setWorld(world);
-    m_ColorEffect->setColor(color);
-
-    GL::heBindVao(spline->getVertexArraysID());
-    glDrawElements(spline->getDrawMode(), spline->getNumIndices(), spline->getIndexType(), 0);
+    DrawContext context;
+    context.m_VBO = shape->getVBO();
+    context.m_IBO = shape->getIBO();
+    m_ShapeEffect->apply(context);
+    shape->draw();
 }
 
 void ShapeRenderer::drawBillboard(const Texture2D* tex2D, const vec3& pos)
 {
     vec2 tcScale(1.0f,1.0f);
-    
     mat44 world(mat44::createTranslation(pos));
-
-    m_BillboardEffect->begin();
-
+    
     m_BillboardEffect->setWorldViewProjection(m_ViewProjection * world * m_BillboardMatrix);
-
     m_BillboardEffect->setDiffuseMap(tex2D);
     m_BillboardEffect->setTCScale(tcScale);
 
-    GL::heBindVao(m_BillboardQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_BillboardQuad->getNumIndices(), m_BillboardQuad->getIndexType(), 0);
+    DrawContext context;
+    context.m_VBO = m_BillboardQuad->getVBO();
+    context.m_IBO = m_BillboardQuad->getIBO();
+    m_BillboardEffect->apply(context);
+    m_BillboardQuad->draw();
 }
 
 void ShapeRenderer::render()
@@ -245,6 +229,5 @@ void ShapeRenderer::detachFromRenderer( IShapeDrawable* drawable )
         m_Drawables.remove(drawable);
     }
 }
-
 
 } } //end namespace

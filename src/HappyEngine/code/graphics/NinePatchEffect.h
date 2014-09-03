@@ -24,18 +24,21 @@
 
 namespace he {
 namespace gfx {
-class Shader;
+
 class Texture2D;
+struct DrawContext;
+class VertexLayout;
+class MaterialInstance;
+class MaterialParameter;
 
 class NinePatchEffect
 {
 public:
     NinePatchEffect();
-    virtual ~NinePatchEffect();
+    ~NinePatchEffect();
 
-    void load();
-    void begin() const;
-    void end() const;
+    void init(const VertexLayout& layout);
+    void apply(const he::gfx::DrawContext& context) const;
 
     void setWorldMatrix(const he::mat44& mat) const;
     void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;
@@ -46,15 +49,15 @@ public:
     void setBlendColor(const Color& color) const;
 
 private:
-    gfx::Shader* m_Shader;
+    MaterialInstance* m_Material;
 
-    uint32 m_ShaderWVPPos;
-    uint32 m_ShaderDiffTexPos;
-    uint32 m_ShaderCenterPos;
-    uint32 m_ShaderSizePos;
-    uint32 m_ShaderOrigSizePos;
-    uint32 m_ShaderDepthPos;
-    uint32 m_ShaderBlendColor;
+    int8 m_WVP;
+    int8 m_DiffTex;
+    int8 m_Center;
+    int8 m_Size;
+    int8 m_OrigSize;
+    int8 m_Depth;
+    int8 m_BlendColor;
 
     //Disable default copy constructor and default assignment operator
     NinePatchEffect(const NinePatchEffect&);

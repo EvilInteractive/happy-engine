@@ -2,20 +2,19 @@
 addFilter(CODE_SRCS src/graphics code/graphics/
             BufferLayout.cpp                    BufferLayout.h
             Color.cpp                           Color.h
-            DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
-            DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
+            Drawable.cpp                        Drawable.h
             Hitregion.cpp                       Hitregion.h
             GLContext.cpp                       GLContext.h
             GLContextSDL.cpp                    GLContextSDL.h
             IDrawable2D.h
             IShapeDrawable.h
             Object3D.cpp                        Object3D.h
-            IDrawable.h  
             SkyBox.cpp                          SkyBox.h
 			Texture.cpp							Texture.h
             Texture2D.cpp                       Texture2D.h
             TextureCube.cpp                     TextureCube.h
             Vertex.cpp                          Vertex.h
+            VertexLayout.cpp                    VertexLayout.h
         )
                             
 addFilter(CODE_SRCS src/graphics/gui code/graphics/
@@ -46,19 +45,29 @@ addFilter(CODE_SRCS src/graphics/light code/graphics/
             
 addFilter(CODE_SRCS src/graphics/material code/graphics/
             Material.cpp                        Material.h
+            MaterialEnums.h
+            MaterialInstance.cpp                MaterialInstance.h
+            MaterialParameter.cpp               MaterialParameter.h
             Shader.cpp                          Shader.h
             ShaderLayout.cpp                    ShaderLayout.h
-            ShaderVar.h                         
+            ShaderUniform.cpp                   ShaderUniform.inl                   ShaderUniform.h         
+            ShaderEnums.cpp                     ShaderEnums.h
+            ShaderUniformBuffer.cpp             ShaderUniformBuffer.h
+            ShaderUniformBufferManager.cpp      ShaderUniformBufferManager.h
+            ShaderUniformFactory.cpp            ShaderUniformFactory.h
         )
             
 addFilter(CODE_SRCS src/graphics/model code/graphics/
             Bone.cpp                            Bone.h
+            MeshEnums.h
             Mesh2D.cpp                          Mesh2D.h
             Model.cpp                           Model.h
             ModelMesh.cpp                       ModelMesh.h
+            ShapeMesh.cpp                       ShapeMesh.h
         )
                         
 addFilter(CODE_SRCS src/graphics/rendering code/graphics/
+            DrawContext.h
             CameraOrtho.cpp                     CameraOrtho.h
             CameraPerspective.cpp               CameraPerspective.h
             CameraBound.cpp                     CameraBound.h

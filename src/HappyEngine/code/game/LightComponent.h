@@ -33,27 +33,26 @@ namespace gfx {
 }
 namespace ge {
 struct EntityComponentDesc;
-class HAPPY_ENTRY PointLightComponent : public EntityComponent, public Object3D
+class HAPPY_ENTRY PointLightComponent : public EntityComponent
 {
-    IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     PointLightComponent();
-    virtual ~PointLightComponent();
+    ~PointLightComponent();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    void visit(he::io::BinaryVisitor* const /*visitor*/) {} // override, final
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate(); // override, final
+    void deactivate(); // override, final
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strPointLightComponent; }
+    const he::FixedString& getComponentID() const { return HEFS::strPointLightComponent; } // override, final
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
-    virtual bool setProperty(const Property* const inProperty);
-    virtual bool getProperty(Property* const inOutProperty);
+    bool setProperty(const Property* const inProperty); // override, final
+    bool getProperty(Property* const inOutProperty); // override, final
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
@@ -70,10 +69,9 @@ public:
     float getEndAttenuation() const;
     const vec3& getColor() const;
 
-protected:
-    virtual void init(Entity* pParent);
-
-private:    
+private:  
+    void init(Entity* parent); // override, final
+  
     Entity* m_Parent;   
 
     gfx::PointLight* m_PointLight;
@@ -87,27 +85,26 @@ private:
     PointLightComponent& operator=(const PointLightComponent&);
 };
 
-class HAPPY_ENTRY SpotLightComponent : public EntityComponent, public Object3D
+class HAPPY_ENTRY SpotLightComponent : public EntityComponent
 {
-IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     SpotLightComponent();
-    virtual ~SpotLightComponent();
+    ~SpotLightComponent();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////    
-    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    void visit(he::io::BinaryVisitor* const /*visitor*/) {} // override, final
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate(); // override, final
+    void deactivate(); // override, final
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strSpotLightComponent; }
+    const he::FixedString& getComponentID() const { return HEFS::strSpotLightComponent; } // override, final
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
-    virtual bool setProperty(const Property* const inProperty);
-    virtual bool getProperty(Property* const inOutProperty);
+    bool setProperty(const Property* const inProperty); // override, final
+    bool getProperty(Property* const inOutProperty); // override, final
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
@@ -129,7 +126,7 @@ public:
     gfx::ShadowResolution getShadow() const;
 
 protected:
-    virtual void init(Entity* parent);
+    void init(Entity* parent); // override, final
 
 private:
     Entity* m_Parent;

@@ -33,7 +33,7 @@ namespace ge {
 class Entity;
 class Property;
 struct EntityComponentDesc;
-class HAPPY_ENTRY EntityComponent : public IObject3D
+class HAPPY_ENTRY EntityComponent : public Object3D
 {
 DECLARE_OBJECT(EntityComponent)
 friend class Entity;
@@ -53,34 +53,7 @@ public:
     
     virtual Entity* getEntityParent();
 
-    //////////////////////////////////////////////////////////////////////////
-    // IObject3D
-    //////////////////////////////////////////////////////////////////////////
-    virtual void setLocalTranslate(const vec3& translate) = 0;
-    virtual void setLocalRotate(const mat33& rotate) = 0;
-    virtual void setLocalScale(const vec3& scale) = 0;
-
-    virtual const vec3&  getLocalTranslate() const = 0;
-    virtual const mat33& getLocalRotate() const = 0;
-    virtual const vec3&  getLocalScale() const = 0;
-
-    virtual const mat44& getLocalMatrix() const = 0;
-    virtual const mat44& getWorldMatrix() const = 0;
-
-    virtual void attach(IObject3D* child) = 0;
-    virtual void detach(IObject3D* child) = 0;
-    
-protected:
-    virtual IObject3D* getParent() const = 0;
-    virtual void setParent(IObject3D* parent) = 0;
-
-    virtual void setWorldMatrixDirty(uint8 cause) = 0;
-    virtual void setLocalMatrixDirty(uint8 cause) = 0;
-
-    virtual void calculateWorldMatrix() = 0;
-    ////////////////////////////////////////////////////////////////////////// 
-
-
+private:
     virtual void init(Entity* parent) = 0;
 
 };

@@ -34,8 +34,8 @@ struct SpriteData
                 const vec2& size,
                 Texture2D* tex2D,
                 unsigned char* rBuff,
-                _cairo_surface* surf,
-                _cairo* cp) :
+                cairo_surface_t* surf,
+                cairo_t* cp) :
                     m_Id(id),
                     m_Size(size),
                     m_Texture2D(tex2D),
@@ -44,7 +44,12 @@ struct SpriteData
                     m_CairoPaint(cp),
                     m_ReadyState(0x00)
     {}
-
+    ~SpriteData()
+    {
+        he_free(m_RenderBuffer);
+        cairo_destroy(m_CairoPaint);
+        cairo_surface_destroy(m_CairoSurface);
+    }
         
     SpriteData(const SpriteData& sd)
     {
@@ -78,11 +83,11 @@ struct SpriteData
 
     uint16 m_Id;
     vec2 m_Size;
-    std::queue<boost::function0<void> > m_DrawCalls;
+    std::queue<std::function<void()>> m_DrawCalls;
     Texture2D* m_Texture2D;
     unsigned char* m_RenderBuffer;
-    _cairo_surface* m_CairoSurface;
-    _cairo* m_CairoPaint;
+    cairo_surface_t* m_CairoSurface;
+    cairo_t* m_CairoPaint;
     char m_ReadyState;
 };
 

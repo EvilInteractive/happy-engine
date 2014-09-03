@@ -38,7 +38,7 @@ class Texture2D : public Resource<Texture2D>
 {
 public:
     Texture2D();
-    virtual ~Texture2D();
+    ~Texture2D();
 
     void init(TextureWrapType wrapType, TextureFilterType filter, TextureFormat textureFormat, bool willHaveMipMaps);
 
@@ -48,7 +48,6 @@ public:
         const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel = 0);
 
     void setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
-    
     void generateMipMaps() const;
 
     uint32 getID() const { return m_Id; }

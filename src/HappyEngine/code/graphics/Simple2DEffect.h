@@ -22,24 +22,22 @@
 #define _HE_SIMPLE_2D_EFFECT_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "Shader.h"
-#include "mat44.h"
-#include "vec3.h"
-#include "Color.h"
-
 namespace he {
 namespace gfx {
+
+struct DrawContext;
+class VertexLayout;
+class MaterialInstance;
+class MaterialParameter;
 
 class Simple2DEffect
 {
 public:
     Simple2DEffect();
-    virtual ~Simple2DEffect();
+    ~Simple2DEffect();
 
-    void load();
-    void begin() const;
-    void end() const;
+    void init(const VertexLayout& layout);
+    void apply(const he::gfx::DrawContext& context) const;
 
     void setColor(const Color& color) const;
     void setWorldMatrix(const he::mat44& mat) const;
@@ -47,11 +45,11 @@ public:
 
 private:
 
-    Shader* m_Shader;
+    MaterialInstance* m_Material;
 
-    uint32 m_ShaderWVPPos;
-    uint32 m_ShaderColorPos;
-    uint32 m_ShaderDepthPos;
+    int8 m_WVP;
+    int8 m_Color;
+    int8 m_Depth;
 
     //Disable default copy constructor and default assignment operator
     Simple2DEffect(const Simple2DEffect&);

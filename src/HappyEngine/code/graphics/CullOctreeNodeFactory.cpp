@@ -19,6 +19,7 @@
 //Created: 07/10/2012
 #include "HappyPCH.h" 
 
+#ifdef HE_USE_OCTREE
 #include "CullOctreeNodeFactory.h"
 #include "CullOctree.h"
 
@@ -85,3 +86,5 @@ void CullOctreeNodeFactory::releaseNode( CullOctreeNode* node )
 }
 
 } } //end namespace
+
+#endif // HE_USE_OCTREE

@@ -22,7 +22,8 @@
 #define _HE_MODELMESH_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "VertexLayout.h"
+#include "MeshEnums.h"
 #include "Bone.h"
 
 #include "Resource.h"
@@ -30,28 +31,6 @@
 
 namespace he {
 namespace gfx {
-
-ENUM(IndexStride, uint8)
-{
-    IndexStride_Byte = sizeof(uint8),
-    IndexStride_UShort = sizeof(uint16),
-    IndexStride_UInt = sizeof(uint32)
-};
-
-enum MeshUsage
-{
-    MeshUsage_Static  =  GL_STATIC_DRAW,    // Update rarely to never
-    MeshUsage_Stream  =  GL_STREAM_DRAW,    // Update frequently
-    MeshUsage_Dynamic =  GL_DYNAMIC_DRAW    // Update every frame
-};
-
-
-enum MeshDrawMode
-{
-    MeshDrawMode_Points     =   GL_POINTS,
-    MeshDrawMode_Lines      =   GL_LINES,
-    MeshDrawMode_Triangles  =   GL_TRIANGLES
-};
 
 struct PickingData
 {
@@ -68,7 +47,7 @@ public:
     ModelMesh();
     virtual ~ModelMesh();
 
-    void init(const BufferLayout& vertexLayout, MeshDrawMode mode);
+    void init(const VertexLayout& vertexLayout, MeshDrawMode mode);
     void setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound);
     void setIndices(const void* const indices, const uint32 num, const IndexStride type, const MeshUsage usage);
     void setBones(const he::ObjectList<Bone>& boneList);
@@ -76,13 +55,11 @@ public:
     // Getters
     inline const he::ObjectList<Bone>& getBones() const { return m_BoneList; }
 
-    inline VaoID getVertexArraysID() const { return m_VaoID[GL::s_CurrentContext->getID()]; }
-    inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->getID()]; }
-    inline uint32 getVBOID() const { return m_VertexVboID; }
-    inline uint32 getVBOIndexID() const { return m_IndexVboID; }
+    inline uint32 getVBO() const { return m_VertexVboID; }
+    inline uint32 getIBO() const { return m_IndexVboID; }
     inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }
 
-    void createPickingData(const void* const vertices, const size_t vertexCount, const BufferLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
+    void createPickingData(const void* const vertices, const size_t vertexCount, const VertexLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
     void destroyPickingData();
     const PickingData& getPickingData() const { return m_PickingData; }
     bool hasPickingData() const { return m_PickingData.m_Vertices != nullptr; }
@@ -91,15 +68,13 @@ public:
     inline uint32 getNumIndices() const { return m_NumIndices; }
 
     inline uint32 getIndexType() const { return m_IndexType; }
-    inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
+    inline const VertexLayout& getVertexLayout() const { return m_VertexLayout; }
 
     inline const Bound& getBound() const { return m_Bound; }
+
+    void draw() const;
     
 private:
-    
-    void initVAO(GLContext* context);
-    void destroyVAO(GLContext* context);    
-
     struct ShadowSkinnedVertex
     {
         vec3 pos;
@@ -107,18 +82,14 @@ private:
         vec4 boneWeight;
     };
 
-    VaoID m_VaoID[MAX_VERTEX_ARRAY_OBJECTS];
-    VaoID m_VaoShadowID[MAX_VERTEX_ARRAY_OBJECTS];
     uint32 m_VertexVboID;
     uint32 m_IndexVboID;
 
     uint32 m_NumVertices;
     uint32 m_NumIndices;
 
-    BufferLayout m_VertexLayout;
+    VertexLayout m_VertexLayout;
     uint32 m_IndexType;
-
-    bool m_isVisible;
 
     Bound m_Bound;
     PickingData m_PickingData;
@@ -126,9 +97,6 @@ private:
     he::ObjectList<Bone> m_BoneList;
 
     MeshDrawMode m_DrawMode;
-
-    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
-    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
     
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);

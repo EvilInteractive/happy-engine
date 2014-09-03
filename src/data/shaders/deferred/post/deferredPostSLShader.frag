@@ -21,6 +21,7 @@
 #version 150 core
 
 #include "packing/decode.frag"
+#include "shared/perCameraUniformBuffer.frag"
 
 in vec3 passPos;
 out vec4 outColor;
@@ -36,11 +37,6 @@ struct SpotLight
     float cosCutoff;
 };
 
-layout(shared) uniform SharedBuffer
-{
-    vec4 projParams;
-};
-
 uniform SpotLight light;
 
 uniform sampler2D colorIllMap;
@@ -49,7 +45,7 @@ uniform sampler2D normalDepthMap;
 uniform sampler2D sgMap;
 #endif
 
-#if SHADOWS
+#if ENABLE_SHADOWMAP
 uniform sampler2D shadowMap;
 uniform mat4 shadowMatrix;   // = shadowViewProjMatrix * invViewMatrix => transform viewPosition to world -> world to shadowViewProj
 uniform vec2 shadowMapInvSize;
@@ -105,7 +101,7 @@ float shadowCheck(in vec3 position, in float distFromLight, in sampler2D shadowM
     return shadow;
 }
 
-#endif
+#endif // ENABLE_SHADOWMAP
 
 void main()
 {
@@ -113,7 +109,7 @@ void main()
     vec2 texCoord = ndc * 0.5f + 0.5f;
      
     vec3 normalDepth = texture(normalDepthMap, texCoord).xyz;   
-    vec3 position = getPosition( normalDepth.z, ndc, projParams );
+    vec3 position = getPosition( normalDepth.z, ndc, perCameraUniformBuffer.projParams );
     
     vec3 lightDir = light.position - position;
     float lightDist = length(lightDir);
@@ -133,7 +129,7 @@ void main()
     // Check shadow	
     float shadow = 1;
 
-#if SHADOWS
+#if ENABLE_SHADOWMAP
     shadow = shadowCheck(position, lightDist, shadowMap, shadowMatrix, 0.01f);
     if (shadow < 0.1f)
         discard;

@@ -41,7 +41,7 @@
 namespace he {
 namespace ct {
 
-TextureLoader::TextureLoader(): m_isLoadThreadRunning(false), m_GCTimer(GC_TIME), m_TextureLoadQueue(10, 10, "TextureLoadQueue"), m_TextureInvokeQueue(10, 10, "TextureInvokeQueue")
+TextureLoader::TextureLoader(): m_GCTimer(GC_TIME), m_TextureLoadQueue(10, 10, "TextureLoadQueue"), m_TextureInvokeQueue(10, 10, "TextureInvokeQueue")
 {
 }
 
@@ -62,34 +62,34 @@ inline void handleILError(const he::String& file)
     }
 }
 
-void TextureLoader::tick(float dTime) //checks for new load operations, if true start thread
+void TextureLoader::tick(float /*dTime*/)
 {
-    if (m_isLoadThreadRunning == false)
-    {
-        PROFILER_BEGIN("TextureFactory garbage collect");
-        if (m_GCTimer > 0.0f)
-        {
-            m_GCTimer -= dTime;
-            if (m_GCTimer <= 0.0f)
-            {
-                ResourceFactory<gfx::Texture2D>* const factory(ResourceFactory<gfx::Texture2D>::getInstance());
-                uint32 destoyed(factory->garbageCollect());
-                if (destoyed > 0)
-                {
-                    HE_WARNING("TextureFactory: GC'd %d textures!", destoyed);
-                }
-                m_GCTimer = GC_TIME;
-            }
-        }
-        PROFILER_END();
-        if (m_TextureLoadQueue.empty() == false)
-        {
-            m_isLoadThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_TextureLoadThread.join();
-            m_TextureLoadThread.startThread(boost::bind(&TextureLoader::TextureLoadThread, this), "TextureLoadThread");
-        }
-    }
 }
+
+bool TextureLoader::loadTick()
+{
+    if (m_TextureLoadQueue.empty() == false)
+    {
+        TextureLoadData data;
+        if (m_TextureLoadQueue.pop(data))
+        {
+            bool success(false);
+            if (data.m_Path[0] != '_')
+            {
+                success = loadData(data);
+            }
+            else
+            {
+                success = makeData(data);
+            }
+            data.m_DataLoaded = success;
+            m_TextureInvokeQueue.push(data);
+        }
+        return true;
+    }
+    return false;
+}
+
 void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_TextureInvokeQueue.empty() == false)
@@ -103,30 +103,31 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
                 succes = createTexture(data);
             }
 
-            if (data.m_Tex.type == gfx::Texture2D::s_ObjectType)
+            if (data.m_Tex.getType() == gfx::Texture2D::s_ObjectType)
                 FACTORY_2D->get(data.m_Tex)->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
-            else if (data.m_Tex.type == gfx::TextureCube::s_ObjectType)
+            else if (data.m_Tex.getType() == gfx::TextureCube::s_ObjectType)
                 FACTORY_CUBE->get(data.m_Tex)->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
             else
-                LOG(LogType_ProgrammerAssert, "Unsupported object type id! (%d)", data.m_Tex.type);
+                LOG(LogType_ProgrammerAssert, "Unsupported object type id! (%d)", data.m_Tex.getType());
         }
     }
 }
 
 const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
 {
-    std::stringstream stream;
+    ResourceFactory<gfx::Texture2D>* const tex2DFactory(FACTORY_2D);
+    he::StringStream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY_2D->isAlive(m_AssetContainer.getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && tex2DFactory->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
-        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
-        FACTORY_2D->instantiate(handle);       
-        return FACTORY_2D->get(handle);
+        const ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
+        tex2DFactory->instantiate(handle);       
+        return tex2DFactory->get(handle);
     }
     else
     {
-        ObjectHandle handle(FACTORY_2D->create());
-        FACTORY_2D->get(handle)->setName(stream.str());
+        const ObjectHandle handle(tex2DFactory->create());
+        tex2DFactory->get(handle)->setName(stream.str());
 
         TextureLoadData data;
         data.m_Path = stream.str();
@@ -137,22 +138,23 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
 
         m_AssetContainer.addAsset(stream.str(), handle);
 
-        return FACTORY_2D->get(handle);
+        return tex2DFactory->get(handle);
     }
 }
 const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
 {
-    std::stringstream stream;
+    ResourceFactory<gfx::Texture2D>* const tex2DFactory(FACTORY_2D);
+    he::StringStream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY_2D->isAlive(m_AssetContainer.getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && tex2DFactory->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
-        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
-        FACTORY_2D->instantiate(handle); 
-        return FACTORY_2D->get(handle);
+        const ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
+        tex2DFactory->instantiate(handle); 
+        return tex2DFactory->get(handle);
     }
     else
     {
-        ObjectHandle handle(FACTORY_2D->create());
+        const ObjectHandle handle(tex2DFactory->create());
         m_AssetContainer.addAsset(stream.str(), handle);
 
         TextureLoadData data;
@@ -163,7 +165,7 @@ const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
         makeData(data);
 
         const bool succes(createTexture(data));
-        gfx::Texture2D* const tex(FACTORY_2D->get(handle));
+        gfx::Texture2D* const tex(tex2DFactory->get(handle));
         tex->setLoaded(succes? eLoadResult_Success : eLoadResult_Failed);
         return tex;
     }
@@ -243,9 +245,9 @@ he::ObjectHandle TextureLoader::asyncLoadTexture( const he::String& path, IResou
 
 bool TextureLoader::createTexture( const TextureLoadData& data )
 {
-    if (data.m_Tex.type == gfx::Texture2D::s_ObjectType)
+    if (data.m_Tex.getType() == gfx::Texture2D::s_ObjectType)
         return createTexture2D(data);
-    else if (data.m_Tex.type == gfx::TextureCube::s_ObjectType)
+    else if (data.m_Tex.getType()  == gfx::TextureCube::s_ObjectType)
         return createTextureCube(data);
     LOG(LogType_ProgrammerAssert, "Unsupported object type id!");
     return false;
@@ -256,7 +258,7 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
 
     gfx::Texture2D* tex2D(FACTORY_2D->get(data.m_Tex));
 
-    if (tex2D->getName() == "")
+    if (tex2D->getName().empty())
         tex2D->setName(data.m_Path);
 
     tex2D->init(gfx::TextureWrapType_Repeat, gfx::TextureFilterType_Anisotropic_16x, 
@@ -304,7 +306,7 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
     bool succes(true);
     gfx::TextureCube* texCube(FACTORY_CUBE->get(data.m_Tex));
 
-    if (texCube->getName() == "")
+    if (texCube->getName().empty())
         texCube->setName(data.m_Path);
 
     texCube->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Anisotropic_16x, data.m_TextureFormat, true);
@@ -496,35 +498,10 @@ bool TextureLoader::makeData( TextureLoadData& data )
     return true;
 }
 
-void TextureLoader::TextureLoadThread()
-{
-    HE_INFO("Texture Load thread started");
-    while (m_TextureLoadQueue.empty() == false)
-    {
-        TextureLoadData data;
-        if (m_TextureLoadQueue.pop(data))
-        {
-            bool succes(false);
-            if (data.m_Path[0] != '_')
-            {
-                succes = loadData(data);
-            }
-            else
-            {
-                succes = makeData(data);
-            }
-            data.m_DataLoaded = succes;
-            m_TextureInvokeQueue.push(data);
-        }
-    }
-    m_isLoadThreadRunning = false;
-    HE_INFO("Texture load thread stopped");
-}
-
 /* GETTERS */
 bool TextureLoader::isLoading() const
 {
-    return m_isLoadThreadRunning;
+    return m_TextureLoadQueue.empty() == false || m_TextureInvokeQueue.empty() == false;
 }
 
 } } //end namespace

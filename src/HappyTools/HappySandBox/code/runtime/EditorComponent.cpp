@@ -79,12 +79,12 @@ void EditorComponent::computeBound()
             he::ge::ModelComponent* const modelComp(he::checked_cast<he::ge::ModelComponent*>(comp));
             if (first)
             {
-                m_AABB = modelComp->getBound().getAABB();
+                m_AABB = modelComp->getDrawable()->getBound().getAABB();
                 first = false;
             }
             else
             {
-                m_AABB.merge(modelComp->getBound().getAABB());
+                m_AABB.merge(modelComp->getDrawable()->getBound().getAABB());
             }
         }
     }

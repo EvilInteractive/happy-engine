@@ -1,0 +1,16 @@
+{
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "deferred/post/deferredPostShader.vert",
+            "FragmentShader" : "deferred/post/deferredPostSLShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : true,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "One",
+        "DestBlend" : "One",
+        "DepthRead" : true,
+        "DepthWrite" : false
+    }
+}

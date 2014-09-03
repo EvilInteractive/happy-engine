@@ -16,74 +16,73 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 30/09/2011
+//Created: 2011/09/30
+//Major change: 2013/04/28
 
 #ifndef _HE_MATERIAL_H_
 #define _HE_MATERIAL_H_
 #pragma once
 
-#include "BufferLayout.h"
 #include "Resource.h"
+#include "MaterialEnums.h"
+#include "MaterialParameter.h"
 
 namespace he {
 namespace gfx {
 
-class InstancedDrawable;
-class SingleDrawable;
-class SkinnedDrawable;
-class ICamera;
-class ShaderVar;
+class IShaderUniform;
+class Shader;
+class MaterialInstance;
+class VertexLayout;
 
 class Material : public Resource<Material>
 {
+    friend class MaterialInstance;
 public:
     Material();
-    virtual ~Material();
+    ~Material();
     
-    void registerVar(ShaderVar* var);
-    ShaderVar* getVar(const he::String& var);
-    void setShader(const ObjectHandle& shaderHandle, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout);
+    void init();
+    
+    void setShader(const EShaderPassType pass, const EShaderRenderType renderType, Shader* const shader );
+    Shader* getShader(const EShaderPassType pass, const EShaderRenderType renderType) const { return m_Shader[pass][renderType]; }
+    
+    void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add,
+                      BlendFunc sourceBlend  = BlendFunc_One,
+                      BlendFunc destBlend    = BlendFunc_Zero);
+    void setNoPost(const bool noPost) { noPost? raiseFlag(eMaterialFlags_NoPost) : clearFlag(eMaterialFlags_NoPost); }
+    
+    void setCullFrontFace(const bool enable) { enable? raiseFlag(eMaterialFlags_CullFrontFace) : clearFlag(eMaterialFlags_CullFrontFace); }
+    
+    void setDepthWriteEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthWrite) : clearFlag(eMaterialFlags_DepthWrite); }
+    void setDepthReadEnabled(const bool enable) { enable? raiseFlag(eMaterialFlags_DepthRead) : clearFlag(eMaterialFlags_DepthRead); }
 
-    const BufferLayout& getCompatibleVertexLayout() const;
-    const BufferLayout& getCompatibleInstancingLayout() const;
-
-    void apply(const InstancedDrawable* pObj,  const ICamera* pCamera) const;
-    void apply(const SingleDrawable*    pObj,  const ICamera* pCamera) const;
-    void apply(const SkinnedDrawable*   pObj,  const ICamera* pCamera) const;
-
-    void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add, 
-                                      BlendFunc sourceBlend  = BlendFunc_One,
-                                      BlendFunc destBlend    = BlendFunc_Zero);
-    void setNoPost(bool noPost);
-    void setIsBackground(bool isBackground);
-
-    bool isBlended() const;
-    BlendEquation getBlendEquation() const;
-    BlendFunc getSourceBlend() const;
-    BlendFunc getDestBlend() const;
-    bool noPost() const;
-    bool isBackground() const;
-    bool isUsedForInstancing() const;
-
-    void setDepthWriteEnabled(bool enable);
-    void setDepthReadEnabled(bool enable);
-
-    void setCullFrontFace(bool enable);
-
+    void setDepthFunc(const DepthFunc func);
+    void setDefaultParams(const he::ObjectList<NameValuePair<he::String>>& params);
+    void setDefaultParams(he::ObjectList<NameValuePair<he::String>>&& params);
+    
+    MaterialInstance* createMaterialInstance(const EShaderRenderType type) const;
+    
 private:
-
+    Shader* bindShader(const EShaderPassType pass, const EShaderRenderType renderType) const;
+    void calculateMaterialLayout(const VertexLayout& bufferLayout, MaterialLayout& outMaterialLayout) const;
+    
+    HE_FORCEINLINE bool checkFlag(const EMaterialFlags flag) const { return (m_Flags & flag) != 0; }
+    HE_FORCEINLINE void raiseFlag(const EMaterialFlags flag) { m_Flags |= flag; }
+    HE_FORCEINLINE void clearFlag(const EMaterialFlags flag) { m_Flags &= ~flag; }
+    
+    Shader* m_Shader[eShaderPassType_MAX][eShaderRenderType_MAX];
+    
+    uint8 m_Flags;
+    
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
-    bool m_IsBlended, m_UsedForInstancing, m_NoPost, m_IsBackground;
-    bool m_CullFrontFace;
+    DepthFunc m_DepthFunc;
 
-    ObjectHandle m_ShaderHandle;
-    he::PrimitiveList<ShaderVar*> m_ShaderVars;
-
-    bool m_DepthRead, m_DepthWrite;
-
-    BufferLayout m_CompatibleVL; // vertex layout
-    BufferLayout m_CompatibleIL; // instance layout
+    // Split for cache friendliness
+    he::ObjectList<MaterialParameter> m_Parameters;
+    he::ObjectList<he::FixedString> m_ParameterNames;
+    he::ObjectList<NameValuePair<he::String>> m_DefaultParams;
 
     // Disabled
     Material(const Material* other);

@@ -23,10 +23,10 @@
 #include "Grid.h"
 
 #include "Vertex.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "ShapeRenderer.h"
 
-#include "ModelMesh.h"
+#include "ShapeMesh.h"
 
 namespace he {
 namespace tools {
@@ -35,63 +35,37 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
                                                             m_Color(Color(0.8f,0.8f,0.8f,1.0f)),
                                                             m_Color2(Color(1.0f,1.0f,1.0f,1.0f))
 {
-    gfx::BufferLayout layout;
-    layout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, 12, 0));
-
-    he::ObjectList<gfx::VertexPos> vertices;
-    he::PrimitiveList<uint32> indices;
-
+    m_GridShape = NEW gfx::ShapeMesh();
+    m_GridShape->init(gfx::MeshDrawMode_Lines);
     uint32 steps(static_cast<uint32>(size / tileSize));
-
-    uint32 index(0);
+    m_GridShape->beginEditing();
     for (uint32 i(0); i <= steps; ++i)
     {
-        vertices.add(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
-        vertices.add(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
+        m_GridShape->addPoint(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (i * tileSize)), true);
+        m_GridShape->addPoint(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (i * tileSize)), false);
 
-        indices.add(index++);
-        indices.add(index++);
-
-        vertices.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z - (size / 2))));
-        vertices.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z + (size / 2))));
-
-        indices.add(index++);
-        indices.add(index++);
+        m_GridShape->addPoint(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z - (size / 2)), true);
+        m_GridShape->addPoint(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z + (size / 2)), false);
     }
+    m_GridShape->endEditing(false, false);
 
-    m_ModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
-    m_ModelMesh->setName("Grid mesh 1");
-    m_ModelMesh->init(layout, gfx::MeshDrawMode_Lines);
-    m_ModelMesh->setVertices(&vertices[0], (uint32)vertices.size(), gfx::MeshUsage_Static, true);
-    m_ModelMesh->setIndices(&indices[0], (uint32)indices.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
+    m_BaseLineShape = NEW gfx::ShapeMesh();
+    m_BaseLineShape->init(gfx::MeshDrawMode_Lines);
+    m_BaseLineShape->beginEditing();
 
-    he::ObjectList<gfx::VertexPos> vertices2;
-    he::PrimitiveList<uint32> indices2;
+    m_BaseLineShape->addPoint(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize)), true);
+    m_BaseLineShape->addPoint(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize)), false);
 
-    index = 0;
-    vertices2.add(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
-    vertices2.add(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
+    m_BaseLineShape->addPoint(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z - (size / 2)), true);
+    m_BaseLineShape->addPoint(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z + (size / 2)), false);
 
-    indices2.add(index++);
-    indices2.add(index++);
-
-    vertices2.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z - (size / 2))));
-    vertices2.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z + (size / 2))));
-
-    indices2.add(index++);
-    indices2.add(index++);
-
-    m_ModelMesh2 = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
-    m_ModelMesh2->setName("Grid mesh 2");
-    m_ModelMesh2->init(layout, gfx::MeshDrawMode_Lines);
-    m_ModelMesh2->setVertices(&vertices2[0], (uint32)vertices2.size(), gfx::MeshUsage_Static, true);
-    m_ModelMesh2->setIndices(&indices2[0], (uint32)indices2.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
+    m_BaseLineShape->endEditing(false, false);
 }
 
 Grid::~Grid()
 {
-    m_ModelMesh->release();
-    m_ModelMesh2->release();
+    delete m_GridShape;
+    delete m_BaseLineShape;
 }
 
 /* GENERAL */
@@ -99,8 +73,8 @@ void Grid::drawShapes(gfx::ShapeRenderer* const renderer)
 {
     mat44 world(mat44::createTranslation(m_Position));
 
-    renderer->drawMeshColor(m_ModelMesh, world, m_Color);
-    renderer->drawMeshColor(m_ModelMesh2, world, m_Color2);
+    renderer->drawShape(m_GridShape, world, m_Color);
+    renderer->drawShape(m_BaseLineShape, world, m_Color2);
 }
 
 /* SETTERS */

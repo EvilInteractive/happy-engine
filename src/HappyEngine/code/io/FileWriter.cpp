@@ -38,7 +38,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
     close();
 
     bool success(true);
-    boost::filesystem::path boostPath(path.str());
+    boost::filesystem::path boostPath(path.str().c_str());
     boost::system::error_code error;
     if (boost::filesystem::exists(boostPath, error) == false)
     {
@@ -50,7 +50,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
             {
                 if (error.value() != 0)
                 {
-                    std::string message("Directory creation failed:\n" + error.message());
+                    he::String message("Directory creation failed:\n" + error.message());
                     HappyMessageBox::showExt("Fail!", message.c_str(), HappyMessageBox::Icon_Error);
                 }
             }
@@ -58,7 +58,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
     }
     else if (overrideWarning)
     {
-        std::string message("Are you sure you want to override\n" + path.str() + "?");
+        he::String message("Are you sure you want to override\n" + path.str() + "?");
         success = HappyMessageBox::showExt("Override file?", message.c_str(), 
             HappyMessageBox::Icon_Info, "Yes", "No") == HappyMessageBox::Button_Button1;
     }
@@ -85,20 +85,6 @@ FileWriter& FileWriter::operator<<( const he::String& str )
 {
     HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
     m_Stream << str.c_str();
-    return *this;
-}
-
-FileWriter& FileWriter::operator<<( const wchar_t* const str )
-{
-    HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
-    m_Stream << str;
-    return *this;
-}
-
-FileWriter& FileWriter::operator<<( const std::wstring& str )
-{
-    HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
-    m_Stream << str;
     return *this;
 }
 

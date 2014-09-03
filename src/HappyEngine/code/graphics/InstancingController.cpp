@@ -39,38 +39,38 @@ namespace he {
 namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
-
+/*
 #pragma warning(disable:4355) // use of this in initializer list
 InstancingController::InstancingController(const he::String& name, bool dynamic, const ObjectHandle& meshHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
-    m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1)), m_AttachedToScene(false)
+    m_ContextCreatedHandler(std::bind(&InstancingController::initVao, this, std::placeholders::_1)),
+    m_ContextRemovedHandler(std::bind(&InstancingController::destroyVao, this, std::placeholders::_1)), m_AttachedToScene(false)
 {
     he_memset(m_Vao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
     he_memset(m_ShadowVao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
 
     ResourceFactory<Material>::getInstance()->instantiate(material);
     m_Material = ResourceFactory<Material>::getInstance()->get(material);
-    m_InstancingLayout = BufferLayout(m_Material->getCompatibleInstancingLayout());
+    m_InstancingLayout = VertexLayout(m_Material->getCompatibleInstancingLayout());
     m_CpuBuffer = details::InstancingBuffer(m_Material->getCompatibleInstancingLayout().getSize(), 32);
 
     m_ModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(meshHandle);
     m_ModelMesh->instantiate();
-    m_ModelMesh->callbackOnceIfLoaded(this, boost::bind(&InstancingController::init, this));
+    m_ModelMesh->callbackOnceIfLoaded(this, std::bind(&InstancingController::init, this));
 }
 
 InstancingController::InstancingController( const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset, const he::String& mesh ):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
-    m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1)), m_AttachedToScene(false)
+    m_ContextCreatedHandler(std::bind(&InstancingController::initVao, this, std::placeholders::_1)),
+    m_ContextRemovedHandler(std::bind(&InstancingController::destroyVao, this, std::placeholders::_1)), m_AttachedToScene(false)
 {
         he_memset(m_Vao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
         he_memset(m_ShadowVao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
 
         m_Material = ResourceFactory<Material>::getInstance()->get(CONTENT->loadMaterial(materialAsset));
-        m_InstancingLayout = BufferLayout(m_Material->getCompatibleInstancingLayout());
+        m_InstancingLayout = VertexLayout(m_Material->getCompatibleInstancingLayout());
         m_CpuBuffer = details::InstancingBuffer(m_Material->getCompatibleInstancingLayout().getSize(), 32);
 
         m_ModelMesh = CONTENT->asyncLoadModelMesh(modelAsset, mesh, m_Material->getCompatibleVertexLayout());
@@ -122,7 +122,7 @@ InstancingController::~InstancingController()
 void InstancingController::initVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    const BufferLayout::layout& vertexElements(m_ModelMesh->getVertexLayout().getElements());
+    const VertexLayout::layout& vertexElements(m_ModelMesh->getVertexLayout().getElements());
     //////////////////////////////////////////////////////////////////////////
     ///  Regular Draw
     //////////////////////////////////////////////////////////////////////////
@@ -135,12 +135,12 @@ void InstancingController::initVao( GLContext* context )
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
         glBindBuffer(GL_ARRAY_BUFFER, m_ModelMesh->getVBOID());
-        const BufferLayout::layout& vertexElements(m_ModelMesh->getVertexLayout().getElements());
-        std::for_each(vertexElements.cbegin(), vertexElements.cend(), [&](const BufferElement& e)
+        const VertexLayout::layout& vertexElements(m_ModelMesh->getVertexLayout().getElements());
+        std::for_each(vertexElements.cbegin(), vertexElements.cend(), [&](const VertexElement& e)
         {
             GLint components = 1;
             GLenum type = 0;
-            GL::getGLTypesFromBufferElement(e, components, type);
+            GL::getGLTypesFromVertexElement(e, components, type);
             glVertexAttribPointer(e.getElementIndex(), components, type, 
                 GL_FALSE, m_ModelMesh->getVertexLayout().getSize(), 
                 BUFFER_OFFSET(e.getByteOffset())); 
@@ -157,11 +157,11 @@ void InstancingController::initVao( GLContext* context )
         //////////////////////////////////////////////////////////////////////////
         glBindBuffer(GL_ARRAY_BUFFER, m_GpuBuffer);
 
-        std::for_each(m_InstancingLayout.getElements().cbegin(), m_InstancingLayout.getElements().cend(), [&](const BufferElement& element)
+        std::for_each(m_InstancingLayout.getElements().cbegin(), m_InstancingLayout.getElements().cend(), [&](const VertexElement& element)
         {
             GLint components(1);
             GLenum type(0);
-            GL::getGLTypesFromBufferElement(element, components, type);
+            GL::getGLTypesFromVertexElement(element, components, type);
             glEnableVertexAttribArray(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex());
             glVertexAttribPointer(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex(), components, type, 
                 GL_FALSE, m_InstancingLayout.getSize(), BUFFER_OFFSET(element.getByteOffset())); 
@@ -174,10 +174,10 @@ void InstancingController::initVao( GLContext* context )
     HE_IF_ASSERT(m_ShadowVao[context->getID()] == UINT32_MAX, "shadow vao already inited?")
     {
         uint32 posOffset(UINT32_MAX);
-        BufferLayout::layout::const_iterator it(vertexElements.cbegin());
+        VertexLayout::layout::const_iterator it(vertexElements.cbegin());
         for(; it != vertexElements.cend(); ++it)
         {
-            if (it->getUsage() == gfx::BufferElement::Usage_Position)
+            if (it->getAttribute() == gfx::eShaderAttribute_Position)
             {
                 posOffset = it->getByteOffset();
                 break;
@@ -393,7 +393,7 @@ void InstancingController::removeManualFiller( const IInstanceFiller* filler )
     m_ManualCpuBufferFillers.remove(filler);
 }
 
-void InstancingController::tick( float /*dTime*/ )
+void InstancingController::tick( float /*dTime*//* )
 {
     updateBuffer();
 }
@@ -442,7 +442,7 @@ void InstancingController::calculateBound()
 {
 
 }
-
+*/
 
 
 } } //end namespace

@@ -29,7 +29,7 @@
 namespace he {
 namespace gui {
 
-JSObject::JSObject(Awesomium::JSObject& aweObject, const std::string& name) : m_AweObject(aweObject),
+JSObject::JSObject(Awesomium::JSObject& aweObject, const he::String& name) : m_AweObject(aweObject),
                                                                               m_ObjectName(name)
 {
 }

@@ -38,8 +38,6 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
 #endif
 
-static int s_scope = 0;
-
 } } } //end namespace
 
 #ifdef HE_DEBUG
@@ -47,11 +45,13 @@ static int s_scope = 0;
 #define HE_IF_ASSERT(isOk, message, ...) if (!(isOk)) { LOG(he::LogType_ProgrammerAssert, message, ##__VA_ARGS__); } else 
 #define HE_ART_ASSERT(isOk, message, ...) if (!(isOk)) LOG(he::LogType_ArtAssert, message, ##__VA_ARGS__)
 #define HE_IF_ART_ASSERT(isOk, message, ...) if (!(isOk)) { LOG(he::LogType_ArtAssert, message, ##__VA_ARGS__); } else
+#define HE_NOT_IMPLEMENTED LOG(he::LogType_ProgrammerAssert, "Method not implemented! %s", __HE_FUNCTION__);
 #else
 #define HE_ASSERT(...) {}
 #define HE_IF_ASSERT(...) {}
 #define HE_ART_ASSERT(...) {}
 #define HE_IF_ART_ASSERT(isOk, ...) if (isOk)
+#define HE_NOT_IMPLEMENTED
 #endif
 #define HE_COMPILE_ASSERT(isOk, message) static_assert(isOk, message)
 

@@ -129,7 +129,7 @@ void Profiler::load()
         m_Text.setFont(m_Font);
     }
 
-    CONSOLE->registerCmd(boost::bind(&he::tools::Profiler::toggleProfiler, this), "toggle_profiler");
+    CONSOLE->registerCmd(std::bind(&he::tools::Profiler::toggleProfiler, this), "toggle_profiler");
 }
 
 

@@ -29,11 +29,18 @@ namespace sfx {
 
 struct SoundFileProperties
 {
+    SoundFileProperties();
+    SoundFileProperties(SoundFileProperties&& other);
+    SoundFileProperties& operator=(SoundFileProperties&& other);
+
     he::String filePath;
     uint32 samplesCount;
     uint32 channelsCount;
     uint32 samplerate;
 
+private:
+    SoundFileProperties(const SoundFileProperties&);
+    SoundFileProperties& operator=(const SoundFileProperties&);
 };
 
 class SoundFile

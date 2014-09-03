@@ -48,7 +48,7 @@ struct ValueTest : JsonTest::TestCase
       , float_( 0.00390625f )
       , emptyString_( "" )
       , string1_( "a" )
-      , string_( "sometext with space" )
+      , string_( "sometext with space and \"this is a quoted string\nwith new lines\n and \"quotes\" 'n stuff\"" )
       , true_( true )
       , false_( false )
    {

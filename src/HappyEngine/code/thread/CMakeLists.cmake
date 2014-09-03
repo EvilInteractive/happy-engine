@@ -14,6 +14,7 @@ addFilter(CODE_SRCS src/thread code/thread/
             ${THREAD_CPP}          
             Thread.h
             ThreadSafety.h
+            ThreadTicket.cpp 	ThreadTicket.h
             ThreadTypes.h
             ${MUTEX_CPP}
             Mutex.h

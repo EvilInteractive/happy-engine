@@ -113,6 +113,10 @@ void HappyEngine::init(const int argc, const char* const * const argv, const int
     HE_ASSERT(argc > 0, "There must be at least one argument in the argv argument list!");
     Path::init(argc, argv);
     StaticDataManager::init();
+    ThreadTicketManager* const treadTicketMan(ThreadTicketManager::getInstance());
+    treadTicketMan->registerTicket(eThreadTicket_Main, "Main");
+    treadTicketMan->registerTicket(eThreadTicket_Content, "Content");
+    CLAIM_THREAD(eThreadTicket_Main);
     HE_INFO("Bin path: %s", Path::getBinPath().str().c_str());
     HE_INFO("Data path: %s", Path::getDataPath().str().c_str());
     HE_INFO("User path: %s", Path::getUserDir().str().c_str());
@@ -216,7 +220,7 @@ void HappyEngine::start(ge::Game* game, const bool managed, he::gfx::Window* sha
     
     if (m_SubEngines & SubEngine_Audio)
     {
-        m_AudioThread.startThread(boost::bind(&HappyEngine::audioLoop, this), "Audio Thread");
+        m_AudioThread.startThread(std::bind(&HappyEngine::audioLoop, this), "Audio Thread");
     }
 
     m_PrevTime = boost::chrono::high_resolution_clock::now();

@@ -37,6 +37,8 @@ private:
 
 public:
     mat44();
+    mat44(const mat44& other);
+    mat44& operator=(const mat44& other);
     explicit mat44(const physx::PxMat44& mat);
     mat44(const vec4& col0, const vec4& col1, const vec4& col2, const vec4& col3);
     mat44( float _00, float _01, float _02, float _03,
@@ -44,7 +46,6 @@ public:
             float _20, float _21, float _22, float _23,
             float _30, float _31, float _32, float _33 );
     ~mat44();
-    //default copy constructor and assignment operator are fine
 
     //static constructors
     static mat44 createPerspectiveLH(float fov, float viewWidth, float viewHeight, float zNear, float zFar);

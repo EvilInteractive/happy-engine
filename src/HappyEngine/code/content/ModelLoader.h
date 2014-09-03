@@ -26,7 +26,7 @@
 #pragma once
 
 #include "Model.h"
-#include "BufferLayout.h"
+#include "VertexLayout.h"
 #include "AssetContainer.h"
 #include "ThreadSafeQueueMP1C.h"
 
@@ -51,14 +51,15 @@ public:
     virtual ~ModelLoader();
         
     /* GENERAL */
-    void tick(float dTime); //checks for new load operations, if true start thread
+    void tick(float dTime);
+    bool loadTick();
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model* asyncLoadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
-    gfx::ModelMesh* asyncLoadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::Model* asyncLoadModel(const he::String& path, const bool savePickingData);
+    gfx::ModelMesh* asyncLoadModelMesh(const he::String& path, const he::String& meshName, const bool savePickingData);
 
-    gfx::Model* loadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
-    gfx::ModelMesh* loadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::Model* loadModel(const he::String& path, const bool savePickingData);
+    gfx::ModelMesh* loadModelMesh(const he::String& path, const he::String& meshName, const bool savePickingData);
 
     /* GETTERS */
     bool isLoading() const;
@@ -69,7 +70,6 @@ private:
     public:
         ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false), dataLoaded(false) {}
         he::String path;
-        gfx::BufferLayout vertexLayout;
         ObjectHandle modelHandle;
         models::IModelLoader* loader;
         bool savePickingData;
@@ -84,17 +84,12 @@ private:
     bool createModel(ModelLoadData& data);
 
     bool isModelLoaded(const he::String& path, ObjectHandle& outHandle);
-    void modelLoadThread();
-    bool m_isModelThreadRunning;
 
     he::ThreadSafeQueueMP1C<ModelLoadData> m_ModelLoadQueue;
     he::ThreadSafeQueueMP1C<ModelLoadData> m_ModelInvokeQueue;
 
     he::Mutex m_WaitListMutex;
-
-    he::Thread m_ModelLoadThread;
-
-
+    
     AssetContainer<ObjectHandle> m_AssetContainer;
 
     gfx::ModelMesh* m_EmptyMesh;

@@ -110,7 +110,7 @@ he::ObjectHandle ShaderGenerator::addVariable()
     const uint32 id(m_LocalVarUID++);
     char name[20];
     hesnprintf(name, 19, "localvar%d", id);
-    var->setLocalName(name);
+    var->setLocalName(he::String(name));
 
     return result;
 }
@@ -126,7 +126,7 @@ ShaderGeneratorVariable* ShaderGenerator::addInternalVariable()
     const uint32 id(m_LocalVarUID++);
     char name[20];
     hesnprintf(name, 19, "localvar%d", id);
-    var->setLocalName(name);
+    var->setLocalName(he::String(name));
 
     return var;
 }
@@ -280,7 +280,7 @@ void ShaderGenerator::inititalizeInternalVertexVars( const ShadingType /*shading
     viewNormal4->setMultiply(worldView, localNormal4_0->getHandle());
 
     ShaderGeneratorVariable* passNormal(addInternalVariable());
-    passNormal->setLocalName(getGlobalFragmentVariableName(ShaderGeneratorGlobalFragmentVariableType_ViewNormal));
+    passNormal->setLocalName(he::String(getGlobalFragmentVariableName(ShaderGeneratorGlobalFragmentVariableType_ViewNormal)));
     passNormal->setSwizzle(viewNormal4->getHandle(), ShaderGeneratorSwizzleMask_X, ShaderGeneratorSwizzleMask_Y, ShaderGeneratorSwizzleMask_Z);
     m_OutVariables.add(passNormal->getHandle());
 
@@ -302,7 +302,7 @@ void ShaderGenerator::inititalizeInternalVertexVars( const ShadingType /*shading
     localPos4_1->setComposeFloat4(localPos, const1->getHandle());
 
     ShaderGeneratorVariable* outPosition(addInternalVariable());
-    outPosition->setLocalName(getOutVariableName(ShaderGeneratorOutVariableType_GLPosition));
+    outPosition->setLocalName(he::String(getOutVariableName(ShaderGeneratorOutVariableType_GLPosition)));
 
     switch (drawType)
     {

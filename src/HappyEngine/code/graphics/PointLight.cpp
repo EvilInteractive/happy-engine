@@ -23,6 +23,8 @@
 
 #include "ContentManager.h"
 #include "ModelMesh.h"
+#include "Material.h"
+#include "MaterialInstance.h"
 
 namespace he {
 namespace gfx {
@@ -32,64 +34,11 @@ PointLight::PointLight()
     , m_Attenuation(0.0f, 10.0f)
     , m_ScaledAttenuation(0.0f, 10.0f)
     , m_Color(1.0f, 1.0f, 1.0f)
-    , m_Material(nullptr)
-    , m_Model(nullptr)
-    , m_LightVolume(nullptr)
 {
-    m_Material = ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
-    BufferLayout vertexLayout;
-    vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", vertexLayout);
-
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
-    m_Model = m_LightVolume;
-}
-
-PointLight::PointLight( const PointLight& other )
-: m_Multiplier(other.m_Multiplier)
-, m_Color(other.m_Color)
-, m_Attenuation(other.m_Attenuation)
-, m_ScaledAttenuation(other.m_ScaledAttenuation)
-, m_Material(other.m_Material)
-, m_Model(other.m_Model)
-, m_LightVolume(other.m_LightVolume)
-{
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
-    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
-}
-
-PointLight& PointLight::operator=( const PointLight& other )
-{
-    m_Multiplier = other.m_Multiplier;
-    m_Color = other.m_Color;
-    m_Attenuation = other.m_Attenuation;
-    m_ScaledAttenuation = other.m_ScaledAttenuation;
-
-    if (m_Model != nullptr)
-        m_Model->release();
-    if (m_LightVolume != nullptr)
-        m_LightVolume->release();
-    if (m_Material != nullptr)
-        m_Material->release();
-    m_Model = other.m_Model;
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
-    m_LightVolume = other.m_LightVolume;
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
-    m_Material = other.m_Material;
-    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
-
-    return *this;
 }
 
 PointLight::~PointLight()
 {
-    if (m_Material != nullptr)
-        m_Model->release();
-    if (m_Material != nullptr)
-        m_LightVolume->release();
-    if (m_Material != nullptr)
-        m_Material->release();
 }
 
 void PointLight::setMultiplier(float multiplier)
@@ -140,23 +89,10 @@ const vec3& PointLight::getColor() const
     return m_Color;
 }
   
-const ModelMesh* PointLight::getLightVolume() const
-{
-    return m_LightVolume;
-}
-const Material* PointLight::getMaterial() const
-{
-    return m_Material;
-}
-const ModelMesh* PointLight::getModelMesh() const
-{
-    return m_Model;
-}
-
 void PointLight::calculateWorldMatrix()
 {
-    DefaultSingleDrawable::calculateWorldMatrix();
-    float scale(length(vec3(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0)))); // takes x as uniform scale
+    Object3D::calculateWorldMatrix();
+    float scale(length(vec3(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0))));
     m_ScaledAttenuation = m_Attenuation * (scale / m_Attenuation.y);
 }
 
