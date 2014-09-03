@@ -395,7 +395,7 @@ void Deferred3DRenderer::render()
 }
 void Deferred3DRenderer::draw2D(gui::Canvas2D* canvas)
 {
-    //if (m_ShowDebugTextures)
+    if (m_ShowDebugTextures)
     {
         canvas->blitImage(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
         canvas->blitImage(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));

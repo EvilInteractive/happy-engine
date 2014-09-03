@@ -4,17 +4,17 @@
             "VertexShader" : "forward/forwardShader.vert",
             "FragmentShader" : "forward/forwardShader.frag",
             "OutputLayout" : [ "outColor", "outNormalDepth" ]
-        },
-        "Skinned" : {
-            "VertexShader" : "forward/forwardShaderSkinned.vert",
-            "FragmentShader" : "forward/forwardShader.frag",
-            "OutputLayout" : [ "outColor", "outNormalDepth" ]
-        },
-        "Instanced" : {
-            "VertexShader" : "forward/forwardShaderInstanced.vert",
-            "FragmentShader" : "forward/forwardShader.frag",
-            "OutputLayout" : [ "outColor", "outNormalDepth" ]
         }
+        //"Skinned" : {
+        //    "VertexShader" : "forward/forwardShaderSkinned.vert",
+        //    "FragmentShader" : "forward/forwardShader.frag",
+        //    "OutputLayout" : [ "outColor", "outNormalDepth" ]
+        //},
+        //"Instanced" : {
+        //    "VertexShader" : "forward/forwardShaderInstanced.vert",
+        //    "FragmentShader" : "forward/forwardShader.frag",
+        //    "OutputLayout" : [ "outColor", "outNormalDepth" ]
+        //}
     },
     "Options" : {
         "IsBlended" : true,

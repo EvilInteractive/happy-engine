@@ -60,7 +60,7 @@ void ShadowCaster::render(Scene* scene)
         if (light->getVisibleLastFrame() && light->getShadowResolution() != ShadowResolution_None)
         {
             m_SpotLightShadowRenderers[light->getShadowResolution() - 1].render(scene, light);
-            m_LastTexture = light->getShadowMap()->getHandle();
+            //m_LastTexture = light->getShadowMap()->getHandle();
         }
     });
 }

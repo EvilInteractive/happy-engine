@@ -51,7 +51,7 @@ PostProcesser::PostProcesser():
     m_DebugRenderer(nullptr),
     m_WriteRenderTarget(nullptr),
     m_ReadRenderTarget(nullptr),
-    m_ShowDebugTextures(true),
+    m_ShowDebugTextures(false),
     m_AOEnabled(false),
     m_FogEnabled(false)
 {
