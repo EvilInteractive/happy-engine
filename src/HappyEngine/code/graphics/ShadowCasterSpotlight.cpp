@@ -29,6 +29,7 @@
 #include "MaterialInstance.h"
 #include "RenderTarget.h"
 #include "Scene.h"
+#include "ShaderUniformBufferManager.h"
 #include "SpotLight.h"
 #include "Texture2D.h"
 #include "View.h"
@@ -78,6 +79,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
     // Prepare Camera
     light->prepareShadowCamera();
     const ICamera* cam(&light->getShadowCamera());
+    GRAPHICS->getShaderUniformBufferManager()->updateSpotLightBuffer(light, cam);
       
     // Prepare drawing
     m_RenderTarget->switchTextureTarget(0, light->getShadowMap());

@@ -107,6 +107,8 @@ DEF_FS(noiseMap);
 DEF_FS(viewPortSize);
 DEF_FS(SharedPerCameraUniformBuffer);
 DEF_FS(SharedPerSceneUniformBuffer);
+DEF_FS(SharedSpotLightUniformBuffer);
+DEF_FS(SharedPointLightUniformBuffer);
 
 //////////////////////////////////////////////////////////////////////////
 // Deferred
@@ -188,7 +190,8 @@ DEF_FS(size);
 DEF_FS(originalSize);
 DEF_FS(blendColor);
 
-DEF_FS(matWorldView);
+DEF_FS(matWV);
+DEF_FS(lightNearFar);
 
 //////////////////////////////////////////////////////////////////////////
 // Config

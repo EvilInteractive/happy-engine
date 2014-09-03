@@ -113,7 +113,7 @@ void Material::init()
                                         for (size_t j(0); j < count; ++j)
                                         {
                                             IShaderUniform* const uniform(uniforms[j]);
-                                            MaterialParameter* param;
+                                            MaterialParameter* param(nullptr);
                                             size_t index(0);
                                             if (m_ParameterNames.find(uniform->getName(), index))
                                             {
@@ -243,12 +243,18 @@ void Material::init()
                                                     break;
                                                 }
 
-                                                m_Parameters.add(tempParam);
-                                                m_ParameterNames.add(uniform->getName());
-                                                param = &m_Parameters.back();
+                                                if (tempParam.getType() != MaterialParameter::eType_Invalid)
+                                                {
+                                                    m_Parameters.add(tempParam);
+                                                    m_ParameterNames.add(uniform->getName());
+                                                    param = &m_Parameters.back();
+                                                }
                                             }
-                                            const ShaderUniformID id(checked_numcast<uint32>(j));
-                                            param->setShaderUniformID(id, checked_numcast<EShaderPassType>(pass), checked_numcast<EShaderRenderType>(rtype));
+                                            if (param)
+                                            {
+                                                const ShaderUniformID id(checked_numcast<uint32>(j));
+                                                param->setShaderUniformID(id, checked_numcast<EShaderPassType>(pass), checked_numcast<EShaderRenderType>(rtype));
+                                            }
                                         }
                                     }
                                 }

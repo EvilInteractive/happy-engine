@@ -29,6 +29,8 @@ namespace gfx {
 
 class Scene;
 class ICamera;
+class SpotLight;
+class PointLight;
 
 class ShaderUniformBufferManager
 {
@@ -63,6 +65,38 @@ class ShaderUniformBufferManager
             , m_ViewSize(1280, 720)
         {}
     UNIFORM_STRUCT_END(PerCameraBuffer)
+        
+    UNIFORM_STRUCT(SpotLightUniformBuffer)
+
+        UNIFORM_MAT4(m_WVP);
+        UNIFORM_VEC4(m_ColorMult);
+        UNIFORM_VEC4(m_DirectionCosCutOff);
+        UNIFORM_VEC3(m_ViewPosition);
+        UNIFORM_VEC2_VEC2(m_Attenuation, __attenuationPad);
+
+        SpotLightUniformBuffer()
+            : m_ColorMult(1.0f, 1.0f, 1.0f, 1.0f)
+            , m_DirectionCosCutOff(0.0f, 0.0f, 1.0f, 1.0f)
+            , m_ViewPosition(0.0f, 0.0f, 0.0f)
+            , m_Attenuation(0.0f, 20.0f)
+        {}
+
+    UNIFORM_STRUCT_END(SpotLightUniformBuffer)
+        
+    UNIFORM_STRUCT(PointLightUniformBuffer)
+
+        UNIFORM_MAT4(m_WVP);
+        UNIFORM_VEC4(m_ColorMult);
+        UNIFORM_VEC3(m_ViewPosition);
+        UNIFORM_VEC2_VEC2(m_Attenuation, __attenuationPad);
+
+        PointLightUniformBuffer()
+            : m_ColorMult(1.0f, 1.0f, 1.0f, 1.0f)
+            , m_ViewPosition(0.0f, 0.0f, 0.0f)
+            , m_Attenuation(0.0f, 20.0f)
+        {}
+
+    UNIFORM_STRUCT_END(PointLightUniformBuffer)
 
 public:
     ShaderUniformBufferManager();
@@ -72,6 +106,8 @@ public:
 
     void updateSceneBuffer(const Scene* const scene);
     void updateCameraBuffer(const ICamera* const camera);
+    void updateSpotLightBuffer(const SpotLight* const light, const ICamera* const camera);
+    void updatePointLightBuffer(const PointLight* const light, const ICamera* const camera);
 
     uint32 findLink(const he::FixedString& name) const;
 
@@ -80,6 +116,8 @@ public:
 private:
     SharedUniformBuffer<PerSceneBuffer> m_SceneBuffer;
     SharedUniformBuffer<PerCameraBuffer> m_CameraBuffer;
+    SharedUniformBuffer<SpotLightUniformBuffer> m_SpotLightBuffer;
+    SharedUniformBuffer<PointLightUniformBuffer> m_PointLightBuffer;
 
     size_t m_BufferCounter;
 

@@ -112,7 +112,7 @@ void MaterialInstance::applyShader( const EShaderPassType pass, const DrawContex
         const int8 wvp(tryFindParameter(HEFS::strmatWVP));
         if (wvp >= 0)
             getParameter(wvp).setFloat44(context.m_Camera->getViewProjection() * context.m_WorldMatrix);
-        const int8 wv(tryFindParameter(HEFS::strmatWorldView));
+        const int8 wv(tryFindParameter(HEFS::strmatWV));
         if (wv >= 0)
             getParameter(wv).setFloat44(context.m_Camera->getView() * context.m_WorldMatrix);
     }

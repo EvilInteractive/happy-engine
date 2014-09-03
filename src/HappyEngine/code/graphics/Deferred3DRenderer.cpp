@@ -228,31 +228,6 @@ void Deferred3DRenderer::loadMaterials()
             m_SpotLightMaterial = spotLightMaterial->createMaterialInstance(eShaderRenderType_Normal);
             spotLightMaterial->release();
         }
-        // Load mesh
-        {
-            m_SpotLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight");
-            m_SpotLightVolume->callbackOnceIfLoaded(this, [this](const ELoadResult result)
-            {
-                if (result == eLoadResult_Success)
-                {
-                    if (m_SpotLightMaterial->getLoadResult() == eLoadResult_Unloaded)
-                    {
-                        m_SpotLightMaterial->callbackOnceIfLoaded(this, [this](const ELoadResult /*result*/)
-                        {
-                            m_SpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
-                        });
-                    }
-                    else
-                    {
-                        m_SpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
-                    }
-                }
-                else
-                {
-                    HAPPYENGINE->quit(); // fatal if this happen
-                }
-            });
-        }
 
         m_SpotLightData.position = m_SpotLightMaterial->findParameter(HEFS::strlight_position);
         m_SpotLightData.multiplier = m_SpotLightMaterial->findParameter(HEFS::strlight_multiplier);
@@ -293,6 +268,45 @@ void Deferred3DRenderer::loadMaterials()
         m_ShadowSpotLightData.shadowMap = m_ShadowSpotLightMaterial->findParameter(HEFS::strshadowMap);
         m_ShadowSpotLightData.shadowMatrix = m_ShadowSpotLightMaterial->findParameter(HEFS::strshadowMatrix);
         m_ShadowSpotLightData.shadowInvSize = m_ShadowSpotLightMaterial->findParameter(HEFS::strshadowMapInvSize);
+    }
+
+    {
+        // Load Spotlight mesh
+        {
+            m_SpotLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight");
+            m_SpotLightVolume->callbackOnceIfLoaded(this, [this](const ELoadResult result)
+            {
+                if (result == eLoadResult_Success)
+                {
+                    if (m_SpotLightMaterial->getLoadResult() == eLoadResult_Unloaded)
+                    {
+                        m_SpotLightMaterial->callbackOnceIfLoaded(this, [this](const ELoadResult /*result*/)
+                        {
+                            m_SpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
+                        });
+                    }
+                    else
+                    {
+                        m_SpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
+                    }
+                    if (m_ShadowSpotLightMaterial->getLoadResult() == eLoadResult_Unloaded)
+                    {
+                        m_ShadowSpotLightMaterial->callbackOnceIfLoaded(this, [this](const ELoadResult /*result*/)
+                        {
+                            m_ShadowSpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
+                        });
+                    }
+                    else
+                    {
+                        m_ShadowSpotLightMaterial->calculateMaterialLayout(m_SpotLightVolume->getVertexLayout());
+                    }
+                }
+                else
+                {
+                    HAPPYENGINE->quit(); // fatal if this happen
+                }
+            });
+        }
     }
 
     // AmbDirLight
@@ -351,7 +365,6 @@ void Deferred3DRenderer::render()
         GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
         m_CollectionRenderTarget->clear(he::Color(0.0f, 1, 0, 0));
         GRAPHICS->getShaderUniformBufferManager()->updateSceneBuffer(m_Scene);
-        GRAPHICS->getShaderUniformBufferManager()->bind();
 
 
         //////////////////////////////////////////////////////////////////////////

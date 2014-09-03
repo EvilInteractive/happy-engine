@@ -64,6 +64,7 @@ public:
     InstancingManager* getInstancingManager() const { return m_InstancingManager; }
     ge::CameraManager* getCameraManager() const { return m_CameraManager; }
     const DrawListContainer& getDrawList() const { return m_DrawList; }
+    ShadowCaster*      getShadowRenderer() const { return m_ShadowCaster; }
     
     // Visual Picking
     //void initPicking(); // only init picking when needed, because it requires extra FBO & shader

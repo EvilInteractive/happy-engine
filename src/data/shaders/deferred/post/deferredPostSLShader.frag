@@ -45,7 +45,7 @@ uniform sampler2D normalDepthMap;
 uniform sampler2D sgMap;
 #endif
 
-#if SHADOWS
+#if ENABLE_SHADOWMAP
 uniform sampler2D shadowMap;
 uniform mat4 shadowMatrix;   // = shadowViewProjMatrix * invViewMatrix => transform viewPosition to world -> world to shadowViewProj
 uniform vec2 shadowMapInvSize;
@@ -101,7 +101,7 @@ float shadowCheck(in vec3 position, in float distFromLight, in sampler2D shadowM
     return shadow;
 }
 
-#endif
+#endif // ENABLE_SHADOWMAP
 
 void main()
 {
@@ -129,7 +129,7 @@ void main()
     // Check shadow	
     float shadow = 1;
 
-#if SHADOWS
+#if ENABLE_SHADOWMAP
     shadow = shadowCheck(position, lightDist, shadowMap, shadowMatrix, 0.01f);
     if (shadow < 0.1f)
         discard;

@@ -219,7 +219,7 @@ he::gfx::Window*Sandbox::getMainWindow() const
 
 QGLWidget* Sandbox::getSharedWidget() const
 {
-    return m_Window->getGameWidget();
+    return m_Window? m_Window->getGameWidget() : nullptr;
 }
 
 } //end namespace

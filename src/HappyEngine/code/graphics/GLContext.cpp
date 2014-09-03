@@ -21,6 +21,7 @@
 #include "GLContext.h"
 
 #include "GraphicsEngine.h"
+#include "ShaderUniformBufferManager.h"
 
 namespace he {
 namespace gfx {
@@ -82,6 +83,10 @@ bool GLContext::create(Window* const /*window*/)
 
     glGenVertexArrays(1, &m_DefaultVAO);
     GL::heBindVao(m_DefaultVAO);
+
+    ShaderUniformBufferManager* uboMan(GRAPHICS->getShaderUniformBufferManager());
+    if (uboMan)
+        uboMan->bind();
 
     return true;
 }

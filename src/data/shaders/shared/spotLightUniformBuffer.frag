@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -17,15 +17,21 @@
 //
 //Author: Bastian Damman
 
-#version 150 core
+#ifndef _FRAG_SPOTLIGHTUNIFORMBUFFER
+#define _FRAG_SPOTLIGHTUNIFORMBUFFER
 
-#include "shared/spotLightUniformBuffer.frag"
-
-in vec3 passPos;
-out float outShadow;
-  
-void main()
+struct SpotLightUniformBuffer
 {
-    float depth = (length(passPos) - 1.0f) / (20.0f - 1.0);
-    outShadow = clamp(depth, 0, 1);
-}
+    mat4 wvp;
+    vec4 colorMult;
+    vec4 directionCosCutOff;
+    vec3 position;
+    vec2 attenuation;
+};
+
+layout(std140) uniform SharedSpotLightUniformBuffer
+{
+	SpotLightUniformBuffer spotLightUniformBuffer;
+};
+
+#endif // _FRAG_SPOTLIGHTUNIFORMBUFFER

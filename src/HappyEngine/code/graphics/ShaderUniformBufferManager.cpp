@@ -23,6 +23,8 @@
 
 #include "AmbientLight.h"
 #include "DirectionalLight.h"
+#include "SpotLight.h"
+#include "PointLight.h"
 #include "ICamera.h"
 #include "LightManager.h"
 #include "Scene.h"
@@ -44,6 +46,8 @@ void ShaderUniformBufferManager::init()
 {
     m_SceneBuffer.init(m_BufferCounter++, PerSceneBuffer(), true);
     m_CameraBuffer.init(m_BufferCounter++, PerCameraBuffer(), true);
+    m_SpotLightBuffer.init(m_BufferCounter++, SpotLightUniformBuffer(), true);
+    m_PointLightBuffer.init(m_BufferCounter++, PointLightUniformBuffer(), true);
 }
 
 void ShaderUniformBufferManager::updateSceneBuffer(const Scene* const scene)
@@ -90,6 +94,33 @@ void ShaderUniformBufferManager::updateCameraBuffer(const ICamera* const camera)
     m_CameraBuffer.updateData(buffer);
 }
 
+void ShaderUniformBufferManager::updateSpotLightBuffer( const SpotLight* const light, const ICamera* const camera )
+{
+    SpotLightUniformBuffer buffer;
+    buffer.m_WVP = camera->getViewProjection() * light->getWorldMatrix();
+    buffer.m_ColorMult = vec4(light->getColor(), light->getMultiplier());
+    buffer.m_DirectionCosCutOff = vec4(normalize((camera->getView() * vec4(light->getWorldDirection(), 0)).xyz()), light->getCosCutoff());
+    vec3 position;
+    light->getWorldMatrix().getTranslationComponent(position);
+    buffer.m_ViewPosition = camera->getView() * position;
+    buffer.m_Attenuation = vec2(light->getScaledBeginAttenuation(), light->getScaledEndAttenuation());
+
+    m_SpotLightBuffer.updateData(buffer);
+}
+
+void ShaderUniformBufferManager::updatePointLightBuffer( const PointLight* const light, const ICamera* const camera )
+{
+    PointLightUniformBuffer buffer;
+    buffer.m_WVP = camera->getViewProjection() * light->getWorldMatrix();
+    buffer.m_ColorMult = vec4(light->getColor(), light->getMultiplier());
+    vec3 position;
+    light->getWorldMatrix().getTranslationComponent(position);
+    buffer.m_ViewPosition = camera->getView() * position;
+    buffer.m_Attenuation = vec2(light->getScaledBeginAttenuation(), light->getScaledEndAttenuation());
+
+    m_PointLightBuffer.updateData(buffer);
+}
+
 he::uint32 ShaderUniformBufferManager::findLink( const he::FixedString& name ) const
 {
     if (name == HEFS::strSharedPerCameraUniformBuffer)
@@ -100,6 +131,14 @@ he::uint32 ShaderUniformBufferManager::findLink( const he::FixedString& name ) c
     {
         return m_SceneBuffer.getBufferID();
     }
+    else if (name == HEFS::strSharedSpotLightUniformBuffer)
+    {
+        return m_SpotLightBuffer.getBufferID();
+    }
+    else if (name == HEFS::strSharedPointLightUniformBuffer)
+    {
+        return m_PointLightBuffer.getBufferID();
+    }
     return UINT32_MAX;
 }
 
@@ -107,6 +146,9 @@ void ShaderUniformBufferManager::bind()
 {
     m_SceneBuffer.bindBuffer();
     m_CameraBuffer.bindBuffer();
+    m_PointLightBuffer.bindBuffer();
+    m_SpotLightBuffer.bindBuffer();
 }
+
 
 } }

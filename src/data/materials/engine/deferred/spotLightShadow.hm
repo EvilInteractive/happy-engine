@@ -3,7 +3,7 @@
         "Normal" : {
             "VertexShader" : "deferred/post/deferredPostShader.vert",
             "FragmentShader" : "deferred/post/deferredPostSLShader.frag",
-            "Defines" : [ "SHADOWS" ]
+            "Defines" : [ "ENABLE_SHADOWMAP" ]
         }
     },
     "Options" : {

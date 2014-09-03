@@ -24,13 +24,14 @@
 
 #include "ShadowCasterSpotlight.h"
 #include "Light.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
 class View;
 class Scene;
 
-class ShadowCaster
+class ShadowCaster : public IDrawable2D
 {
 public:
     ShadowCaster();
@@ -39,9 +40,11 @@ public:
     void init();
 
     void render(Scene* scene);
+    void draw2D(he::gui::Canvas2D* canvas);
 
 private:
     ShadowCasterSpotLight m_SpotLightShadowRenderers[ShadowResolution_MAX - 1];
+    ObjectHandle m_LastTexture;
 
     //Disable default copy constructor and default assignment operator
     ShadowCaster(const ShadowCaster&);
