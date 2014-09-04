@@ -38,7 +38,7 @@ ShaderLoader::~ShaderLoader()
     factory->garbageCollect();
 }
 
-he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
+he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& geomPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
@@ -46,6 +46,7 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
 
     int32 hash(0);
     hash = he::hash(hash, vsPath);
+    hash = he::hash(hash, geomPath);
     hash = he::hash(hash, fsPath);
     if (defines)
     {
@@ -97,7 +98,7 @@ he::gfx::Shader* ShaderLoader::load(const he::String& vsPath, const he::String& 
         if (settings.postSettings.shaderSettings.enableVignette)
             allDefines.add("VIGNETTE");
 
-        const bool result(shader->initFromFile(vsPath, fsPath, &allDefines, outputLayout));
+        const bool result(shader->initFromFile(vsPath, geomPath, fsPath, &allDefines, outputLayout));
         m_AssetContainer.addAsset(hash, shader->getHandle());
         shader->setLoaded(result? eLoadResult_Success : eLoadResult_Failed);
 

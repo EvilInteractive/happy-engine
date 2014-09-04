@@ -40,8 +40,8 @@ public:
     virtual ~Shader();
 
     // Init
-    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
-    bool initFromMem(const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
+    bool initFromFile(const he::String& vsPath, const he::String& geomPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
+    bool initFromMem(const he::String& vs, const he::String& geom, const he::String& fs, const he::String& debugVertName, const he::String& debugGeomName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
 
     // Use
     void bind();
@@ -71,11 +71,13 @@ private:
     he::PrimitiveList<IShaderUniform*> m_Uniforms;
 
     uint32 m_VsId;
+    uint32 m_GeomId;
     uint32 m_FsId;
     ShaderLayout m_Layout;
 
     he::String m_FragShaderName;
     he::String m_VertShaderName;
+    he::String m_GeomShaderName;
 
     static uint32 s_CurrentBoundShader;
 

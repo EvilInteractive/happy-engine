@@ -157,6 +157,7 @@ namespace ct {
 MaterialDesc::MaterialDescShader::MaterialDescShader() 
     : m_FragmentShader("")
     , m_VertexShader("")
+    , m_GeometryShader("")
 {
 }
 
@@ -164,6 +165,7 @@ void MaterialDesc::MaterialDescShader::visit( he::io::StructuredVisitor* const v
 {
     m_FragmentShader.visit(HEFS::strFragmentShader, visitor);
     m_VertexShader.visit(HEFS::strVertexShader, visitor);
+    m_GeometryShader.visit(HEFS::strGeometryShader, visitor);
 
     m_Defines.m_Override = visitor->visitList(HEFS::strDefines, m_Defines.m_Value);
     m_OutputLayout.m_Override = visitor->visitList(HEFS::strOutputLayout, m_OutputLayout.m_Value);
@@ -173,6 +175,7 @@ MaterialDesc::MaterialDescShader& MaterialDesc::MaterialDescShader::operator=( M
 {
     m_FragmentShader = std::move(other.m_FragmentShader);
     m_VertexShader = std::move(other.m_VertexShader);
+    m_GeometryShader = std::move(other.m_GeometryShader);
     m_Defines = std::move(other.m_Defines);
     m_OutputLayout = std::move(other.m_OutputLayout);
     return *this;
@@ -350,6 +353,7 @@ void MaterialDescStack::collapse( MaterialDesc& outDesc )
                 MaterialDesc::MaterialDescShader& overrideShaderDesc(desc.m_Shader[pass][rtype]);
                 CopyIfOverride(overrideShaderDesc.m_FragmentShader, outShaderDesc.m_FragmentShader);
                 CopyIfOverride(overrideShaderDesc.m_VertexShader, outShaderDesc.m_VertexShader);
+                CopyIfOverride(overrideShaderDesc.m_GeometryShader, outShaderDesc.m_GeometryShader);
                 if (overrideShaderDesc.m_Defines.m_Override)
                     outShaderDesc.m_Defines = std::move(overrideShaderDesc.m_Defines);
                 if (overrideShaderDesc.m_OutputLayout.m_Override)
@@ -430,7 +434,7 @@ gfx::Material* MaterialLoader::load(const he::String& asset)
                     if (shaderDesc.m_FragmentShader.m_Value.empty() == false && shaderDesc.m_VertexShader.m_Value.empty() == false)
                     {
                         gfx::Shader* const shader(CONTENT->loadShader(
-                            shaderDesc.m_VertexShader.m_Value, shaderDesc.m_FragmentShader.m_Value, 
+                            shaderDesc.m_VertexShader.m_Value, shaderDesc.m_GeometryShader.m_Value, shaderDesc.m_FragmentShader.m_Value, 
                             &shaderDesc.m_Defines.m_Value, &shaderDesc.m_OutputLayout.m_Value));
                         material->setShader(checked_numcast<gfx::EShaderPassType>(pass), checked_numcast<gfx::EShaderRenderType>(rtype), shader);
                         shader->release();

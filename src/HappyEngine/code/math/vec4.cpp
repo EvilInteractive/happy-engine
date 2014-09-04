@@ -45,6 +45,10 @@ vec4::vec4( const vec2& xy, float z_, float w_ ): x(xy.x), y(xy.y), z(z_), w(w_)
 {
 
 }
+vec4::vec4( const vec2& xy, const vec2& zw ): x(xy.x), y(xy.y), z(zw.x), w(zw.y)
+{
+
+}
 
 vec4::vec4(float x_, float y_, float z_, float w_): x(x_), y(y_), z(z_), w(w_)
 {

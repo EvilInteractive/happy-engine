@@ -88,6 +88,7 @@ addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/
 			Canvas2DRendererGL.cpp              Canvas2DRendererGL.h
 			Canvas2DRendererCairo.cpp           Canvas2DRendererCairo.h
 			Renderer2D.cpp                      Renderer2D.h
+			BezierEffect.cpp                    BezierEffect.h
 			Simple2DEffect.cpp                  Simple2DEffect.h
 			Simple2DFontEffect.cpp              Simple2DFontEffect.h
 			Simple2DTextureEffect.cpp           Simple2DTextureEffect.h

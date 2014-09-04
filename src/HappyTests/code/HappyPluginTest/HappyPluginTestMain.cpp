@@ -42,6 +42,8 @@
 #include <GlobalSettings.h>
 #include <PostProcesser.h>
 #include <ShadowCaster.h>
+#include <ControlsManager.h>
+#include <Mouse.h>
 
 #include "FlyCamera.h"
 #include "VRCamera.h"
@@ -243,6 +245,52 @@ void ht::HappyPluginTestMain::setActiveCamera( he::gfx::ICamera* const camera )
 
 void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
 {
+    canvas->setColor(he::Color(1.0f, 0.2f, 0.2f, 0.75f));
+    he::vec2 bezierEnd(CONTROLS->getMouse()->getPosition());
+
+    for (float x(0); x <= canvas->getSize().x; x += canvas->getSize().x / 10)
+    {
+        {
+            he::vec2 diff(bezierEnd - he::vec2(x, 0));
+            const he::vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
+            const he::vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
+            diff.x *= myNormal.x; // abs
+            diff.y *= myUp.y;
+
+            canvas->fillCurve(he::vec2(x, 0), he::vec2(0, 1) * diff.x / 2.0f, he::vec2(0, 1) * diff.x / 2.0f, bezierEnd, 2.0f);
+        }
+        {
+            he::vec2 diff(bezierEnd - he::vec2(x, canvas->getSize().y));
+            const he::vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
+            const he::vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
+            diff.x *= myNormal.x; // abs
+            diff.y *= myUp.y;
+
+            canvas->fillCurve(he::vec2(x, canvas->getSize().y), he::vec2(0, -1) * diff.x / 2.0f, he::vec2(0, -1) * diff.x / 2.0f, bezierEnd, 2.0f);
+        }
+    }
+    for (float y(0); y <= canvas->getSize().y; y += canvas->getSize().x / 6)
+    {
+        {
+            he::vec2 diff(bezierEnd - he::vec2(0, y));
+            const he::vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
+            const he::vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
+            diff.x *= myNormal.x; // abs
+            diff.y *= myUp.y;
+
+            canvas->fillCurve(he::vec2(0, y), he::vec2(1, 0) * diff.x / 2.0f, he::vec2(1, 0) * diff.x / 2.0f, bezierEnd, 2.0f);
+        }
+        {
+            he::vec2 diff(bezierEnd - he::vec2(canvas->getSize().x, y));
+            const he::vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
+            const he::vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
+            diff.x *= myNormal.x; // abs
+            diff.y *= myUp.y;
+
+            canvas->fillCurve(he::vec2(canvas->getSize().x, y), he::vec2(-1, 0) * diff.x / 2.0f, he::vec2(-1, 0) * diff.x / 2.0f, bezierEnd, 2.0f);
+        }
+    }
+
     if (m_VREnabled == true)
     {
         he::io::OculusRiftDevice* const device(CONTROLS->getOculusRiftBinding()->getDevice(0));
@@ -276,4 +324,3 @@ void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
         }
     }
 }
-

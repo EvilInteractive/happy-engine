@@ -1,0 +1,19 @@
+{
+    "Normal" : {
+        "Normal" : {
+            "VertexShader" : "2D/bezier.vert",
+            "GeometryShader" : "2D/bezier.geom",
+            "FragmentShader" : "2D/simpleShader.frag"
+        }
+    },
+    "Options" : {
+        "IsBlended" : true,
+        "NoPost" : false,
+        "CullFrontFace" : true,
+        "DepthRead" : false,
+        "DepthWrite" : false,
+        "BlendEquation" : "Add",
+        "SourceBlend" : "SrcAlpha",
+        "DestBlend" : "OneMinSrcAlpha"
+    }
+}

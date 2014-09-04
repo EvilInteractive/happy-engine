@@ -16,36 +16,47 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 30/09/2011
+//Created: 2014/09/03
 
-#ifndef _HE_SHADER_LOADER_H_
-#define _HE_SHADER_LOADER_H_
+#ifndef _HE_BEZIER_EFFECT_H_
+#define _HE_BEZIER_EFFECT_H_
 #pragma once
-
-#include "AssetContainer.h"
 
 namespace he {
 namespace gfx {
-    class ShaderLayout;
-    class Shader;
-}
 
-namespace ct {
+struct DrawContext;
+class VertexLayout;
+class MaterialInstance;
+class MaterialParameter;
 
-class ShaderLoader
+class BezierEffect
 {
 public:
-    ShaderLoader();
-    ~ShaderLoader();
-    
-    gfx::Shader* load(const he::String& vsPath, const he::String& geomPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines = nullptr, const he::ObjectList<he::String>* const outputLayout = nullptr);
-    
+    BezierEffect();
+    ~BezierEffect();
+
+    void init(const VertexLayout& layout);
+    void apply(const he::gfx::DrawContext& context) const;
+
+    void setColor(const Color& color) const;
+    void setWVPMatrix(const he::mat44& mat) const;
+    void setRadius(float depth) const;
+    void setCurve(const he::vec2& begin, const he::vec2& tangent1, const he::vec2& tangent2, const he::vec2& endPos) const;
+
 private:
-    AssetContainer<ObjectHandle, uint32> m_AssetContainer;
-    
+
+    MaterialInstance* m_Material;
+
+    int8 m_WVP;
+    int8 m_Color;
+    int8 m_Radius;
+    int8 m_BeginEnd;
+    int8 m_Tangents;
+
     //Disable default copy constructor and default assignment operator
-    ShaderLoader(const ShaderLoader&);
-    ShaderLoader& operator=(const ShaderLoader&);
+    BezierEffect(const BezierEffect&);
+    BezierEffect& operator=(const BezierEffect&);
 };
 
 } } //end namespace

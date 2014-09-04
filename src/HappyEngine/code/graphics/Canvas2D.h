@@ -97,6 +97,9 @@ public:
     void fillRect(const RectI& rect);
     void drawLine(const vec2& p1, const vec2& p2);
 
+    void fillCurve(const vec2& p1, const vec2& tan1, const vec2& tan2, const vec2& p2, const float radius);
+    //void drawTexturedCurve(const vec2& p1, const vec2& tan1, const vec2& tan2, const vec2& p2, const float radius, const Texture1D& tex, const he::Color& color);
+
 private:
 
     /* INTERNAL */

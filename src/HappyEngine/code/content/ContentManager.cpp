@@ -115,7 +115,7 @@ void ContentManager::destroy()
     m_TextureLoader = nullptr;
 }
 
-void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
+void ContentManager::tick(float dTime)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_ModelLoader->tick(dTime);
@@ -219,9 +219,9 @@ gui::Font* ContentManager::getDefaultFont(uint16 size)
 }
 
 //////////////////////////////////////////////////////////////////////////
-he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
+he::gfx::Shader* ContentManager::loadShader(const he::String& vsAsset, const he::String& geomAsset, const he::String& fsAsset, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
-    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, defines, outputLayout);
+    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, geomAsset.empty()? geomAsset : m_ShaderPath.str() + geomAsset, m_ShaderPath.str() + fsAsset, defines, outputLayout);
 }
 
 //////////////////////////////////////////////////////////////////////////

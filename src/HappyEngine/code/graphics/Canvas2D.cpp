@@ -196,6 +196,12 @@ void Canvas2D::drawLine(const vec2& p1, const vec2& p2)
     m_RendererGL->drawLine(p1, p2);
 }
 
+void Canvas2D::fillCurve( const vec2& p1, const vec2& tan1, const vec2& tan2, const vec2& p2, const float radius )
+{
+    m_RendererGL->setColor(m_Color);
+    m_RendererGL->fillCurve(p1, tan1, tan2, p2, radius);
+}
+
 /* INTERNAL */
 void Canvas2D::cleanup()
 {

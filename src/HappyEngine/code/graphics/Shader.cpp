@@ -95,7 +95,7 @@ namespace gfx {
 
 uint32 Shader::s_CurrentBoundShader = 0;
 
-Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
+Shader::Shader() : m_Id(0), m_VsId(0), m_GeomId(0), m_FsId(0)
 {
 }
 
@@ -108,14 +108,18 @@ Shader::~Shader()
     }
     
     glDetachShader(m_Id, m_VsId);
+    if (m_GeomId)
+        glDetachShader(m_Id, m_GeomId);
     glDetachShader(m_Id, m_FsId);
 
     glDeleteShader(m_VsId);
+    if (m_GeomId)
+        glDeleteShader(m_GeomId);
     glDeleteShader(m_FsId);
     glDeleteProgram(m_Id);
 }
 
-bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& geomPath, const he::String& fsPath, const he::ObjectList<he::String>* const defines, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     HE_ASSERT(m_Id != -1, "no need to init twice");
 
@@ -123,6 +127,7 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     io::FileReader reader;
 
     he::String strVS;
+    he::String strGEOM;
     he::String strFS;
     if (reader.open(vsPath, io::FileReader::OpenType_ASCII))
     {
@@ -133,6 +138,19 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     {
         HE_ERROR("Error reading: %s", vsPath.c_str());
         return false;
+    }
+    if (geomPath.empty() == false)
+    {
+        if (reader.open(geomPath, io::FileReader::OpenType_ASCII))
+        {
+            strGEOM = reader.readToEnd();
+            reader.close();
+        }
+        else
+        {
+            HE_ERROR("Error reading: %s", geomPath.c_str());
+            return false;
+        }
     }
     if (reader.open(fsPath, io::FileReader::OpenType_ASCII))
     {
@@ -146,16 +164,17 @@ bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, co
     }
     // <-----------------------------------------------
 
-    return initFromMem(strVS, strFS, vsPath, fsPath, defines, outputLayout);
+    return initFromMem(strVS, strGEOM, strFS, vsPath, geomPath, fsPath, defines, outputLayout);
 }
 
-bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
+bool Shader::initFromMem( const he::String& vs, const he::String& geom, const he::String& fs, const he::String& debugVertName, const he::String& debugGeomName, const he::String& debugFragName, const he::ObjectList<he::String>* const defines /*= nullptr*/, const he::ObjectList<he::String>* const outputLayout /*= nullptr*/)
 {
     bool succes = true;
 
-    setName(debugVertName+"/"+debugFragName);
+    setName(debugVertName + (debugGeomName.empty()? "" : "/"+debugGeomName) +"/"+debugFragName);
 
     m_VertShaderName = debugVertName;
+    m_GeomShaderName = debugGeomName;
     m_FragShaderName = debugFragName;
 
     he::ObjectList<he::String> shaderDefines;
@@ -166,17 +185,37 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
 
     shaderDefines.clear();
 
+    he::String geomPost;
+    if (geom.empty() == false)
+    {
+        if (defines)
+            shaderDefines.append(*defines);
+        geomPost = ct::details::ShaderPreProcessor::process(geom, shaderDefines);
+    }
+
+    shaderDefines.clear();
+
     if (defines)
         shaderDefines.append(*defines);
     he::String fsPost = ct::details::ShaderPreProcessor::process(fs, shaderDefines);
 
     m_VsId = glCreateShader(GL_VERTEX_SHADER);
+    if (geom.empty() == false)
+        m_GeomId = glCreateShader(GL_GEOMETRY_SHADER);
     m_FsId = glCreateShader(GL_FRAGMENT_SHADER);
 
     const char* vsBuff(vsPost.c_str());
     glShaderSource(m_VsId, 1, &vsBuff, 0);
     glCompileShader(m_VsId);
     succes = succes && validateShader(m_VsId, m_VertShaderName);
+
+    if (m_GeomId)
+    {
+        const char* geomBuff(geomPost.c_str());
+        glShaderSource(m_GeomId, 1, &geomBuff, 0);
+        glCompileShader(m_GeomId);
+        succes = succes && validateShader(m_GeomId, m_GeomShaderName);
+    }
 
     const char* fsBuff(fsPost.c_str());
     glShaderSource(m_FsId, 1, &fsBuff, 0);
@@ -185,6 +224,8 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const he::
 
     m_Id = glCreateProgram();
     glAttachShader(m_Id, m_VsId);
+    if (m_GeomId)
+        glAttachShader(m_Id, m_GeomId);
     glAttachShader(m_Id, m_FsId);
     
     if (outputLayout)

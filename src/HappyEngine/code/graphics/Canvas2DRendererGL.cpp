@@ -35,6 +35,7 @@
 #include "Mesh2D.h"
 #include "ICamera.h"
 #include "DrawContext.h"
+#include "BezierEffect.h"
 
 namespace he {
 namespace gfx {
@@ -54,7 +55,9 @@ Canvas2DRendererGL::Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* 
     m_TextureEffectQuad(nullptr),
     m_ColorEffectShape(nullptr),
     m_FontEffectDynFont(nullptr),
-    m_NinePatchEffectQuad(nullptr)
+    m_NinePatchEffectQuad(nullptr),
+    m_BezierEffect(nullptr),
+    m_Bezier(nullptr)
 {
 }
 
@@ -62,12 +65,14 @@ Canvas2DRendererGL::~Canvas2DRendererGL()
 {
     m_TextureQuad->release();
     m_DynamicFontMesh->release();
+    m_Bezier->release();
     delete m_DynamicShapeMesh;
 
     delete m_TextureEffectQuad;
     delete m_ColorEffectShape;
     delete m_FontEffectDynFont;
     delete m_NinePatchEffectQuad;
+    delete m_BezierEffect;
 }
 
 /* GENERAL */
@@ -539,13 +544,6 @@ void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
 {
     HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
     GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
 
     m_ColorEffectShape->setColor(m_Color);
@@ -562,6 +560,25 @@ void Canvas2DRendererGL::drawLine(const vec2& p1, const vec2& p2)
     context.m_IBO = m_DynamicShapeMesh->getVBOIndexID();
     m_ColorEffectShape->apply(context);
     m_DynamicShapeMesh->draw();
+}
+
+void Canvas2DRendererGL::fillCurve( const vec2& p1, const vec2& tan1, const vec2& tan2, const vec2& p2, const float radius )
+{
+    HE_ASSERT(m_CanvasBuffer->m_GlContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
+
+    m_BezierEffect->setColor(m_Color);
+    m_BezierEffect->setRadius(radius);
+
+    m_BezierEffect->setCurve(p1, p1 + tan1, p2 + tan2, p2);
+    m_BezierEffect->setWVPMatrix(m_OrthographicMatrix);
+
+    DrawContext context;
+    context.m_VBO = m_Bezier->getVBO();
+    context.m_IBO = m_Bezier->getIBO();
+    m_BezierEffect->apply(context);
+    m_Bezier->draw();
 }
 
 /* INTERNAL */
@@ -626,6 +643,21 @@ void Canvas2DRendererGL::init()
     m_DynamicShapeMesh = NEW Mesh2D(false);
 
 
+    m_Bezier = modelMeshFactory->get(modelMeshFactory->create());
+    {
+        VertexLayout vertexLayoutBezier;
+        vertexLayoutBezier.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+
+        m_Bezier->init(vertexLayoutBezier, gfx::MeshDrawMode_Points);
+        he::vec2 bezierVert(0, 0);
+        int8 bezierInd(0);
+        m_Bezier->setVertices(&bezierVert, 1, gfx::MeshUsage_Static, false);
+        m_Bezier->setIndices(&bezierInd, 1, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_Bezier->setName("Canvas2DRendererGL-Bezier");
+        m_Bezier->setLoaded(eLoadResult_Success);
+    }
+
+
     if (m_ColorEffectShape == nullptr)
     {
         m_ColorEffectShape = NEW Simple2DEffect();
@@ -646,6 +678,12 @@ void Canvas2DRendererGL::init()
         m_NinePatchEffectQuad = NEW NinePatchEffect();
         m_NinePatchEffectQuad->init(m_TextureQuad->getVertexLayout());
     }
+    if (m_BezierEffect == nullptr)
+    {
+        m_BezierEffect = NEW BezierEffect();
+        m_BezierEffect->init(m_Bezier->getVertexLayout());
+    }
 }
+
 
 } } //end namespace

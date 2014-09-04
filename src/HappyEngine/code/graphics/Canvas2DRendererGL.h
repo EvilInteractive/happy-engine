@@ -34,6 +34,7 @@ namespace gfx {
     class Texture2D;
     class View;
     class ModelMesh;
+    class BezierEffect;
     class Simple2DEffect;
     class Simple2DTextureEffect;
     class Simple2DFontEffect;
@@ -72,6 +73,7 @@ public:
     void strokeRect(const RectI& rect);
     void fillRect(const RectI& rect);
     void drawLine(const vec2& p1, const vec2& p2);
+    void fillCurve(const vec2& p1, const vec2& tan1, const vec2& tan2, const vec2& p2, const float radius);
 
 private:
 
@@ -91,6 +93,10 @@ private:
 
     // For dynamic font mesh
     Simple2DFontEffect* m_FontEffectDynFont;
+
+    // For curves
+    BezierEffect* m_BezierEffect;
+    ModelMesh* m_Bezier;
 
     uint16 s_Renderers;
 

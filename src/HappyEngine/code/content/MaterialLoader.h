@@ -104,6 +104,7 @@ public:
 
         MaterialDescParam<he::String> m_FragmentShader;
         MaterialDescParam<he::String> m_VertexShader;
+        MaterialDescParam<he::String> m_GeometryShader;
         MaterialDescParam<he::ObjectList<he::String>> m_Defines;
         MaterialDescParam<he::ObjectList<he::String>> m_OutputLayout;
 
