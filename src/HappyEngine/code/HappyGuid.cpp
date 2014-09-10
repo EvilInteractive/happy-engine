@@ -54,6 +54,7 @@ he::String Guid::toString() const
 
 void Guid::toString(char* const charBuffer) const
 {
+    charBuffer[s_CharbufferSize - 1] = '\0';
     hesnprintf(charBuffer, s_CharbufferSize - 1, "%08x-%04x-%04x-%04x-%04x%08x", m_Data1, m_Data2, m_Data3, m_Data4, m_Data5, m_Data6);
 }
 
