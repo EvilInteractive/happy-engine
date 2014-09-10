@@ -119,6 +119,8 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
 
 MaterialGeneratorGraph::~MaterialGeneratorGraph()
 {
+    deactivate();
+
     MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
     m_NodeList.forEach([factory](MaterialGeneratorNode* const node)
     {
@@ -126,9 +128,7 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
     });
     m_NodeList.clear();
     m_Renderer->detachFromRender(this);
-#ifdef USE_WEB
-    m_Renderer->removeWebView(m_WebViewGui);
-#endif
+
     delete m_Renderer;
     delete m_Generator;
     if (m_View != nullptr)
@@ -170,6 +170,21 @@ void MaterialGeneratorGraph::init()
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("Happy Material Editor");
     m_Window->create(false);
+    he::eventCallback0<void> windowCloseCallback([this]()
+    { 
+        close(); 
+    });
+    m_Window->Closed += windowCloseCallback;
+    he::eventCallback0<void> windowFocusGainCallback([this]()
+    { 
+        activate();
+    });
+    he::eventCallback0<void> windowFocusLostCallback([this]()
+    { 
+        deactivate();
+    });
+    m_Window->GainedFocus += windowFocusGainCallback;
+    m_Window->LostFocus += windowFocusLostCallback;
 
     m_View->setWindow(m_Window);
     m_Renderer = NEW gfx::Renderer2D();
@@ -183,98 +198,6 @@ void MaterialGeneratorGraph::init()
     m_View->ViewportSizeChanged += viewResizedHandler;
 
     m_Renderer->attachToRender(this);
-
-#ifdef USE_WEB
-    m_WebViewGui = m_Renderer->createWebViewRelative(RectF(0, 0, 1, 1), true);
-    loadGui();
-    m_WebViewGui->setTransparent(true);
-    m_WebListener = m_WebViewGui->getWebListener();
-
-    he::eventCallback0<void> loadedCallback([this]()
-    {
-        Awesomium::JSArray args;
-        for (size_t i(0); i < MaterialGeneratorNodeTypeSubdivion_MAX; ++i)
-        {
-            const MaterialGeneratorNodeTypeSubdivion subD(static_cast<MaterialGeneratorNodeTypeSubdivion>(i));
-            const char* subDString(materialGeneratorNodeTypeSubdivionToString(subD));
-            args.Clear();
-            args.Push(Awesomium::JSValue(Awesomium::WebString::CreateFromUTF8(subDString, strlen(subDString))));
-            m_WebListener->executeFunction("", "addNodeSubdivision", args);
-        }
-        for (size_t i(0); i < MaterialGeneratorNodeType_MAX; ++i)
-        {
-            const MaterialGeneratorNodeType type(static_cast<MaterialGeneratorNodeType>(i));
-            const MaterialGeneratorNodeTypeSubdivion subD(getMaterialGeneratorNodeTypeSubdivision(type));
-            if (subD != MaterialGeneratorNodeTypeSubdivion_None)
-            {
-                const char* subDString(materialGeneratorNodeTypeSubdivionToString(subD));
-                const char* typeString(materialGeneratorNodeTypeToString(type));
-                args.Clear();
-                args.Push(Awesomium::JSValue(Awesomium::WebString::CreateFromUTF8(subDString, strlen(subDString))));
-                args.Push(Awesomium::JSValue(Awesomium::WebString::CreateFromUTF8(typeString, strlen(typeString))));
-                m_WebListener->executeFunction("", "addNode", args);
-            }
-        }
-        args.Clear();
-        m_WebListener->executeFunction("", "init", args);
-
-        MaterialGeneratorGraph* _this(this);
-        he::eventCallback1<void, const Awesomium::JSArray&> nodeDroppedCallback([_this](const Awesomium::JSArray& args)
-        {
-            char buff[100];
-            he_memset(buff, 0, 100);
-            HE_ASSERT(args.size() > 0, "Nor arguments supply with nodeDroppedCallback callback!");
-            const Awesomium::JSValue& value(args[0]);
-            HE_ASSERT(value.IsString(), "nodeDroppedCallback did not return a string!");
-            HE_ASSERT(value.IsUndefined() == false, "nodeDroppedCallback returned am undefined value!");
-            const Awesomium::WebString str(value.ToString());
-            value.ToString().ToUTF8(buff, str.length());
-            _this->m_CommandStack.beginTransaction("Create node");
-            _this->m_CreateCommand.create(materialGeneratorNodeTypeFromString(buff), 
-                _this->screenToWorldPos(CONTROLS->getMouse()->getPosition()));
-            _this->m_CommandStack.endTransaction();
-        });
-        m_WebListener->addObjectCallback("HME", "nodeDropped", nodeDroppedCallback);
-    });
-
-    m_WebViewGui->OnUrlLoaded += loadedCallback;
-
-    CONSOLE->registerCmd(std::bind(&MaterialGeneratorGraph::loadGui, this), "reloadMaterialGeneratorGui");
-
-    eventCallback0<void> lostfocusCallback([this]()
-    {
-        if (m_IsActive == true)
-        {
-            m_IsActive = false;
-            GAME->removeFromTickList(this);
-            CONTROLS->returnFocus(this);
-            m_WebViewGui->unfocus();
-        }
-    });
-    eventCallback0<void> closeCallback([this]()
-    {
-        if (m_IsActive == true)
-        {
-            m_IsActive = false;
-            GAME->removeFromTickList(this);
-            CONTROLS->returnFocus(this);
-            m_WebViewGui->unfocus();
-        }
-    });
-    eventCallback0<void> gainfocusCallback([this]()
-    {
-        if (m_IsActive == false)
-        {
-            m_IsActive = true;
-            GAME->addToTickList(this);
-            CONTROLS->getFocus(this);
-            m_WebViewGui->focus();
-        }
-    });
-    m_Window->GainedFocus += gainfocusCallback;
-    m_Window->LostFocus += lostfocusCallback;
-    m_Window->Closed += closeCallback;
-#endif
 
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Background = cr->createSprite(vec2(1280, 720));
@@ -293,20 +216,37 @@ void MaterialGeneratorGraph::init()
 
 void MaterialGeneratorGraph::loadGui()
 {
-#ifdef USE_WEB
-    m_WebViewGui->loadUrl((Path::getWorkingDir().append(CONTENT->getContentDir().str()).append("gui/materialEditor.html")).str());
-#endif
 }
 
 
 void MaterialGeneratorGraph::open()
 {
     m_Window->show();
+    activate();
 }
 
 void MaterialGeneratorGraph::close()
 {
     m_Window->hide();
+    deactivate();
+}
+
+void MaterialGeneratorGraph::activate()
+{
+    if (!m_IsActive)
+    {
+        GAME->addToTickList(this);
+        m_IsActive = true;
+    }
+}
+
+void MaterialGeneratorGraph::deactivate()
+{
+    if (m_IsActive)
+    {
+        GAME->removeFromTickList(this);
+        m_IsActive = false;
+    }
 }
 
 void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
@@ -329,6 +269,10 @@ void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
             {
                 he::ObjectList<MaterialGeneratorError> errors;
                 m_NodeGraph.evalute(errors);
+                errors.forEach([&](const MaterialGeneratorError& error)
+                {
+                    pushError(error);
+                });
             }
             else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Shift, io::Key_Z) || 
                 keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Y))
@@ -656,10 +600,6 @@ void MaterialGeneratorGraph::draw2D( gui::Canvas2D* canvas )
         canvas->fillText(*msg.m_Text, screenPos - msg.m_TextSize / 2.0f);
     });
     
-#ifdef USE_WEB
-    m_WebViewGui->draw2D(canvas);
-#endif
-
     // DEBUG
     m_DebugText.clear();
     const vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse()->getPosition()));

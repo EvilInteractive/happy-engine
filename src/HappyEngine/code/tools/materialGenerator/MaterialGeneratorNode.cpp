@@ -426,7 +426,7 @@ bool MaterialGeneratorNode::evaluate( MaterialGeneratorError& error )
     }
     else
     {
-        error.setMessage("Error! Incorrect input types, could not find compatible overload!");
+        error.setMessage("Error! Incorrect input/output types, could not find compatible overload! Check your input and outputs.");
         result = false;
     }
     return result;
