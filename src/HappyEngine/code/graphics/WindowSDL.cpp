@@ -48,6 +48,8 @@ bool WindowSDL::create(const bool show)
         flags |= SDL_WINDOW_RESIZABLE;
     if (!show)
         flags |= SDL_WINDOW_HIDDEN;
+
+    setFlag(Window::eFlags_IsVisible, show);
     
     he::gfx::GraphicsEngine* gfxEngine(GRAPHICS);
     if (gfxEngine->getSharedContext()) // First window == shared context
