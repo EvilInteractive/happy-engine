@@ -29,102 +29,49 @@ namespace gui {
 const vec2 marge(128, 4);
 
 BezierShape2D::BezierShape2D():
-    m_Sprite(nullptr), m_NeedsUpdate(false),
     m_PositionBegin(0, 0), m_PositionEnd(0, 0)
 {
-    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
-    m_Sprite = cr->createSprite(vec2(64, 64), gui::Sprite::DYNAMIC_DRAW | gui::Sprite::UNIFORM_SCALE);
 }
 
 
 BezierShape2D::~BezierShape2D()
 {
-    GUI->getSpriteCreator()->removeSprite(m_Sprite);
 }
 
 void BezierShape2D::setPositionStart( const vec2& position )
 {
-    if (m_PositionBegin != position)
-    {
-        m_PositionBegin = position;
-        m_NeedsUpdate = true;
-    }
+    m_PositionBegin = position;
 }
 
 void BezierShape2D::setPositionEnd( const vec2& position )
 {
-    if (m_PositionEnd != position)
-    {
-        m_PositionEnd = position;
-        m_NeedsUpdate = true;
-    }
+    m_PositionEnd = position;
 }
 
 void BezierShape2D::setBeginTangent( const vec2& tangent )
 {
-    if (m_TangentBegin != tangent)
-    {
-        m_TangentBegin = tangent;
-        m_NeedsUpdate = true;
-    }
+    m_TangentBegin = tangent;
 }
 
 void BezierShape2D::setEndTangent( const vec2& tangent )
 {
-    if (m_TangentEnd != tangent)
-    {
-        m_TangentEnd = tangent;
-        m_NeedsUpdate = true;
-    }
+    m_TangentEnd = tangent;
 }
 void BezierShape2D::draw2D(gui::Canvas2D* const canvas, const mat33& transform)
 {
-    vec2 diff(m_PositionEnd - m_PositionBegin);
-    const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
-    const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
-
-    const vec2 transformedPosition(transform * m_PositionBegin);
-    const vec2 size((transform * vec3(m_Sprite->getSize().x, m_Sprite->getSize().y, 0)).xy());
-    const vec2 scaledMarge((transform * vec3(marge.x, marge.y, 0)).xy());
-
-    canvas->drawSprite(m_Sprite, 
-        transformedPosition - vec2(myNormal.x > 0 ? scaledMarge.x / 2.0f : size.x - scaledMarge.x / 2.0f,
-                                   myUp.y > 0 ? scaledMarge.y / 2.0f : size.y - scaledMarge.y / 2.0f), size);
-    if (m_NeedsUpdate)
-    {
-        updateShape();
-        m_NeedsUpdate = false;
-    }
-}
-
-void BezierShape2D::updateShape()
-{
-    vec2 diff(m_PositionEnd - m_PositionBegin);
-    const vec2 size(abs(diff.x) + marge.x, abs(diff.y) + marge.y);
+    vec2 p0(transform * m_PositionBegin);
+    vec2 p1(transform * m_PositionEnd);
+    vec2 diff(p1 - p0);
     const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
     const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
     diff.x *= myNormal.x; // abs
     diff.y *= myUp.y;
-
-    const vec2 beginPoint(size.x / 2.0f - myNormal.x * size.x / 2.0f + myNormal.x * marge.x / 2.0f, 
-                          size.y / 2.0f - myUp.y * size.y / 2.0f + myUp.y * marge.y / 2.0f);
-    const vec2 endPoint(size.x / 2.0f + myNormal.x * size.x / 2.0f - myNormal.x * marge.x / 2.0f, 
-                        size.y / 2.0f + myUp.y * size.y / 2.0f - myUp.y * marge.y / 2.0f);
-
-    m_Sprite->invalidate(size);
-
-    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
-    cr->setActiveSprite(m_Sprite);
-    cr->newPath();
-    cr->moveTo(beginPoint);
-    cr->curveTo(
-        beginPoint + m_TangentBegin * diff.x / 2.0f,
-        endPoint + m_TangentEnd * diff.x / 2.0f,
-        endPoint);
-    cr->setColor(Color(1.0f, 1.0f, 1.0f));
-    cr->setLineWidth(3);
-    cr->stroke();
-    cr->renderSpriteAsync();
+    
+    canvas->fillCurve(
+        p0, 
+        m_TangentBegin * diff.x / 2.0f,
+        m_TangentEnd * diff.x / 2.0f,
+        p1, 2.0f);
 }
 
 } } //end namespace

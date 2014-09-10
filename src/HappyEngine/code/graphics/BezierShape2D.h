@@ -44,12 +44,10 @@ public:
 private:
     void updateShape();
 
-    bool m_NeedsUpdate;
     vec2 m_PositionBegin;
     vec2 m_PositionEnd;
     vec2 m_TangentBegin;
     vec2 m_TangentEnd;
-    Sprite* m_Sprite;
 
     //Disable default copy constructor and default assignment operator
     BezierShape2D(const BezierShape2D&);
