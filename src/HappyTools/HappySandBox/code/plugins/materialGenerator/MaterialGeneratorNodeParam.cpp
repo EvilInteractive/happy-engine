@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 16/12/2012
-#include "HappyPCH.h"
+#include "HappySandBoxPCH.h"
 
 #include "MaterialGeneratorNodeParam.h"
 

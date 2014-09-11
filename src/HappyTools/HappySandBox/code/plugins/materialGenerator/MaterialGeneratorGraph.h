@@ -50,7 +50,7 @@ namespace ct {
 namespace tools {
 class MaterialGeneratorNode;
 
-class HAPPY_ENTRY MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
+class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
 {
     friend class MaterialGeneratorGraphMoveCommand;
     friend class MaterialGeneratorGraphEditSelectionCommand;

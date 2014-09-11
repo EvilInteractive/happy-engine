@@ -27,7 +27,7 @@ namespace gui {
 
 class Sprite;
 
-class BezierShape2D
+class HAPPY_ENTRY BezierShape2D
 {
 public:
     BezierShape2D();

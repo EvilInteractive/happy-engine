@@ -50,7 +50,7 @@ struct ShaderGeneratorVariableOperation
 
 class ShaderGeneratorVariable;
 
-class ShaderGenerator
+class HAPPY_ENTRY ShaderGenerator
 {
 public:
     ShaderGenerator();

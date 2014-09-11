@@ -17,14 +17,11 @@
 //
 //Author:  Bastian Damman
 //Created: 14/11/2012
-#include "HappyPCH.h" 
+#include "HappySandBoxPCH.h" 
 
-#include "MaterialGeneratorTextureNodes.h"
-#include "ShaderGeneratorVariableFactory.h"
-#include "MaterialGeneratorGraph.h"
+#include "MaterialGeneratorNode.h"
 
 namespace he {
 namespace tools {
-    
 
 } } //end namespace

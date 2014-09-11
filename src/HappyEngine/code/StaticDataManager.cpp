@@ -40,7 +40,6 @@
 #include "CullOctreeNodeFactory.h"
 #include "ShaderGeneratorVariableFactory.h"
 #include "Sprite.h"
-#include "materialGenerator/MaterialGeneratorNodeFactory.h"
 #include "SpriteCreator.h"
 #include "PickingManager.h"
 #include "BinaryVisitor.h"
@@ -98,7 +97,6 @@ void StaticDataManager::init()
     gfx::CullOctreeNodeFactory::sdmInit();
 #endif
     ct::ShaderGeneratorVariableFactory::sdmInit();
-    tools::MaterialGeneratorNodeFactory::sdmInit();
     ge::PickingManager::sdmInit();
     ge::EntityManager::sdmInit();
     GlobalSettings::sdmInit();
@@ -113,7 +111,6 @@ void StaticDataManager::destroy()
     GlobalSettings::sdmDestroy();
     ge::EntityManager::sdmDestroy();
     ge::PickingManager::sdmDestroy();
-    tools::MaterialGeneratorNodeFactory::sdmDestroy();
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
 #ifdef HE_USE_OCTREE
     gfx::CullOctreeNodeFactory::sdmDestroy();

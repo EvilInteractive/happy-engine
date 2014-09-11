@@ -84,7 +84,7 @@ struct NetworkObjectTypeID
 #define TRUE 1
 #define FALSE 0
 
-struct ObjectHandle
+struct HAPPY_ENTRY ObjectHandle
 {
     static const int s_UnassignedType = 0;
 
