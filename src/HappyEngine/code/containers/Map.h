@@ -26,11 +26,11 @@
 
 namespace he {
 
-template<typename KEY, typename VALUE>
-class Map : public std::unordered_map<KEY, VALUE>
+template<typename KEY, typename VALUE, typename HASH = std::hash<KEY>>
+class Map : public std::unordered_map<KEY, VALUE, HASH>
 {
 public:
-    Map() : std::unordered_map<KEY, VALUE>() {}
+    Map() : std::unordered_map<KEY, VALUE, HASH>() {}
     // do nothing special in here!
 
 

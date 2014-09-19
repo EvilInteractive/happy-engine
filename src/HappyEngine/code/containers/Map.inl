@@ -20,20 +20,20 @@
 
 namespace he {
     
-template<typename KEY, typename VALUE>
-void he::Map<KEY, VALUE>::forEach( const std::function<void(std::pair<const KEY, VALUE>&)>& func )
+template<typename KEY, typename VALUE, typename HASH>
+void he::Map<KEY, VALUE, HASH>::forEach( const std::function<void(std::pair<const KEY, VALUE>&)>& func )
 {
-    typename std::unordered_map<KEY, VALUE>::iterator it(this->begin());
-    typename std::unordered_map<KEY, VALUE>::iterator end(this->end());
+    typename std::unordered_map<KEY, VALUE, HASH>::iterator it(this->begin());
+    typename std::unordered_map<KEY, VALUE, HASH>::iterator end(this->end());
     for (; it != end; ++it)
     func(*it);
 }
 
-template<typename KEY, typename VALUE>
-void he::Map<KEY, VALUE>::forEach( const std::function<void(const std::pair<const KEY, VALUE>&)>& func ) const
+template<typename KEY, typename VALUE, typename HASH>
+void he::Map<KEY, VALUE, HASH>::forEach( const std::function<void(const std::pair<const KEY, VALUE>&)>& func ) const
 {
-    typename std::unordered_map<KEY, VALUE>::const_iterator it(this->cbegin());
-    typename std::unordered_map<KEY, VALUE>::const_iterator end(this->cend());
+    typename std::unordered_map<KEY, VALUE, HASH>::const_iterator it(this->cbegin());
+    typename std::unordered_map<KEY, VALUE, HASH>::const_iterator end(this->cend());
     for (; it != end; ++it)
     func(*it);
 }
