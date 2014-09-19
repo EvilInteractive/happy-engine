@@ -30,7 +30,7 @@ void he::Map<KEY, VALUE>::forEach( const std::function<void(std::pair<const KEY,
 }
 
 template<typename KEY, typename VALUE>
-void he::Map<KEY, VALUE>::forEach( const std::function1<void(const std::pair<const KEY, VALUE>&)>& func ) const
+void he::Map<KEY, VALUE>::forEach( const std::function<void(const std::pair<const KEY, VALUE>&)>& func ) const
 {
     typename std::unordered_map<KEY, VALUE>::const_iterator it(this->cbegin());
     typename std::unordered_map<KEY, VALUE>::const_iterator end(this->cend());
