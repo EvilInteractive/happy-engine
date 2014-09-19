@@ -317,7 +317,7 @@ void View::setCamera( ICamera* const camera )
 
 void View::tick( float dTime )
 {
-    if (m_Camera != nullptr && m_Window == GRAPHICS->getActiveWindow()) // not a good way but good for now
+    if (m_Camera != nullptr && m_Window->getHandle() == GRAPHICS->getActiveWindow()) // not a good way but good for now
         m_Camera->tick(dTime);
 }
 

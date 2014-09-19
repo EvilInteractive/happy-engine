@@ -29,7 +29,7 @@ struct SDL_Cursor;
 namespace he {
 namespace io {
 
-class Mouse : public IMouse
+class HAPPY_ENTRY Mouse : public IMouse
 {
 public:
     Mouse();

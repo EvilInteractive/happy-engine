@@ -143,7 +143,6 @@ void Sandbox::init()
     globalSettings->load(he::Path("sandboxSettings.cfg"));
     globalSettings->save(he::Path("sandboxSettings.cfg"));
 
-    GRAPHICS->registerWindow(m_Window->getGameWidget());
     m_View = GRAPHICS->createView();
     
     using namespace he;
@@ -212,7 +211,7 @@ void Sandbox::quit()
     }
 }
 
-he::gfx::Window*Sandbox::getMainWindow() const
+he::gfx::Window* Sandbox::getMainWindow() const
 {
     return m_Window->getGameWidget();
 }

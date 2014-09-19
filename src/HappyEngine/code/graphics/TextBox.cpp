@@ -25,6 +25,7 @@
 #include "IMouse.h"
 #include "Hitregion.h"
 #include "Gui.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gui {
@@ -91,9 +92,10 @@ TextBox::~TextBox()
 /* GENERAL */
 void TextBox::tick()
 {
-    if (CONTROLS->getMouse()->isButtonPressed(io::MouseButton_Left))
+    he::io::IMouse* mouse(CONTROLS->getMouse(GRAPHICS->getActiveWindow()));
+    if (mouse->isButtonPressed(io::MouseButton_Left))
     {
-        if (m_Hitrect->hitTest(CONTROLS->getMouse()->getPosition()))
+        if (m_Hitrect->hitTest(mouse->getPosition()))
         {
             m_HasFocus = true;
             CONTROLS->getFocus(this);
@@ -107,14 +109,15 @@ void TextBox::tick()
 
     if (m_HasFocus && m_Active)
     {
-        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Left))
+        he::io::IKeyboard* keyboard(CONTROLS->getKeyboard(GRAPHICS->getActiveWindow()));
+        if (keyboard->isKeyPressed(io::Key_Left))
         {
             if (m_CursorPos > 0)
             {
                 --m_CursorPos;
             }
         }
-        else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Right))
+        else if (keyboard->isKeyPressed(io::Key_Right))
         {
             if (m_CursorPos < m_String.size())
             {
@@ -122,7 +125,7 @@ void TextBox::tick()
             }
         }
         // check for backspace
-        else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Backspace))
+        else if (keyboard->isKeyDown(io::Key_Backspace))
         {
             if (m_BackspaceDown == false)
             {
@@ -137,7 +140,7 @@ void TextBox::tick()
                 m_BackspaceDown = true;
             }
         }
-        else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Delete))
+        else if (keyboard->isKeyPressed(io::Key_Delete))
         {
             // remove char after cursor
             if (m_String.size() > 0 && m_CursorPos < m_String.size())
@@ -147,7 +150,7 @@ void TextBox::tick()
         }
         else
         {
-            const he::String& textEntered(CONTROLS->getKeyboard()->getTextEntered());
+            const he::String& textEntered(keyboard->getTextEntered());
             if (textEntered.empty() == false)
             {
                 m_String.insert(m_CursorPos, textEntered);
@@ -155,7 +158,7 @@ void TextBox::tick()
             }
         }
 
-        if (CONTROLS->getKeyboard()->isKeyUp(io::Key_Backspace))
+        if (keyboard->isKeyUp(io::Key_Backspace))
         {
             m_BackspaceDown = false;
             m_BackSpaceTimer = (uint32)(m_BlinkTimer.elapsed() * 10);
@@ -171,7 +174,7 @@ void TextBox::tick()
             m_BackSpaceDelayTimer = (uint32)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer;
         }
 
-        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return))
+        if (keyboard->isKeyPressed(io::Key_Return))
         {
             m_Entered = true;
         }

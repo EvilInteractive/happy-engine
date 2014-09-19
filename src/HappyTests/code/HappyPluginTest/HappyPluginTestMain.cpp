@@ -246,7 +246,7 @@ void ht::HappyPluginTestMain::setActiveCamera( he::gfx::ICamera* const camera )
 void ht::HappyPluginTestMain::draw2D( he::gui::Canvas2D* canvas )
 {
     canvas->setColor(he::Color(1.0f, 0.2f, 0.2f, 0.75f));
-    he::vec2 bezierEnd(CONTROLS->getMouse()->getPosition());
+    he::vec2 bezierEnd(CONTROLS->getMouse(m_View->getWindow()->getHandle())->getPosition());
 
     for (float x(0); x <= canvas->getSize().x; x += canvas->getSize().x / 10)
     {

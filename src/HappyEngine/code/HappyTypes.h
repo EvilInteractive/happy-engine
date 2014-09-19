@@ -37,7 +37,9 @@ typedef int16_t int16;
 typedef int32_t int32;
 typedef int64_t int64;
 
+typedef uint8 WindowID;
 typedef uint32 SceneID;
+#define WINDOWID_UNASSIGNED UINT8_MAX
 
 enum IntersectResult
 {
@@ -125,6 +127,12 @@ struct HAPPY_ENTRY ObjectHandle
     bool operator!=(const ObjectHandle& other) const
     {
         return m_Handle != other.m_Handle;
+    }
+
+    // to be hashable
+    size_t operator()(const ObjectHandle& handle) const
+    {
+        return handle.m_Handle;
     }
 
     HE_FORCEINLINE ObjectType getType() const { return m_Handle & s_TypeMask; }

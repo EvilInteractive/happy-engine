@@ -24,26 +24,27 @@
 #include "ControlsManager.h"
 #include "IMouse.h"
 #include "Gui.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Scrollbar::Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar) :	m_Hitregion(nullptr),
-																					m_Pos(pos),
-																					m_Size(size),
-																					m_BarPos(0.0f),
-																					m_Dragging(false),
-																					m_PreviousMousePos(0,0),
-																					m_ScrollbarHeight(heightScrollbar)
+                                                                                    m_Pos(pos),
+                                                                                    m_Size(size),
+                                                                                    m_BarPos(0.0f),
+                                                                                    m_Dragging(false),
+                                                                                    m_PreviousMousePos(0,0),
+                                                                                    m_ScrollbarHeight(heightScrollbar)
 {
-	m_Hitregion = NEW Hitregion(
+    m_Hitregion = NEW Hitregion(
         vec2(pos.x + size.x/2, pos.y + (heightScrollbar/2)),
-		vec2(size.x - 2, heightScrollbar));
+        vec2(size.x - 2, heightScrollbar));
 
-	m_Colors["background"] = Color(0.6f,0.6f,0.6f);
-	m_Colors["scrollbar"] = Color(0.4f,0.4f,0.4f);
-	m_Colors["edge"] = Color(0.2f,0.2f,0.2f);
+    m_Colors["background"] = Color(0.6f,0.6f,0.6f);
+    m_Colors["scrollbar"] = Color(0.4f,0.4f,0.4f);
+    m_Colors["edge"] = Color(0.2f,0.2f,0.2f);
 
     SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Sprites[0] = cr->createSprite(m_Size, Sprite::UNIFORM_SCALE);
@@ -54,53 +55,54 @@ Scrollbar::Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar) :
 
 Scrollbar::~Scrollbar()
 {
-	delete m_Hitregion;
-	m_Hitregion = nullptr;
+    delete m_Hitregion;
+    m_Hitregion = nullptr;
 }
 
 /* GENERAL */
 void Scrollbar::tick()
 {
-    const vec2 mousePos(CONTROLS->getMouse()->getPosition());
+    io::IMouse* mouse(CONTROLS->getMouse(GRAPHICS->getActiveWindow()));
+    const vec2 mousePos(mouse->getPosition());
     const vec2 hitrectPos(m_Hitregion->getPosition());
 
-	if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Left))
-	{
-		if (m_Hitregion->hitTest(mousePos))
-		{
-			m_Dragging = true;
-		}
-	}
-	else
-	{
-		m_Dragging = false;
+    if (mouse->isButtonDown(io::MouseButton_Left))
+    {
+        if (m_Hitregion->hitTest(mousePos))
+        {
+            m_Dragging = true;
+        }
+    }
+    else
+    {
+        m_Dragging = false;
 
-		m_PreviousMousePos = mousePos;
-	}
+        m_PreviousMousePos = mousePos;
+    }
 
-	if (m_Dragging)
-	{
-		vec2 mouseMovement(0.0f,0.0f);
+    if (m_Dragging)
+    {
+        vec2 mouseMovement(0.0f,0.0f);
 
-		if (mousePos.y >= m_Pos.y && mousePos.y <= m_Pos.y + m_Size.y)
-			mouseMovement = mousePos - m_PreviousMousePos;
+        if (mousePos.y >= m_Pos.y && mousePos.y <= m_Pos.y + m_Size.y)
+            mouseMovement = mousePos - m_PreviousMousePos;
 
-		m_PreviousMousePos = mousePos;
+        m_PreviousMousePos = mousePos;
 
-		m_Hitregion->move(vec2(0, mouseMovement.y));
+        m_Hitregion->move(vec2(0, mouseMovement.y));
 
-		if (hitrectPos.y - (m_ScrollbarHeight/2) < m_Pos.y)
-			m_Hitregion->setPosition(vec2(hitrectPos.x, m_Pos.y + (m_ScrollbarHeight/2)));
-		else if (hitrectPos.y + (m_ScrollbarHeight/2) > m_Pos.y + m_Size.y)
-			m_Hitregion->setPosition(vec2(hitrectPos.x, m_Pos.y + m_Size.y - (m_ScrollbarHeight/2)));
+        if (hitrectPos.y - (m_ScrollbarHeight/2) < m_Pos.y)
+            m_Hitregion->setPosition(vec2(hitrectPos.x, m_Pos.y + (m_ScrollbarHeight/2)));
+        else if (hitrectPos.y + (m_ScrollbarHeight/2) > m_Pos.y + m_Size.y)
+            m_Hitregion->setPosition(vec2(hitrectPos.x, m_Pos.y + m_Size.y - (m_ScrollbarHeight/2)));
 
-		m_BarPos = (hitrectPos.y - m_Pos.y - (m_ScrollbarHeight/2)) / (m_Size.y - m_ScrollbarHeight);
-	}
+        m_BarPos = (hitrectPos.y - m_Pos.y - (m_ScrollbarHeight/2)) / (m_Size.y - m_ScrollbarHeight);
+    }
 
-	if (m_BarPos < 0)
-		m_BarPos = 0;
-	else if (m_BarPos > 1.0f)
-		m_BarPos = 1.0f;
+    if (m_BarPos < 0)
+        m_BarPos = 0;
+    else if (m_BarPos > 1.0f)
+        m_BarPos = 1.0f;
 }
 
 void Scrollbar::draw(gui::Canvas2D* canvas)
@@ -112,26 +114,26 @@ void Scrollbar::draw(gui::Canvas2D* canvas)
 /* SETTERS */
 void Scrollbar::setBarPos(float barPos)
 {
-	m_BarPos = barPos;
+    m_BarPos = barPos;
 
-	float y((m_BarPos * (m_Size.y - m_ScrollbarHeight)) + (m_ScrollbarHeight/2) + m_Pos.y);
+    float y((m_BarPos * (m_Size.y - m_ScrollbarHeight)) + (m_ScrollbarHeight/2) + m_Pos.y);
 
-	m_Hitregion->setPosition(vec2(m_Hitregion->getPosition().x, y));
+    m_Hitregion->setPosition(vec2(m_Hitregion->getPosition().x, y));
 }
 
 void Scrollbar::setColors(	const Color& backgroundColor,
-							const Color& scrollbarColor,
-							const Color& edgeColor)
+                            const Color& scrollbarColor,
+                            const Color& edgeColor)
 {
-	m_Colors["background"] = backgroundColor;
-	m_Colors["scrollbar"] = scrollbarColor;
-	m_Colors["edge"] = edgeColor;
+    m_Colors["background"] = backgroundColor;
+    m_Colors["scrollbar"] = scrollbarColor;
+    m_Colors["edge"] = edgeColor;
 }
 
 /* GETTERS */
 float Scrollbar::getBarPos() const
 {
-	return m_BarPos;
+    return m_BarPos;
 }
 
 void Scrollbar::setPosition( const vec2& pos )
@@ -167,7 +169,7 @@ void Scrollbar::renderSprites()
     cr->setActiveSprite(front);
     cr->setColor(m_Colors["scrollbar"]);
     cr->rectangle(vec2(1, hitrectPos.y - (m_ScrollbarHeight/2)),
-				  vec2(m_Size.x - 2, m_ScrollbarHeight));
+                  vec2(m_Size.x - 2, m_ScrollbarHeight));
     cr->fill();
     cr->setColor(m_Colors["edge"]);
     cr->stroke();

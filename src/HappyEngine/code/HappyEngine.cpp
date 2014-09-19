@@ -270,18 +270,18 @@ void HappyEngine::updateLoop(float dTime)
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
-            // Window
-            if (event.type == SDL_WINDOWEVENT)
+            he::gfx::WindowFactory* factory(he::gfx::WindowFactory::getInstance());
+            const size_t windowCount(factory->getSize());
+            for (size_t i(0); i < windowCount; ++i)
             {
-                he::gfx::WindowFactory* factory(he::gfx::WindowFactory::getInstance());
-                const size_t windowCount(factory->getSize());
-                for (size_t i(0); i < windowCount; ++i)
+                he::gfx::Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
+                if (window->getType() == HEFS::strSDLWindow)
                 {
-                    he::gfx::Window* const window(factory->getAt(static_cast<ObjectHandle::IndexType>(i)));
-                    if (window->getType() == HEFS::strSDLWindow)
+                    he::gfx::WindowSDL* sdlWindow = checked_cast<he::gfx::WindowSDL*>(window);
+                    if (sdlWindow->getID() == event.window.windowID)
                     {
-                        he::gfx::WindowSDL* sdlWindow = checked_cast<he::gfx::WindowSDL*>(window);
-                        if (sdlWindow->getID() == event.window.windowID)
+                        // Window
+                        if (event.type == SDL_WINDOWEVENT)
                         {
                             switch (event.window.event)
                             {
@@ -317,46 +317,46 @@ void HappyEngine::updateLoop(float dTime)
                             }
                             break;
                         }
-                    }
-                }
-            }
-            else if (m_SubEngines & SubEngine_Controls)
-            {
-                io::IMouse* mouse(m_ControlsManager->getMouse());
-                io::IKeyboard* keyboard(m_ControlsManager->getKeyboard());
-                switch (event.type)
-                {
-                    // Mouse
-                    case SDL_MOUSEBUTTONDOWN:
-                    {
-                        mouse->MouseButtonPressed(static_cast<io::MouseButton>(event.button.button));
-                    } break;
-                    case SDL_MOUSEBUTTONUP:
-                    {
-                        mouse->MouseButtonReleased(static_cast<io::MouseButton>(event.button.button));
-                    } break;
-                    case SDL_MOUSEMOTION:
-                    {
-                        mouse->MouseMoved(vec2(static_cast<float>(event.motion.x), static_cast<float>(event.motion.y)));
-                    } break;
-                    case SDL_MOUSEWHEEL:
-                    {
-                        mouse->MouseWheelMoved(event.wheel.y);
-                    } break;
+                        else if (m_SubEngines & SubEngine_Controls)
+                        {
+                            io::IMouse* mouse(m_ControlsManager->getMouse(window->getHandle()));
+                            io::IKeyboard* keyboard(m_ControlsManager->getKeyboard(window->getHandle()));
+                            switch (event.type)
+                            {
+                                // Mouse
+                            case SDL_MOUSEBUTTONDOWN:
+                                {
+                                    mouse->MouseButtonPressed(static_cast<io::MouseButton>(event.button.button));
+                                } break;
+                            case SDL_MOUSEBUTTONUP:
+                                {
+                                    mouse->MouseButtonReleased(static_cast<io::MouseButton>(event.button.button));
+                                } break;
+                            case SDL_MOUSEMOTION:
+                                {
+                                    mouse->MouseMoved(vec2(static_cast<float>(event.motion.x), static_cast<float>(event.motion.y)));
+                                } break;
+                            case SDL_MOUSEWHEEL:
+                                {
+                                    mouse->MouseWheelMoved(event.wheel.y);
+                                } break;
 
-                    // Keyboard
-                    case SDL_KEYDOWN:
-                    {
-                        keyboard->KeyPressed(static_cast<io::Key>(event.key.keysym.scancode));
-                    } break;
-                    case SDL_KEYUP:
-                    {
-                        keyboard->KeyReleased(static_cast<io::Key>(event.key.keysym.scancode));
-                    } break;
-                    case SDL_TEXTINPUT:
-                    {
-                        keyboard->TextEntered(event.text.text);
-                    } break;
+                                // Keyboard
+                            case SDL_KEYDOWN:
+                                {
+                                    keyboard->KeyPressed(static_cast<io::Key>(event.key.keysym.scancode));
+                                } break;
+                            case SDL_KEYUP:
+                                {
+                                    keyboard->KeyReleased(static_cast<io::Key>(event.key.keysym.scancode));
+                                } break;
+                            case SDL_TEXTINPUT:
+                                {
+                                    keyboard->TextEntered(event.text.text);
+                                } break;
+                            }
+                        }
+                    }
                 }
             }
         }

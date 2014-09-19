@@ -46,7 +46,7 @@ namespace he {
 namespace gfx {
 
 GraphicsEngine::GraphicsEngine()
-    : m_ActiveWindow(nullptr)
+    : m_ActiveWindow(ObjectHandle::unassigned)
     , m_ActiveView(nullptr)
     , m_OwnSharedContext(false)
 #ifdef USE_WEB
@@ -240,6 +240,7 @@ void GraphicsEngine::draw()
             if (viewList.empty() == false)
             {
                 window->prepareForRendering();
+
                 GraphicsEngine* const _this(this);
                 PROFILER_BEGIN("Views");
                 ViewFactory* const viewFactory(ViewFactory::getInstance());
@@ -355,6 +356,11 @@ he::uint16 GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution 
     }
     LOG(LogType_ProgrammerAssert, "Unknown / Invalid shadow resolution");
     return 0;
+}
+
+void GraphicsEngine::setActiveWindow( Window* window )
+{
+    m_ActiveWindow = window->getHandle();
 }
 
 } } //end namespace

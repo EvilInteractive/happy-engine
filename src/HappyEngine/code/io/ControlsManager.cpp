@@ -28,9 +28,7 @@ namespace he {
 namespace io {
 
 ControlsManager::ControlsManager()
-    : m_Mouse(NEW Mouse)
-    , m_Keyboard(NEW Keyboard)
-    , m_OculusRiftBinding(NEW OculusRiftBinding())
+    : m_OculusRiftBinding(NEW OculusRiftBinding())
     , m_Locked(false)
     , m_LockedObject(nullptr)
 {
@@ -41,24 +39,30 @@ ControlsManager::~ControlsManager()
 {
     m_OculusRiftBinding->shutdown();
     delete m_OculusRiftBinding;
-    delete m_Keyboard;
-    delete m_Mouse;
 }
 
 void ControlsManager::tick()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    m_Keyboard->tick();
-    m_Mouse->tick();
+    m_Keyboard.forEach([](const std::pair<ObjectHandle, IKeyboard*>& pair)
+    {
+        pair.second->tick();
+    });
+    m_Mouse.forEach([](const std::pair<ObjectHandle, IMouse*>& pair)
+    {
+        pair.second->tick();
+    });
 }
 
-IKeyboard* ControlsManager::getKeyboard() const
+IKeyboard* ControlsManager::getKeyboard(const ObjectHandle window) const
 {
-    return m_Keyboard;
+    TKeyboardMap::const_iterator it(m_Keyboard.find(window));
+    return it != m_Keyboard.cend()? it->second : nullptr;
 }
-IMouse* ControlsManager::getMouse() const
+IMouse* ControlsManager::getMouse(const ObjectHandle window) const
 {
-    return m_Mouse;
+    TMouseMap::const_iterator it(m_Mouse.find(window));
+    return it != m_Mouse.cend()? it->second : nullptr;
 }
 
 bool ControlsManager::getFocus(void* object)
@@ -98,6 +102,28 @@ bool ControlsManager::hasFocus(void* object) const
         return true;
     else
         return false;
+}
+
+void ControlsManager::registerInputForWindow( const ObjectHandle window, IKeyboard* keyboard, IMouse* mouse )
+{
+    m_Keyboard[window] = keyboard;
+    m_Mouse[window] = mouse;
+}
+
+void ControlsManager::unregisterInputForWindow( const ObjectHandle window )
+{
+    TKeyboardMap::iterator keyIt(m_Keyboard.find(window));
+    if (keyIt != m_Keyboard.end())
+    {
+        delete (*keyIt).second;
+        m_Keyboard.erase(keyIt);
+    }
+    TMouseMap::iterator mouseIt(m_Mouse.find(window));
+    if (mouseIt != m_Mouse.end())
+    {
+        delete (*mouseIt).second;
+        m_Mouse.erase(mouseIt);
+    }
 }
 
 } } //end namespace

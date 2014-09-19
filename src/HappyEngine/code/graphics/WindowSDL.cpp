@@ -20,8 +20,11 @@
 #include "HappyPCH.h" 
 #include "WindowSDL.h"
 
+#include "ControlsManager.h"
 #include "GLContextSDL.h"
 #include "GraphicsEngine.h"
+#include "Keyboard.h"
+#include "Mouse.h"
 #include "SDL2/SDL.h"
 
 
@@ -64,6 +67,7 @@ bool WindowSDL::create(const bool show)
     {
         m_ID = SDL_GetWindowID(m_Window);
         SDL_GetWindowPosition(m_Window, &m_WindowRect.x, &m_WindowRect.y);
+        CONTROLS->registerInputForWindow(getHandle(), NEW io::Keyboard(), NEW io::Mouse());
     }
     return result;
 }
@@ -74,6 +78,7 @@ void WindowSDL::destroy()
     m_Context = nullptr;
     if (m_Window != nullptr)
     {
+        CONTROLS->unregisterInputForWindow(getHandle());
         SDL_DestroyWindow(m_Window);
         m_Window = nullptr;
     }

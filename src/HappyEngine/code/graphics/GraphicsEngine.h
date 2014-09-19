@@ -85,14 +85,14 @@ public:
     void unregisterContext(GLContext* context);
 
     /* SETTERS */
-    void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
+    void setActiveWindow(Window* window); // Internal use
     void setActiveContext(GLContext* context);
     void setActiveView(View* view) { m_ActiveView = view; } // Internal use
 
     GLContext* getSharedContext() const;
     
     /* GETTERS */
-    Window* getActiveWindow() const { return m_ActiveWindow; }
+    ObjectHandle getActiveWindow() const { return m_ActiveWindow; }
     const he::ObjectList<ObjectHandle>& getAllWindows() const { return m_Windows; }
     const he::PrimitiveList<GLContext*>& getContexts() const { return m_Contexts; } 
 
@@ -115,7 +115,7 @@ private:
     he::ObjectList<ObjectHandle> m_Views;
     he::ObjectList<ObjectHandle> m_Windows;
 
-    Window* m_ActiveWindow;
+    ObjectHandle m_ActiveWindow;
     View* m_ActiveView;
 #ifdef USE_WEB
     Awesomium::WebCore* m_WebCore;

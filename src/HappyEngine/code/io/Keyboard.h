@@ -29,7 +29,7 @@
 namespace he {
 namespace io {
 
-class Keyboard : public IKeyboard
+class HAPPY_ENTRY Keyboard : public IKeyboard
 {
 public:
     Keyboard();

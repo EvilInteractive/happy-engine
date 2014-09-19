@@ -15,6 +15,7 @@
 #include <PickResult.h>
 #include <PickingComponent.h>
 #include <Ray.h>
+#include <Window.h>
 
 namespace hs {
 
@@ -56,14 +57,14 @@ void GameStateEdit::exit()
 
 void GameStateEdit::tick( const float /*dTime*/ )
 {
-    he::io::ControlsManager* const controls(CONTROLS);
-    he::io::IMouse* const mouse(controls->getMouse());
-    he::io::IKeyboard* const keyboard(controls->getKeyboard());
-
     Sandbox* const sandbox(Sandbox::getInstance());
     he::pl::IPlugin* const plugin(sandbox->getGamePlugin());
     if (plugin != nullptr)
     {
+        he::io::ControlsManager* const controls(CONTROLS);
+        he::io::IMouse* const mouse(controls->getMouse(sandbox->getMainWindow()->getHandle()));
+        he::io::IKeyboard* const keyboard(controls->getKeyboard(sandbox->getMainWindow()->getHandle()));
+
         if (mouse->isButtonPressed(he::io::MouseButton_Left))
         {        
             if (keyboard->isKeyDown(he::io::Key_Ctrl) == false && keyboard->isKeyDown(he::io::Key_Alt) == false)

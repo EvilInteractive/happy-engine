@@ -30,6 +30,7 @@
 #include "IMouse.h"
 #include "Font.h"
 #include "Canvas2D.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gui {
@@ -74,14 +75,15 @@ void Button::tick()
 
         if (m_ActivationType == ACTIVATION_MOUSE)
         {
-            if (m_Hitregion.hitTest(CONTROLS->getMouse()->getPosition()))
+            io::IMouse* mouse(CONTROLS->getMouse(GRAPHICS->getActiveWindow()));
+            if (m_Hitregion.hitTest(mouse->getPosition()))
             {
-                if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Left))
+                if (mouse->isButtonDown(io::MouseButton_Left))
                     m_State = STATE_DOWN;
                 else
                     m_State = STATE_HOVER;
 
-                if (CONTROLS->getMouse()->isButtonReleased(io::MouseButton_Left))
+                if (mouse->isButtonReleased(io::MouseButton_Left))
                 {
                     m_bClicked = true;
 

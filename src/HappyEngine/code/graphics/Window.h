@@ -55,7 +55,8 @@ enum EFlags
     eFlags_Fullscreen = 1 << 1,
     eFlags_Resizeable = 1 << 2,
     eFlags_IsVisible = 1 << 3,
-    eFlags_EnableOculusRift = 1 << 4
+    eFlags_EnableOculusRift = 1 << 4,
+    eFlags_HasFocus = 1 << 5
 };
 struct OculusRiftBarrelDistorter;
 public:

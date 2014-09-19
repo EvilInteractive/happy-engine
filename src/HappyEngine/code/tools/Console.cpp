@@ -256,7 +256,10 @@ void Console::displayCmds()
 void Console::tick()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut))
+    io::IKeyboard* keyboard(CONTROLS->getKeyboard(GRAPHICS->getActiveWindow()));
+    if (!keyboard) return;
+
+    if (keyboard->isKeyPressed(m_Shortcut))
     {
         m_IsOpen = !m_IsOpen;
         m_TextBox->resetText();
@@ -284,7 +287,7 @@ void Console::tick()
         if (m_MsgHistory.size() > m_MaxMessagesInWindow)
             m_ScrollBar->tick();
 
-        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Down))
+        if (keyboard->isKeyPressed(io::Key_Down))
         {
             m_TextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
 
@@ -297,7 +300,7 @@ void Console::tick()
                 m_CmdHistoryPos = (uint32)m_CmdHistory.size() - 1;
             }
         }
-        else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Up))
+        else if (keyboard->isKeyPressed(io::Key_Up))
         {
             m_TextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
 

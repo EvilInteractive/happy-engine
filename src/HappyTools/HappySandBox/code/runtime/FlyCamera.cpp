@@ -46,8 +46,8 @@ void FlyCamera::tick(float dTime)
     using namespace he;
 
     he::io::ControlsManager* const controls(CONTROLS);
-    const he::io::IKeyboard* const keyboard(controls->getKeyboard());
-    const he::io::IMouse* const mouse(controls->getMouse());
+    const he::io::IKeyboard* const keyboard(controls->getKeyboard(GRAPHICS->getActiveWindow()));
+    const he::io::IMouse* const mouse(controls->getMouse(GRAPHICS->getActiveWindow()));
     controls->getFocus(this);
 
     if (m_bMoveable)

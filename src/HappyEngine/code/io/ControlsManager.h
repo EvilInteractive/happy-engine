@@ -22,6 +22,8 @@
 #define _HE_CONTROLS_MANAGER_H_
 #pragma once
 
+#include <Map.h>
+
 namespace he {
 namespace io {
 class IMouse;
@@ -36,18 +38,24 @@ public:
 
     void tick();
 
-    IKeyboard* getKeyboard() const;
-    IMouse* getMouse() const;
+    IKeyboard* getKeyboard(const ObjectHandle window) const;
+    IMouse* getMouse(const ObjectHandle window) const;
     OculusRiftBinding* getOculusRiftBinding() const { return m_OculusRiftBinding; }
 
     bool getFocus(void* object);
     void returnFocus(void* object);
     bool hasFocus(void* object) const;
 
+    void registerInputForWindow(const ObjectHandle window, IKeyboard* keyboard, IMouse* mouse); // Takes ownership of keyboard and mouse
+    void unregisterInputForWindow(const ObjectHandle window);
+
 private:
 
-    IKeyboard* m_Keyboard;
-    IMouse* m_Mouse;
+    typedef he::Map<ObjectHandle, IKeyboard*, ObjectHandle> TKeyboardMap;
+    typedef he::Map<ObjectHandle, IMouse*, ObjectHandle> TMouseMap;
+
+    TKeyboardMap m_Keyboard;
+    TMouseMap m_Mouse;
     OculusRiftBinding* m_OculusRiftBinding;
 
     bool m_Locked;

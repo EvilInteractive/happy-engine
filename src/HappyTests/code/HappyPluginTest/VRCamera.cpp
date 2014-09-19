@@ -57,8 +57,7 @@ void VRCamera::tick(const float dTime)
     using namespace he;
 
     he::io::ControlsManager* const controls(CONTROLS);
-    const he::io::IKeyboard* const keyboard(controls->getKeyboard());
-    //const he::io::IMouse* const mouse(controls->getMouse());
+    const he::io::IKeyboard* const keyboard(controls->getKeyboard(GRAPHICS->getActiveWindow()));
     controls->getFocus(this);
     
     he::io::OculusRiftDevice* const device(controls->getOculusRiftBinding()->getDevice(0));

@@ -197,6 +197,18 @@ Window::Window()
        m_WindowRect.y = y;
     });
     Moved += movedCallback;
+
+    he::eventCallback0<void> focusCallback([this]()
+    {
+        raiseFlag(eFlags_HasFocus);
+    });
+    GainedFocus += focusCallback;
+
+    he::eventCallback0<void> focuslostCallback([this]()
+    {
+        clearFlag(eFlags_HasFocus);
+    });
+    LostFocus += focuslostCallback;
 }
 #pragma warning(default:4355)
 
