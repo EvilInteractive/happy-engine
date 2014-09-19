@@ -30,7 +30,7 @@ class Window;
 } }
 
 namespace hs {
-class GameWidget;
+class RenderWidget;
 
 class GLContextQT : public he::gfx::GLContext
 {
@@ -42,10 +42,10 @@ public:
     void destroy();
     void makeCurrent();
     
-    GameWidget* getWidget() const { return m_Widget; }
+    RenderWidget* getWidget() const { return m_Widget; }
 
 private:
-    GameWidget* m_Widget;
+    RenderWidget* m_Widget;
 
     GLContextQT(const GLContextQT&);
     GLContextQT& operator=(const GLContextQT&);

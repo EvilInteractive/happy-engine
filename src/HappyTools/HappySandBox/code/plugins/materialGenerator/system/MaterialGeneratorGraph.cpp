@@ -252,8 +252,8 @@ void MaterialGeneratorGraph::deactivate()
 void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
 {
     const io::ControlsManager* const controls(CONTROLS);
-    const io::IMouse* const mouse(controls->getMouse());
-    const io::IKeyboard* const keyboard(controls->getKeyboard());
+    const io::IMouse* const mouse(controls->getMouse(m_Window->getHandle()));
+    const io::IKeyboard* const keyboard(controls->getKeyboard(m_Window->getHandle()));
     const bool keepSelection(keyboard->isKeyDown(io::Key_Lctrl) || keyboard->isKeyDown(io::Key_Rctrl));
     const bool removeSelection(keyboard->isKeyDown(io::Key_Lalt) || keyboard->isKeyDown(io::Key_Ralt));
 
@@ -426,7 +426,7 @@ void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
 void MaterialGeneratorGraph::updateErrors( const float dTime )
 {
     const io::ControlsManager* const controls(CONTROLS);
-    const io::IMouse* const mouse(controls->getMouse());
+    const io::IMouse* const mouse(controls->getMouse(m_Window->getHandle()));
     const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
     for (size_t i(0); i < m_VisibleErrors.size();)
     {
@@ -456,7 +456,7 @@ void MaterialGeneratorGraph::updateErrors( const float dTime )
 void MaterialGeneratorGraph::tick( float dTime )
 {
     const io::ControlsManager* const controls(CONTROLS);
-    const io::IMouse* const mouse(controls->getMouse());
+    const io::IMouse* const mouse(controls->getMouse(m_Window->getHandle()));
 
     const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
     bool foundHoover(false);
@@ -602,7 +602,7 @@ void MaterialGeneratorGraph::draw2D( gui::Canvas2D* canvas )
     
     // DEBUG
     m_DebugText.clear();
-    const vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse()->getPosition()));
+    const vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse(m_Window->getHandle())->getPosition()));
     m_DebugText.addTextExt("&5F5Zoom: &AFA%.2f\n&5F5Region: &AFA%.2f, %.2f, %.2f, %.2f\n&5F5Mouse: &AFA%.2f, %.2f\n\n&5F5: Undo/Redo: &5F5\n", 
         m_Scale, m_Offset.x, m_Offset.y, transformedSize.x, transformedSize.y, mouseWorld.x, mouseWorld.y);
 
@@ -718,7 +718,7 @@ void MaterialGeneratorGraph::pushError( const MaterialGeneratorError& errorMsg )
     msg.m_Text->clear();
     msg.m_Text->addTextExt("&F55%s", errorMsg.getMessage().c_str());
     msg.m_TextSize = msg.m_Text->measureText();
-    msg.m_Position = screenToWorldPos(CONTROLS->getMouse()->getPosition());
+    msg.m_Position = screenToWorldPos(CONTROLS->getMouse(m_Window->getHandle())->getPosition());
     msg.m_TimeLeft = ERROR_TIME;
     m_VisibleErrors.add(msg);
 }

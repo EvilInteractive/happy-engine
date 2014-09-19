@@ -29,7 +29,7 @@ namespace gfx {
 namespace gui {
     class SpriteCreator;
 
-class Sprite
+class HAPPY_ENTRY Sprite
 {
 DECLARE_OBJECT(Sprite)
 public:

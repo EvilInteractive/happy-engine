@@ -15,38 +15,46 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 9/12/2012
 
-#ifndef _HE_Command_H_
-#define _HE_Command_H_
+#ifndef _HS_NODEGRAPH_H_
+#define _HS_NODEGRAPH_H_
 #pragma once
 
-namespace he {
-namespace tools {
+#include "RenderWidget.h"
 
-enum CommandType
-{
-    CommandType_Undo,
-    CommandType_Do
-};
+#include <IDrawable2D.h>
+#include <Text.h>
 
-class HAPPY_ENTRY Command
+namespace hs {
+
+class NodeGraph :  public RenderWidget, public he::gfx::IDrawable2D
 {
+    Q_OBJECT
 public:
-    typedef std::function<void(const CommandType)> CommandFunction;
-    Command() {}
-    Command(const CommandFunction& command);
-    ~Command() {}
-    // Copy == OK
+    explicit NodeGraph(QWidget *parent = 0);
+    virtual ~NodeGraph();
 
-    void doCommand();
-    void undoCommand();
+    virtual void draw2D(he::gui::Canvas2D* canvas) override;
+
+    bool isEdited() const { return false; }
 
 private:
-    CommandFunction m_Command;
+    he::vec2 screenToWorldPos(const he::vec2& screenPos) const;
+    he::vec2 worldToScreenPos(const he::vec2& worldPos) const;
+
+    he::gfx::View* m_View;
+    he::gfx::Renderer2D* m_2DRenderer;
+
+    he::vec2 m_Offset;
+    float m_Scale;
+
+    he::gui::Text m_DebugText;
+
+    //Disable default copy constructor and default assignment operator
+    NodeGraph(const NodeGraph&);
+    NodeGraph& operator=(const NodeGraph&);
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

@@ -16,16 +16,9 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "HappySandBoxPCH.h"
-#include "GameWidget.h"
+#include "NodeGraphNode.h"
 
 namespace hs {
 
-GameWidget::GameWidget(QWidget *parent): RenderWidget(parent)
-{
-}
+} //end namespace
 
-GameWidget::~GameWidget()
-{
-}
-
-}

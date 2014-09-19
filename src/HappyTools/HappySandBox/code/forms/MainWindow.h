@@ -9,6 +9,7 @@ class MainWindow;
 
 namespace hs {
 class GameWidget;
+class MaterialEditor;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -21,8 +22,13 @@ public:
 
     GameWidget* getGameWidget() const;
 
+private slots:
+    void openMaterialEditor();
+
 private:
     Ui::MainWindow* m_UI;
+
+    MaterialEditor* m_MaterialEditor;
 };
 
 }

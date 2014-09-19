@@ -18,16 +18,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
     <item row="0" column="0">
@@ -48,7 +39,7 @@
      <x>0</x>
      <y>0</y>
      <width>923</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -81,6 +72,7 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionMaterialEditor"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -119,16 +111,7 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_2">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <property name="spacing">
@@ -189,10 +172,32 @@
    <property name="text">
     <string>Save as..</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+ß</string>
+   </property>
   </action>
   <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/toolbar/resources/Exit.png</normaloff>:/icons/toolbar/resources/Exit.png</iconset>
+   </property>
    <property name="text">
     <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionMaterialEditor">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/toolbar/resources/Retort.png</normaloff>:/icons/toolbar/resources/Retort.png</iconset>
+   </property>
+   <property name="text">
+    <string>Material Editor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
  </widget>

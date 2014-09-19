@@ -20,7 +20,7 @@
 #include "HappySandBoxPCH.h"
 #include "GLContextQT.h"
 
-#include "forms/GameWidget.h"
+#include "forms/RenderWidget.h"
 
 #include <GraphicsEngine.h>
 #include <Window.h>
@@ -38,7 +38,7 @@ GLContextQT::GLContextQT()
 bool GLContextQT::create(he::gfx::Window* const window)
 {
     HE_ASSERT(window && window->getType() == HSFS::strQTWindow, "No window or wrong window type when creating context!");
-    m_Widget = he::checked_cast<GameWidget*>(window);
+    m_Widget = he::checked_cast<RenderWidget*>(window);
     return GLContext::create(window);
 }
     

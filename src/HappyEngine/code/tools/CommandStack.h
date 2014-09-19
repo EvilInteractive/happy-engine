@@ -29,7 +29,7 @@ namespace tools {
 
 class Command;
 
-class CommandStack
+class HAPPY_ENTRY CommandStack
 {
 public:
     CommandStack();

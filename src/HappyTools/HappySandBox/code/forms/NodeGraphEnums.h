@@ -15,17 +15,10 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include "HappySandBoxPCH.h"
-#include "GameWidget.h"
 
-namespace hs {
+#ifndef _HS_NODEGRAPHENUMS_H_
+#define _HS_NODEGRAPHENUMS_H_
+#pragma once
 
-GameWidget::GameWidget(QWidget *parent): RenderWidget(parent)
-{
-}
 
-GameWidget::~GameWidget()
-{
-}
-
-}
+#endif

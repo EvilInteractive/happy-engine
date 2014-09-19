@@ -37,7 +37,7 @@ class SpriteFactory : public ObjectFactory<Sprite>, public Singleton<SpriteFacto
     virtual ~SpriteFactory() {}
 };
 
-class SpriteCreator
+class HAPPY_ENTRY SpriteCreator
 {
 public:
 

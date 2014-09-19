@@ -27,7 +27,7 @@
 namespace he {
 namespace ct {
 
-class ShaderGeneratorVariable
+class HAPPY_ENTRY ShaderGeneratorVariable
 {
 DECLARE_OBJECT(ShaderGeneratorVariable)
 public:
