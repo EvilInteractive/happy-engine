@@ -40,8 +40,8 @@ public:
     virtual ~RenderWidget();
 
     // From Window
-    bool create(const bool show);
-    void destroy();
+    bool create(const bool show) override;
+    void destroy() override;
 
     // Do
     virtual void present();
@@ -64,22 +64,25 @@ public:
     
 private:
     // From QGLWidget
-    void initializeGL();
-    void paintGL();
-    void resizeGL(int width, int height);
-    void closeEvent(QCloseEvent* event);
-    void moveEvent(QMoveEvent* event);
+    void initializeGL() override;
+    void paintGL() override;
+    void resizeGL(int width, int height) override;
+    void closeEvent(QCloseEvent* event) override;
+    void moveEvent(QMoveEvent* event) override;
 
-    void mouseMoveEvent(QMouseEvent* event);
-    void mousePressEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
-    void wheelEvent(QWheelEvent* event);
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
-    void keyPressEvent(QKeyEvent* event);
-    void keyReleaseEvent(QKeyEvent* event);
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
 
-    void focusInEvent(QFocusEvent* event);
-    void focusOutEvent(QFocusEvent* event);
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
+
+    void showEvent(QShowEvent* event) override;
+    void hideEvent(QHideEvent* event) override;
 
     GLContextQT* m_Context;
 

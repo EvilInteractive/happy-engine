@@ -285,7 +285,7 @@ void GL::init()
     glDisable(GL_SCISSOR_TEST);
 
 #ifdef HE_DEBUG
-	// no worky on AMD/ATI
+    // no worky on AMD/ATI
    /* if (glewGetContext()->__GLEW_ARB_debug_output)
     {
         glDebugMessageCallbackARB(glDebugCallback, nullptr);

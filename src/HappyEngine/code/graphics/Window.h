@@ -109,6 +109,8 @@ public:
     event0<void> Closed;
     event0<void> GainedFocus;
     event0<void> LostFocus;
+    event0<void> Shown;
+    event0<void> Hidden;
 
 protected:
     inline void raiseFlag(const EFlags flag) { m_Flags |= flag; }

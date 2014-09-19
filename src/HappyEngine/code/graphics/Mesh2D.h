@@ -42,6 +42,7 @@ public:
     void clear();
 
     bool triangulate();
+    bool outline();
 
     void createBuffer(bool outline = false);
 

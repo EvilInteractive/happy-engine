@@ -68,18 +68,24 @@ bool Mesh2D::triangulate()
     return m_Polygon->triangulate();
 }
 
-void Mesh2D::createBuffer(bool outline)
+bool Mesh2D::outline()
 {
-    if (outline == false)
+    m_DrawMode = MeshDrawMode_LineLoop;
+    return m_Polygon->outline();
+}
+
+void Mesh2D::createBuffer(bool doOutline)
+{
+    if (doOutline == false)
     {
-        if (m_Polygon->triangulate() == false)
+        if (!triangulate())
         {
             HE_ERROR("Failed to triangulate Mesh2D!");
         }
     }
     else
     {
-        if (m_Polygon->outline() == false)
+        if (!outline())
         {
             HE_ERROR("Failed to outline Mesh2D!");
         }

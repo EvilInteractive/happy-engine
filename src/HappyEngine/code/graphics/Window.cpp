@@ -258,12 +258,20 @@ void Window::destroy()
 
 void Window::show()
 {
-    raiseFlag(eFlags_IsVisible);
+    if (!checkFlag(eFlags_IsVisible))
+    {
+        raiseFlag(eFlags_IsVisible);
+        Shown();
+    }
 }
 
 void Window::hide()
 {
-    clearFlag(eFlags_IsVisible);
+    if (checkFlag(eFlags_IsVisible))
+    {
+        clearFlag(eFlags_IsVisible);
+        Hidden();
+    }
 }
 
 void Window::setWindowTitle( const he::String& caption )

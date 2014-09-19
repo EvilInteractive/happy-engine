@@ -23,28 +23,48 @@
 #include "RenderWidget.h"
 
 #include <IDrawable2D.h>
+#include <ITickable.h>
 #include <Text.h>
 
 namespace hs {
 
-class NodeGraph :  public RenderWidget, public he::gfx::IDrawable2D
+class NodeGraph :  public RenderWidget, public he::gfx::IDrawable2D, public he::ge::ITickable
 {
     Q_OBJECT
 public:
     explicit NodeGraph(QWidget *parent = 0);
     virtual ~NodeGraph();
 
+    void activate();
+    void deactivate();
+
+    virtual void tick(float dTime);
     virtual void draw2D(he::gui::Canvas2D* canvas) override;
 
     bool isEdited() const { return false; }
 
 private:
+    enum State
+    {
+        State_Idle,
+        State_StartPan,
+        State_Pan,
+        State_StartMoveNode,
+        State_MoveNode,
+        State_ConnectNode
+    };
+    void updateStates(const float dTime);
+
     he::vec2 screenToWorldPos(const he::vec2& screenPos) const;
     he::vec2 worldToScreenPos(const he::vec2& worldPos) const;
 
     he::gfx::View* m_View;
     he::gfx::Renderer2D* m_2DRenderer;
 
+    bool m_Active;
+
+    State m_State;
+    he::vec2 m_GrabWorldPos;
     he::vec2 m_Offset;
     float m_Scale;
 

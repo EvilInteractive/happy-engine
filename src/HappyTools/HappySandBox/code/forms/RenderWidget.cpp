@@ -394,6 +394,24 @@ he::gfx::GLContext* RenderWidget::getContext() const
     return m_Context;
 }
 
+void RenderWidget::showEvent( QShowEvent* /*event*/ )
+{
+    if (!checkFlag(Window::eFlags_IsVisible))
+    {
+        raiseFlag(Window::eFlags_IsVisible);
+        Shown();
+    }
+}
+
+void RenderWidget::hideEvent( QHideEvent* /*event*/ )
+{
+    if (checkFlag(Window::eFlags_IsVisible))
+    {
+        clearFlag(Window::eFlags_IsVisible);
+        Hidden();
+    }
+}
+
 
 } //end namespace
 
