@@ -176,7 +176,7 @@ Window::Window()
   , m_WindowRect(-1, -1, 1280, 720)
   , m_Titel("")
   , m_OVRDistorter(nullptr)
-  , m_Flags(eFlags_Resizeable | eFlags_IsVisible)
+  , m_Flags(eFlags_Resizeable)
 {
     he::eventCallback2<void, int32, int32> resizedCallback([this](const int32 width, const int32 height)
     {

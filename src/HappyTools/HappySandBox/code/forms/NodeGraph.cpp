@@ -47,7 +47,7 @@ NodeGraph::NodeGraph(QWidget *parent)
 {
     QWidget::setMouseTracking(true);
 
-    create(true);
+    create(false);
 
     m_View->setWindow(this);
     m_View->addRenderPlugin(m_2DRenderer);
@@ -175,22 +175,29 @@ void NodeGraph::updateStates( const float /*dTime*/ )
 
 void NodeGraph::draw2D( he::gui::Canvas2D* canvas )
 {
+    DrawContext context;
     const he::vec2 canvasSize(canvas->getSize());
-    const he::mat33 transform(he::mat33::createScale2D(he::vec2(m_Scale, m_Scale)) * he::mat33::createTranslation2D(-m_Offset));
-    const he::vec2 transformedSize(canvasSize.x / m_Scale, canvasSize.y / m_Scale);
-    const he::RectF clipRect(0.0f, 0.0f, canvasSize.x, canvasSize.y);
-    const he::RectI clipRectI(0, 0, static_cast<int>(canvasSize.x), static_cast<int>(canvasSize.y));
+    context.canvas = canvas;
+    context.transform = he::mat33::createScale2D(he::vec2(m_Scale, m_Scale)) * he::mat33::createTranslation2D(-m_Offset);
+    context.clipRect = he::RectF(0.0f, 0.0f, canvasSize.x, canvasSize.y);
+    context.worldRect = he::RectF(m_Offset.x, m_Offset.y, canvasSize.x * m_Scale, canvasSize.y * m_Scale);
 
-    //const he::vec2 screenWorldOrig(screenToWorldPos(he::vec2(0, 0)));
-    //const he::vec2 screenWorldMax(screenToWorldPos(he::vec2(canvasSize.x, canvasSize.y)));
+    drawBackground(context);
+    drawNodes(context);
+    drawDebug(context);
+}
+
+void NodeGraph::drawBackground(const DrawContext& context)
+{
+    // Background
+    const he::RectI clipRectI(0, 0, static_cast<int>(context.clipRect.width), static_cast<int>(context.clipRect.height));
+    context.canvas->setColor(he::Color(static_cast<he::uint8>(50), 41, 50));
+    context.canvas->fillRect(clipRectI);
 
     // Grid
-    canvas->setColor(he::Color(static_cast<he::uint8>(50), 41, 50));
-    canvas->fillRect(clipRectI);
-
     he::Color lineColor(static_cast<he::uint8>(84), 80, 114);
     he::Color majorLineColor(static_cast<he::uint8>(89), 130, 147);
-    canvas->setColor(lineColor);
+    context.canvas->setColor(lineColor);
     
     const static float worldUnitsPerGridLine = 32;
     const static int majorGridLineEveryNth = 8;
@@ -204,36 +211,42 @@ void NodeGraph::draw2D( he::gui::Canvas2D* canvas )
     int xMajorOffset(static_cast<int>(ceil(m_Offset.x / worldUnitsPerGridLine)) % majorGridLineEveryNth);
     int yMajorOffset(static_cast<int>(ceil(m_Offset.y / worldUnitsPerGridLine)) % majorGridLineEveryNth);
 
-    for (float x(screenOffset.x); x < clipRect.width; x += screenUnitsPerGridLine, ++xMajorOffset)
+    for (float x(screenOffset.x); x < context.clipRect.width; x += screenUnitsPerGridLine, ++xMajorOffset)
     {
         const bool isMajor((xMajorOffset % majorGridLineEveryNth) == 0);
         if (isMajor)
-            canvas->setColor(majorLineColor);
-        canvas->drawLine(he::vec2(x, 0), he::vec2(x, clipRect.height));
+            context.canvas->setColor(majorLineColor);
+        context.canvas->drawLine(he::vec2(x, 0), he::vec2(x, context.clipRect.height));
         if (isMajor)
-            canvas->setColor(lineColor);
+            context.canvas->setColor(lineColor);
     }
-    for (float y(screenOffset.y); y < clipRect.height; y += screenUnitsPerGridLine, ++yMajorOffset)
+    for (float y(screenOffset.y); y < context.clipRect.height; y += screenUnitsPerGridLine, ++yMajorOffset)
     {
         const bool isMajor((yMajorOffset % majorGridLineEveryNth) == 0);
         if (isMajor)
-            canvas->setColor(majorLineColor);
-        canvas->drawLine(he::vec2(0, y), he::vec2(clipRect.width, y));
+            context.canvas->setColor(majorLineColor);
+        context.canvas->drawLine(he::vec2(0, y), he::vec2(context.clipRect.width, y));
         if (isMajor)
-            canvas->setColor(lineColor);
+            context.canvas->setColor(lineColor);
     }
+}
 
-    // DEBUG
+void NodeGraph::drawNodes(const DrawContext& /*context*/)
+{
+
+}
+
+void NodeGraph::drawDebug(const DrawContext& context)
+{
     m_DebugText.clear();
     const he::vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse(getHandle())->getPosition()));
     m_DebugText.addTextExt("&5F5Zoom: &AFA%.2f\n&5F5Region: &AFA%.2f, %.2f, %.2f, %.2f\n&5F5Mouse: &AFA%.2f, %.2f\n\n&5F5: Undo/Redo: &5F5\n", 
-        m_Scale, m_Offset.x, m_Offset.y, transformedSize.x, transformedSize.y, mouseWorld.x, mouseWorld.y);
+        m_Scale, context.worldRect.x, context.worldRect.y, context.worldRect.width, context.worldRect.height, mouseWorld.x, mouseWorld.y);
 
-    canvas->setColor(he::Color(0.0f, 0.0f, 0.0f, 1.0f));
-    canvas->fillText(m_DebugText, he::vec2(14.0f, 14.0f));
-    canvas->setColor(he::Color(1.0f, 1.0f, 1.0f, 1.0f));
-    canvas->fillText(m_DebugText, he::vec2(12.0f, 12.0f));
-
+    context.canvas->setColor(he::Color(0.0f, 0.0f, 0.0f, 1.0f));
+    context.canvas->fillText(m_DebugText, he::vec2(14.0f, 14.0f));
+    context.canvas->setColor(he::Color(1.0f, 1.0f, 1.0f, 1.0f));
+    context.canvas->fillText(m_DebugText, he::vec2(12.0f, 12.0f));
 }
 
 }

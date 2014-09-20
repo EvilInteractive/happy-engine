@@ -53,8 +53,23 @@ private:
         State_MoveNode,
         State_ConnectNode
     };
+
+    // Updates
     void updateStates(const float dTime);
 
+    // Draw
+    struct DrawContext
+    {
+        he::gui::Canvas2D* canvas;
+        he::mat33 transform;
+        he::RectF clipRect;
+        he::RectF worldRect;
+    };
+    void drawBackground(const DrawContext& context);
+    void drawNodes(const DrawContext& context);
+    void drawDebug(const DrawContext& context);
+
+    // Helpers
     he::vec2 screenToWorldPos(const he::vec2& screenPos) const;
     he::vec2 worldToScreenPos(const he::vec2& worldPos) const;
 
