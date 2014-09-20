@@ -54,12 +54,12 @@ public:
     NodeGraphNodeOutputConnections(const NodeGraphNodeOutputConnections<TInput, TOutput>& other):
         ObjectList<NodeGraphConnection<TInput, TOutput>>(other.m_Connections.size())
     {
-        append(other);
+        this->append(other);
     }
     NodeGraphNodeOutputConnections& operator=(const NodeGraphNodeOutputConnections<TInput, TOutput>& other)
     {
         this->clear();
-        append(other);
+        this->append(other);
         return *this;
     }
 };

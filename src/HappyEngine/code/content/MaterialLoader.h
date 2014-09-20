@@ -25,10 +25,9 @@
 #include "AssetContainer.h"
 #include "MaterialEnums.h"
 
+#include "StructuredVisitor.h"
+
 namespace he {
-namespace io {
-    class StructuredVisitor;
-}
 namespace gfx {
     class Material;
 }
