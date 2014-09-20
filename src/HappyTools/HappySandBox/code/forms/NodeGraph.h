@@ -27,7 +27,7 @@
 #include <Text.h>
 
 namespace hs {
-
+struct NodeGraphDrawContext;
 class NodeGraph :  public RenderWidget, public he::gfx::IDrawable2D, public he::ge::ITickable
 {
     Q_OBJECT
@@ -56,18 +56,19 @@ private:
 
     // Updates
     void updateStates(const float dTime);
+    void updateIdleState(const float dTime);
+    void updateStartPanState(const float dTime);
+    void updatePanState(const float dTime);
+    void updateStartMoveNodeState(const float dTime);
+    void updateMoveNodeState(const float dTime);
+    void updateConnectNodeState(const float dTime);
+
+    void updateZoom(const float dTime);
 
     // Draw
-    struct DrawContext
-    {
-        he::gui::Canvas2D* canvas;
-        he::mat33 transform;
-        he::RectF clipRect;
-        he::RectF worldRect;
-    };
-    void drawBackground(const DrawContext& context);
-    void drawNodes(const DrawContext& context);
-    void drawDebug(const DrawContext& context);
+    void drawBackground(const NodeGraphDrawContext& context);
+    void drawNodes(const NodeGraphDrawContext& context);
+    void drawDebug(const NodeGraphDrawContext& context);
 
     // Helpers
     he::vec2 screenToWorldPos(const he::vec2& screenPos) const;

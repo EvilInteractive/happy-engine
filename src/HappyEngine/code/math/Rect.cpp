@@ -51,6 +51,19 @@ bool RectF::operator!=(const RectF& r) const
 	return !(*this == r);
 }
 
+RectF RectF::transform( const he::mat33& mat ) const
+{
+    he::vec2 pos(x, y);
+    pos = mat * pos;
+    return RectF(pos.x, pos.y, width * mat(0, 0), height * mat(1, 1));
+}
+
+bool RectF::isInside( const he::vec2& pos ) const
+{
+    return pos.x >= x && pos.x < x + width &&
+        pos.y >= y && pos.y < y + height;
+}
+
 RectI::RectI(): x(0), y(0), width(0), height(0)
 {
 }

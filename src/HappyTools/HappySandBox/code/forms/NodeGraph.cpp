@@ -17,6 +17,7 @@
 //
 #include "HappySandBoxPCH.h"
 #include "NodeGraph.h"
+#include "NodeGraphEnums.h"
 
 #include <ContentManager.h>
 #include <Canvas2D.h>
@@ -109,9 +110,13 @@ he::vec2 NodeGraph::worldToScreenPos( const he::vec2& worldPos ) const
 
 void NodeGraph::tick( float dTime )
 {
-    using namespace he;
     updateStates(dTime);
+    updateZoom(dTime);
+}
 
+void NodeGraph::updateZoom( const float /*dTime*/ )
+{
+    using namespace he;
     const io::IMouse* const mouse(CONTROLS->getMouse(getHandle()));
     const int scroll(mouse->getScroll());
     if (scroll != 0)
@@ -126,56 +131,88 @@ void NodeGraph::tick( float dTime )
     }
 }
 
-void NodeGraph::updateStates( const float /*dTime*/ )
+void NodeGraph::updateStates( const float dTime )
 {
-    using namespace he;
-    const io::ControlsManager* const controls(CONTROLS);
-    const io::IMouse* const mouse(controls->getMouse(getHandle()));
-
-    const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
-
     switch (m_State)
     {
     case State_Idle:
         {
-            m_GrabWorldPos = mouseWorld;
-            const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
-            if (leftDown)
-            {
-                m_State = State_StartPan;
-            }
+            updateIdleState(dTime);
         } break;
     case State_StartPan:
         {
-            const vec2 mousePos(mouse->getPosition());
-            const vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
-            const vec2 diff(mousePos - grabScreenPos);
-            if (mouse->isButtonReleased(io::MouseButton_Left))
-            {
-                m_State = State_Idle;
-            }
-            else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
-            {
-                m_State = State_Pan;
-            }
+            updateStartPanState(dTime);
         } break;
     case State_Pan:
         {
-            const vec2 mousePos(mouse->getPosition());
-            const vec2 worldMouse(screenToWorldPos(mousePos));
-            const vec2 diff(worldMouse - m_GrabWorldPos);
-            m_Offset -= diff; 
-            if (mouse->isButtonReleased(io::MouseButton_Left))
-            {
-                m_State = State_Idle;
-            }
+            updatePanState(dTime);
         } break;
     }
 }
 
+void NodeGraph::updateIdleState( const float /*dTime*/ )
+{
+    const he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    const he::vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+
+    m_GrabWorldPos = mouseWorld;
+    const bool leftDown(mouse->isButtonPressed(he::io::MouseButton_Left));
+    if (leftDown)
+    {
+        m_State = State_StartPan;
+    }
+}
+
+void NodeGraph::updateStartPanState( const float /*dTime*/ )
+{
+    const he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    const he::vec2 mousePos(mouse->getPosition());
+    const he::vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
+    const he::vec2 diff(mousePos - grabScreenPos);
+    if (mouse->isButtonReleased(he::io::MouseButton_Left))
+    {
+        m_State = State_Idle;
+    }
+    else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
+    {
+        m_State = State_Pan;
+    }
+}
+
+void NodeGraph::updatePanState( const float /*dTime*/ )
+{
+    const he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    const he::vec2 mousePos(mouse->getPosition());
+    const he::vec2 worldMouse(screenToWorldPos(mousePos));
+    const he::vec2 diff(worldMouse - m_GrabWorldPos);
+    m_Offset -= diff; 
+    if (mouse->isButtonReleased(he::io::MouseButton_Left))
+    {
+        m_State = State_Idle;
+    }
+}
+
+void NodeGraph::updateStartMoveNodeState( const float /*dTime*/ )
+{
+
+}
+
+void NodeGraph::updateMoveNodeState( const float /*dTime*/ )
+{
+
+}
+
+void NodeGraph::updateConnectNodeState( const float /*dTime*/ )
+{
+
+}
+
 void NodeGraph::draw2D( he::gui::Canvas2D* canvas )
 {
-    DrawContext context;
+    NodeGraphDrawContext context;
     const he::vec2 canvasSize(canvas->getSize());
     context.canvas = canvas;
     context.transform = he::mat33::createScale2D(he::vec2(m_Scale, m_Scale)) * he::mat33::createTranslation2D(-m_Offset);
@@ -187,7 +224,7 @@ void NodeGraph::draw2D( he::gui::Canvas2D* canvas )
     drawDebug(context);
 }
 
-void NodeGraph::drawBackground(const DrawContext& context)
+void NodeGraph::drawBackground(const NodeGraphDrawContext& context)
 {
     // Background
     const he::RectI clipRectI(0, 0, static_cast<int>(context.clipRect.width), static_cast<int>(context.clipRect.height));
@@ -231,12 +268,12 @@ void NodeGraph::drawBackground(const DrawContext& context)
     }
 }
 
-void NodeGraph::drawNodes(const DrawContext& /*context*/)
+void NodeGraph::drawNodes(const NodeGraphDrawContext& /*context*/)
 {
 
 }
 
-void NodeGraph::drawDebug(const DrawContext& context)
+void NodeGraph::drawDebug(const NodeGraphDrawContext& context)
 {
     m_DebugText.clear();
     const he::vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse(getHandle())->getPosition()));

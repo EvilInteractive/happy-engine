@@ -15,27 +15,10 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-
-#ifndef _HS_NODEGRAPHENUMS_H_
-#define _HS_NODEGRAPHENUMS_H_
-#pragma once
-
-namespace he {
-namespace gui {
-    class Canvas2D;
-}
-}
+#include "HappySandBoxPCH.h"
+#include "NodeGraphNodeOutput.h"
 
 namespace hs {
 
-struct NodeGraphDrawContext
-{
-    he::gui::Canvas2D* canvas;
-    he::mat33 transform;
-    he::RectF clipRect;
-    he::RectF worldRect;
-};
+} //end namespace
 
-}
-
-#endif

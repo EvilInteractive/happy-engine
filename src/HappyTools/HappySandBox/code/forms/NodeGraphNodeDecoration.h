@@ -16,26 +16,28 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef _HS_NODEGRAPHENUMS_H_
-#define _HS_NODEGRAPHENUMS_H_
+#ifndef _HS_NODEGRAPHNODEDECORATION_H_
+#define _HS_NODEGRAPHNODEDECORATION_H_
 #pragma once
 
-namespace he {
-namespace gui {
-    class Canvas2D;
-}
-}
+#include "INodeGraphNodeAttachment.h"
 
 namespace hs {
 
-struct NodeGraphDrawContext
-{
-    he::gui::Canvas2D* canvas;
-    he::mat33 transform;
-    he::RectF clipRect;
-    he::RectF worldRect;
-};
+    class NodeGraphNodeDecoration : public INodeGraphNodeAttachment
+    {
+    public:
+        NodeGraphNodeDecoration();
+        virtual ~NodeGraphNodeDecoration();
 
+        // INodeGraphNodeAttachment
+        virtual ELayoutAlignment getLayoutAlignment() const override { return eLayoutAlignment_Center; }
+        virtual const he::vec4& getLayoutMargin() const override = 0;
+        virtual const he::RectF& getBound() const override;
+
+        virtual void draw(const NodeGraphDrawContext& context) override;
+
+    };
 }
 
 #endif

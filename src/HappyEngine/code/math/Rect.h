@@ -35,30 +35,33 @@ public:
     float x, y, width, height;
 
     RectF();
-	RectF(float x, float y, float width, float height);
-	RectF(const vec2& pos, const vec2& size);
+    RectF(float x, float y, float width, float height);
+    RectF(const vec2& pos, const vec2& size);
     explicit RectF(const RectI& rect);
     ~RectF();
     //Default copy constructor and assignment operator are fine
 
-	bool operator==(const RectF& r) const;
-	bool operator!=(const RectF& r) const;
+    bool isInside(const he::vec2& pos) const;
+    RectF transform(const he::mat33& mat) const;
+
+    bool operator==(const RectF& r) const;
+    bool operator!=(const RectF& r) const;
 };
 struct HAPPY_ENTRY RectI
 {
 public:
     int x, y, width, height;
 
-	RectI();
-	RectI(int x, int y, int width, int height);
+    RectI();
+    RectI(int x, int y, int width, int height);
     explicit RectI(const RectF& rect);
     ~RectI();
 
     RectI(const RectI& rect);
     RectI& operator=(const RectI& other);
 
-	bool operator==(const RectI& r) const;
-	bool operator!=(const RectI& r) const;
+    bool operator==(const RectI& r) const;
+    bool operator!=(const RectI& r) const;
 };
 
 } //end namespace

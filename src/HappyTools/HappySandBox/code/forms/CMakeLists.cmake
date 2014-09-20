@@ -7,9 +7,14 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/forms code/forms/
     )
 
 addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/nodeGraph code/forms/
-        NodeGraph.cpp               NodeGraph.h
-        NodeGraphNode.cpp           NodeGraphNode.cpp
+        NodeGraph.cpp                   NodeGraph.h
+        NodeGraphNode.cpp               NodeGraphNode.h
         NodeGraphEnums.h
+        NodeGraphNodeConnector.cpp      NodeGraphNodeConnector.h
+        NodeGraphNodeInput.cpp          NodeGraphNodeInput.h
+        NodeGraphNodeOutput.cpp         NodeGraphNodeOutput.h
+        NodeGraphNodeDecoration.cpp     NodeGraphNodeDecoration.h
+        INodeGraphNodeAttachment.h
     )
 addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/entity code/forms/
         EntityPropertiesForm.cpp        EntityPropertiesForm.h          EntityPropertiesForm.ui
