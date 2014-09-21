@@ -20,6 +20,9 @@
 
 #include "NodeGraphEnums.h"
 #include "INodeGraphNodeAttachment.h"
+#include "NodeGraphNodeInput.h"
+#include "NodeGraphNodeOutput.h"
+#include "NodeGraphNodeDecoration.h"
 
 #include <Canvas2D.h>
 
@@ -27,6 +30,7 @@ namespace hs {
 
 NodeGraphNode::Style::Style() 
     : m_TitleSize(12)
+    , m_BackgroundMargin(4, 0, 4, 0)
 {
     m_Border[eState_Normal] = he::Color(79, 133, 149, static_cast<he::uint8>(255));
     m_Border[eState_Hover] = he::Color(143, 185, 197, static_cast<he::uint8>(255));
@@ -42,6 +46,9 @@ NodeGraphNode::Style::Style()
 }
 
 NodeGraphNode::NodeGraphNode()
+    : m_State(eState_Normal)
+    , m_LayoutDirty(false)
+    , m_Bound(0, 0, 0, 0)
 {
 
 }
@@ -56,49 +63,121 @@ bool NodeGraphNode::isInside( const he::vec2& worldPos )
     return m_Bound.isInside(worldPos);
 }
 
-void NodeGraphNode::addOutput( INodeGraphOutput* output )
+void NodeGraphNode::setPosition(const he::vec2& position)
 {
-    m_Outputs.add(output);
+    m_Bound.x = position.x;
+    m_Bound.y = position.y;
 }
 
-void NodeGraphNode::addInput( INodeGraphInput* input )
+he::vec2 NodeGraphNode::getPosition() const
+{
+    return he::vec2(m_Bound.x, m_Bound.y);
+}
+
+void NodeGraphNode::addOutput( NodeGraphNodeOutput* output )
+{
+    m_Outputs.add(output);
+    addAttachment(output);
+}
+
+void NodeGraphNode::addInput( NodeGraphNodeInput* input )
 {
     m_Inputs.add(input);
+    addAttachment(input);
+}
+
+void NodeGraphNode::addDecoration(NodeGraphNodeDecoration* deco)
+{
+    addAttachment(deco);
+}
+
+void NodeGraphNode::addAttachment(INodeGraphNodeAttachment* att)
+{
+    m_Attachments.add(att);
+    m_LayoutDirty = true;
 }
 
 void NodeGraphNode::updateLayout()
 {
-    float leftY(0.0f), centerY(0.0f), rightY(0.0f);
-    m_Attachments.forEach([&](INodeGraphNodeAttachment* att)
+    float sizeX(0.0f), sizeLeftX(0.0f), sizeRightX(0.0f);
+    float sizeY(0.0f);
+    // Vertical layout
     {
-        switch (att->getLayoutAlignment())
+        float leftY(0.0f), centerY(0.0f), rightY(0.0f);
+        m_Attachments.forEach([&](INodeGraphNodeAttachment* att)
         {
-        case INodeGraphNodeAttachment::eLayoutAlignment_Left:
+            const he::vec4& margin(att->getLayoutMargin());
+            he::RectF bound(att->getBound());
+            switch (att->getLayoutAlignment())
             {
-                leftY += att->getLayoutMargin().y;
-                he::RectF bound(att->getBound());
-                bound.y = leftY;
-                leftY += att->getLayoutMargin().w;
-            } break;
-        case INodeGraphNodeAttachment::eLayoutAlignment_Center:
+            case INodeGraphNodeAttachment::eLayoutAlignment_Left:
+                {
+                    leftY += margin.y;
+                    bound.y = leftY;
+                    leftY += margin.w + bound.height;
+                    sizeLeftX = std::max(sizeLeftX, bound.width + margin.x + margin.z);
+                } break;
+            case INodeGraphNodeAttachment::eLayoutAlignment_Center:
+                {
+                    centerY = std::max(leftY, rightY);
+                    centerY += margin.y;
+                    bound.y = centerY;
+                    centerY += margin.w + bound.height;
+                    leftY = centerY;
+                    rightY = centerY;
+
+                    sizeX = std::max(sizeX, sizeLeftX + sizeRightX);
+                    sizeX = std::max(sizeX, bound.width + margin.x + margin.z);
+                    sizeLeftX = 0.0f;
+                    sizeRightX = 0.0f;
+                } break;
+            case INodeGraphNodeAttachment::eLayoutAlignment_Right:
+                {
+                    rightY += margin.y;
+                    bound.y = rightY;
+                    rightY += margin.w + bound.height;
+                    sizeRightX = std::max(sizeRightX, bound.width + margin.x + margin.z);
+                } break;
+            }
+            att->setBound(bound);
+        });
+        sizeY = std::max(leftY, rightY);
+    }
+    sizeX = std::max(sizeX, sizeLeftX + sizeRightX);
+
+    // Horizontal layout
+    {
+        const float center(sizeX / 2.0f);
+        const float left(0.0f);
+        const float right(sizeX);
+        m_Attachments.forEach([&](INodeGraphNodeAttachment* att)
+        {
+            const he::vec4& margin(att->getLayoutMargin());
+            he::RectF bound(att->getBound());
+
+            switch (att->getLayoutAlignment())
             {
-                centerY = std::max(leftY, rightY);
-                centerY += att->getLayoutMargin().y;
-                he::RectF bound(att->getBound());
-                bound.y = centerY;
-                centerY += att->getLayoutMargin().w;
-                leftY = centerY;
-                rightY = centerY;
-            } break;
-        case INodeGraphNodeAttachment::eLayoutAlignment_Right:
-            {
-                rightY += att->getLayoutMargin().y;
-                he::RectF bound(att->getBound());
-                bound.y = rightY;
-                rightY += att->getLayoutMargin().w;
-            } break;
-        }
-    });
+            case INodeGraphNodeAttachment::eLayoutAlignment_Left:
+                {
+                    bound.x = left + margin.x;
+                } break;
+            case INodeGraphNodeAttachment::eLayoutAlignment_Center:
+                {
+                    bound.x = center - (bound.width + margin.x + margin.z) / 2.0f;
+                } break;
+            case INodeGraphNodeAttachment::eLayoutAlignment_Right:
+                {
+                    bound.x = right - margin.z - bound.width;
+                } break;
+            }
+
+            att->setBound(bound);
+        });
+    }
+
+    // Bound
+    m_Bound.width = sizeX;
+    m_Bound.height = sizeY;
 }
 
 namespace {
@@ -113,31 +192,34 @@ namespace {
 
 void NodeGraphNode::draw( const NodeGraphDrawContext& context )
 {
-    size_t notUsed(0);
-    m_Attachments.find_if([this](INodeGraphNodeAttachment* att)
+    if (m_LayoutDirty)
     {
-        if (att->needsLayoutUpdate())
-        {
-            updateLayout();
-            return true;
-        }
-        return false;
-    }, notUsed);
+        updateLayout();
+        m_LayoutDirty = false;
+    }
 
     if (BoundCheck(m_Bound, context.worldRect))
     {
         drawNodeBackground(context);
 
-        m_Attachments.forEach([this, &context](INodeGraphNodeAttachment* att)
+        NodeGraphDrawContext localContext(context);
+        localContext.transform = context.transform * he::mat33::createTranslation2D(he::vec2(m_Bound.x, m_Bound.y));
+        m_Attachments.forEach([this, &localContext](INodeGraphNodeAttachment* att)
         {
-            drawAttachment(context, att);
+            drawAttachment(localContext, att);
         });
     }
 }
 
 void NodeGraphNode::drawNodeBackground( const NodeGraphDrawContext& context )
 {
-    const he::RectI transformedBound(m_Bound.transform(context.transform));
+    he::RectF bound(m_Bound);
+    const he::vec4& margin(m_Style.m_BackgroundMargin);
+    bound.x += margin.x;
+    bound.y += margin.y;
+    bound.width -= margin.x + margin.z;
+    bound.height -= margin.y + margin.w;
+    const he::RectI transformedBound(bound.transform(context.transform));
 
     context.canvas->setColor(m_Style.m_Background[m_State]);
     context.canvas->fillRect(transformedBound);    

@@ -17,7 +17,11 @@
 //
 #include "HappySandBoxPCH.h"
 #include "NodeGraph.h"
+
 #include "NodeGraphEnums.h"
+#include "NodeGraphNode.h"
+#include "NodeGraphNodeInput.h"
+#include "NodeGraphNodeOutput.h"
 
 #include <ContentManager.h>
 #include <Canvas2D.h>
@@ -78,6 +82,11 @@ NodeGraph::~NodeGraph()
     delete m_2DRenderer;
 
     destroy();
+
+    m_Nodes.forEach([](NodeGraphNode* node)
+    {
+        delete node;
+    });
 }
 
 void NodeGraph::activate()
@@ -131,6 +140,24 @@ void NodeGraph::updateZoom( const float /*dTime*/ )
     }
 }
 
+void NodeGraph::createNode(const he::vec2& pos)
+{
+    const size_t inputs(rand() % 5 + 1);
+    const size_t outputs(rand() % 5 + 1);
+
+    NodeGraphNode* node(NEW NodeGraphNode());
+    node->setPosition(pos);
+    for (size_t i(0); i < inputs; ++i)
+    {
+        node->addInput(NEW NodeGraphNodeInput());
+    }
+    for (size_t i(0); i < outputs; ++i)
+    {
+        node->addOutput(NEW NodeGraphNodeOutput());
+    }
+    m_Nodes.add(node);
+}
+
 void NodeGraph::updateStates( const float dTime )
 {
     switch (m_State)
@@ -154,13 +181,21 @@ void NodeGraph::updateIdleState( const float /*dTime*/ )
 {
     const he::io::ControlsManager* const controls(CONTROLS);
     const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    const he::io::IKeyboard* const keyboard(controls->getKeyboard(getHandle()));
     const he::vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
 
     m_GrabWorldPos = mouseWorld;
     const bool leftDown(mouse->isButtonPressed(he::io::MouseButton_Left));
     if (leftDown)
     {
-        m_State = State_StartPan;
+        if (keyboard->isKeyDown(he::io::Key_Ctrl))
+        {
+            createNode(screenToWorldPos(mouse->getPosition()));
+        }
+        else
+        {
+            m_State = State_StartPan;
+        }
     }
 }
 
@@ -217,7 +252,7 @@ void NodeGraph::draw2D( he::gui::Canvas2D* canvas )
     context.canvas = canvas;
     context.transform = he::mat33::createScale2D(he::vec2(m_Scale, m_Scale)) * he::mat33::createTranslation2D(-m_Offset);
     context.clipRect = he::RectF(0.0f, 0.0f, canvasSize.x, canvasSize.y);
-    context.worldRect = he::RectF(m_Offset.x, m_Offset.y, canvasSize.x * m_Scale, canvasSize.y * m_Scale);
+    context.worldRect = he::RectF(m_Offset.x, m_Offset.y, canvasSize.x / m_Scale, canvasSize.y / m_Scale);
 
     drawBackground(context);
     drawNodes(context);
@@ -268,9 +303,12 @@ void NodeGraph::drawBackground(const NodeGraphDrawContext& context)
     }
 }
 
-void NodeGraph::drawNodes(const NodeGraphDrawContext& /*context*/)
+void NodeGraph::drawNodes(const NodeGraphDrawContext& context)
 {
-
+    m_Nodes.forEach([&context](NodeGraphNode* node)
+    {
+        node->draw(context);
+    });
 }
 
 void NodeGraph::drawDebug(const NodeGraphDrawContext& context)

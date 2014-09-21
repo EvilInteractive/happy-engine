@@ -24,7 +24,7 @@
 
 namespace hs {
 
-class NodeGraphNodeOutput : public INodeGraphNodeAttachment
+class NodeGraphNodeOutput : public NodeGraphNodeConnector
 {
 public:
     NodeGraphNodeOutput();
@@ -32,9 +32,6 @@ public:
 
     // INodeGraphNodeAttachment
     virtual ELayoutAlignment getLayoutAlignment() const override { return eLayoutAlignment_Right; }
-    virtual const he::vec4& getLayoutMargin() const override = 0;
-    virtual const he::RectF& getBound() const override;
-
     virtual void draw(const NodeGraphDrawContext& context) override;
 
 };

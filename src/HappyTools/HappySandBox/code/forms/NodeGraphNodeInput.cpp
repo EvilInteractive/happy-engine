@@ -18,7 +18,31 @@
 #include "HappySandBoxPCH.h"
 #include "NodeGraphNodeInput.h"
 
+#include "NodeGraphEnums.h"
+
+#include <Canvas2D.h>
+
 namespace hs {
+
+NodeGraphNodeInput::NodeGraphNodeInput()
+{
+    setContentMargin(he::vec4(4, 0, 4, 0));
+    setContentSize(he::vec2(rand() % 64 + 64, rand() % 64 + 16));
+}
+
+NodeGraphNodeInput::~NodeGraphNodeInput()
+{
+
+}
+
+void NodeGraphNodeInput::draw(const NodeGraphDrawContext& context)
+{
+    he::RectF contentBound(getContentBound().transform(context.transform));
+    context.canvas->setColor(he::Color(200, 50, 50, static_cast<he::uint8>(255)));
+    context.canvas->fillRect(he::RectI(contentBound));
+
+    drawConnector(context);
+}
 
 } //end namespace
 

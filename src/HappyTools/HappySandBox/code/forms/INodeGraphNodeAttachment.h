@@ -26,6 +26,7 @@ namespace he {
 
 namespace hs {
 struct  NodeGraphDrawContext;
+class NodeGraphNode;
 class INodeGraphNodeAttachment
 {
 public:
@@ -33,7 +34,9 @@ public:
     {
         eConnectorState_Normal,
         eConnectorState_Hover,
-        eConnectorState_Selected
+        eConnectorState_Selected,
+
+        eConnectorState_MAX
     };
     enum ELayoutAlignment
     {
@@ -44,10 +47,10 @@ public:
 
     virtual ~INodeGraphNodeAttachment() {}
 
-    // Layout
-    virtual bool needsLayoutUpdate() const = 0;
-    virtual void setLayoutUpdated() = 0;
+    // Parent
+    virtual void setParent(NodeGraphNode* const parent) = 0;
 
+    // Layout
     virtual ELayoutAlignment getLayoutAlignment() const = 0;
     virtual const he::vec4& getLayoutMargin() const = 0;
 

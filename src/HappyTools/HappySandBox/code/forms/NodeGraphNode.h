@@ -21,8 +21,9 @@
 #pragma once
 
 namespace hs {
-class INodeGraphOutput;
-class INodeGraphInput;
+class NodeGraphNodeOutput;
+class NodeGraphNodeInput;
+class NodeGraphNodeDecoration;
 class INodeGraphNodeAttachment;
 struct NodeGraphDrawContext;
 
@@ -44,37 +45,54 @@ public:
         he::Color m_Background[eState_MAX];
         he::Color m_Title[eState_MAX];
         float m_TitleSize;
+        he::vec4 m_BackgroundMargin;
     };
     NodeGraphNode();
     ~NodeGraphNode();
 
+    // Style
     void setStyle(const Style& style);
 
-    void addOutput(INodeGraphOutput* output);
-    void addInput(INodeGraphInput* input);
-    void addDecoration(INodeGraphInput* input);
+    // Attachments
+    void addOutput(NodeGraphNodeOutput* output);
+    void addInput(NodeGraphNodeInput* input);
+    void addDecoration(NodeGraphNodeDecoration* deco);
 
+    void setLayoutDirty() { m_LayoutDirty = true; }
+
+    // State
     bool isInside(const he::vec2& worldPos);
 
     void setState(const EState state) { m_State = state; }
     EState getState() const { return m_State; }
 
+    void setPosition(const he::vec2& position);
+    he::vec2 getPosition() const;
+
+    // Draw
     void draw(const NodeGraphDrawContext& context);
 
 private:
+    // Attachments
+    void addAttachment(INodeGraphNodeAttachment* att);
+
+    // State
     void updateLayout();
 
+    // Draw
     void drawNodeBackground(const NodeGraphDrawContext& context);
     void drawAttachment(const NodeGraphDrawContext& context, INodeGraphNodeAttachment* attachment);
 
+    // Members
     EState m_State;
+    bool m_LayoutDirty;
 
     he::RectF m_Bound;
     Style m_Style;
 
     he::PrimitiveList<INodeGraphNodeAttachment*> m_Attachments;
-    he::PrimitiveList<INodeGraphOutput*> m_Outputs;
-    he::PrimitiveList<INodeGraphInput*> m_Inputs;
+    he::PrimitiveList<NodeGraphNodeOutput*> m_Outputs;
+    he::PrimitiveList<NodeGraphNodeInput*> m_Inputs;
 
     NodeGraphNode(const NodeGraphNode&);
     NodeGraphNode& operator=(const NodeGraphNode&);

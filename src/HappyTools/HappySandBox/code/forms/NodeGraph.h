@@ -27,6 +27,7 @@
 #include <Text.h>
 
 namespace hs {
+class NodeGraphNode;
 struct NodeGraphDrawContext;
 class NodeGraph :  public RenderWidget, public he::gfx::IDrawable2D, public he::ge::ITickable
 {
@@ -42,6 +43,8 @@ public:
     virtual void draw2D(he::gui::Canvas2D* canvas) override;
 
     bool isEdited() const { return false; }
+
+    void createNode(const he::vec2& pos); // test
 
 private:
     enum State
@@ -74,6 +77,7 @@ private:
     he::vec2 screenToWorldPos(const he::vec2& screenPos) const;
     he::vec2 worldToScreenPos(const he::vec2& worldPos) const;
 
+    // Members
     he::gfx::View* m_View;
     he::gfx::Renderer2D* m_2DRenderer;
 
@@ -83,6 +87,8 @@ private:
     he::vec2 m_GrabWorldPos;
     he::vec2 m_Offset;
     float m_Scale;
+
+    he::PrimitiveList<NodeGraphNode*> m_Nodes;
 
     he::gui::Text m_DebugText;
 

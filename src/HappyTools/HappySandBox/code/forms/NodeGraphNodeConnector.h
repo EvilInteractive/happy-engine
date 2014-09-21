@@ -26,37 +26,64 @@ namespace hs {
 
 class NodeGraphNodeConnector : public INodeGraphNodeAttachment
 {
-protected:
-    enum EFlags
-    {
-        eFlags_NeedsLayoutUpdate,
-        eFlags_User
-    };
 public:
+    struct ConnectorStyle
+    {
+        ConnectorStyle();
+        he::vec2 m_ConnectorSize;
+        he::Color m_ConnectorBackgroundColor[INodeGraphNodeAttachment::eConnectorState_MAX];
+        he::Color m_ConnectorBorderColor[INodeGraphNodeAttachment::eConnectorState_MAX];
+    };
+
     NodeGraphNodeConnector();
     virtual ~NodeGraphNodeConnector();
 
+    // Style
+    void setConnectorStyle(const ConnectorStyle& style);
+    const ConnectorStyle& getConnectorStyle() const { return m_ConnectorStyle; }
+
     // INodeGraphNodeAttachment
-    virtual bool needsLayoutUpdate() const override { return (m_Flags & eFlags_NeedsLayoutUpdate) != 0; }
-    virtual void setLayoutUpdated() override { m_Flags &= ~eFlags_NeedsLayoutUpdate; }
+    virtual void setParent(NodeGraphNode* const parent) override { m_Parent = parent; }
 
     virtual ELayoutAlignment getLayoutAlignment() const override = 0;
-    virtual const he::vec4& getLayoutMargin() const override = 0;
+    virtual const he::vec4& getLayoutMargin() const override { return m_Margin; }
 
-    virtual void setBound(const he::RectF& bound) override { m_ConnectorBound = bound; }
-    virtual const he::RectF& getBound() const override { return m_ConnectorBound; }
+    virtual void setBound(const he::RectF& bound) override;
+    virtual const he::RectF& getBound() const override { return m_Bound; }
 
     virtual bool hasConnector() const override { return true; }
     virtual bool isInsideConnector(const he::vec2& worldPos) const override;
     virtual void setConnectorState(const EConnectorState state) override { m_State = state; }
     virtual EConnectorState getConnectorState() const override { return m_State; }
 
-    virtual void draw(const NodeGraphDrawContext& context) override;
+    virtual void draw(const NodeGraphDrawContext& context) override = 0;
+
+protected:
+    void setContentSize(const he::vec2& contentSize);
+    const he::vec2& getContentSize() const { return m_ContentSize; }
+
+    void setContentMargin(const he::vec4& contentMargin);
+    const he::vec4& getContentMargin() const { return m_ContentMargin; }
+
+    const he::RectF& getContentBound() const { return m_ContentBound; }
+
+    void drawConnector(const NodeGraphDrawContext& context);
+
+    NodeGraphNode* m_Parent;
 
 private:
-    he::uint8 m_Flags;
-    EConnectorState m_State : 8;
-    he::RectF m_ConnectorBound;
+    void calculateBound();
+
+    he::RectF m_Bound;
+    he::vec4 m_Margin;
+
+    he::RectF m_ContentBound;
+    he::vec2 m_ContentSize;
+    he::vec4 m_ContentMargin;
+
+    ConnectorStyle m_ConnectorStyle;
+
+    EConnectorState m_State;
 };
 
 }
