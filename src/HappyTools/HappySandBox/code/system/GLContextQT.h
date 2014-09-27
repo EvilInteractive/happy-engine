@@ -24,6 +24,8 @@
 
 #include "GLContext.h"
 
+#include <QGLContext>
+
 namespace he {
 namespace gfx {
 class Window;
@@ -32,15 +34,18 @@ class Window;
 namespace hs {
 class RenderWidget;
 
-class GLContextQT : public he::gfx::GLContext
+class GLContextQT : public he::gfx::GLContext, public QGLContext
 {
 public:
-    GLContextQT();
+    GLContextQT(const QGLFormat & format);
     ~GLContextQT() {}
     
     bool create(he::gfx::Window* const window);
     void destroy();
-    void makeCurrent();
+
+    bool create(const QGLContext * shareContext = 0) override;
+    void makeCurrent() override;
+    void doneCurrent() override;
     
     RenderWidget* getWidget() const { return m_Widget; }
 

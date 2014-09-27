@@ -21,6 +21,7 @@
 #pragma once
 
 #include "NodeGraphNodeConnector.h"
+#include "VectorText.h"
 
 namespace hs {
 
@@ -34,6 +35,8 @@ public:
     virtual ELayoutAlignment getLayoutAlignment() const override { return eLayoutAlignment_Left; }
     virtual void draw(const NodeGraphDrawContext& context) override;
 
+private:
+    he::gui::VectorText m_Text;
 };
 
 }

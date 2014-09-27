@@ -26,7 +26,7 @@
 namespace hs {
 
 NodeGraphNodeConnector::ConnectorStyle::ConnectorStyle()
-    : m_ConnectorSize(8, 8)
+    : m_ConnectorSize(16, 16)
 {
     m_ConnectorBackgroundColor[eConnectorState_Normal] = he::Color(126, 109, 95, static_cast<he::uint8>(255));
     m_ConnectorBackgroundColor[eConnectorState_Hover] = m_ConnectorBackgroundColor[eConnectorState_Normal];

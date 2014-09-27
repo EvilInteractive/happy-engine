@@ -223,4 +223,9 @@ void Canvas2D::resize()
     m_RendererGL->resize();
 }
 
+const mat44& Canvas2D::getMatrix() const
+{
+    return m_RendererGL->getMatrix();
+}
+
 }} //end namespace

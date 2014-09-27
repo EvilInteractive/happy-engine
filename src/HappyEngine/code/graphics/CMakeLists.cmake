@@ -22,6 +22,7 @@ addFilter(CODE_SRCS src/graphics/gui code/graphics/
             Font.cpp                            Font.h
             Scrollbar.cpp                       Scrollbar.h
             Text.cpp                            Text.h
+            VectorText.cpp                      VectorText.h
             TextBox.cpp                         TextBox.h
 			Sprite.cpp							Sprite.h
 			SpriteCreator.cpp					SpriteCreator.h

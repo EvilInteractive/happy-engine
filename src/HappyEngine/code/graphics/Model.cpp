@@ -83,16 +83,28 @@ ModelMesh* Model::instantiateMesh(uint32 index) const
 
 ModelMesh* Model::instantiateMesh( const he::String& name ) const
 {
-    ModelMesh* const value(tryInstantiateMesh(name));
-    HE_CONDITIONAL_ERROR(value == nullptr, "Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());
+    return instantiateMesh(name.c_str(), name.size());
+}
+
+ModelMesh* Model::instantiateMesh( const char* name, const int len /*= -1 */ ) const
+{
+    ModelMesh* const value(tryInstantiateMesh(name, len));
+    HE_CONDITIONAL_ERROR(value == nullptr, "Mesh in model (%s) not found with name %s", getName().c_str(), name);
     return value;
 }
 
 ModelMesh* Model::tryInstantiateMesh( const he::String& name ) const
 {
+    return tryInstantiateMesh(name.c_str(), name.size());
+}
+
+ModelMesh* Model::tryInstantiateMesh( const char* name, int len /*= -1*/ ) const
+{
+    len = len >= 0? len : strlen(name);
     he::PrimitiveList<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* const mesh)
     {
-        return mesh->getName() == name;
+        const he::String& meshName(mesh->getName());
+        return len == static_cast<int>(meshName.size()) && strncmp(meshName.c_str(), name, len) == 0;
     }));
 
     if (it != cend())

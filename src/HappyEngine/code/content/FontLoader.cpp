@@ -22,6 +22,10 @@
 #include "FontLoader.h"
 
 #include "ResourceFactory.h"
+#include "BinObjLoader.h"
+#include "MeshEnums.h"
+
+#include <sys/stat.h>
 
 #define FACTORY ResourceFactory<gui::Font>::getInstance()
 
@@ -87,10 +91,109 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
             LOG(LogType_ProgrammerAssert, "Error setting font size: %s", path.c_str());
             return nullptr;
         }
+        
+        gui::Font::VectorFont vectorFont;
+        // Check for vector
+        {
+            he::String modelPath(path);
+            size_t index(modelPath.rfind("."));
+            if (index != he::String::npos)
+            {
+                modelPath.resize(index + 1);
+                modelPath += "binobj";
+
+                struct stat buffer;   
+                if (stat(modelPath.c_str(), &buffer) == 0)
+                {
+                    models::BinObjLoader modelLoader;
+                    if (modelLoader.load(modelPath))
+                    {
+                        char rangeStart(CHAR_MAX);
+                        char rangeEnd(0);
+                        const size_t meshes(modelLoader.getNumMeshes());
+                        for (size_t i(0); i < meshes; ++i)
+                        {
+                            const char chr(modelLoader.getMeshName(i)[0]);
+                            rangeStart = std::min(rangeStart, chr);
+                            rangeEnd = std::max(rangeEnd, chr);
+                        }
+                        rangeEnd += 1; // not inclusive end
+
+                        const gfx::VertexLayout& layout(modelLoader.getVertexLayout());
+                        size_t posIndex(0);
+                        if (layout.getElements().find_if([](const gfx::VertexElement& el)
+                        {
+                            return el.getAttribute() == gfx::eShaderAttribute_Position;
+                        }, posIndex))
+                        {
+                            const gfx::VertexElement& el(layout.getElements()[posIndex]);
+                            const char range(rangeEnd - rangeStart);
+                            void** vertices = static_cast<void**>(he_malloc(sizeof(void*) * range));
+                            he_memset(vertices, 0, sizeof(void*) * range);
+                            void** indices = static_cast<void**>(he_malloc(sizeof(void*) * range));
+                            he_memset(indices, 0, sizeof(void*) * range);
+
+                            he_checkmem();
+                            uint16* vertexCountBuffer(static_cast<uint16*>(he_malloc(sizeof(uint16) * range)));
+                            he_memset(vertexCountBuffer, 0, sizeof(uint16) * range);
+                            uint16* indexCountBuffer(static_cast<uint16*>(he_malloc(sizeof(uint16) * range)));
+                            he_memset(indexCountBuffer, 0, sizeof(uint16) * range);
+
+                            vectorFont.m_RangeStart = rangeStart;
+                            vectorFont.m_RangeEnd = rangeEnd;
+                            vectorFont.m_Vertices = vertices;
+                            vectorFont.m_Indices = indices;
+                            vectorFont.m_VertexCount = vertexCountBuffer;
+                            vectorFont.m_IndexCount = indexCountBuffer;
+                        
+                            for (size_t i(0); i < meshes; ++i)
+                            {
+                                if (modelLoader.getIndexStride(i) == gfx::IndexStride_Byte)
+                                {
+                                    const char chr(modelLoader.getMeshName(i)[0]);
+                                    const char index(chr - rangeStart);
+
+                                    {
+                                        const char* meshVertices(static_cast<const char*>(modelLoader.getVertices(i)));
+                                        const size_t vertexCount(modelLoader.getNumVertices(i));
+                                        float* buffer(static_cast<float*>(he_malloc(vertexCount * sizeof(float) * 2)));
+                                        for (size_t v(0); v < vertexCount; ++v)
+                                        {
+                                            const float* pos(reinterpret_cast<const float*>(meshVertices + v * layout.getSize() + el.getByteOffset()));
+                                            buffer[v * 2] = pos[0];
+                                            buffer[v * 2 + 1] = pos[2];
+                                        }
+                                        vertices[index] = buffer;
+                                        vertexCountBuffer[index] = checked_numcast<uint16>(vertexCount);
+                                    }
+                                    {
+                                        const uint8* meshIndices(static_cast<const uint8*>(modelLoader.getIndices(i)));
+                                        const size_t indexCount(modelLoader.getNumIndices(i));
+                                        uint16* buffer(static_cast<uint16*>(he_malloc(indexCount * sizeof(uint16))));
+                                        for (size_t v(0); v < indexCount; ++v)
+                                        {
+                                            const uint8* ind(reinterpret_cast<const uint8*>(meshIndices + v));
+                                            buffer[v] = *ind;
+                                        }
+                                        indices[index] = buffer;
+                                        indexCountBuffer[index] = checked_numcast<uint16>(indexCount);
+                                    }
+                                }
+                                else
+                                {
+                                    HE_ERROR("VectorFont with index stride != IndexStride_Byte! : %s (%s)", modelPath.c_str(), modelLoader.getMeshName(i).c_str());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         gui::Font* const font(fontFactory->get(handle));
         font->setName(assetName);
         font->init(m_FTLibrary, face, size, options);
+        font->setVectorFont(vectorFont);
         font->setLoaded(eLoadResult_Success);
 
         m_AssetContainer.addAsset(assetName, handle);

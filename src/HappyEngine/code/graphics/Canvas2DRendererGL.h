@@ -53,6 +53,8 @@ public:
     void init();
     void resize();
 
+    const mat44& getMatrix() const { return m_OrthographicMatrix; }
+
     /* SETTERS */
     void setColor(const Color& col);
 

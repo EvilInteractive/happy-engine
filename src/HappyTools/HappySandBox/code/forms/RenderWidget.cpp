@@ -26,6 +26,7 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 #include <QMoveEvent>
+#include <QGLContext>
 
 namespace
 {
@@ -203,16 +204,13 @@ namespace
 
 namespace hs {
 
-RenderWidget::RenderWidget(QWidget *parent): QGLWidget(QGLFormat::defaultFormat(), parent, Sandbox::getInstance()->getSharedWidget())
+RenderWidget::RenderWidget(QWidget *parent): QGLWidget(NEW GLContextQT(QGLFormat::defaultFormat()), parent, Sandbox::getInstance()->getSharedWidget())
 {
-    m_Context = NEW GLContextQT();
     setAutoBufferSwap(false);
 }
 
 RenderWidget::~RenderWidget()
 {
-    delete m_Context;
-    m_Context = nullptr;
 }
 
 void RenderWidget::initializeGL()
@@ -391,7 +389,7 @@ void RenderWidget::setMousePosition( const he::vec2& /*pos*/ )
 
 he::gfx::GLContext* RenderWidget::getContext() const
 {
-    return m_Context;
+    return he::checked_cast<he::gfx::GLContext*>(context());
 }
 
 void RenderWidget::showEvent( QShowEvent* /*event*/ )

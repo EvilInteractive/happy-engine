@@ -27,7 +27,7 @@ namespace hs {
 NodeGraphNodeOutput::NodeGraphNodeOutput()
 {
     setContentMargin(he::vec4(4, 0, 4, 0));
-    setContentSize(he::vec2(rand() % 64 + 64, rand() % 64 + 16));
+    setContentSize(he::vec2(rand() % 64 + 64.0f, rand() % 64 + 16.0f));
 }
 
 NodeGraphNodeOutput::~NodeGraphNodeOutput()

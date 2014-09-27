@@ -329,9 +329,14 @@ void GraphicsEngine::setActiveContext( GLContext* context )
 {
     if (GL::s_CurrentContext != context)
     {
-        context->makeCurrent();
         GL::s_CurrentContext = context;
+        context->makeCurrent();
     }
+}
+
+GLContext* GraphicsEngine::getActiveContext() const
+{
+    return GL::s_CurrentContext;
 }
 
 GLContext* GraphicsEngine::getSharedContext() const
@@ -362,5 +367,6 @@ void GraphicsEngine::setActiveWindow( Window* window )
 {
     m_ActiveWindow = window->getHandle();
 }
+
 
 } } //end namespace

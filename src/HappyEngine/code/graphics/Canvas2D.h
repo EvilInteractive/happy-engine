@@ -59,6 +59,7 @@ public:
     /* GETTERS */
     // return render buffer data
     gfx::Canvas2DBuffer* getCanvas2DBuffer() const;
+    const mat44& getMatrix() const;
 
     // return size of canvas in pixels
     const vec2& getPosition() const;

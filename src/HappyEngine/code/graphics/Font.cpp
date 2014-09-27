@@ -49,6 +49,8 @@ Font::Font() :  m_FTLibrary(nullptr),
 
 Font::~Font()
 {
+    m_VectorFont.destroy();
+
     cairo_font_face_destroy(m_CairoFontFace);
 
     if (m_Face != 0)
@@ -56,7 +58,8 @@ Font::~Font()
         FT_Done_Face(m_Face);
     }
 
-    m_TextureAtlas->release();
+    if (m_TextureAtlas)
+        m_TextureAtlas->release();
 }
 
 /* GENERAL */
@@ -240,14 +243,13 @@ uint32 Font::getLineHeight() const
 float Font::getStringWidth(const char* buff, const int len) const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
-    HE_ASSERT(m_Cached == true, "Font must be prechached!");
 
     float width(0.0f);
     const size_t count(len == -1? strlen(buff) : len);
 
     for (uint32 i(0); i < count; ++i)
     {
-        width += m_CharTextureData[buff[i]].advance.x;
+        width += getAdvance(buff[i]);
 
         if (i < count - 1)
         {
@@ -318,6 +320,14 @@ float Font::getOffset(const char c) const
     return static_cast<float>(m_Face->glyph->metrics.horiBearingX >> 6);
 }
 
+float Font::getWidth( const char c ) const
+{
+    FT_Load_Glyph(m_Face, FT_Get_Char_Index(m_Face, c), FT_LOAD_DEFAULT);
+
+    return static_cast<float>(m_Face->glyph->metrics.width >> 6);
+}
+
+
 /* EXTRA */
 inline int Font::nextP2(int a) const
 {
@@ -331,6 +341,55 @@ inline int Font::nextP2(int a) const
     }
 
     return rval;
+}
+
+void Font::setVectorFont( const VectorFont& vectorFont )
+{
+    m_VectorFont = vectorFont;
+}
+
+
+Font::VectorFont::VectorFont()
+    : m_RangeStart(0)
+    , m_RangeEnd(0)
+    , m_Vertices(nullptr)
+    , m_Indices(nullptr)
+    , m_VertexCount(nullptr)
+    , m_IndexCount(nullptr)
+{
+
+}
+
+Font::VectorFont::~VectorFont()
+{
+
+}
+
+void Font::VectorFont::destroy()
+{
+    const size_t range(checked_numcast<size_t>(m_RangeEnd - m_RangeStart));
+    if (m_Vertices)
+    {
+        for (size_t i(0); i < range; ++i)
+        {
+            he_free(m_Vertices[i]);
+        }
+        he_free(m_Vertices);
+        m_Vertices = nullptr;
+    }
+    if (m_Indices)
+    {
+        for (size_t i(0); i < range; ++i)
+        {
+            he_free(m_Indices[i]);
+        }
+        he_free(m_Indices);
+        m_Indices = nullptr;
+    }
+    he_free(m_VertexCount);
+    m_VertexCount = nullptr;
+    he_free(m_IndexCount);
+    m_IndexCount = nullptr;
 }
 
 } } //end namespace

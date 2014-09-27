@@ -23,19 +23,39 @@
 
 namespace he {
 
-AABB AABB::calculateBoundingAABB( const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset )
+AABB AABB::calculateBoundingAABB( const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset, gfx::EShaderAttributeTypeComponents comp )
 {
     if (num < 2)
         return AABB(vec3(0, 0, 0), vec3(0, 0, 0));
-    vec3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
-         max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+    vec3 min(FLT_MAX, comp >= gfx::eShaderAttributeTypeComponents_2? FLT_MAX : 0.0f, comp >= gfx::eShaderAttributeTypeComponents_3? FLT_MAX : 0.0f);
+    vec3 max(-FLT_MAX, comp >= gfx::eShaderAttributeTypeComponents_2? -FLT_MAX : 0.0f, comp >= gfx::eShaderAttributeTypeComponents_3? -FLT_MAX : 0.0f);
 
     const char* charPointCloud = static_cast<const char*>(pointCloud);
     for(uint32 i = 0; i < num; ++i)
     {
-        const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
-        he::minPerComponent(min, p, min);
-        he::maxPerComponent(max, p, max);
+        switch (comp)
+        {
+        case he::gfx::eShaderAttributeTypeComponents_1:
+            {
+                const float& p(*reinterpret_cast<const float*>(charPointCloud + stride * i + posOffset));
+                min.x = std::min(min.x, p);
+                max.x = std::max(max.x, p);
+            } break;
+        case he::gfx::eShaderAttributeTypeComponents_2:
+            {
+                const vec3 p(*reinterpret_cast<const vec2*>(charPointCloud + stride * i + posOffset), 0);
+                he::minPerComponent(min, p, min);
+                he::maxPerComponent(max, p, max);
+            } break;
+        case he::gfx::eShaderAttributeTypeComponents_3:
+            {
+                const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
+                he::minPerComponent(min, p, min);
+                he::maxPerComponent(max, p, max);
+            } break;
+        default:
+            break;
+        }
     }
 
     return AABB(min, max);

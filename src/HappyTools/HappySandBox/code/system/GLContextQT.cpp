@@ -30,8 +30,9 @@
 
 namespace hs {
 
-GLContextQT::GLContextQT()
-    : m_Widget(nullptr)
+GLContextQT::GLContextQT(const QGLFormat& format)
+    : QGLContext(format)
+    , m_Widget(nullptr)
 {
 }
 
@@ -41,7 +42,15 @@ bool GLContextQT::create(he::gfx::Window* const window)
     m_Widget = he::checked_cast<RenderWidget*>(window);
     return GLContext::create(window);
 }
-    
+
+bool GLContextQT::create( const QGLContext * shareContext /*= 0*/ )
+{
+    bool result(QGLContext::create(shareContext));
+    makeCurrent();
+    return result;
+}
+
+
 void GLContextQT::destroy()
 {
     if (m_Widget != nullptr)
@@ -53,7 +62,15 @@ void GLContextQT::destroy()
     
 void GLContextQT::makeCurrent()
 {
-    m_Widget->makeCurrent();
+    if (GRAPHICS->getActiveContext() != this)
+        GRAPHICS->setActiveContext(this);
+    else
+        QGLContext::makeCurrent();
+}
+
+void GLContextQT::doneCurrent()
+{
+    QGLContext::doneCurrent();
 }
 
 } //end namespace

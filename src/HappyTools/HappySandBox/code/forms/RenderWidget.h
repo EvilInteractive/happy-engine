@@ -83,9 +83,7 @@ private:
 
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
-
-    GLContextQT* m_Context;
-
+    
     //Disable default copy constructor and default assignment operator
     RenderWidget(const RenderWidget&);
     RenderWidget& operator=(const RenderWidget&);

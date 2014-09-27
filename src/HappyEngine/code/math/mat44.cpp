@@ -55,6 +55,7 @@ m_Matrix(physx::PxVec4(_00, _10, _20, _30),
          physx::PxVec4(_03, _13, _23, _33))
 {
 }
+
 mat44::~mat44()
 {
 }

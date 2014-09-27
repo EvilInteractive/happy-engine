@@ -93,6 +93,7 @@ public:
     
     /* GETTERS */
     ObjectHandle getActiveWindow() const { return m_ActiveWindow; }
+    GLContext* getActiveContext() const;
     const he::ObjectList<ObjectHandle>& getAllWindows() const { return m_Windows; }
     const he::PrimitiveList<GLContext*>& getContexts() const { return m_Contexts; } 
 

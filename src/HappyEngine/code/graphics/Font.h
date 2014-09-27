@@ -42,6 +42,23 @@ class Font : public Resource<Font>
 {
 public:
 
+    struct VectorFont
+    {
+        VectorFont();
+        ~VectorFont();
+
+        void destroy();
+
+        char m_RangeStart;
+        char m_RangeEnd;
+
+        void** m_Vertices;
+        void** m_Indices;
+
+        uint16* m_VertexCount;
+        uint16* m_IndexCount;
+    };
+
     struct CharData
     {
         RectF textureRegion;
@@ -62,6 +79,9 @@ public:
     /* GENERAL */
     void init(FT_Library lib, FT_Face face, uint16 size, uint8 options = 0);
     void preCache(bool extendedCharacters = false);
+
+    void setVectorFont(const VectorFont& vectorFont);
+    const VectorFont& getVectorFont() const { return m_VectorFont; }
 
     /* GETTERS */
     uint32 getPixelHeight() const;
@@ -94,6 +114,7 @@ public:
     uint32 getGlyphIndex(const char c) const;
     float getAdvance(const char c) const;
     float getOffset(const char c) const;
+    float getWidth(const char c) const;
 
     /* SETTERS */
 
@@ -109,12 +130,13 @@ private:
     uint16 m_CharSize;
     uint32 m_LineHeight;
 
+    bool m_Init;
     bool m_Cached;
     bool m_ExtendedChars;
     gfx::Texture2D* m_TextureAtlas;
     PrimitiveList<CharData> m_CharTextureData;
-
-    bool m_Init;
+    
+    VectorFont m_VectorFont;
 
     // needed for rendering with cairo to sprites
     cairo_font_face_t* m_CairoFontFace;

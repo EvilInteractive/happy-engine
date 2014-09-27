@@ -66,14 +66,16 @@ void ModelMesh::setVertices(const void* const vertices, const uint32 num, const 
     if (calcBound == true)
     {
         uint32 posOffset = UINT32_MAX;
+        EShaderAttributeTypeComponents comp(eShaderAttributeTypeComponents_2);
         std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const VertexElement& e)
         {
             if (e.getAttribute() == gfx::eShaderAttribute_Position)
             {
                 posOffset = e.getByteOffset();
+                comp = e.getComponents();
             }
         });
-        m_Bound.fromAABB(AABB::calculateBoundingAABB(vertices, num, m_VertexLayout.getSize(), posOffset));
+        m_Bound.fromAABB(AABB::calculateBoundingAABB(vertices, num, m_VertexLayout.getSize(), posOffset, comp));
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);

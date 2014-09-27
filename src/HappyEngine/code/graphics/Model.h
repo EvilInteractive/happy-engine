@@ -46,8 +46,10 @@ public:
     ModelMesh* getMesh(const uint32 index) const;
     ModelMesh* instantiateMesh(uint32 index) const;
     ModelMesh* instantiateMesh(const he::String& name) const;
+    ModelMesh* instantiateMesh(const char* name, const int len = -1 ) const;
 
 
+    ModelMesh* tryInstantiateMesh(const char* name, const int len = -1 ) const;
     ModelMesh* tryInstantiateMesh(const he::String& name) const;
     Model* instantiateMeshesWithPrefix(const he::String& prefix) const;
 

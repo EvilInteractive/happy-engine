@@ -22,6 +22,8 @@
 #define _HE_AABB_H_
 #pragma once
 
+#include "ShaderEnums.h"
+
 namespace he {
     
 class AABB
@@ -90,7 +92,7 @@ public:
                 m_BottomBackRight.z >= other.z);
     }
 
-    static AABB calculateBoundingAABB(const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset);
+    static AABB calculateBoundingAABB(const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset, gfx::EShaderAttributeTypeComponents comp);
 
     void generateVertices(he::PrimitiveList<vec3>& outBuffer) const;
     void generateIndices(he::PrimitiveList<uint32>& outBuffer, uint32 offset) const;
