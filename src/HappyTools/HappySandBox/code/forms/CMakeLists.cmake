@@ -6,7 +6,7 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/forms code/forms/
         Resources.qrc
     )
 
-addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/nodeGraph code/forms/
+addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/nodeGraph code/forms/nodegraph/
         NodeGraph.cpp                   NodeGraph.h
         NodeGraphNode.cpp               NodeGraphNode.h
         NodeGraphEnums.h

@@ -20,7 +20,7 @@
 #define _HS_NODEGRAPH_H_
 #pragma once
 
-#include "RenderWidget.h"
+#include "forms/RenderWidget.h"
 
 #include <IDrawable2D.h>
 #include <ITickable.h>

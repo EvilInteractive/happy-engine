@@ -1,7 +1,7 @@
 #ifndef MaterialGraph_H
 #define MaterialGraph_H
 
-#include "forms/NodeGraph.h"
+#include "forms/nodegraph/NodeGraph.h"
 
 namespace Ui {
     class MaterialGraph;
