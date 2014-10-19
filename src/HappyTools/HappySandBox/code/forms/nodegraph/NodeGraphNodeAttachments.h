@@ -16,28 +16,12 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef _HS_NODEGRAPHNODEDECORATION_H_
-#define _HS_NODEGRAPHNODEDECORATION_H_
+#ifndef _HS_NODEGRAPHNODEATTACHMENTS_H_
+#define _HS_NODEGRAPHNODEATTACHMENTS_H_
 #pragma once
 
-#include "INodeGraphNodeAttachment.h"
-
 namespace hs {
-
-    class NodeGraphNodeDecoration : public INodeGraphNodeAttachment
-    {
-    public:
-        NodeGraphNodeDecoration();
-        virtual ~NodeGraphNodeDecoration();
-
-        // INodeGraphNodeAttachment
-        virtual ELayoutAlignment getLayoutAlignment() const override { return eLayoutAlignment_Center; }
-        virtual const he::vec4& getLayoutMargin() const override = 0;
-        virtual const he::RectF& getBound() const override;
-
-        virtual void draw(const NodeGraphDrawContext& context) override;
-
-    };
+    
 }
 
 #endif

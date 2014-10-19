@@ -10,6 +10,7 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
 # include + HappyEngine
 include (${HappyEngine_SOURCE_DIR}/HappyEngine/code/CIncludeLists.cmake)
 include_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/code)
+include_directories (${HappyEngine_SOURCE_DIR}/HappyMessageBox/include)
 link_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/bin)
 
 # include + link 3thParth
@@ -27,6 +28,7 @@ LinkThirdParty(HappyPluginLoader)
 
 # link HappyEngine
 target_link_libraries(HappyPluginLoader HappyEngine)
+target_link_libraries(HappyPluginLoader HappyMessageBox)
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)

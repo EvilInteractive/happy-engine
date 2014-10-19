@@ -92,6 +92,18 @@ void Canvas2DRendererGL::setColor(const Color& col)
         m_Color = col;
     }
 }
+
+void Canvas2DRendererGL::setClipRect( const he::RectI& rect )
+{
+    GL::heScissorEnabled(true);
+    GL::heScissorRect(rect);
+}
+
+void Canvas2DRendererGL::resetClipRect()
+{
+    GL::heScissorEnabled(false);
+}
+
 int atoix(char chr)
 {
     int result(chr - 48);

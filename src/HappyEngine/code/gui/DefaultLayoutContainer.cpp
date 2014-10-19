@@ -15,27 +15,38 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
+//Author:  Bastian Damman
+//Created: 2014/10/19
+#include "HappyPCH.h"
+#include "DefaultLayoutContainer.h"
 
-#ifndef _HS_NODEGRAPHNODEOUTPUT_H_
-#define _HS_NODEGRAPHNODEOUTPUT_H_
-#pragma once
+namespace he {
+namespace gui {
 
-#include "NodeGraphNodeConnector.h"
-
-namespace hs {
-
-class NodeGraphNodeOutput : public NodeGraphNodeConnector
+DefaultLayoutContainer::DefaultLayoutContainer()
+    : m_Margin(0, 0, 0, 0)
 {
-public:
-    NodeGraphNodeOutput();
-    virtual ~NodeGraphNodeOutput();
-
-    // INodeGraphNodeAttachment
-    virtual ELayoutAlignment getLayoutAlignment() const override { return eLayoutAlignment_Right; }
-    virtual void draw(const NodeGraphDrawContext& context) override;
-
-};
 
 }
 
-#endif
+DefaultLayoutContainer::~DefaultLayoutContainer()
+{
+
+}
+
+void DefaultLayoutContainer::setLayoutMargin( const he::vec4& margin )
+{
+    if (m_Margin != margin)
+    {
+        m_Margin = margin;
+        setLayoutDirty();
+    }
+}
+
+void DefaultLayoutContainer::requestLayoutUpdate()
+{
+    setLayoutDirty();
+}
+
+
+} } //end namespace

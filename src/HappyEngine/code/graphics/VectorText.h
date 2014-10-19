@@ -57,7 +57,8 @@ public:
     void create(Font* font, HAlignment halign, VAlignment valign, const he::String& text);
     void setScale(const float scale) { m_Scale = scale; }
     void setPostion(const he::vec2& pos) { m_Position = pos; }
-    he::vec2 getSize();
+
+    he::RectF getBound() const;
 
     /* DRAW */
     void draw2D(he::gui::Canvas2D* canvas, const he::mat33& transform);

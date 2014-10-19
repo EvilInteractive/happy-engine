@@ -35,6 +35,7 @@
 #include <Text.h>
 #include <ContentManager.h>
 #include <GlobalSettings.h>
+#include <HappyMessageBox.h>
 
 namespace ht {
 
@@ -84,27 +85,56 @@ void MainGame::init()
     entityMan->init();
 
     m_PluginLoader = NEW he::pl::PluginLoader();
-    m_Plugin = m_PluginLoader->loadPlugin(he::Path::getBinPath(), "HappyPluginTest");
-    if (m_Plugin != nullptr)
+
+    char* plugins[2] = 
     {
-        m_Plugin->init(m_Window, he::RectF(0, 0, 1.0f, 1.0f));
-        m_Plugin->onLoadLevel(he::Path(""));
+        "HappyPluginTest",
+        "HappyPlugin2DTest"
+    };
+
+    he::HappyMessageBox::Button msgResult(
+        he::HappyMessageBox::showExt("Choose plugin", "Please select your plugin", he::HappyMessageBox::Icon_Info, plugins[0], plugins[1], "Cancel"));
+
+    const char* chosenPlugin(nullptr);
+    switch (msgResult)
+    {
+    case he::HappyMessageBox::Button_Button1:
+        chosenPlugin = plugins[0];
+        break;
+    case he::HappyMessageBox::Button_Button2:
+        chosenPlugin = plugins[1];
+        break;
+    default:
+        break;
+    }
+    if (chosenPlugin)
+    {
+        m_Plugin = m_PluginLoader->loadPlugin(he::Path::getBinPath(), chosenPlugin);
+        if (m_Plugin != nullptr)
+        {
+            m_Plugin->init(m_Window, he::RectF(0, 0, 1.0f, 1.0f));
+            m_Plugin->onLoadLevel(he::Path(""));
         
-        m_View = graphicsEngine->createView();
-        m_View->setWindow(m_Window);
-        m_DebugRenderer = NEW he::gfx::Renderer2D();
-        m_View->addRenderPlugin(m_DebugRenderer);
-        m_View->init(cameraSettings);
-        m_View->setCamera(m_Plugin->getActiveCamera());
+            m_View = graphicsEngine->createView();
+            m_View->setWindow(m_Window);
+            m_DebugRenderer = NEW he::gfx::Renderer2D();
+            m_View->addRenderPlugin(m_DebugRenderer);
+            m_View->init(cameraSettings);
+            m_View->setCamera(m_Plugin->getActiveCamera());
         
-        PROFILER->attachToRenderer(m_DebugRenderer);
-        CONSOLE->attachToRenderer(m_DebugRenderer);
-        m_FpsGraph = NEW he::tools::FPSGraph(oculus? 3.0f : 1.0f);
-        m_FpsGraph->setPos(he::vec2(5, 5));
-        m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);
-        addToTickList(m_FpsGraph);
-        m_DebugRenderer->attachToRender(m_FpsGraph);
-        m_DebugRenderer->attachToRender(this);
+            PROFILER->attachToRenderer(m_DebugRenderer);
+            CONSOLE->attachToRenderer(m_DebugRenderer);
+            m_FpsGraph = NEW he::tools::FPSGraph(oculus? 3.0f : 1.0f);
+            m_FpsGraph->setPos(he::vec2(5, 5));
+            m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);
+            addToTickList(m_FpsGraph);
+            m_DebugRenderer->attachToRender(m_FpsGraph);
+            m_DebugRenderer->attachToRender(this);
+        }
+        else
+        {
+            HAPPYENGINE->quit();
+        }
     }
     else
     {

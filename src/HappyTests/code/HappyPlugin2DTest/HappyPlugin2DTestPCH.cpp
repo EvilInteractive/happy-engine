@@ -15,34 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include "HappySandBoxPCH.h"
-#include "NodeGraphNodeOutput.h"
+//Author:  Bastian Damman
+//Created: 2014/10/19
+#include "HappyPlugin2DTestPCH.h" 
 
-#include "NodeGraphEnums.h"
-
-#include <Canvas2D.h>
-
-namespace hs {
-
-NodeGraphNodeOutput::NodeGraphNodeOutput()
-{
-    setContentMargin(he::vec4(4, 0, 4, 0));
-    setContentSize(he::vec2(rand() % 64 + 64.0f, rand() % 64 + 16.0f));
-}
-
-NodeGraphNodeOutput::~NodeGraphNodeOutput()
-{
-
-}
-
-void NodeGraphNodeOutput::draw(const NodeGraphDrawContext& context)
-{
-    he::RectF contentBound(getContentBound().transform(context.transform));
-    context.canvas->setColor(he::Color(50, 200, 50, static_cast<he::uint8>(255)));
-    context.canvas->fillRect(he::RectI(contentBound));
-
-    drawConnector(context);
-}
-
-} //end namespace
 

@@ -20,8 +20,6 @@
 
 #include "NodeGraphEnums.h"
 #include "NodeGraphNode.h"
-#include "NodeGraphNodeInput.h"
-#include "NodeGraphNodeOutput.h"
 
 #include <ContentManager.h>
 #include <Canvas2D.h>
@@ -142,19 +140,19 @@ void NodeGraph::updateZoom( const float /*dTime*/ )
 
 void NodeGraph::createNode(const he::vec2& pos)
 {
-    const size_t inputs(rand() % 5 + 1);
-    const size_t outputs(rand() % 5 + 1);
+//    const size_t inputs(rand() % 5 + 1);
+    //const size_t outputs(rand() % 5 + 1);
 
     NodeGraphNode* node(NEW NodeGraphNode());
     node->setPosition(pos);
-    for (size_t i(0); i < inputs; ++i)
-    {
-        node->addInput(NEW NodeGraphNodeInput());
-    }
-    for (size_t i(0); i < outputs; ++i)
-    {
-        node->addOutput(NEW NodeGraphNodeOutput());
-    }
+//     for (size_t i(0); i < inputs; ++i)
+//     {
+//         node->addInput(NEW NodeGraphNodeInput());
+//     }
+//     for (size_t i(0); i < outputs; ++i)
+//     {
+//         node->addOutput(NEW NodeGraphNodeOutput());
+//     }
     m_Nodes.add(node);
 }
 

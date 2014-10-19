@@ -57,6 +57,8 @@ public:
 
     /* SETTERS */
     void setColor(const Color& col);
+    void setClipRect(const he::RectI& rect);
+    void resetClipRect();
 
     /* DRAW */
     void fillText(const he::gui::Text& text, const vec2& pos);
@@ -107,6 +109,7 @@ private:
     mat44 m_OrthographicMatrix;
 
     Color m_Color;
+    RectI m_ClipRect;
 
     Canvas2DBuffer* m_CanvasBuffer;
 

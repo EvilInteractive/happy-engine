@@ -228,4 +228,16 @@ const mat44& Canvas2D::getMatrix() const
     return m_RendererGL->getMatrix();
 }
 
+void Canvas2D::setClipRect( const he::RectI& rect )
+{
+    RectI trect(rect);
+    trect.y = static_cast<int>(m_Size.y) - trect.y - rect.height;
+    m_RendererGL->setClipRect(trect);
+}
+
+void Canvas2D::resetClipRect()
+{
+    m_RendererGL->resetClipRect();
+}
+
 }} //end namespace

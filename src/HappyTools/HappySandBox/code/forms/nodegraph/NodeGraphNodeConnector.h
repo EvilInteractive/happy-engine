@@ -20,19 +20,27 @@
 #define _HS_NODEGRAPHNODECONNECTOR_H_
 #pragma once
 
-#include "INodeGraphNodeAttachment.h"
+#include "NodeGraphNodeAttachment.h"
 
 namespace hs {
 
-class NodeGraphNodeConnector : public INodeGraphNodeAttachment
+class NodeGraphNodeConnector
 {
 public:
+    enum EConnectorState
+    {
+        eConnectorState_Normal,
+        eConnectorState_Hover,
+        eConnectorState_Selected,
+
+        eConnectorState_MAX
+    };
     struct ConnectorStyle
     {
         ConnectorStyle();
         he::vec2 m_ConnectorSize;
-        he::Color m_ConnectorBackgroundColor[INodeGraphNodeAttachment::eConnectorState_MAX];
-        he::Color m_ConnectorBorderColor[INodeGraphNodeAttachment::eConnectorState_MAX];
+        he::Color m_ConnectorBackgroundColor[eConnectorState_MAX];
+        he::Color m_ConnectorBorderColor[eConnectorState_MAX];
     };
 
     NodeGraphNodeConnector();
@@ -42,19 +50,6 @@ public:
     void setConnectorStyle(const ConnectorStyle& style);
     const ConnectorStyle& getConnectorStyle() const { return m_ConnectorStyle; }
 
-    // INodeGraphNodeAttachment
-    virtual void setParent(NodeGraphNode* const parent) override { m_Parent = parent; }
-
-    virtual ELayoutAlignment getLayoutAlignment() const override = 0;
-    virtual const he::vec4& getLayoutMargin() const override { return m_Margin; }
-
-    virtual void setBound(const he::RectF& bound) override;
-    virtual const he::RectF& getBound() const override { return m_Bound; }
-
-    virtual bool hasConnector() const override { return true; }
-    virtual bool isInsideConnector(const he::vec2& worldPos) const override;
-    virtual void setConnectorState(const EConnectorState state) override { m_State = state; }
-    virtual EConnectorState getConnectorState() const override { return m_State; }
 
     virtual void draw(const NodeGraphDrawContext& context) override = 0;
 

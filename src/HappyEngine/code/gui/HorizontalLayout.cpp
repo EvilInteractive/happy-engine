@@ -15,10 +15,22 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include "HappySandBoxPCH.h"
-#include "NodeGraphNodeDecoration.h"
+//Author:  
+//Created: //
+#include "HappyPCH.h" 
 
-namespace hs {
+#include "HorizontalLayout.h"
 
-} //end namespace
+namespace he {
+namespace gui {
 
+HorizontalLayout::HorizontalLayout()
+{
+}
+
+
+HorizontalLayout::~HorizontalLayout()
+{
+}
+
+} } //end namespace

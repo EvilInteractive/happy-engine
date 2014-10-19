@@ -16,27 +16,28 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef _HS_NODEGRAPHNODEINPUT_H_
-#define _HS_NODEGRAPHNODEINPUT_H_
+#ifndef _HS_NODEGRAPHNODEATTACHMENT_H_
+#define _HS_NODEGRAPHNODEATTACHMENT_H_
 #pragma once
 
-#include "NodeGraphNodeConnector.h"
-#include "VectorText.h"
+namespace he {
+    struct RectF;
+}
 
 namespace hs {
-
-class NodeGraphNodeInput : public NodeGraphNodeConnector
+struct NodeGraphDrawContext;
+class NodeGraphNode;
+class NodeGraphNodeConnector;
+class NodeGraphNodeAttachment : public he::gui::ILayoutable
 {
 public:
-    NodeGraphNodeInput();
-    virtual ~NodeGraphNodeInput();
+    virtual ~NodeGraphNodeAttachment() {}
 
-    // INodeGraphNodeAttachment
-    virtual ELayoutAlignment getLayoutAlignment() const override { return eLayoutAlignment_Left; }
-    virtual void draw(const NodeGraphDrawContext& context) override;
-
-private:
-    he::gui::VectorText m_Text;
+    // Connector
+    virtual NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) const = 0;
+    
+    // Draw
+    virtual void draw(const NodeGraphDrawContext& context) = 0;
 };
 
 }

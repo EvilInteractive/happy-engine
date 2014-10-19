@@ -20,11 +20,13 @@
 #define _HS_NODEGRAPHNODE_H_
 #pragma once
 
+#include <GridLayout.h>
+
 namespace hs {
 class NodeGraphNodeOutput;
 class NodeGraphNodeInput;
 class NodeGraphNodeDecoration;
-class INodeGraphNodeAttachment;
+class NodeGraphNodeAttachment;
 struct NodeGraphDrawContext;
 
 class NodeGraphNode
@@ -54,11 +56,12 @@ public:
     void setStyle(const Style& style);
 
     // Attachments
-    void addOutput(NodeGraphNodeOutput* output);
-    void addInput(NodeGraphNodeInput* input);
-    void addDecoration(NodeGraphNodeDecoration* deco);
+    void addOutput(NodeGraphNodeAttachment* output);
+    void addInput(NodeGraphNodeAttachment* input);
+    void addDecoration(NodeGraphNodeAttachment* deco);
 
-    void setLayoutDirty() { m_LayoutDirty = true; }
+    void create();
+    void destroy();
 
     // State
     bool isInside(const he::vec2& worldPos);
@@ -74,25 +77,20 @@ public:
 
 private:
     // Attachments
-    void addAttachment(INodeGraphNodeAttachment* att);
-
-    // State
-    void updateLayout();
+    void addAttachment(NodeGraphNodeAttachment* att);
 
     // Draw
     void drawNodeBackground(const NodeGraphDrawContext& context);
-    void drawAttachment(const NodeGraphDrawContext& context, INodeGraphNodeAttachment* attachment);
+    void drawAttachment(const NodeGraphDrawContext& context, NodeGraphNodeAttachment* attachment);
 
     // Members
     EState m_State;
-    bool m_LayoutDirty;
 
-    he::RectF m_Bound;
     Style m_Style;
 
-    he::PrimitiveList<INodeGraphNodeAttachment*> m_Attachments;
-    he::PrimitiveList<NodeGraphNodeOutput*> m_Outputs;
-    he::PrimitiveList<NodeGraphNodeInput*> m_Inputs;
+    he::PrimitiveList<NodeGraphNodeAttachment*> m_Attachments;
+    
+    he::gui::GridLayout m_Layout;
 
     NodeGraphNode(const NodeGraphNode&);
     NodeGraphNode& operator=(const NodeGraphNode&);

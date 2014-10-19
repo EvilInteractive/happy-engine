@@ -166,9 +166,16 @@ void VectorText::draw2D( he::gui::Canvas2D* canvas, const he::mat33& transform )
     m_Text->draw();
 }
 
-he::vec2 VectorText::getSize()
+he::RectF VectorText::getBound() const
 {
-    return he::vec2(m_Text->getBound().getAABB().getBottomBackRight().xy() - m_Text->getBound().getAABB().getTopFrontLeft().xy()) * m_Scale;
+    he::RectF bound;
+    const he::AABB& meshBound(m_Text->getBound().getAABB());
+    bound.x = meshBound.getTopFrontLeft().x * m_Scale + m_Position.x;
+    bound.y = meshBound.getTopFrontLeft().y * m_Scale + m_Position.y;
+    bound.width = (meshBound.getBottomBackRight().x - meshBound.getTopFrontLeft().x) * m_Scale;
+    bound.height = (meshBound.getBottomBackRight().y - meshBound.getTopFrontLeft().y) * m_Scale;
+
+    return bound;
 }
 
 } }

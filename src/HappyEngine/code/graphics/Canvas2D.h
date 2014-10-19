@@ -71,6 +71,8 @@ public:
     void setSize(const vec2& size);
 
     void setColor(const Color& color);
+    void setClipRect(const he::RectI& rect);
+    void resetClipRect();
 
     /* DRAW */
     // clear buffer to rgba(0,0,0,0)
