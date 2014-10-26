@@ -352,13 +352,13 @@ void GridLayout::performLayout()
     calculateRowHeights(rowData);
     calculateColumnWidths(columnData);
 
-    float y(m_Margin.y);
+    float y(m_LayoutBound.y + m_Margin.y);
     for (uint8 r(0); r < m_Rows; ++r)
     {
         const LayoutData& rData(rowData[r]);
         const float height(rData.size);
         float width(0.0f);
-        float x(m_Margin.x);
+        float x(m_LayoutBound.x + m_Margin.x);
         for (uint8 c(0); c < m_Columns; ++c)
         {
             const LayoutData& cData(columnData[c]);

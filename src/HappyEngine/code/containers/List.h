@@ -51,7 +51,7 @@ public:
     inline void resize(const size_t size);
     inline void trim();
 
-    inline void remove(const T& element); // O(n)
+    inline bool remove(const T& element); // O(n)
     inline void removeAt(const size_t index); // O(1)
     inline void orderedRemove(const T& element); // O(n)
     inline void orderedRemoveAt(const size_t index); // memmove
@@ -272,14 +272,16 @@ void he::List<T, Allocator>::pop()
 }
 
 template<typename T, typename Allocator> inline
-void he::List<T, Allocator>::remove( const T& element )
+bool he::List<T, Allocator>::remove( const T& element )
 {
     HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     size_t index(0);
     if (find(element, index))
     {
         removeAt(index);
+        return true;
     }
+    return false;
 }
 template<typename T, typename Allocator> inline
 void he::List<T, Allocator>::removeAt( const size_t index )

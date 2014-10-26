@@ -38,6 +38,8 @@ void ColouredRect::draw2D( he::gui::Canvas2D* canvas )
 {
     he::RectI clipRect(m_LayoutClipBound);
     canvas->setClipRect(clipRect);
+    canvas->setColor(m_BackgroundColor);
+    canvas->fillRect(clipRect);
     canvas->setColor(he::Color(0.4f, 0.0f, 0.0f));
     canvas->drawLine(
         he::vec2(m_LayoutClipBound.x, m_LayoutClipBound.y + m_LayoutClipBound.height - 1), 

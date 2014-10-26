@@ -133,7 +133,6 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                             void** indices = static_cast<void**>(he_malloc(sizeof(void*) * range));
                             he_memset(indices, 0, sizeof(void*) * range);
 
-                            he_checkmem();
                             uint16* vertexCountBuffer(static_cast<uint16*>(he_malloc(sizeof(uint16) * range)));
                             he_memset(vertexCountBuffer, 0, sizeof(uint16) * range);
                             uint16* indexCountBuffer(static_cast<uint16*>(he_malloc(sizeof(uint16) * range)));
@@ -150,7 +149,13 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                             {
                                 if (modelLoader.getIndexStride(i) == gfx::IndexStride_Byte)
                                 {
-                                    const char chr(modelLoader.getMeshName(i)[0]);
+                                    const he::String& name(modelLoader.getMeshName(i));
+                                    char chr(name[0]);
+                                    if (chr == '_')
+                                    {
+                                        if (name.size() == 2) // some things are prefixed _
+                                            chr = name[1];
+                                    }
                                     const char index(chr - rangeStart);
 
                                     {
@@ -163,6 +168,7 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                                             buffer[v * 2] = pos[0];
                                             buffer[v * 2 + 1] = pos[2];
                                         }
+                                        HE_ASSERT(vertices[index] == nullptr, "Already mesh @index %d --leak", index);
                                         vertices[index] = buffer;
                                         vertexCountBuffer[index] = checked_numcast<uint16>(vertexCount);
                                     }
@@ -175,6 +181,7 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                                             const uint8* ind(reinterpret_cast<const uint8*>(meshIndices + v));
                                             buffer[v] = *ind;
                                         }
+                                        HE_ASSERT(indices[index] == nullptr, "Already mesh @index %d --leak", index);
                                         indices[index] = buffer;
                                         indexCountBuffer[index] = checked_numcast<uint16>(indexCount);
                                     }

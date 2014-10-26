@@ -64,6 +64,12 @@ bool RectF::isInside( const he::vec2& pos ) const
         pos.y >= y && pos.y < y + height;
 }
 
+void RectF::move( const he::vec2& move )
+{
+    x += move.x;
+    y += move.y;
+}
+
 RectI::RectI(): x(0), y(0), width(0), height(0)
 {
 }

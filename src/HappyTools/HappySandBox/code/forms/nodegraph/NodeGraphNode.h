@@ -20,14 +20,20 @@
 #define _HS_NODEGRAPHNODE_H_
 #pragma once
 
-#include <GridLayout.h>
+#include <VerticalLayout.h>
+
+namespace he {
+namespace gfx
+{
+    class Texture2D;
+}
+}
+
 
 namespace hs {
-class NodeGraphNodeOutput;
-class NodeGraphNodeInput;
-class NodeGraphNodeDecoration;
 class NodeGraphNodeAttachment;
 struct NodeGraphDrawContext;
+class NodeGraphNodeConnector;
 
 class NodeGraphNode
 {
@@ -43,42 +49,41 @@ public:
     struct Style
     {
         Style();
-        he::Color m_Border[eState_MAX];
-        he::Color m_Background[eState_MAX];
+        const he::gfx::Texture2D* m_NinePatchTextureBackground[eState_MAX];
         he::Color m_Title[eState_MAX];
         float m_TitleSize;
-        he::vec4 m_BackgroundMargin;
+
+        static Style s_DefaultStyle;
+
+        static void sdmInit();
+        static void sdmDestroy();
     };
     NodeGraphNode();
     ~NodeGraphNode();
 
     // Style
-    void setStyle(const Style& style);
+    void setStyle(const Style* style); // Does not take ownership
 
     // Attachments
-    void addOutput(NodeGraphNodeAttachment* output);
-    void addInput(NodeGraphNodeAttachment* input);
-    void addDecoration(NodeGraphNodeAttachment* deco);
-
-    void create();
-    void destroy();
-
+    void startEdit();
+    void endEdit();
+    void addAttachment(NodeGraphNodeAttachment* att);
+    
     // State
     bool isInside(const he::vec2& worldPos);
+    NodeGraphNodeConnector* pickConnector(const he::vec2& worldPos);
 
     void setState(const EState state) { m_State = state; }
     EState getState() const { return m_State; }
 
-    void setPosition(const he::vec2& position);
-    he::vec2 getPosition() const;
+    void move(const he::vec2& worldDelta);
+
+    void setTitle(const char* title);
 
     // Draw
     void draw(const NodeGraphDrawContext& context);
 
 private:
-    // Attachments
-    void addAttachment(NodeGraphNodeAttachment* att);
-
     // Draw
     void drawNodeBackground(const NodeGraphDrawContext& context);
     void drawAttachment(const NodeGraphDrawContext& context, NodeGraphNodeAttachment* attachment);
@@ -86,11 +91,13 @@ private:
     // Members
     EState m_State;
 
-    Style m_Style;
+    const Style* m_Style;
 
     he::PrimitiveList<NodeGraphNodeAttachment*> m_Attachments;
     
-    he::gui::GridLayout m_Layout;
+    he::gui::VerticalLayout m_Layout;
+    he::gui::Text m_Title;
+    he::vec2 m_Position;
 
     NodeGraphNode(const NodeGraphNode&);
     NodeGraphNode& operator=(const NodeGraphNode&);

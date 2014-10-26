@@ -14,6 +14,7 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/nodeGraph code/forms/nodegraph/
         NodeGraphNodeAttachment.cpp     NodeGraphNodeAttachment.h
         NodeGraphNodeAttachments.cpp    NodeGraphNodeAttachments.h
         
+        NodeGraphNodeConnector.cpp      NodeGraphNodeConnector.h
     )
 addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/entity code/forms/
         EntityPropertiesForm.cpp        EntityPropertiesForm.h          EntityPropertiesForm.ui

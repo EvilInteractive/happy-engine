@@ -23,6 +23,7 @@
 #pragma once
 
 #include "IDrawable2D.h"
+#include "DefaultLayoutable.h"
 
 namespace he {
 namespace gfx {
@@ -59,6 +60,7 @@ public:
     void setPostion(const he::vec2& pos) { m_Position = pos; }
 
     he::RectF getBound() const;
+    he::RectF getLineBound() const;
 
     /* DRAW */
     void draw2D(he::gui::Canvas2D* canvas, const he::mat33& transform);
@@ -73,6 +75,22 @@ private:
     /* HIDE DEFAULT COPY & ASSIGNMENT */
     VectorText(const VectorText& text);
     VectorText& operator=(const VectorText& text);
+};
+
+class HAPPY_ENTRY LayoutableVectorText : public he::gui::DefaultLayoutable
+{
+public:
+    LayoutableVectorText();
+    ~LayoutableVectorText();
+
+    /* GENERAL */
+    void create(Font* const font, const float size, const he::String& text);
+
+    /* DRAW */
+    void draw2D(he::gui::Canvas2D* canvas, const he::mat33& transform);
+
+public:
+    VectorText m_Text;
 };
 
 } } //end namespace

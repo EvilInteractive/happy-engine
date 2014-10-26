@@ -87,6 +87,7 @@ void ht::HappyPlugin2DTestMain::onLoadLevel( const he::Path& /*path*/ )
     srand(static_cast<unsigned int>(time(0)));
     m_Grid.suspendLayout();
     m_GridInGrid.suspendLayout();
+    m_OrientedLayout.suspendLayout();
 
     m_Grid.initGrid(4, 5);
     m_Grid.setColumnWidth(2, 128.0f);
@@ -94,11 +95,11 @@ void ht::HappyPlugin2DTestMain::onLoadLevel( const he::Path& /*path*/ )
     m_Grid.setLayoutBound(he::RectF(m_View->getViewport()));
 
     m_GridInGrid.initGrid(3, 3);
-    m_GridInGrid.setRowHeight(0, 16.0f);
-    m_GridInGrid.setColumnWidth(0, 16.0f);
-    m_Grid.setAt(0, 0, 0, &m_GridInGrid);
+    m_GridInGrid.setRowHeight(0, 64.0f);
+    m_GridInGrid.setColumnWidth(0, 64.0f);
+    m_Grid.setAt(1, 2, 1, &m_GridInGrid);
 
-    const static int rectCount(3*3 + 4*5 - 1);
+    const static int rectCount(3*3 + 4*5 - 2 - 1 + 3);
     int hueList[rectCount];
     for (int i(0); i < rectCount; ++i)
     {
@@ -111,40 +112,59 @@ void ht::HappyPlugin2DTestMain::onLoadLevel( const he::Path& /*path*/ )
 
     m_RectList.resize(rectCount);
     size_t rectCounter(0);
+
+    // Grid in grid layout
     for (he::uint8 x(0); x < 3; ++x)
     {
         for (he::uint8 y(0); y < 3; ++y)
         {
             ColouredRect& rect(m_RectList[rectCounter++]);
             rect.setColor(he::Color::fromHSB(hueList[rectCounter-1] / 360.0f, 0.5f, 0.5f));
+            rect.setBackgroundColor(he::Color::fromHSB(0.8f, ((x + y) % 2) == 0? 0.5f : 0.25f, 0.5f));
             rect.setLayoutMinSize(he::vec2(8.0f + rand() % 64, 8.0f + rand() % 64));
             rect.setLayoutMaxSize(rect.getLayoutMinSize() + he::vec2(1.0f + rand() % 64, 1.0f + rand() % 64));
             rect.setLayoutHAlignment(he::checked_numcast<he::gui::ELayoutHAlignment>(rand()%3));
             rect.setLayoutVAlignment(he::checked_numcast<he::gui::ELayoutVAlignment>(rand()%3));
             rect.setLayoutPadding(he::vec4(1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8));
+            
             m_GridInGrid.setAt(x, y, 0, &rect);
         }
+    }
+    // Vertical layout
+    m_Grid.setAt(1, 0, 0, &m_OrientedLayout);
+    for (he::uint8 i(0); i < 3; ++i)
+    {
+        ColouredRect& rect(m_RectList[rectCounter++]);
+        rect.setColor(he::Color::fromHSB(hueList[rectCounter-1] / 360.0f, 0.5f, 0.5f));
+        rect.setBackgroundColor(he::Color::fromHSB(1.0f, 0.25f, (i % 2) == 0? 0.5f : 0.25f));
+        rect.setLayoutMinSize(he::vec2(8.0f + rand() % 64, 8.0f + rand() % 64));
+        rect.setLayoutMaxSize(rect.getLayoutMinSize() + he::vec2(1.0f + rand() % 64, 1.0f + rand() % 64));
+        rect.setLayoutHAlignment(he::checked_numcast<he::gui::ELayoutHAlignment>(rand()%3));
+        rect.setLayoutVAlignment(he::checked_numcast<he::gui::ELayoutVAlignment>(rand()%3));
+        rect.setLayoutPadding(he::vec4(1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8));
+        m_OrientedLayout.add(&rect);
     }
     for (he::uint8 x(0); x < 4; ++x)
     {
         for (he::uint8 y(0); y < 5; ++y)
         {
-            if (x != 0 || y != 0)
-            {
-                ColouredRect& rect(m_RectList[rectCounter++]);
-                rect.setColor(he::Color::fromHSB(hueList[rectCounter-1] / 360.0f, 1.0f, 1.0f));
-                rect.setLayoutMinSize(he::vec2(16.0f + rand() % 128, 16.0f + rand() % 128));
-                rect.setLayoutMaxSize(rect.getLayoutMinSize() + he::vec2(1.0f + rand() % 128, 1.0f + rand() % 128));
-                rect.setLayoutHAlignment(he::checked_numcast<he::gui::ELayoutHAlignment>(rand()%3));
-                rect.setLayoutVAlignment(he::checked_numcast<he::gui::ELayoutVAlignment>(rand()%3));
-                rect.setLayoutPadding(he::vec4(1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8));
-                m_Grid.setAt(x, y, 0, &rect);
-            }
+            if ((x == 1 && (y == 2 || y == 3)) || (x == 1 && y == 0))
+                continue;
+            ColouredRect& rect(m_RectList[rectCounter++]);
+            rect.setColor(he::Color::fromHSB(hueList[rectCounter-1] / 360.0f, 1.0f, 1.0f));
+            rect.setBackgroundColor(he::Color::fromHSB(0.2f, ((x + y) % 2) == 0? 0.5f : 0.25f, 0.5f));
+            rect.setLayoutMinSize(he::vec2(16.0f + rand() % 128, 16.0f + rand() % 128));
+            rect.setLayoutMaxSize(rect.getLayoutMinSize() + he::vec2(1.0f + rand() % 128, 1.0f + rand() % 128));
+            rect.setLayoutHAlignment(he::checked_numcast<he::gui::ELayoutHAlignment>(rand()%3));
+            rect.setLayoutVAlignment(he::checked_numcast<he::gui::ELayoutVAlignment>(rand()%3));
+            rect.setLayoutPadding(he::vec4(1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8, 1.0f + rand() % 8));
+            m_Grid.setAt(x, y, 0, &rect);
         }
     }
 
     m_Grid.resumeLayout();
     m_GridInGrid.resumeLayout();
+    m_OrientedLayout.resumeLayout();
     for (int i(0); i < rectCount; ++i)
     {
         ColouredRect& rect(m_RectList[i]);

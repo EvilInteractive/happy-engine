@@ -22,10 +22,12 @@
 #define _HE_TEXT_H_
 #pragma once
 
+#include "DefaultLayoutable.h"
+
 namespace he {
 namespace gui {
     class Font;
-
+    
 class HAPPY_ENTRY Text
 {
 public:
@@ -108,6 +110,26 @@ private:
 
     vec2 m_Bounds;
     bool m_HasBounds;
+};
+
+class LayoutableText : public DefaultLayoutable
+{
+public:
+    LayoutableText();
+    ~LayoutableText();
+
+    void setText(const char* text, int len = -1);
+    void setTextExt(const char* text, ...);
+    void setTextExt(const char* text, va_list& argList);
+
+    void setFont(Font* const font);
+
+    const he::gui::Text& getText() const { return m_Text; }
+
+    void performLayout() final;
+
+private:
+    he::gui::Text m_Text;
 };
 
 } } //end namespace

@@ -23,6 +23,7 @@
 #include "Text.h"
 #include "Font.h"
 #include "ContentManager.h"
+#include "Canvas2D.h"
 
 #define CAPA_INCR_MIN 8
 
@@ -194,6 +195,58 @@ Text& Text::operator=(const Text& text)
     this->m_HasBounds = text.m_HasBounds;
 
     return *this;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+LayoutableText::LayoutableText()
+ : m_Text()
+{
+    m_Text.setOverFlowType(Text::OverFlowType_Clip);
+}
+
+LayoutableText::~LayoutableText()
+{
+
+}
+
+void LayoutableText::setTextExt( const char* text, ... )
+{
+    va_list argList;
+    va_start(argList, text);
+    setTextExt(text, argList);
+    va_end(argList);
+}
+
+void LayoutableText::setTextExt( const char* text, va_list& argList )
+{
+    char buff[1024];
+    buff[1023] = '\0';
+    int len(hevsnprintf(buff, 1023, text, argList));
+    HE_ASSERT(len >= 0, "addTextExt FAILED!");
+    setText(buff, len);
+}
+
+void LayoutableText::setText( const char* text, int len /*= -1*/ )
+{
+    m_Text.clear();
+    m_Text.addText(text, len);
+    const he::vec2 size(m_Text.measureText());
+    setLayoutMinSize(size);
+}
+
+void LayoutableText::setFont( Font* const font )
+{
+    m_Text.setFont(font);
+    const he::vec2 size(m_Text.measureText());
+    setLayoutMinSize(size);
+}
+void LayoutableText::performLayout()
+{
+    DefaultLayoutable::performLayout();
+    m_Text.setBounds(he::vec2(m_LayoutBound.width, m_LayoutBound.height));
 }
 
 } } //end namespace

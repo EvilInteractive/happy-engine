@@ -33,13 +33,13 @@ enum ELayoutFlags
 
 DefaultLayoutable::DefaultLayoutable()
     : m_LayoutBound(0, 0, 0, 0)
-    , m_LayoutClipBound(0, 0, FLT_MAX, FLT_MAX)
+    , m_LayoutClipBound(0, 0, 1000000, 1000000)
     , m_LayoutFlags(0)
     , m_HAlignment(eLayoutHAlignment_Left)
     , m_VAlignment(eLayoutVAlignment_Top)
     , m_Padding(0, 0, 0, 0)
     , m_MinSize(0, 0)
-    , m_MaxSize(FLT_MAX, FLT_MAX)
+    , m_MaxSize(1000000, 1000000)
     , m_LayoutParent(nullptr)
 {
 
@@ -85,6 +85,11 @@ void DefaultLayoutable::setLayoutMaxSize( const he::vec2& maxSize )
     setLayoutDirty();
 }
 
+bool DefaultLayoutable::isLayoutSuspended() const 
+{
+    return (m_LayoutFlags & eLayoutFlags_LayoutSuspended) != 0;
+}
+
 void DefaultLayoutable::suspendLayout()
 {
     m_LayoutFlags |= eLayoutFlags_LayoutSuspended;
@@ -124,6 +129,12 @@ void DefaultLayoutable::performLayout()
 void DefaultLayoutable::setLayoutClipBound( const he::RectF& bound )
 {
     m_LayoutClipBound = bound;
+}
+
+void DefaultLayoutable::move( const he::vec2& move )
+{
+    m_LayoutClipBound.move(move);
+    m_LayoutBound.move(move);
 }
 
 } } //end namespace

@@ -87,6 +87,8 @@ public:
     void drawImage(const gfx::Texture2D* tex2D, const vec2& pos,
                    const vec2& size = vec2(),
                    const RectI& regionToDraw = RectI());
+    void drawNinePatch(const gfx::Texture2D* tex2D, const vec2& pos, const he::RectF& centerBlock, const vec2& size);
+        
     void drawSprite(const Sprite* sprite, const vec2& pos,
                     const vec2& size = vec2());
     // blit to screen

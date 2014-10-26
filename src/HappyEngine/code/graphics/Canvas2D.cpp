@@ -150,6 +150,12 @@ void Canvas2D::drawImage(const gfx::Texture2D* tex2D, const vec2& pos,
     m_RendererGL->drawImage(tex2D, pos, newDimensions, regionToDraw);
 }
 
+void Canvas2D::drawNinePatch( const gfx::Texture2D* tex2D, const vec2& pos, const he::RectF& centerBlock, const vec2& size )
+{
+    m_RendererGL->setColor(m_Color);
+    m_RendererGL->drawNinePatch(tex2D, pos, centerBlock, size);
+}
+
 void Canvas2D::drawSprite(const Sprite* sprite, const vec2& pos,
                              const vec2& size)
 {

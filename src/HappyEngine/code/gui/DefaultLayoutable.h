@@ -50,12 +50,15 @@ public:
 
     virtual void suspendLayout() override;
     virtual void resumeLayout() override;
+    virtual bool isLayoutSuspended() const override;
 
     virtual void setLayoutBound(const he::RectF& bound) override;
-    virtual const he::RectF& getLayoutBound() const { return m_LayoutBound; }
+    virtual const he::RectF& getLayoutBound() const override { return m_LayoutBound; }
 
     virtual void setLayoutClipBound(const he::RectF& bound) override;
-    virtual const he::RectF& getLayoutClipBound() const { return m_LayoutClipBound; }
+    virtual const he::RectF& getLayoutClipBound() const override { return m_LayoutClipBound; }
+
+    virtual void move(const he::vec2& move) override;
 
     virtual void performLayout() override;
 

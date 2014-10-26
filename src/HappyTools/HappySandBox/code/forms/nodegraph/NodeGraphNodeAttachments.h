@@ -20,8 +20,61 @@
 #define _HS_NODEGRAPHNODEATTACHMENTS_H_
 #pragma once
 
+#include "NodeGraphNodeAttachment.h"
+#include "NodeGraphNodeConnector.h"
+
+#include <HorizontalLayout.h>
+#include <VectorText.h>
+
+namespace he {
+namespace gfx {
+    class Texture2D;
+} }
+
 namespace hs {
-    
+    class NodeGraphNodeTextConnector : public NodeGraphNodeAttachment
+    {
+    public:
+        NodeGraphNodeTextConnector();
+        ~NodeGraphNodeTextConnector();
+
+        void init(const ENodeGraphNodeConnectorType connectorType, const char* text);
+
+        // Connector
+        NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) override;
+        NodeGraphNodeConnector& getNodeConnector()  { return m_Connector; }
+
+        // Draw
+        void draw(const NodeGraphDrawContext& context) override;
+
+        DECLARE_LAYOUT
+
+    private:
+        he::gui::HorizontalLayout m_Layout;
+        he::gui::LayoutableVectorText m_Text;
+        NodeGraphNodeConnector m_Connector;
+    };
+
+    class NodeGraphNodeTextureAttachment : public NodeGraphNodeAttachment
+    {
+    public:
+        NodeGraphNodeTextureAttachment();
+        ~NodeGraphNodeTextureAttachment();
+
+        void init(const he::gfx::Texture2D* const tex, const he::vec2& size);
+
+        // Connector
+        NodeGraphNodeConnector* pickNodeConnector(const he::vec2& /*worldPos*/) override { return nullptr; }
+
+        // Draw
+        void draw(const NodeGraphDrawContext& context) override;
+
+        DECLARE_LAYOUT
+
+    private:
+        he::gui::DefaultLayoutable m_Layout;
+        const he::gfx::Texture2D* m_Texture;
+    };
 }
 
 #endif

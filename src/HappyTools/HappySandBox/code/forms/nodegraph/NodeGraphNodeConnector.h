@@ -20,11 +20,19 @@
 #define _HS_NODEGRAPHNODECONNECTOR_H_
 #pragma once
 
-#include "NodeGraphNodeAttachment.h"
+#include <DefaultLayoutable.h>
 
 namespace hs {
+class NodeGraphNodeAttachment;
+struct NodeGraphDrawContext;
 
-class NodeGraphNodeConnector
+enum ENodeGraphNodeConnectorType
+{
+    eNodeGraphNodeConnectorType_Input,
+    eNodeGraphNodeConnectorType_Output
+};
+
+class NodeGraphNodeConnector : public he::gui::DefaultLayoutable
 {
 public:
     enum EConnectorState
@@ -44,41 +52,30 @@ public:
     };
 
     NodeGraphNodeConnector();
-    virtual ~NodeGraphNodeConnector();
+    ~NodeGraphNodeConnector();
 
     // Style
     void setConnectorStyle(const ConnectorStyle& style);
-    const ConnectorStyle& getConnectorStyle() const { return m_ConnectorStyle; }
+    const ConnectorStyle& getConnectorStyle() const { return m_Style; }
 
+    EConnectorState getState() const { return m_State; }
+    void setState(const EConnectorState state) { m_State = state; }
 
-    virtual void draw(const NodeGraphDrawContext& context) override = 0;
+    ENodeGraphNodeConnectorType getType() const { return m_Type; }
+    void setType(const ENodeGraphNodeConnectorType type) { m_Type = type; }
 
-protected:
-    void setContentSize(const he::vec2& contentSize);
-    const he::vec2& getContentSize() const { return m_ContentSize; }
+    // Picking
+    bool pick(const he::vec2& worldPos) const;
 
-    void setContentMargin(const he::vec4& contentMargin);
-    const he::vec4& getContentMargin() const { return m_ContentMargin; }
-
-    const he::RectF& getContentBound() const { return m_ContentBound; }
-
-    void drawConnector(const NodeGraphDrawContext& context);
-
-    NodeGraphNode* m_Parent;
-
+    void draw(const NodeGraphDrawContext& context);
+    void drawConnection(const NodeGraphDrawContext& context, const NodeGraphNodeConnector& other);
+    void drawConnection(const NodeGraphDrawContext& context, const he::vec2& other);
+    
 private:
-    void calculateBound();
-
-    he::RectF m_Bound;
-    he::vec4 m_Margin;
-
-    he::RectF m_ContentBound;
-    he::vec2 m_ContentSize;
-    he::vec4 m_ContentMargin;
-
-    ConnectorStyle m_ConnectorStyle;
-
+    NodeGraphNodeAttachment* m_Parent;
     EConnectorState m_State;
+    ConnectorStyle m_Style;
+    ENodeGraphNodeConnectorType m_Type;
 };
 
 }

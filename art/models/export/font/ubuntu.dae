@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
-  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2014-09-25T16:47:13Z</created><keywords></keywords><modified>2014-09-25T16:47:13Z</modified><revision></revision><subject></subject><title></title><unit meter="1.000000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2014-10-26T19:28:55Z</created><keywords></keywords><modified>2014-10-26T19:28:55Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
   <library_geometries>
     <geometry id="!-lib" name="!Mesh">
       <mesh>
@@ -3984,10 +3984,10 @@
         <triangles count="35"><input semantic="VERTEX" offset="0" source="#_9-VERTEX"/><input semantic="NORMAL" offset="1" source="#_9-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#_9-UV0"/><p> 17 0 17 18 1 18 19 2 19 16 3 16 17 4 17 19 5 19 15 6 15 16 7 16 19 8 19 14 9 14 15 10 15 19 11 19 14 12 14 19 13 19 20 14 20 13 15 13 14 16 14 20 17 20 20 18 20 31 19 31 32 20 32 13 21 13 20 22 20 32 23 32 13 24 13 32 25 32 33 26 33 12 27 12 13 28 13 33 29 33 12 30 12 33 31 33 34 32 34 11 33 11 12 34 12 34 35 34 10 36 10 11 37 11 34 38 34 10 39 10 34 40 34 21 41 21 9 42 9 10 43 10 21 44 21 8 45 8 9 46 9 21 47 21 8 48 8 21 49 21 22 50 22 7 51 7 8 52 8 22 53 22 7 54 7 22 55 22 23 56 23 6 57 6 7 58 7 23 59 23 6 60 6 23 61 23 24 62 24 5 63 5 6 64 6 24 65 24 5 66 5 24 67 24 25 68 25 4 69 4 5 70 5 25 71 25 4 72 4 25 73 25 26 74 26 3 75 3 4 76 4 26 77 26 3 78 3 26 79 26 27 80 27 2 81 2 3 82 3 27 83 27 1 84 1 2 85 2 27 86 27 0 87 0 1 88 1 27 89 27 0 90 0 27 91 27 28 92 28 0 93 0 28 94 28 29 95 29 30 96 30 31 97 31 20 98 20 29 99 29 30 100 30 20 101 20 0 102 0 29 103 29 20 104 20</p></triangles>
       </mesh>
     </geometry>
-    <geometry id="_-lib" name="_Mesh">
+    <geometry id=":-lib" name=":Mesh">
       <mesh>
-        <source id="_-POSITION">
-          <float_array id="_-POSITION-array" count="48">
+        <source id=":-POSITION">
+          <float_array id=":-POSITION-array" count="48">
 4.388306 9.008594 0.000000
 0.000000 10.800000 0.000000
 -4.388306 9.008594 0.000000
@@ -4006,15 +4006,15 @@
 6.000000 40.400002 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#_-POSITION-array" count="16" stride="3">
+            <accessor source="#:-POSITION-array" count="16" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="_-Normal0">
-          <float_array id="_-Normal0-array" count="108">
+        <source id=":-Normal0">
+          <float_array id=":-Normal0-array" count="108">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -4053,15 +4053,15 @@
 0.000000 0.000000 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#_-Normal0-array" count="36" stride="3">
+            <accessor source="#:-Normal0-array" count="36" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="_-UV0">
-          <float_array id="_-UV0-array" count="32">
+        <source id=":-UV0">
+          <float_array id=":-UV0-array" count="32">
 0.548759 0.305651
 0.500000 0.325556
 0.451241 0.305651
@@ -4080,16 +4080,16 @@
 0.566667 0.654444
 </float_array>
           <technique_common>
-            <accessor source="#_-UV0-array" count="16" stride="2">
+            <accessor source="#:-UV0-array" count="16" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <vertices id="_-VERTEX">
-          <input semantic="POSITION" source="#_-POSITION"/>
+        <vertices id=":-VERTEX">
+          <input semantic="POSITION" source="#:-POSITION"/>
         </vertices>
-        <triangles count="12"><input semantic="VERTEX" offset="0" source="#_-VERTEX"/><input semantic="NORMAL" offset="1" source="#_-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#_-UV0"/><p> 5 0 5 6 1 6 7 2 7 7 3 7 0 4 0 1 5 1 7 6 7 1 7 1 2 8 2 7 9 7 2 10 2 3 11 3 7 12 7 3 13 3 4 14 4 5 15 5 7 16 7 4 17 4 13 18 13 14 19 14 15 20 15 15 21 15 8 22 8 9 23 9 15 24 15 9 25 9 10 26 10 15 27 15 10 28 10 11 29 11 15 30 15 11 31 11 12 32 12 13 33 13 15 34 15 12 35 12</p></triangles>
+        <triangles count="12"><input semantic="VERTEX" offset="0" source="#:-VERTEX"/><input semantic="NORMAL" offset="1" source="#:-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#:-UV0"/><p> 5 0 5 6 1 6 7 2 7 7 3 7 0 4 0 1 5 1 7 6 7 1 7 1 2 8 2 7 9 7 2 10 2 3 11 3 7 12 7 3 13 3 4 14 4 5 15 5 7 16 7 4 17 4 13 18 13 14 19 14 15 20 15 15 21 15 8 22 8 9 23 9 15 24 15 9 25 9 10 26 10 15 27 15 10 28 10 11 29 11 15 30 15 11 31 11 12 32 12 13 33 13 15 34 15 12 35 12</p></triangles>
       </mesh>
     </geometry>
     <geometry id=";-lib" name=";Mesh">
@@ -9012,25 +9012,25 @@
         <triangles count="5"><input semantic="VERTEX" offset="0" source="#^-VERTEX"/><input semantic="NORMAL" offset="1" source="#^-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#^-UV0"/><p> 4 0 4 5 1 5 6 2 6 1 3 1 2 4 2 3 5 3 0 6 0 1 7 1 3 8 3 6 9 6 0 10 0 3 11 3 4 12 4 6 13 6 3 14 3</p></triangles>
       </mesh>
     </geometry>
-    <geometry id="__ncl1_1-lib" name="__ncl1_1Mesh">
+    <geometry id="_-lib" name="_Mesh">
       <mesh>
-        <source id="__ncl1_1-POSITION">
-          <float_array id="__ncl1_1-POSITION-array" count="12">
+        <source id="_-POSITION">
+          <float_array id="_-POSITION-array" count="12">
 -22.349976 -16.500000 0.000000
 22.349976 -16.500000 0.000000
 22.349976 -9.500000 0.000000
 -22.349976 -9.500000 0.000000
 </float_array>
           <technique_common>
-            <accessor source="#__ncl1_1-POSITION-array" count="4" stride="3">
+            <accessor source="#_-POSITION-array" count="4" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="__ncl1_1-Normal0">
-          <float_array id="__ncl1_1-Normal0-array" count="18">
+        <source id="_-Normal0">
+          <float_array id="_-Normal0-array" count="18">
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
 0.000000 0.000000 1.000000
@@ -9039,31 +9039,31 @@
 0.000000 0.000000 1.000000
 </float_array>
           <technique_common>
-            <accessor source="#__ncl1_1-Normal0-array" count="6" stride="3">
+            <accessor source="#_-Normal0-array" count="6" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="__ncl1_1-UV0">
-          <float_array id="__ncl1_1-UV0-array" count="8">
+        <source id="_-UV0">
+          <float_array id="_-UV0-array" count="8">
 0.251667 0.022222
 0.748333 0.022222
 0.748333 0.100000
 0.251667 0.100000
 </float_array>
           <technique_common>
-            <accessor source="#__ncl1_1-UV0-array" count="4" stride="2">
+            <accessor source="#_-UV0-array" count="4" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <vertices id="__ncl1_1-VERTEX">
-          <input semantic="POSITION" source="#__ncl1_1-POSITION"/>
+        <vertices id="_-VERTEX">
+          <input semantic="POSITION" source="#_-POSITION"/>
         </vertices>
-        <triangles count="2"><input semantic="VERTEX" offset="0" source="#__ncl1_1-VERTEX"/><input semantic="NORMAL" offset="1" source="#__ncl1_1-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#__ncl1_1-UV0"/><p> 0 0 0 1 1 1 2 2 2 2 3 2 3 4 3 0 5 0</p></triangles>
+        <triangles count="2"><input semantic="VERTEX" offset="0" source="#_-VERTEX"/><input semantic="NORMAL" offset="1" source="#_-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#_-UV0"/><p> 0 0 0 1 1 1 2 2 2 2 3 2 3 4 3 0 5 0</p></triangles>
       </mesh>
     </geometry>
     <geometry id="`-lib" name="`Mesh">
@@ -13689,7 +13689,7 @@
       <node name="_7" id="_7" sid="_7"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#_7-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="_8" id="_8" sid="_8"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#_8-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="_9" id="_9" sid="_9"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#_9-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
-      <node name="_" id="_" sid="_"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#_-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name=":" id=":" sid=":"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#:-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name=";" id=";" sid=";"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#;-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="&lt;" id="&lt;" sid="&lt;"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#&lt;-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="=" id="=" sid="="><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#=-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
@@ -13726,7 +13726,7 @@
       <node name="\" id="\" sid="\"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#\-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="]" id="]" sid="]"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#]-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="^" id="^" sid="^"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#^-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
-      <node name="__ncl1_1" id="__ncl1_1" sid="__ncl1_1"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#__ncl1_1-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name="_" id="_" sid="_"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#_-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="`" id="`" sid="`"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#`-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="a" id="a" sid="a"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#a-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <node name="b" id="b" sid="b"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#b-lib"/><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>

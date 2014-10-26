@@ -26,6 +26,8 @@
 #include <IDrawable2D.h>
 
 #include <GridLayout.h>
+#include <VerticalLayout.h>
+#include <HorizontalLayout.h>
 
 #include "ColouredRect.h"
 
@@ -74,6 +76,7 @@ private:
 
     he::gui::GridLayout m_Grid;
     he::gui::GridLayout m_GridInGrid;
+    he::gui::HorizontalLayout m_OrientedLayout;
     he::ObjectList<ColouredRect> m_RectList;
 
     /* DEFAULT COPY & ASSIGNMENT */

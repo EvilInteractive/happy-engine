@@ -43,6 +43,7 @@ public:
 
     bool isInside(const he::vec2& pos) const;
     RectF transform(const he::mat33& mat) const;
+    void move(const he::vec2& move);
 
     bool operator==(const RectF& r) const;
     bool operator!=(const RectF& r) const;

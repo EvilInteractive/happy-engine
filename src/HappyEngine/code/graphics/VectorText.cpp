@@ -53,7 +53,9 @@ VectorText::VectorText()
 
 VectorText::~VectorText()
 {
-
+    delete m_Effect;
+    if (m_Text)
+        m_Text->release();
 }
 
 void VectorText::create( Font* font, HAlignment halign, VAlignment valign, const he::String& text)
@@ -146,8 +148,8 @@ void VectorText::create( Font* font, HAlignment halign, VAlignment valign, const
 
                 he_free(vertBuff);
                 he_free(indBuff);
-                font->release();
             }
+            font->release();
         });
     }
 }
@@ -176,6 +178,49 @@ he::RectF VectorText::getBound() const
     bound.height = (meshBound.getBottomBackRight().y - meshBound.getTopFrontLeft().y) * m_Scale;
 
     return bound;
+}
+
+he::RectF VectorText::getLineBound() const
+{
+    he::RectF bound;
+    const he::AABB& meshBound(m_Text->getBound().getAABB());
+    bound.x = meshBound.getTopFrontLeft().x * m_Scale + m_Position.x;
+    bound.y = meshBound.getTopFrontLeft().y * m_Scale + m_Position.y;
+    bound.width = (meshBound.getBottomBackRight().x - meshBound.getTopFrontLeft().x) * m_Scale;
+    bound.height = m_Scale;
+
+    return bound;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+LayoutableVectorText::LayoutableVectorText()
+{
+
+}
+
+LayoutableVectorText::~LayoutableVectorText()
+{
+
+}
+
+void LayoutableVectorText::create( Font* const font, const float size, const he::String& text )
+{
+    m_Text.create(font, VectorText::HAlignment_Left, VectorText::VAlignment_Top, text);
+    m_Text.setScale(size);
+
+    RectF lineBound(m_Text.getLineBound());
+    setLayoutMinSize(he::vec2(lineBound.width, lineBound.height));
+    setLayoutMaxSize(getLayoutMinSize());
+}
+
+void LayoutableVectorText::draw2D( he::gui::Canvas2D* canvas, const he::mat33& transform )
+{
+    const he::RectF& bound(getLayoutBound());
+    m_Text.setPostion(he::vec2(bound.x, bound.y));
+    m_Text.draw2D(canvas, transform);
 }
 
 } }

@@ -20,6 +20,7 @@
 
 #include "NodeGraphEnums.h"
 #include "NodeGraphNode.h"
+#include "NodeGraphNodeAttachments.h"
 
 #include <ContentManager.h>
 #include <Canvas2D.h>
@@ -47,6 +48,9 @@ NodeGraph::NodeGraph(QWidget *parent)
 , m_Scale(0.5f)
 , m_GrabWorldPos(0.0f, 0.0f)
 , m_State(State_Idle)
+, m_HoverNode(nullptr)
+, m_HoverConnector(nullptr)
+, m_ConnectingConnector(nullptr)
 {
     QWidget::setMouseTracking(true);
 
@@ -138,26 +142,11 @@ void NodeGraph::updateZoom( const float /*dTime*/ )
     }
 }
 
-void NodeGraph::createNode(const he::vec2& pos)
-{
-//    const size_t inputs(rand() % 5 + 1);
-    //const size_t outputs(rand() % 5 + 1);
-
-    NodeGraphNode* node(NEW NodeGraphNode());
-    node->setPosition(pos);
-//     for (size_t i(0); i < inputs; ++i)
-//     {
-//         node->addInput(NEW NodeGraphNodeInput());
-//     }
-//     for (size_t i(0); i < outputs; ++i)
-//     {
-//         node->addOutput(NEW NodeGraphNodeOutput());
-//     }
-    m_Nodes.add(node);
-}
-
 void NodeGraph::updateStates( const float dTime )
 {
+    const he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    doNodeHover(screenToWorldPos(mouse->getPosition()));
     switch (m_State)
     {
     case State_Idle:
@@ -171,6 +160,18 @@ void NodeGraph::updateStates( const float dTime )
     case State_Pan:
         {
             updatePanState(dTime);
+        } break;
+    case State_StartMoveNode:
+        {
+            updateStartMoveNodeState(dTime);
+        } break;
+    case State_MoveNode:
+        {
+            updateMoveNodeState(dTime);
+        } break;
+    case State_ConnectNode:
+        {
+            updateConnectNodeState(dTime);
         } break;
     }
 }
@@ -186,13 +187,29 @@ void NodeGraph::updateIdleState( const float /*dTime*/ )
     const bool leftDown(mouse->isButtonPressed(he::io::MouseButton_Left));
     if (leftDown)
     {
-        if (keyboard->isKeyDown(he::io::Key_Ctrl))
+        NodeGraphNode* newNode(createNode());
+        if (newNode)
         {
-            createNode(screenToWorldPos(mouse->getPosition()));
+            newNode->move(mouseWorld);
+            m_Nodes.add(newNode);
         }
         else
         {
-            m_State = State_StartPan;
+            const bool keepSelection(keyboard->isKeyDown(he::io::Key_Ctrl));
+            const bool removeSelection(keyboard->isKeyDown(he::io::Key_Alt));
+            if (doConnectStart())
+            {
+                m_State = State_ConnectNode;
+            }
+            else if (doNodeSelect(keepSelection, removeSelection, false))  
+            {
+                if (keepSelection == false && removeSelection == false)
+                    m_State = State_StartMoveNode;
+            }
+            else
+            {
+                m_State = State_StartPan;
+            }
         }
     }
 }
@@ -230,17 +247,49 @@ void NodeGraph::updatePanState( const float /*dTime*/ )
 
 void NodeGraph::updateStartMoveNodeState( const float /*dTime*/ )
 {
-
+    const he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    const he::vec2 mousePos(mouse->getPosition());
+    const he::vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
+    const he::vec2 diff(mousePos - grabScreenPos);
+    if (mouse->isButtonReleased(he::io::MouseButton_Left))
+    {
+        const he::io::ControlsManager* const controls(CONTROLS);
+        const he::io::IKeyboard* const keyboard(controls->getKeyboard(getHandle()));
+        const bool keepSelection(keyboard->isKeyDown(he::io::Key_Ctrl));
+        const bool removeSelection(keyboard->isKeyDown(he::io::Key_Alt));
+        doNodeSelect(keepSelection, removeSelection, true);
+        m_State = State_Idle;
+    }
+    else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
+    {
+        m_State = State_MoveNode;
+    }
 }
 
 void NodeGraph::updateMoveNodeState( const float /*dTime*/ )
 {
-
+    const he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    const he::vec2 mouseMove(mouse->getMove());
+    const he::vec2 worldMove(mouseMove / m_Scale);
+    doNodeMove(worldMove);
+    if (mouse->isButtonReleased(he::io::MouseButton_Left))
+    {
+        m_State = State_Idle;
+    }
 }
 
 void NodeGraph::updateConnectNodeState( const float /*dTime*/ )
 {
-
+    const he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+    if (mouse->isButtonReleased(he::io::MouseButton_Left))
+    {
+        m_ConnectingConnector->setState(m_ConnectingConnector == m_HoverConnector? NodeGraphNodeConnector::eConnectorState_Hover : NodeGraphNodeConnector::eConnectorState_Normal);
+        m_ConnectingConnector = nullptr;
+        m_State = State_Idle;
+    }
 }
 
 void NodeGraph::draw2D( he::gui::Canvas2D* canvas )
@@ -307,6 +356,13 @@ void NodeGraph::drawNodes(const NodeGraphDrawContext& context)
     {
         node->draw(context);
     });
+
+    if (m_ConnectingConnector)
+    {
+        const he::io::ControlsManager* const controls(CONTROLS);
+        const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
+        m_ConnectingConnector->drawConnection(context, screenToWorldPos(mouse->getPosition()));
+    }
 }
 
 void NodeGraph::drawDebug(const NodeGraphDrawContext& context)
@@ -320,6 +376,100 @@ void NodeGraph::drawDebug(const NodeGraphDrawContext& context)
     context.canvas->fillText(m_DebugText, he::vec2(14.0f, 14.0f));
     context.canvas->setColor(he::Color(1.0f, 1.0f, 1.0f, 1.0f));
     context.canvas->fillText(m_DebugText, he::vec2(12.0f, 12.0f));
+}
+
+bool NodeGraph::doNodeHover( const he::vec2& worldPos )
+{
+    bool result(false);
+    size_t pickedNode(0);
+    if (m_HoverNode != nullptr)
+    {
+        if (m_HoverNode->getState() != NodeGraphNode::eState_Selected)
+        {
+            m_HoverNode->setState(NodeGraphNode::eState_Normal);
+        }
+        m_HoverNode = nullptr;
+    }
+    if (m_HoverConnector != nullptr)
+    {
+        if (m_HoverConnector->getState() != NodeGraphNodeConnector::eConnectorState_Selected)
+        {
+            m_HoverConnector->setState(NodeGraphNodeConnector::eConnectorState_Normal);
+        }
+        m_HoverConnector = nullptr;
+    }
+    if (m_Nodes.rfind_if([&worldPos](NodeGraphNode* const node) { return node->isInside(worldPos); }, pickedNode))
+    {
+        NodeGraphNode* const selectedNode(m_Nodes[pickedNode]);
+        if (selectedNode->getState() != NodeGraphNode::eState_Selected)
+        {
+            selectedNode->setState(NodeGraphNode::eState_Hover);
+        }
+        m_HoverNode = selectedNode;
+
+        m_HoverConnector = selectedNode->pickConnector(worldPos);
+        if (m_HoverConnector && m_HoverConnector->getState() != NodeGraphNodeConnector::eConnectorState_Selected)
+        {
+            m_HoverConnector->setState(NodeGraphNodeConnector::eConnectorState_Hover);
+        }
+        result = true;
+    }
+    return result;
+}
+
+bool NodeGraph::doNodeSelect( const bool keepSelection, const bool removeSelection, const bool removeSelectionIfSelected )
+{
+    if ((!m_HoverNode && !keepSelection) || (m_HoverNode && !keepSelection && !removeSelection && (removeSelectionIfSelected || m_HoverNode->getState() != NodeGraphNode::eState_Selected)))
+    {
+        m_SelectedNodes.forEach([](NodeGraphNode* const node)
+        {
+            node->setState(NodeGraphNode::eState_Normal);
+        });
+        m_SelectedNodes.clear();
+    }
+    if (m_HoverNode != nullptr)
+    {
+        m_HoverNode->setState(removeSelection? NodeGraphNode::eState_Hover : NodeGraphNode::eState_Selected);
+        size_t index(0);
+        if (m_SelectedNodes.find(m_HoverNode, index))
+        {
+            if (removeSelection)
+                m_SelectedNodes.removeAt(index);
+        }
+        else
+        {
+            if (!removeSelection)
+                m_SelectedNodes.add(m_HoverNode);
+        }
+    }
+    return m_HoverNode != nullptr;
+}
+
+void NodeGraph::doNodeMove( const he::vec2& worldDelta )
+{
+    m_SelectedNodes.forEach([&worldDelta](NodeGraphNode* const node)
+    {
+        node->move(worldDelta);
+    });
+}
+
+bool NodeGraph::doConnectStart()
+{
+    bool result(false);
+    if (m_HoverConnector)
+    {
+        m_ConnectingConnector = m_HoverConnector;
+        m_ConnectingConnector->setState(NodeGraphNodeConnector::eConnectorState_Selected);
+        result = true;
+    }
+    return result;
+}
+
+bool NodeGraph::doConnectEnd()
+{
+    bool result(true);
+
+    return result;
 }
 
 }

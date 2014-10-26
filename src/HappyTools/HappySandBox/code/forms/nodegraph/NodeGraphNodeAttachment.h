@@ -20,6 +20,8 @@
 #define _HS_NODEGRAPHNODEATTACHMENT_H_
 #pragma once
 
+#include <DefaultLayoutable.h>
+
 namespace he {
     struct RectF;
 }
@@ -34,7 +36,10 @@ public:
     virtual ~NodeGraphNodeAttachment() {}
 
     // Connector
-    virtual NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) const = 0;
+    virtual NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) = 0;
+
+    // State
+    virtual void move(const he::vec2& worldDelta) = 0;
     
     // Draw
     virtual void draw(const NodeGraphDrawContext& context) = 0;

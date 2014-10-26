@@ -38,15 +38,12 @@ NodeGraphNodeConnector::ConnectorStyle::ConnectorStyle()
 }
 
 NodeGraphNodeConnector::NodeGraphNodeConnector()
-    : m_Bound(0, 0, 0, 0)
-    , m_Margin(0, 4, 0, 4)
-    , m_ContentBound(0, 0, 0, 0)
-    , m_ContentSize(0, 0)
-    , m_ContentMargin(4, 4, 4, 4)
-    , m_State(eConnectorState_Normal)
+    : m_State(eConnectorState_Normal)
     , m_Parent(nullptr)
+    , m_Type(eNodeGraphNodeConnectorType_Input)
 {
-
+    setLayoutMinSize(he::vec2(12, 12));
+    setLayoutMaxSize(he::vec2(12, 12));
 }
 
 NodeGraphNodeConnector::~NodeGraphNodeConnector()
@@ -56,83 +53,45 @@ NodeGraphNodeConnector::~NodeGraphNodeConnector()
 
 void NodeGraphNodeConnector::setConnectorStyle(const NodeGraphNodeConnector::ConnectorStyle& style)
 {
-    m_ConnectorStyle = style;
-    calculateBound();
+    m_Style = style;
 }
 
-bool NodeGraphNodeConnector::isInsideConnector( const he::vec2& worldPos ) const 
+bool NodeGraphNodeConnector::pick( const he::vec2& worldPos ) const 
 {
-    return m_Bound.isInside(worldPos);
+    return getLayoutBound().isInside(worldPos);
 }
 
-void NodeGraphNodeConnector::setBound(const he::RectF& bound)
+void NodeGraphNodeConnector::draw( const NodeGraphDrawContext& context )
 {
-    m_Bound = bound;
-    m_ContentBound = bound;
+    const he::RectI& bound(he::RectI(getLayoutBound().transform(context.transform)));
+    context.canvas->setColor(m_Style.m_ConnectorBackgroundColor[m_State]);
+    context.canvas->fillRect(bound);
 
-    m_ContentBound.y += m_ContentMargin.y;
-    m_ContentBound.height -= m_ContentMargin.y + m_ContentMargin.w;
-    switch (getLayoutAlignment())
-    {
-    case eLayoutAlignment_Left:
-        {
-            m_ContentBound.x += m_ConnectorStyle.m_ConnectorSize.x + m_ContentMargin.x;
-            m_ContentBound.width -= m_ConnectorStyle.m_ConnectorSize.x + m_ContentMargin.x + m_ContentMargin.z;
-        } break;
-    case eLayoutAlignment_Right:
-        {
-            m_ContentBound.x += m_ContentMargin.x;
-            m_ContentBound.width -= m_ContentMargin.x + m_ContentMargin.z + m_ConnectorStyle.m_ConnectorSize.x;
-        } break;
-    default: LOG(he::LogType_ProgrammerAssert, "Invalid alignment type for NodeConnector");
-    }
+    context.canvas->setColor(m_Style.m_ConnectorBorderColor[m_State]);
+    context.canvas->fillRect(bound);
 }
 
-void NodeGraphNodeConnector::setContentSize(const he::vec2& contentSize)
+void NodeGraphNodeConnector::drawConnection( const NodeGraphDrawContext& context, const he::vec2& other )
 {
-    m_ContentSize = contentSize;
-    calculateBound();
+    he::vec2 pos0(m_LayoutBound.x + m_LayoutBound.width / 2.0f, m_LayoutBound.y + m_LayoutBound.height / 2.0f);
+    he::vec2 tan0, tan1;
+    if (m_Type == eNodeGraphNodeConnectorType_Input)
+        tan0 = he::vec2(-1, 0);
+    else
+        tan0 = he::vec2(1, 0);
+    pos0 = context.transform * pos0;
+    he::vec2 otherTransformd(context.transform * other);
+    tan0 *= abs((pos0.x - otherTransformd.x) / 2.0f);
+    tan1 = -tan0;
+
+    context.canvas->setColor(he::Color(1.0f, 1.0f, 1.0f, 1.0f));
+    context.canvas->fillCurve(pos0, tan0, tan1, otherTransformd, 2.0f);
 }
 
-void NodeGraphNodeConnector::setContentMargin(const he::vec4& contentMargin)
+void NodeGraphNodeConnector::drawConnection( const NodeGraphDrawContext& context, const NodeGraphNodeConnector& other )
 {
-    m_ContentMargin = contentMargin;
-    calculateBound();
-}
-
-void NodeGraphNodeConnector::calculateBound()
-{
-    m_Bound.width = m_ConnectorStyle.m_ConnectorSize.x + m_ContentMargin.x + m_ContentMargin.z + m_ContentSize.x;
-    m_Bound.height = std::max(m_ConnectorStyle.m_ConnectorSize.y, m_ContentMargin.y + m_ContentMargin.w + m_ContentSize.y);
-
-    if (m_Parent)
-        m_Parent->setLayoutDirty();
-}
-
-void NodeGraphNodeConnector::drawConnector(const NodeGraphDrawContext& context)
-{
-    const he::RectF& bound(getBound());
-    he::vec2 pos(0, bound.y + bound.height / 2.0f - m_ConnectorStyle.m_ConnectorSize.y / 2.0f);
-    switch (getLayoutAlignment())
-    {
-    case eLayoutAlignment_Left:
-        {
-            pos.x = bound.x;
-        } break;
-    case eLayoutAlignment_Right:
-        {
-            pos.x = bound.x + bound.width - m_ConnectorStyle.m_ConnectorSize.x;
-        } break;
-    default: LOG(he::LogType_ProgrammerAssert, "Invalid alignment type for NodeConnector");
-    }
-
-    he::RectI rect(he::RectF(pos.x, pos.y, m_ConnectorStyle.m_ConnectorSize.x, m_ConnectorStyle.m_ConnectorSize.y ).transform(context.transform));
-
-    context.canvas->setColor(m_ConnectorStyle.m_ConnectorBackgroundColor[m_State]);
-    context.canvas->fillRect(rect);
-
-    context.canvas->setColor(m_ConnectorStyle.m_ConnectorBorderColor[m_State]);
-    context.canvas->fillRect(rect);
+    he::vec2 pos1(other.m_LayoutBound.x + m_LayoutBound.width / 2.0f, other.m_LayoutBound.y + m_LayoutBound.height / 2.0f);
+    drawConnection(context, pos1);
 }
 
 } //end namespace

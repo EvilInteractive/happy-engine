@@ -29,6 +29,7 @@
 namespace hs {
 class NodeGraphNode;
 struct NodeGraphDrawContext;
+class NodeGraphNodeConnector;
 class NodeGraph :  public RenderWidget, public he::gfx::IDrawable2D, public he::ge::ITickable
 {
     Q_OBJECT
@@ -44,7 +45,12 @@ public:
 
     bool isEdited() const { return false; }
 
-    void createNode(const he::vec2& pos); // test
+protected:
+    // Called when left mouse is pressed (only return a node if you want to create one on click (with a shortcut))
+    virtual NodeGraphNode* createNode() = 0;
+
+    // Called when a connection is made between two connectors, returns if successful
+    virtual bool connect(NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to) = 0;
 
 private:
     enum State
@@ -68,6 +74,12 @@ private:
 
     void updateZoom(const float dTime);
 
+    bool doNodeHover(const he::vec2& worldPos);
+    bool doNodeSelect(const bool keepSelection, const bool removeSelection, const bool removeSelectionIfSelected);
+    void doNodeMove(const he::vec2& worldDelta);
+    bool doConnectStart();
+    bool doConnectEnd();
+
     // Draw
     void drawBackground(const NodeGraphDrawContext& context);
     void drawNodes(const NodeGraphDrawContext& context);
@@ -89,6 +101,10 @@ private:
     float m_Scale;
 
     he::PrimitiveList<NodeGraphNode*> m_Nodes;
+    he::PrimitiveList<NodeGraphNode*> m_SelectedNodes;
+    NodeGraphNode* m_HoverNode;
+    NodeGraphNodeConnector* m_HoverConnector;
+    NodeGraphNodeConnector* m_ConnectingConnector;
 
     he::gui::Text m_DebugText;
 

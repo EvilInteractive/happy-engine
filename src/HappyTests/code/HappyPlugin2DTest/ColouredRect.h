@@ -36,11 +36,13 @@ public:
     void createDebugText();
     
     void setColor(const he::Color& color) { m_Color = color; }
+    void setBackgroundColor(const he::Color& color) { m_BackgroundColor = color; }
 
     void draw2D(he::gui::Canvas2D* canvas) override;
 
 private:
     he::Color m_Color;
+    he::Color m_BackgroundColor;
     he::gui::Text m_DebugText;
 };
 

@@ -65,6 +65,7 @@ public:
     void drawImage( const Texture2D* tex2D, const vec2& pos,
                     const vec2& newDimensions = vec2(),
                     const RectI regionToDraw = RectI());
+    void drawNinePatch(const gfx::Texture2D* tex2D, const vec2& pos, const he::RectF& centerBlock, const vec2& size);
     void drawSprite(const gui::Sprite* sprite, const vec2& pos,
                     const vec2& size = vec2());
     void blitImage( const Texture2D* tex2D, const vec2& pos,

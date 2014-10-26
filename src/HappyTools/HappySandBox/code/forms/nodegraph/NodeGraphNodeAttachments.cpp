@@ -18,7 +18,105 @@
 #include "HappySandBoxPCH.h"
 #include "NodeGraphNodeAttachments.h"
 
+#include "NodeGraphEnums.h"
+
+#include <Canvas2D.h>
+#include <ContentManager.h>
+#include <Font.h>
+#include <Texture2D.h>
+
 namespace hs {
+
+IMPLEMENT_LAYOUT_FROM(hs::NodeGraphNodeTextConnector, m_Layout)
+
+NodeGraphNodeTextConnector::NodeGraphNodeTextConnector()
+{
+
+}
+
+NodeGraphNodeTextConnector::~NodeGraphNodeTextConnector()
+{
+
+}
+
+void NodeGraphNodeTextConnector::init( const ENodeGraphNodeConnectorType connectorType, const char* text )
+{
+    m_Layout.suspendLayout();
+    he::gui::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", 72, he::gui::Font::NO_CACHE));
+    m_Text.create(font, 16, text);
+    font->release();
+
+    m_Text.setLayoutVAlignment(he::gui::eLayoutVAlignment_Center);
+    m_Connector.setLayoutVAlignment(he::gui::eLayoutVAlignment_Center);
+    m_Connector.setType(connectorType);
+    switch (connectorType)
+    {
+    case eNodeGraphNodeConnectorType_Input:
+        {
+            m_Text.setLayoutPadding(he::vec4(4, 0, 0, 0));
+            m_Layout.add(&m_Connector);
+            m_Layout.add(&m_Text);
+            m_Layout.setLayoutHAlignment(he::gui::eLayoutHAlignment_Left);
+        } break;
+    case eNodeGraphNodeConnectorType_Output:
+        {
+            m_Text.setLayoutPadding(he::vec4(0, 0, 4, 0));
+            m_Layout.add(&m_Text);
+            m_Layout.add(&m_Connector);
+            m_Layout.setLayoutHAlignment(he::gui::eLayoutHAlignment_Right);
+        } break;
+    }
+    he::vec2 minSize(m_Text.getLayoutMinSize());
+    minSize.x += m_Connector.getLayoutMinSize().x + 8; // +8 padding
+    m_Layout.setLayoutMinSize(minSize);
+    m_Layout.resumeLayout();
+}
+
+NodeGraphNodeConnector* NodeGraphNodeTextConnector::pickNodeConnector( const he::vec2& worldPos )
+{
+    if (m_Connector.pick(worldPos))
+        return &m_Connector;
+    else
+        return nullptr;
+}
+
+void NodeGraphNodeTextConnector::draw( const NodeGraphDrawContext& context )
+{
+    m_Connector.draw(context);
+    m_Text.draw2D(context.canvas, context.transform);
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+IMPLEMENT_LAYOUT_FROM(hs::NodeGraphNodeTextureAttachment, m_Layout)
+
+NodeGraphNodeTextureAttachment::NodeGraphNodeTextureAttachment()
+    : m_Texture(nullptr)
+{
+    m_Layout.setLayoutHAlignment(he::gui::eLayoutHAlignment_Center);
+}
+
+NodeGraphNodeTextureAttachment::~NodeGraphNodeTextureAttachment()
+{
+    if (m_Texture)
+        m_Texture->release();
+}
+
+void NodeGraphNodeTextureAttachment::init( const he::gfx::Texture2D* const tex, const he::vec2& size )
+{
+    m_Layout.setLayoutMaxSize(size);
+    m_Layout.setLayoutMinSize(size);
+    tex->instantiate();
+    m_Texture = tex;
+}
+
+void NodeGraphNodeTextureAttachment::draw( const NodeGraphDrawContext& context )
+{
+    const he::RectF bound(m_Layout.getLayoutBound().transform(context.transform));
+    context.canvas->drawImage(m_Texture, he::vec2(bound.x, bound.y), he::vec2(bound.width, bound.height));
+}
 
 } //end namespace
 

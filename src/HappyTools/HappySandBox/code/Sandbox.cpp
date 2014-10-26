@@ -30,6 +30,7 @@
 
 #include "forms/MainWindow.h"
 #include "forms/GameWidget.h"
+#include "forms/nodegraph/NodeGraphNode.h"
 
 #include <qapplication.h>
 #include <QColorDialog>
@@ -135,6 +136,8 @@ void Sandbox::destroy()
 
     GameStateMachine* const stateMachine(GameStateMachine::getInstance());
     stateMachine->destroy();
+
+    NodeGraphNode::Style::sdmDestroy();
 }
 
 void Sandbox::init()
@@ -161,6 +164,8 @@ void Sandbox::init()
     stateMachine->setState(eGameState_Init);
 
     m_ColorPicker = NEW QColorDialog(m_Window);
+
+    NodeGraphNode::Style::sdmInit();
 }
 
 void Sandbox::tick(float dTime)

@@ -361,27 +361,31 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
             //vec2 scale(size.x / s.x, size.y / s.y);
             c.width = size.x - (s.x - c.width);
             c.height = size.y - (s.y - c.height);
-
             s = size;
         }
 
-        mat44 world(mat44::createTranslation(vec3(pos.x + s.x/2, pos.y + s.y/2, 0.0f)) * mat44::createScale(s.x, s.y, 1.0f));
-    
-        m_NinePatchEffectQuad->setWorldMatrix(m_OrthographicMatrix * world);
-        m_NinePatchEffectQuad->setCenter(c);
-        m_NinePatchEffectQuad->setSize(s);
-        m_NinePatchEffectQuad->setOriginalSize(sprite->getSize());
-        m_NinePatchEffectQuad->setDiffuseMap(sprite->getRenderTexture());
-        m_NinePatchEffectQuad->setDepth(0.5f);
-        m_NinePatchEffectQuad->setBlendColor(m_Color);
-    
-        GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
-        DrawContext context;
-        context.m_VBO = m_TextureQuad->getVBO();
-        context.m_IBO = m_TextureQuad->getIBO();
-        m_NinePatchEffectQuad->apply(context);
-        m_TextureQuad->draw();
+        drawNinePatch(sprite->getRenderTexture(), pos, c, s);
     }
+}
+
+void Canvas2DRendererGL::drawNinePatch( const gfx::Texture2D* tex2D, const vec2& pos, const he::RectF& centerBlock, const vec2& size )
+{
+    mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+
+    m_NinePatchEffectQuad->setWorldMatrix(m_OrthographicMatrix * world);
+    m_NinePatchEffectQuad->setCenter(centerBlock);
+    m_NinePatchEffectQuad->setSize(size);
+    m_NinePatchEffectQuad->setOriginalSize(he::vec2(static_cast<float>(tex2D->getWidth()), static_cast<float>(tex2D->getHeight())));
+    m_NinePatchEffectQuad->setDiffuseMap(tex2D);
+    m_NinePatchEffectQuad->setDepth(0.5f);
+    m_NinePatchEffectQuad->setBlendColor(m_Color);
+
+    GL::heBindFbo(m_CanvasBuffer->m_FrameBufferId);
+    DrawContext context;
+    context.m_VBO = m_TextureQuad->getVBO();
+    context.m_IBO = m_TextureQuad->getIBO();
+    m_NinePatchEffectQuad->apply(context);
+    m_TextureQuad->draw();
 }
 
 void Canvas2DRendererGL::blitImage( const Texture2D* tex2D, const vec2& pos,

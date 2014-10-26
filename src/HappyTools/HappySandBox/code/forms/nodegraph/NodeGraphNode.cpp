@@ -22,45 +22,55 @@
 #include "NodeGraphNodeAttachment.h"
 
 #include <Canvas2D.h>
+#include <ContentManager.h>
+#include <Texture2D.h>
+
+#define HEADER_HEIGHT 24.0f
 
 namespace hs {
 
 NodeGraphNode::Style::Style() 
     : m_TitleSize(12)
-    , m_BackgroundMargin(4, 0, 4, 0)
 {
-    m_Border[eState_Normal] = he::Color(79, 133, 149, static_cast<he::uint8>(255));
-    m_Border[eState_Hover] = he::Color(143, 185, 197, static_cast<he::uint8>(255));
-    m_Border[eState_Selected] = he::Color(208, 225, 230, static_cast<he::uint8>(255));
-
-    m_Background[eState_Normal] = he::Color(95, 100, 126, static_cast<he::uint8>(255));
-    m_Background[eState_Hover] = m_Background[eState_Normal];
-    m_Background[eState_Selected] = he::Color(118, 123, 152, static_cast<he::uint8>(255));
+    m_NinePatchTextureBackground[eState_Normal] = nullptr;
+    m_NinePatchTextureBackground[eState_Hover] = nullptr;
+    m_NinePatchTextureBackground[eState_Selected] = nullptr;
 
     m_Title[eState_Normal] = he::Color(210, 227, 232, static_cast<he::uint8>(255));
     m_Title[eState_Hover] =  m_Title[eState_Normal];
     m_Title[eState_Selected] =  m_Title[eState_Normal];
 }
 
+void NodeGraphNode::Style::sdmInit()
+{
+    Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Normal] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch.png");
+    Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Hover] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch_hover.png");
+    Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Selected] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch_selected.png");
+}
+
+void NodeGraphNode::Style::sdmDestroy()
+{
+    Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Normal]->release();
+    Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Hover]->release();
+    Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Selected]->release();
+}
+
+NodeGraphNode::Style NodeGraphNode::Style::s_DefaultStyle;
+
 NodeGraphNode::NodeGraphNode()
     : m_State(eState_Normal)
+    , m_Style(&Style::s_DefaultStyle)
 {
+    m_Layout.setLayoutBound(he::RectF(0, 0, 160, 128));
+    m_Layout.setLayoutMargin(he::vec4(4, HEADER_HEIGHT + 16, 4, 16));
 }
 
 NodeGraphNode::~NodeGraphNode()
 {
-
-}
-
-void NodeGraphNode::create()
-{
-    m_Layout.initGrid(5, 3);
-    m_Layout.setLayoutBound(he::RectF(0, 0, 128, 64));
-}
-
-void NodeGraphNode::destroy()
-{
-
+    m_Attachments.forEach([](NodeGraphNodeAttachment* att)
+    {
+        delete att;
+    });
 }
 
 bool NodeGraphNode::isInside( const he::vec2& worldPos )
@@ -68,42 +78,44 @@ bool NodeGraphNode::isInside( const he::vec2& worldPos )
     return m_Layout.getLayoutBound().isInside(worldPos);
 }
 
-void NodeGraphNode::setPosition(const he::vec2& position)
+NodeGraphNodeConnector* NodeGraphNode::pickConnector( const he::vec2& worldPos )
 {
-    he::RectF bound(m_Layout.getLayoutBound());
-    bound.x = position.x;
-    bound.y = position.y;
-    m_Layout.setLayoutBound(bound);
+    NodeGraphNodeConnector* result(nullptr);
+    size_t index(0);
+    m_Attachments.find_if([&worldPos, &result](NodeGraphNodeAttachment* att)
+    {
+        result = att->pickNodeConnector(worldPos);
+        return result != nullptr;
+    }, index);
+    return result;
 }
 
-he::vec2 NodeGraphNode::getPosition() const
+void NodeGraphNode::move( const he::vec2& worldDelta )
 {
-    const he::RectF& bound(m_Layout.getLayoutBound());
-    return he::vec2(bound.x, bound.y);
-}
-
-void NodeGraphNode::addOutput( NodeGraphNodeAttachment* output )
-{
-    m_Layout.setAt(2, he::checked_numcast<he::uint8>(m_Attachments.size()), 0, output);
-    addAttachment(output);
-}
-
-void NodeGraphNode::addInput( NodeGraphNodeAttachment* input )
-{
-    m_Layout.setAt(0, he::checked_numcast<he::uint8>(m_Attachments.size()), 0, input);
-    addAttachment(input);
-}
-
-void NodeGraphNode::addDecoration(NodeGraphNodeAttachment* deco)
-{
-    m_Layout.setAt(1, he::checked_numcast<he::uint8>(m_Attachments.size()), 0, deco);
-    addAttachment(deco);
+    m_Layout.move(worldDelta);
 }
 
 void NodeGraphNode::addAttachment(NodeGraphNodeAttachment* att)
 {
     m_Attachments.add(att);
+    HE_ASSERT(m_Layout.isLayoutSuspended(), "Please call startEdit before adding or removing NodeGraphNodeAttachment's");
+    const float height(att->getLayoutMinSize().y + 8);
+    he::RectF layoutBound(m_Layout.getLayoutBound());
+    layoutBound.height += height;
+    m_Layout.setLayoutBound(layoutBound);
+    m_Layout.add(att);
 }
+
+void NodeGraphNode::startEdit()
+{
+    m_Layout.suspendLayout();
+}
+
+void NodeGraphNode::endEdit()
+{
+    m_Layout.resumeLayout();
+}
+
 
 namespace {
     bool BoundCheck(const he::RectF& bound, const he::RectF& region)
@@ -122,11 +134,9 @@ void NodeGraphNode::draw( const NodeGraphDrawContext& context )
     {
         drawNodeBackground(context);
 
-        NodeGraphDrawContext localContext(context);
-        localContext.transform = context.transform * he::mat33::createTranslation2D(he::vec2(bound.x, bound.y));
-        m_Attachments.forEach([this, &localContext](NodeGraphNodeAttachment* att)
+        m_Attachments.forEach([this, &context](NodeGraphNodeAttachment* att)
         {
-            drawAttachment(localContext, att);
+            drawAttachment(context, att);
         });
     }
 }
@@ -134,23 +144,24 @@ void NodeGraphNode::draw( const NodeGraphDrawContext& context )
 void NodeGraphNode::drawNodeBackground( const NodeGraphDrawContext& context )
 {
     he::RectF bound(m_Layout.getLayoutBound());
-    const he::vec4& margin(m_Style.m_BackgroundMargin);
-    bound.x += margin.x;
-    bound.y += margin.y;
-    bound.width -= margin.x + margin.z;
-    bound.height -= margin.y + margin.w;
     const he::RectI transformedBound(bound.transform(context.transform));
 
-    context.canvas->setColor(m_Style.m_Background[m_State]);
-    context.canvas->fillRect(transformedBound);    
-
-    context.canvas->setColor(m_Style.m_Border[m_State]);
-    context.canvas->strokeRect(transformedBound);    
+    const he::gfx::Texture2D* tex(m_Style->m_NinePatchTextureBackground[m_State]);
+    context.canvas->setColor(he::Color(1.0f, 1.0f, 1.0f, 0.75f));
+    context.canvas->drawNinePatch(tex, he::vec2(static_cast<float>(transformedBound.x), static_cast<float>(transformedBound.y)), 
+        he::RectF(24.0f, 24.0f, transformedBound.width - 48.0f, transformedBound.height - 48.0f),
+        he::vec2(static_cast<float>(transformedBound.width), static_cast<float>(transformedBound.height)));
 }
 
 void NodeGraphNode::drawAttachment( const NodeGraphDrawContext& context, NodeGraphNodeAttachment* attachment )
 {
     attachment->draw(context);
+}
+
+void NodeGraphNode::setTitle( const char* title )
+{
+    m_Title.clear();
+    m_Title.addText(title);
 }
 
 } //end namespace

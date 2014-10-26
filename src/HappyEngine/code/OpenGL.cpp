@@ -261,9 +261,9 @@ void APIENTRY glDebugCallback(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/,
     case GL_DEBUG_SEVERITY_MEDIUM_ARB: 
         HE_ERROR("GL: %.*s", length, message); break;
     case GL_DEBUG_SEVERITY_LOW_ARB: 
-        HE_WARNING("GL: %.*s", length, message); break;
+        //HE_WARNING("GL: %.*s", length, message); break;
     default: 
-        HE_INFO("GL: %.*s", length, message);
+        //HE_INFO("GL: %.*s", length, message);
         break;
     }
 }
@@ -280,17 +280,17 @@ void GL::init()
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetWindingFrontFace(false);
     GL::heSetCullFace(false);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_SCISSOR_TEST);
 
 #ifdef HE_DEBUG
     // no worky on AMD/ATI
-   /* if (glewGetContext()->__GLEW_ARB_debug_output)
+    if (glewGetContext()->__GLEW_ARB_debug_output)
     {
         glDebugMessageCallbackARB(glDebugCallback, nullptr);
         glEnable(GL_DEBUG_OUTPUT);
-    }*/
+    }
 #endif
 
     if (glewGetContext()->__GLEW_EXT_texture_filter_anisotropic == GL_TRUE)
