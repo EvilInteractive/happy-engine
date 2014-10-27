@@ -286,6 +286,13 @@ void NodeGraph::updateConnectNodeState( const float /*dTime*/ )
     const he::io::IMouse* const mouse(controls->getMouse(getHandle()));
     if (mouse->isButtonReleased(he::io::MouseButton_Left))
     {
+        if (m_HoverConnector && m_HoverConnector->getType() != m_ConnectingConnector->getType())
+        {
+            if (m_HoverConnector->getType() == eNodeGraphNodeConnectorType_Output || !m_HoverConnector->isConnected() || disconnect(m_HoverConnector))
+            {
+                connect(m_ConnectingConnector, m_HoverConnector);
+            }
+        }
         m_ConnectingConnector->setState(m_ConnectingConnector == m_HoverConnector? NodeGraphNodeConnector::eConnectorState_Hover : NodeGraphNodeConnector::eConnectorState_Normal);
         m_ConnectingConnector = nullptr;
         m_State = State_Idle;
@@ -455,14 +462,25 @@ void NodeGraph::doNodeMove( const he::vec2& worldDelta )
 
 bool NodeGraph::doConnectStart()
 {
-    bool result(false);
     if (m_HoverConnector)
     {
         m_ConnectingConnector = m_HoverConnector;
-        m_ConnectingConnector->setState(NodeGraphNodeConnector::eConnectorState_Selected);
-        result = true;
+        if (m_ConnectingConnector->isConnected() && m_ConnectingConnector->getType() == eNodeGraphNodeConnectorType_Input)
+        {
+            NodeGraphNodeConnector* newConnection(m_ConnectingConnector->getConnections()[0]);
+            if (disconnect(m_ConnectingConnector))
+            {
+                m_ConnectingConnector = newConnection;
+            }
+            else
+            {
+                m_ConnectingConnector = nullptr;
+            }
+        }
+        if (m_ConnectingConnector)
+            m_ConnectingConnector->setState(NodeGraphNodeConnector::eConnectorState_Selected);
     }
-    return result;
+    return m_ConnectingConnector != nullptr;
 }
 
 bool NodeGraph::doConnectEnd()
@@ -470,6 +488,18 @@ bool NodeGraph::doConnectEnd()
     bool result(true);
 
     return result;
+}
+
+bool NodeGraph::connect( NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to )
+{
+    from->connect(to);
+    return true;
+}
+
+bool NodeGraph::disconnect( NodeGraphNodeConnector* const connection )
+{
+    connection->disconnectAll();
+    return true;
 }
 
 }

@@ -50,7 +50,8 @@ protected:
     virtual NodeGraphNode* createNode() = 0;
 
     // Called when a connection is made between two connectors, returns if successful
-    virtual bool connect(NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to) = 0;
+    virtual bool connect(NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to);
+    virtual bool disconnect(NodeGraphNodeConnector* const connection);
 
 private:
     enum State

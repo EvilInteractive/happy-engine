@@ -64,6 +64,12 @@ public:
     ENodeGraphNodeConnectorType getType() const { return m_Type; }
     void setType(const ENodeGraphNodeConnectorType type) { m_Type = type; }
 
+    void connect(NodeGraphNodeConnector* other);
+    void disconnect(NodeGraphNodeConnector* other);
+    void disconnectAll();
+    bool isConnected() const { return m_Connections.size() != 0; }
+    const he::PrimitiveList<NodeGraphNodeConnector*>& getConnections() const { return m_Connections; }
+
     // Picking
     bool pick(const he::vec2& worldPos) const;
 
@@ -73,6 +79,7 @@ public:
     
 private:
     NodeGraphNodeAttachment* m_Parent;
+    he::PrimitiveList<NodeGraphNodeConnector*> m_Connections;
     EConnectorState m_State;
     ConnectorStyle m_Style;
     ENodeGraphNodeConnectorType m_Type;

@@ -62,9 +62,9 @@ NodeGraphNode* MaterialGraph::createNode()
     return node;
 }
 
-bool MaterialGraph::connect( NodeGraphNodeConnector* const /*from*/, NodeGraphNodeConnector* const /*to*/ )
+bool MaterialGraph::connect( NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to )
 {
-    return true;
+    return NodeGraph::connect(from, to);
 }
 
 }

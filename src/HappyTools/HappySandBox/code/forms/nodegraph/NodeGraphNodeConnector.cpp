@@ -69,6 +69,11 @@ void NodeGraphNodeConnector::draw( const NodeGraphDrawContext& context )
 
     context.canvas->setColor(m_Style.m_ConnectorBorderColor[m_State]);
     context.canvas->fillRect(bound);
+
+    if (m_Type == eNodeGraphNodeConnectorType_Input && isConnected())
+    {
+        drawConnection(context, *m_Connections[0]);
+    }
 }
 
 void NodeGraphNodeConnector::drawConnection( const NodeGraphDrawContext& context, const he::vec2& other )
@@ -92,6 +97,36 @@ void NodeGraphNodeConnector::drawConnection( const NodeGraphDrawContext& context
 {
     he::vec2 pos1(other.m_LayoutBound.x + m_LayoutBound.width / 2.0f, other.m_LayoutBound.y + m_LayoutBound.height / 2.0f);
     drawConnection(context, pos1);
+}
+
+void NodeGraphNodeConnector::connect( NodeGraphNodeConnector* other )
+{
+    if (!m_Connections.contains(other))
+    {
+        m_Connections.add(other);
+        other->connect(this);
+        HE_ASSERT(m_Type == eNodeGraphNodeConnectorType_Output || m_Connections.size() < 2, "An input connector can only have one connection!");
+    }
+}
+
+void NodeGraphNodeConnector::disconnect(NodeGraphNodeConnector* other)
+{
+    size_t index(0);
+    if (m_Connections.find(other, index))
+    {
+        m_Connections.removeAt(index);
+        other->disconnect(this);
+    }
+}
+
+void NodeGraphNodeConnector::disconnectAll()
+{
+    for (size_t i(0); i < m_Connections.size();)
+    {
+        NodeGraphNodeConnector* const connector(m_Connections[i]);
+        m_Connections.removeAt(i);
+        connector->disconnect(this);
+    }
 }
 
 } //end namespace
