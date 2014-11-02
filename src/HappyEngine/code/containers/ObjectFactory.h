@@ -37,7 +37,7 @@ public: \
     he::ObjectHandle::ObjectType Type::s_ObjectType = he::ObjectHandle::s_UnassignedType;
 
 namespace details {
-class ObjectFactoryTypeManager : public Singleton<ObjectFactoryTypeManager>
+class SINGLETON(ObjectFactoryTypeManager)
 {
     friend class Singleton<ObjectFactoryTypeManager>;
     ObjectFactoryTypeManager(): m_LastType(0) {}

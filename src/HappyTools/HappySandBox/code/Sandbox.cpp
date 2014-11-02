@@ -82,8 +82,8 @@ int Sandbox::run(int argc, char* args[])
 
     HE_ASSERT(QGLFormat::defaultFormat().majorVersion() == 3, "Default Major is not 3! but %d", QGLFormat::defaultFormat().majorVersion());
 
-    hs::StaticDataManager::init();
     he::HappyEngine::init(argc, args, he::SubEngine_All & ~he::SubEngine_Windowing);
+    hs::StaticDataManager::init();
 
     m_Window = NEW MainWindow();
     connect(m_Window, SIGNAL(close()), this, SLOT(quit()));
@@ -102,13 +102,12 @@ int Sandbox::run(int argc, char* args[])
     destroy();
 
     m_Window->getGameWidget()->destroy(); // Unregister context and stuff
-
+    
+    hs::StaticDataManager::destroy();
     he::HappyEngine::dispose();
 
     delete m_Window;
     m_Window = nullptr;
-
-    hs::StaticDataManager::destroy();
 
     return ret;
 }

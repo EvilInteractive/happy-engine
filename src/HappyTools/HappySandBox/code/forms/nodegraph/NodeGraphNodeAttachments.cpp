@@ -47,14 +47,15 @@ void NodeGraphNodeTextConnector::init( const ENodeGraphNodeConnectorType connect
     font->release();
 
     m_Text.setLayoutVAlignment(he::gui::eLayoutVAlignment_Center);
-    m_Connector.setLayoutVAlignment(he::gui::eLayoutVAlignment_Center);
-    m_Connector.setType(connectorType);
+    NodeGraphNodeConnector& connector(getNodeConnector());
+    connector.setLayoutVAlignment(he::gui::eLayoutVAlignment_Center);
+    connector.setType(connectorType);
     switch (connectorType)
     {
     case eNodeGraphNodeConnectorType_Input:
         {
             m_Text.setLayoutPadding(he::vec4(4, 0, 0, 0));
-            m_Layout.add(&m_Connector);
+            m_Layout.add(&connector);
             m_Layout.add(&m_Text);
             m_Layout.setLayoutHAlignment(he::gui::eLayoutHAlignment_Left);
         } break;
@@ -62,27 +63,28 @@ void NodeGraphNodeTextConnector::init( const ENodeGraphNodeConnectorType connect
         {
             m_Text.setLayoutPadding(he::vec4(0, 0, 4, 0));
             m_Layout.add(&m_Text);
-            m_Layout.add(&m_Connector);
+            m_Layout.add(&connector);
             m_Layout.setLayoutHAlignment(he::gui::eLayoutHAlignment_Right);
         } break;
     }
     he::vec2 minSize(m_Text.getLayoutMinSize());
-    minSize.x += m_Connector.getLayoutMinSize().x + 8; // +8 padding
+    minSize.x += connector.getLayoutMinSize().x + 8; // +8 padding
     m_Layout.setLayoutMinSize(minSize);
     m_Layout.resumeLayout();
 }
 
 NodeGraphNodeConnector* NodeGraphNodeTextConnector::pickNodeConnector( const he::vec2& worldPos )
 {
-    if (m_Connector.pick(worldPos))
-        return &m_Connector;
+    NodeGraphNodeConnector& connector(getNodeConnector());
+    if (connector.pick(worldPos))
+        return &connector;
     else
         return nullptr;
 }
 
 void NodeGraphNodeTextConnector::draw( const NodeGraphDrawContext& context )
 {
-    m_Connector.draw(context);
+    getNodeConnector().draw(context);
     m_Text.draw2D(context.canvas, context.transform);
 }
 

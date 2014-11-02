@@ -30,8 +30,7 @@
 #include "MaterialGeneratorRootNodes.h"
 #include "MaterialGeneratorVectorNodes.h"
 
-namespace he {
-namespace tools {
+namespace hs {
 
 MaterialGeneratorNodeFactory::MaterialGeneratorNodeFactory()
 {
@@ -44,10 +43,10 @@ MaterialGeneratorNodeFactory::~MaterialGeneratorNodeFactory()
 
 MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGeneratorNodeType type )
 {
-    return create(type, Guid::generateGuid());
+    return create(type, he::Guid::generateGuid());
 }
 
-MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGeneratorNodeType type, const Guid& id )
+MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGeneratorNodeType type, const he::Guid& id )
 {
     MaterialGeneratorNode* node(nullptr);
     switch (type)
@@ -105,7 +104,7 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
         //case MaterialGeneratorNodeType_Texcoord: node = NEW MaterialGeneratorNodeTexcoord(); break;
 
         default:
-            LOG(LogType_ProgrammerAssert, "Unknown node in factory: %s", materialGeneratorNodeTypeToString(type));
+            LOG(he::LogType_ProgrammerAssert, "Unknown node in factory: %s", materialGeneratorNodeTypeToString(type));
     }
     registerObject(node);
     node->init();
@@ -118,4 +117,4 @@ void MaterialGeneratorNodeFactory::destroy( MaterialGeneratorNode* const node )
     destroyObject(node->getHandle());
 }
 
-} } //end namespace
+} //end namespace

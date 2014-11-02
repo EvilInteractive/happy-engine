@@ -49,8 +49,10 @@
 #ifdef HE_WINDOWS
     #ifdef HappyEngine_EXPORTS
         #define HAPPY_ENTRY __declspec(dllexport)
+        #define HAPPY_TEMPLATE_ENTRY
     #else
         #define HAPPY_ENTRY __declspec(dllimport)
+        #define HAPPY_TEMPLATE_ENTRY extern
     #endif
 #else
     #define HAPPY_ENTRY
@@ -63,6 +65,8 @@
 #define HE_FORCEINLINE __inline__ __attribute__((always_inline))
 #endif
 
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, val, ...) val
+#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
 #define CONCAT(a, b) CONCAT2(a, b)
 #define CONCAT2(a, b) a##b

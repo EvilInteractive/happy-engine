@@ -24,6 +24,7 @@
 #include <Canvas2D.h>
 #include <ContentManager.h>
 #include <Texture2D.h>
+#include <Font.h>
 
 #define HEADER_HEIGHT 24.0f
 
@@ -62,7 +63,13 @@ NodeGraphNode::NodeGraphNode()
     , m_Style(&Style::s_DefaultStyle)
 {
     m_Layout.setLayoutBound(he::RectF(0, 0, 160, 128));
-    m_Layout.setLayoutMargin(he::vec4(4, HEADER_HEIGHT + 16, 4, 16));
+    m_Layout.setLayoutMargin(he::vec4(4, 16, 4, 16));
+
+    m_Title.setLayoutHAlignment(he::gui::eLayoutHAlignment_Center);
+    m_Title.setLayoutVAlignment(he::gui::eLayoutVAlignment_Top);
+    m_Title.setLayoutPadding(he::vec4(0.0f, 0.0f, 0.0f, 16.0f));
+
+    m_Layout.add(&m_Title);
 }
 
 NodeGraphNode::~NodeGraphNode()
@@ -134,6 +141,8 @@ void NodeGraphNode::draw( const NodeGraphDrawContext& context )
     {
         drawNodeBackground(context);
 
+        m_Title.draw2D(context.canvas, context.transform);
+
         m_Attachments.forEach([this, &context](NodeGraphNodeAttachment* att)
         {
             drawAttachment(context, att);
@@ -160,8 +169,9 @@ void NodeGraphNode::drawAttachment( const NodeGraphDrawContext& context, NodeGra
 
 void NodeGraphNode::setTitle( const char* title )
 {
-    m_Title.clear();
-    m_Title.addText(title);
+    he::gui::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", 72, he::gui::Font::NO_CACHE));
+    m_Title.create(font, 16, title);
+    font->release();
 }
 
 } //end namespace

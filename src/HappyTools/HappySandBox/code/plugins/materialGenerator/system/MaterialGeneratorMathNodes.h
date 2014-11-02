@@ -24,8 +24,7 @@
 
 #include "MaterialGeneratorNodeClassHelper.h"
 
-namespace he {
-namespace tools {
+namespace hs {
     
 // One param
 MaterialGeneratorNodeClass(Abs)
@@ -56,6 +55,6 @@ MaterialGeneratorNodeClass(Reflect)
 MaterialGeneratorNodeClass(Clamp)
 MaterialGeneratorNodeClass(Lerp)
 
-} } //end namespace
+} //end namespace
 
 #endif

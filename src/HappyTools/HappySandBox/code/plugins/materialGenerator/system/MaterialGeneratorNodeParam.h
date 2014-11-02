@@ -24,8 +24,7 @@
 
 #include "ShaderGeneratorEnums.h"
 
-namespace he {
-namespace tools {
+namespace hs {
 
 class MaterialGeneratorNodeParam
 {
@@ -48,19 +47,19 @@ public:
 
     // Setters
     void setFloat(const float val);
-    void setFloat2(const vec2& val);
-    void setFloat3(const vec3& val);
-    void setFloat4(const vec4& val);
+    void setFloat2(const he::vec2& val);
+    void setFloat3(const he::vec3& val);
+    void setFloat4(const he::vec4& val);
     void setBool(const bool val);
-    void setSwizzleMask(const ct::ShaderGeneratorSwizzleMask val);
+    void setSwizzleMask(const he::ct::ShaderGeneratorSwizzleMask val);
 
     // Getters
     float getFloat() const;
-    vec2  getFloat2() const;
-    vec3  getFloat3() const;
-    vec4  getFloat4() const;
+    he::vec2  getFloat2() const;
+    he::vec3  getFloat3() const;
+    he::vec4  getFloat4() const;
     bool  getBool() const;
-    ct::ShaderGeneratorSwizzleMask  getSwizzleMask() const;
+    he::ct::ShaderGeneratorSwizzleMask  getSwizzleMask() const;
 
     Type getType() const { return m_Type; }
 
@@ -71,10 +70,10 @@ private:
     {
         bool m_Bool;
         float m_Float[4];
-        ct::ShaderGeneratorSwizzleMask m_Mask;
+        he::ct::ShaderGeneratorSwizzleMask m_Mask;
     } m_Data;
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

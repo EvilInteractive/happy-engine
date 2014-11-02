@@ -174,36 +174,74 @@ bool Color::operator!=(const Color& other) const
 
 he::Color Color::fromHSB(float hue, float saturation, float brightness)
 {
-    hue = fmod(hue, 1.0f);
-    saturation = he::clamp(saturation, 0.0f, 1.0f);
-    brightness = he::clamp(brightness, 0.0f, 1.0f);
+    if(saturation <= 0.0f) 
+    {       
+        return he::Color(brightness, brightness, brightness);
+    }
+    float hueSlice(hue);
+    if (hueSlice >= 360.0f) hueSlice = 0.0f;
+    hueSlice /= 60.0f;
+    const int hueIndex(static_cast<int>(hueSlice));
+    const float hueLocal(hueSlice - hueIndex);
+    const float p(brightness * (1.0f - saturation));
+    const float q(brightness * (1.0f - (saturation * hueLocal)));
+    const float t(brightness * (1.0f - (saturation * (1.0f - hueLocal))));
 
-    const float hueSlice(6.0f * hue);
-    const float hueSliceInteger(floor(hueSlice));
-    const float hueSliceInterpolant(hueSlice - hueSliceInteger);
+    he::Color result;
+    switch(hueIndex) 
+    {
+    case 0: result = he::Color(brightness, t, p); break;
+    case 1: result = he::Color(q, brightness, p); break;
+    case 2: result = he::Color(p, brightness, t); break;
+    case 3: result = he::Color(p, q, brightness); break;
+    case 4: result = he::Color(t, p, brightness); break;
+    default: result = he::Color(brightness, p, q); break;
+    }
+    return result; 
+}
 
-    const he::vec3 tempRGB(
-        brightness * (1.0f - saturation),
-        brightness * (1.0f - saturation * hueSliceInterpolant),
-        brightness * (1.0f - saturation * (1.0f - hueSliceInterpolant))
-    );
+he::vec3 Color::toHSB() const
+{
+    float min(std::min(m_rgb.x, m_rgb.y));
+    min = std::min(min, m_rgb.z);
 
-    const float isOddSlice(fmod(hueSliceInteger, 2.0f));
-    const float threeSliceSelector(0.5f * (hueSliceInteger - isOddSlice));
+    float max(std::max(m_rgb.x, m_rgb.y));
+    max = std::max(max, m_rgb.z);
 
-    const he::vec3 scrollingRGBForEvenSlices(brightness, tempRGB.z, tempRGB.x);
-    const he::vec3 scrollingRGBForOddSlices(tempRGB.y, brightness, tempRGB.x);  
-    const he::vec3 scrollingRGB(lerp(scrollingRGBForEvenSlices, scrollingRGBForOddSlices, isOddSlice));
+    // h = x
+    // s = y
+    // b = z
+    he::vec3 result;
 
-    const float isNotFirstSlice(clamp(threeSliceSelector, 0.0f, 1.0f));
-    const float isNotSecondSlice(clamp(threeSliceSelector, 0.0f, 1.0f));
+    result.z = max; // brightness
+    const float delta(max - min);
+    if( max > 0.0f ) 
+    {
+        result.y = (delta / max); // saturation
+    } 
+    else 
+    {
+        // if max is 0, then r = g = b = 0              
+        return he::vec3(0, 0, 0);
+    }
+    if( m_rgb.x == max )
+    {
+        result.x = ( m_rgb.y - m_rgb.z ) / delta;   // between yellow & magenta
+    }
+    else
+    {
+        if( m_rgb.y >= max )
+            result.x = 2.0f + ( m_rgb.z - m_rgb.x ) / delta;  // between cyan & yellow
+        else
+            result.x = 4.0f + ( m_rgb.x - m_rgb.y ) / delta;  // between magenta & cyan
+    }
 
-    const he::vec3 result(lerp(scrollingRGB, 
-        lerp(he::vec3(scrollingRGB.z, scrollingRGB.x, scrollingRGB.y), 
-             he::vec3(scrollingRGB.y, scrollingRGB.z, scrollingRGB.x), isNotSecondSlice), isNotFirstSlice));
+    result.x *= 60.0f; // degrees
 
+    if( result.x < 0.0f )
+        result.x += 360.0f;
 
-    return Color(result.x, result.y, result.z, 1.0f);
+    return result;
 }
 
 } //end namespace

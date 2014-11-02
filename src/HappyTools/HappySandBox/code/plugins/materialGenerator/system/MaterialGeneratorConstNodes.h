@@ -24,14 +24,13 @@
 
 #include "MaterialGeneratorNodeClassHelper.h"
 
-namespace he {
-namespace tools {
+namespace hs {
 
 MaterialGeneratorNodeClass(Float1)
 MaterialGeneratorNodeClass(Float2)
 MaterialGeneratorNodeClass(Float3)
 MaterialGeneratorNodeClass(Float4)
 
-} } //end namespace
+} //end namespace
 
 #endif

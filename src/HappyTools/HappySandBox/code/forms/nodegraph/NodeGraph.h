@@ -40,6 +40,10 @@ public:
     void activate();
     void deactivate();
 
+    virtual void destroy() override;
+
+    void addNode(NodeGraphNode* node, const he::vec2& screenPos);
+
     virtual void tick(float dTime);
     virtual void draw2D(he::gui::Canvas2D* canvas) override;
 
@@ -48,6 +52,7 @@ public:
 protected:
     // Called when left mouse is pressed (only return a node if you want to create one on click (with a shortcut))
     virtual NodeGraphNode* createNode() = 0;
+    virtual void destroyNode(NodeGraphNode* node) = 0;
 
     // Called when a connection is made between two connectors, returns if successful
     virtual bool connect(NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to);

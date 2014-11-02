@@ -76,19 +76,6 @@ NodeGraph::NodeGraph(QWidget *parent)
 
 NodeGraph::~NodeGraph()
 {
-    deactivate();
-
-    m_2DRenderer->detachFromRender(this);
-
-    GRAPHICS->removeView(m_View);
-    delete m_2DRenderer;
-
-    destroy();
-
-    m_Nodes.forEach([](NodeGraphNode* node)
-    {
-        delete node;
-    });
 }
 
 void NodeGraph::activate()
@@ -107,6 +94,12 @@ void NodeGraph::deactivate()
         m_Active = false;
         GAME->removeFromTickList(this);
     }
+}
+
+void NodeGraph::addNode( NodeGraphNode* node, const he::vec2& screenPos )
+{
+    node->move(screenToWorldPos(screenPos));
+    m_Nodes.add(node);
 }
 
 he::vec2 NodeGraph::screenToWorldPos( const he::vec2& screenPos ) const
@@ -500,6 +493,31 @@ bool NodeGraph::disconnect( NodeGraphNodeConnector* const connection )
 {
     connection->disconnectAll();
     return true;
+}
+
+void NodeGraph::destroy()
+{
+    deactivate();
+
+    if (m_View)
+    {
+        GRAPHICS->removeView(m_View);
+        m_View = nullptr;
+    }
+
+    if (m_2DRenderer)
+    {
+        m_2DRenderer->detachFromRender(this);
+        delete m_2DRenderer;
+        m_2DRenderer = nullptr;
+    }
+
+    RenderWidget::destroy();
+
+    m_Nodes.forEach([this](NodeGraphNode* node)
+    {
+        destroyNode(node);
+    });
 }
 
 }

@@ -21,10 +21,8 @@
 
 #include "MaterialGeneratorTextureNodes.h"
 #include "ShaderGeneratorVariableFactory.h"
-#include "MaterialGeneratorGraph.h"
 
-namespace he {
-namespace tools {
+namespace hs {
     
 
-} } //end namespace
+} //end namespace

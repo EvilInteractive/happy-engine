@@ -22,8 +22,7 @@
 #define _HE_MaterialGeneratorNodeTypes_H_
 #pragma once
 
-namespace he {
-namespace tools {
+namespace hs {
     
 enum MaterialGeneratorVariableType
 {
@@ -43,22 +42,29 @@ enum MaterialGeneratorNodeType
     MaterialGeneratorNodeType_RootNormalDraw,
 
     // Const
-    MaterialGeneratorNodeType_Float1,
+    MaterialGeneratorNodeType_CONST,
+    MaterialGeneratorNodeType_Float1 = MaterialGeneratorNodeType_CONST,
     MaterialGeneratorNodeType_Float2,
     MaterialGeneratorNodeType_Float3,
     MaterialGeneratorNodeType_Float4,
+    MaterialGeneratorNodeType_CONST_MAX,
 
     // Globals
-    MaterialGeneratorNodeType_WorldViewPosition,
+    MaterialGeneratorNodeType_GLOBALS = MaterialGeneratorNodeType_CONST_MAX,
+    MaterialGeneratorNodeType_WorldViewPosition = MaterialGeneratorNodeType_GLOBALS,
     MaterialGeneratorNodeType_WorldViewNormal,
+    MaterialGeneratorNodeType_GLOBALS_MAX,
 
     // Vector
-    MaterialGeneratorNodeType_Swizzle,
+    MaterialGeneratorNodeType_VECTOR = MaterialGeneratorNodeType_GLOBALS_MAX,
+    MaterialGeneratorNodeType_Swizzle = MaterialGeneratorNodeType_VECTOR,
     MaterialGeneratorNodeType_ComposeVector,
+    MaterialGeneratorNodeType_VECTOR_MAX,
 
     // Math
+    MaterialGeneratorNodeType_MATH = MaterialGeneratorNodeType_VECTOR_MAX,
         // Basic
-        MaterialGeneratorNodeType_Abs,
+        MaterialGeneratorNodeType_Abs = MaterialGeneratorNodeType_MATH,
         MaterialGeneratorNodeType_Add,
         MaterialGeneratorNodeType_Cos,
         MaterialGeneratorNodeType_Divide,
@@ -82,9 +88,11 @@ enum MaterialGeneratorNodeType
         MaterialGeneratorNodeType_Power,
         MaterialGeneratorNodeType_Reflect,
         MaterialGeneratorNodeType_Sign,
+    MaterialGeneratorNodeType_MATH_MAX,
 
     // Texture
-    MaterialGeneratorNodeType_FlipBook,
+    MaterialGeneratorNodeType_TEXTURE = MaterialGeneratorNodeType_MATH_MAX,
+    MaterialGeneratorNodeType_FlipBook = MaterialGeneratorNodeType_TEXTURE,
     MaterialGeneratorNodeType_Panner,
     MaterialGeneratorNodeType_Rotator,
     MaterialGeneratorNodeType_Texture2D,
@@ -110,9 +118,7 @@ enum MaterialGeneratorNodeTypeSubdivion
 
 const char* materialGeneratorNodeTypeToString(const MaterialGeneratorNodeType type);
 MaterialGeneratorNodeType materialGeneratorNodeTypeFromString(const char* str);
-MaterialGeneratorNodeTypeSubdivion getMaterialGeneratorNodeTypeSubdivision(const MaterialGeneratorNodeType type);
-const char* materialGeneratorNodeTypeSubdivionToString(const MaterialGeneratorNodeTypeSubdivion type);
 
-} } //end namespace
+} //end namespace
 
 #endif

@@ -24,12 +24,11 @@
 
 #include "MaterialGeneratorNodeClassHelper.h"
 
-namespace he {
-namespace tools {
+namespace hs {
     
 MaterialGeneratorNodeClass(ComposeVector)
 MaterialGeneratorNodeClass(Swizzle)
 
-} } //end namespace
+} //end namespace
 
 #endif

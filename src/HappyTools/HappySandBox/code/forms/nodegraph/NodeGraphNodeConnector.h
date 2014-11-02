@@ -52,7 +52,7 @@ public:
     };
 
     NodeGraphNodeConnector();
-    ~NodeGraphNodeConnector();
+    virtual ~NodeGraphNodeConnector();
 
     // Style
     void setConnectorStyle(const ConnectorStyle& style);
@@ -64,9 +64,12 @@ public:
     ENodeGraphNodeConnectorType getType() const { return m_Type; }
     void setType(const ENodeGraphNodeConnectorType type) { m_Type = type; }
 
-    void connect(NodeGraphNodeConnector* other);
-    void disconnect(NodeGraphNodeConnector* other);
+    // Returns true if something actually changed
+    virtual bool connect(NodeGraphNodeConnector* other);
+    virtual bool disconnect(NodeGraphNodeConnector* other);
+    
     void disconnectAll();
+
     bool isConnected() const { return m_Connections.size() != 0; }
     const he::PrimitiveList<NodeGraphNodeConnector*>& getConnections() const { return m_Connections; }
 
@@ -83,6 +86,10 @@ private:
     EConnectorState m_State;
     ConnectorStyle m_Style;
     ENodeGraphNodeConnectorType m_Type;
+
+    //Disable default copy constructor and default assignment operator
+    NodeGraphNodeConnector(const NodeGraphNodeConnector&);
+    NodeGraphNodeConnector& operator=(const NodeGraphNodeConnector&);
 };
 
 }

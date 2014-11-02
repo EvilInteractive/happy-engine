@@ -4,67 +4,82 @@
 #include "forms/nodegraph/NodeGraphNode.h"
 #include "forms/nodegraph/NodeGraphNodeAttachments.h"
 
+#include "MaterialEditor.h"
+#include "../system/MaterialGeneratorNodeFactory.h"
+
 #include <ControlsManager.h>
 #include <Mouse.h>
 #include <Keyboard.h>
 #include <ContentManager.h>
 #include <Texture2D.h>
+#include <ShaderGenerator.h>
+
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
+
 
 namespace hs {
 
 MaterialGraph::MaterialGraph(QWidget* parent) :
-    NodeGraph(parent)
+    NodeGraph(parent),
+    m_Generator(NEW he::ct::ShaderGenerator())
 {
+    setAcceptDrops(true);
 }
 
 MaterialGraph::~MaterialGraph()
 {
+    destroy();
+    delete m_Generator;
+}
+
+void MaterialGraph::init( MaterialEditor* parent )
+{
+    m_Parent = parent;
 }
 
 NodeGraphNode* MaterialGraph::createNode()
 {
-    const he::io::ControlsManager* const controls(CONTROLS);
-    const he::io::IKeyboard* const keyboard(controls->getKeyboard(getHandle()));
-    NodeGraphNode* node(nullptr);
-    if (keyboard->isKeyDown(he::io::Key_Shift))
-    {
-        const size_t inputs(rand() % 5 + 1);
-        const size_t outputs(rand() % 5 + 1);
-        const bool addTexture((rand() % 5) == 0);
+    return nullptr;
+}
 
-        char* names[] = { "position", "x", "y", "z", "color", "input1", "input2", "diffuse" };
-        const int nameCount(sizeof(names) / sizeof(char*));
-
-        node = NEW NodeGraphNode();
-        node->startEdit();
-        for (size_t i(0); i < inputs; ++i)
-        {
-            NodeGraphNodeTextConnector* connector(NEW NodeGraphNodeTextConnector());
-            connector->init(eNodeGraphNodeConnectorType_Input, names[rand()%nameCount]);
-            node->addAttachment(connector);
-        }
-        if (addTexture)
-        {
-            NodeGraphNodeTextureAttachment* connector(NEW NodeGraphNodeTextureAttachment());
-            const he::gfx::Texture2D* tex(CONTENT->asyncLoadTexture2D("engine/he_logo.png"));
-            connector->init(tex, he::vec2(64, 64));
-            tex->release();
-            node->addAttachment(connector);
-        }
-        for (size_t i(0); i < outputs; ++i)
-        {
-            NodeGraphNodeTextConnector* connector(NEW NodeGraphNodeTextConnector());
-            connector->init(eNodeGraphNodeConnectorType_Output, names[rand()%nameCount]);
-            node->addAttachment(connector);
-        }
-        node->endEdit();
-    }
-    return node;
+void MaterialGraph::destroyNode( NodeGraphNode* node )
+{
+    MaterialGeneratorNodeFactory::getInstance()->destroy(he::checked_cast<MaterialGeneratorNode*>(node));
 }
 
 bool MaterialGraph::connect( NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to )
 {
     return NodeGraph::connect(from, to);
+}
+
+void MaterialGraph::dragEnterEvent( QDragEnterEvent* event )
+{
+    QObject* obj(event->source());
+    if (obj)
+    {
+        MaterialGeneratorNodeType type(m_Parent->getActiveCreateNode());
+        if (type != MaterialGeneratorNodeType_Unassigned)
+        {
+            event->acceptProposedAction();
+        }
+    }
+}
+
+void MaterialGraph::dropEvent( QDropEvent* event )
+{
+    QObject* obj(event->source());
+    if (obj)
+    {
+        MaterialGeneratorNodeType type(m_Parent->getActiveCreateNode());
+        if (type != MaterialGeneratorNodeType_Unassigned)
+        {
+            MaterialGeneratorNode* node(MaterialGeneratorNodeFactory::getInstance()->create(type));
+            addNode(node, he::vec2(event->posF().x(), event->posF().y()));
+            event->acceptProposedAction();
+        }
+    }
 }
 
 }

@@ -21,74 +21,105 @@
 
 #include "MaterialGeneratorVectorNodes.h"
 #include "ShaderGeneratorVariableFactory.h"
-#include "MaterialGeneratorGraph.h"
+#include "MaterialGeneratorNodeConnector.h"
+#include "../forms/MaterialGraph.h"
 
-namespace he {
-namespace tools {
+namespace hs {
     
 // One Param
 
-#pragma region ComposeFloat2
+#pragma region ComposeVector
 
 MaterialGeneratorNodeComposeVector::MaterialGeneratorNodeComposeVector()
 {
-    addOverload(1, 4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    addOverload(1, 4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
-    addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
+    // FLOAT2
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float2));
 
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 4> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[2] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[3] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    // FLOAT3
+
+    // float2 + float
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    // float + float + float
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+
+    // FLOAT4
+
+    // float + float + float + float
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+
+    // float2 + float + float
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+
+    // float2 + float2
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+
+    // float3 + float
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
-bool MaterialGeneratorNodeComposeVector::evaluate( MaterialGeneratorError& error )
+bool MaterialGeneratorNodeComposeVector::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate(error));
+    const bool result(MaterialGeneratorNode::evaluate());
     if (result)
     {
-        ObjectHandle a(ObjectHandle::unassigned);
-        ObjectHandle b(ObjectHandle::unassigned);
-        ObjectHandle c(ObjectHandle::unassigned);
-        ObjectHandle d(ObjectHandle::unassigned);
-        if (getInputConnection(0).isConnected())
-            a = getInputConnection(0).getConnection().getVar();
-        if (getInputConnection(1).isConnected())
-            b = getInputConnection(1).getConnection().getVar();
-        if (getInputConnection(2).isConnected())
-            c = getInputConnection(2).getConnection().getVar();
-        if (getInputConnection(3).isConnected())
-            d = getInputConnection(3).getConnection().getVar();
-
-        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());
-        const he::ObjectHandle handle(m_Parent->getGenerator()->addVariable());
-        ct::ShaderGeneratorVariable* const varResult(factory->get(handle));
-
-        const MaterialGeneratorVariableType outputType(getOutput(0).getType());
-
-        switch (outputType)
+        he::ObjectHandle vars[4];
+        for (size_t i(0); i < 4; ++i)
         {
-            case MaterialGeneratorVariableType_Float2: varResult->setComposeFloat2(a, b); break;
-            case MaterialGeneratorVariableType_Float3: varResult->setComposeFloat3(a, b, c); break;
-            case MaterialGeneratorVariableType_Float4: varResult->setComposeFloat4(a, b, c, d); break;
-            default: LOG(LogType_ProgrammerAssert, "Unsupported Type!"); break;
+            MaterialGeneratorNodeConnector* c(getInputConnector(i).getInputConnection());
+            if (c)
+                vars[i] = c->getVar();
+            else
+                vars[i] = he::ObjectHandle::unassigned;
         }
 
-        getOutput(0).setVar(handle);
+        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+        const he::ObjectHandle varResultHandle(getParent()->getShaderGenerator()->addVariable());
+        he::ct::ShaderGeneratorVariable* const varResult(factory->get(varResultHandle));
+
+        MaterialGeneratorNodeConnector& output(getOutputConnector(0));
+        const MaterialGeneratorVariableType outputType(getOutputConnector(0).getVariableType());
+        switch (outputType)
+        {
+            case MaterialGeneratorVariableType_Float2: varResult->setComposeFloat2(vars[0], vars[1]); break;
+            case MaterialGeneratorVariableType_Float3: varResult->setComposeFloat3(vars[0], vars[1], vars[2]); break;
+            case MaterialGeneratorVariableType_Float4: varResult->setComposeFloat4(vars[0], vars[1], vars[2], vars[3]); break;
+            default: LOG(he::LogType_ProgrammerAssert, "Unsupported Type!"); break;
+        }
+
+        output.setVar(varResultHandle);
     }
     return result;
 }
@@ -99,59 +130,39 @@ bool MaterialGeneratorNodeComposeVector::evaluate( MaterialGeneratorError& error
 
 MaterialGeneratorNodeSwizzle::MaterialGeneratorNodeSwizzle()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Float4);
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f)));
 
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
-    
+    MGO_ADD_OVERLOAD_IO(
+        MGO_IN(1, MaterialGeneratorVariableType_Float),
+        MGO_OUT(1, MaterialGeneratorVariableType_Float));
+           
     addParam(MaterialGeneratorNodeParam("A", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("B", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("C", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("D", MaterialGeneratorNodeParam::Type_SwizzleMask));
 }
 
-bool MaterialGeneratorNodeSwizzle::evaluate( MaterialGeneratorError& error )
+bool MaterialGeneratorNodeSwizzle::evaluate()
 {
-    bool result(MaterialGeneratorNode::evaluate(error));
+    bool result(MaterialGeneratorNode::evaluate());
     if (result)
     {
-        ct::ShaderGeneratorSwizzleMask mask[4];
-        for (uint8 i(0); i < 4; ++i)
+        he::ct::ShaderGeneratorSwizzleMask mask[4];
+        for (size_t i(0); i < 4; ++i)
         {
-            mask[i] = ct::ShaderGeneratorSwizzleMask_None;
+            mask[i] = he::ct::ShaderGeneratorSwizzleMask_None;
         }
 
-        uint8 components(0);
-
-        const MaterialGeneratorNodeParam& paramA(getParam(0));
-        const MaterialGeneratorNodeParam& paramB(getParam(1));
-        const MaterialGeneratorNodeParam& paramC(getParam(2));
-        const MaterialGeneratorNodeParam& paramD(getParam(3));
-
-        if (paramA.getSwizzleMask() != ct::ShaderGeneratorSwizzleMask_None)
+        size_t components(0);
+        for (size_t i(0); i < 4; ++i)
         {
-            mask[components] = paramA.getSwizzleMask();
-            ++components;
-        }
-        if (paramB.getSwizzleMask() != ct::ShaderGeneratorSwizzleMask_None)
-        {
-            mask[components] = paramB.getSwizzleMask();
-            ++components;
-        }
-        if (paramC.getSwizzleMask() != ct::ShaderGeneratorSwizzleMask_None)
-        {
-            mask[components] = paramC.getSwizzleMask();
-            ++components;
-        }
-        if (paramD.getSwizzleMask() != ct::ShaderGeneratorSwizzleMask_None)
-        {
-            mask[components] = paramD.getSwizzleMask();
-            ++components;
+            const MaterialGeneratorNodeParam& param(getParam(i));
+            if (param.getSwizzleMask() != he::ct::ShaderGeneratorSwizzleMask_None)
+            {
+                mask[components] = param.getSwizzleMask();
+                ++components;
+            }
         }
 
         MaterialGeneratorVariableType outputType(MaterialGeneratorVariableType_Unknown);
@@ -162,29 +173,32 @@ bool MaterialGeneratorNodeSwizzle::evaluate( MaterialGeneratorError& error )
         case 2: outputType = MaterialGeneratorVariableType_Float2; break;
         case 3: outputType = MaterialGeneratorVariableType_Float3; break;
         case 4: outputType = MaterialGeneratorVariableType_Float4; break;
-        default: LOG(LogType_ProgrammerAssert, "Unsupported component count"); break;
+        default: LOG(he::LogType_ProgrammerAssert, "Unsupported component count"); break;
         }
 
-        if (outputType != MaterialGeneratorVariableType_Unknown || outputType > getInput(0).getType())
+        if (outputType != MaterialGeneratorVariableType_Unknown)
         {
             result = false;
-            error.setMessage("Invalid swizzle");
         }
         else
         {
-            const ObjectHandle a(getInputConnection(0).getConnection().getVar());
+            MaterialGeneratorNodeConnector* connection(getInputConnector(0).getInputConnection());
+            if (connection)
+            {
+                const he::ObjectHandle a(connection->getVar());
 
-            ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());
-            const he::ObjectHandle handle(m_Parent->getGenerator()->addVariable());
-            ct::ShaderGeneratorVariable* const varResult(factory->get(handle));
+                he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+                const he::ObjectHandle resultHandle(getParent()->getShaderGenerator()->addVariable());
+                he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
 
-            varResult->setSwizzle(a, mask[0], mask[1], mask[2], mask[3]);
+                varResult->setSwizzle(a, mask[0], mask[1], mask[2], mask[3]);
 
-            getOutput(0).setVar(handle);
+                getOutputConnector(0).setVar(resultHandle);
+            }
         }
     }
     return result;
 }
 
 #pragma endregion
-} } //end namespace
+} //end namespace

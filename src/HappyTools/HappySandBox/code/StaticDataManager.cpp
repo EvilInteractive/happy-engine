@@ -27,6 +27,8 @@
 #include "system/EditorPickingManager.h"
 #include "Sandbox.h"
 
+#include "plugins/materialGenerator/system/MaterialGeneratorNodeFactory.h"
+
 namespace hs {
 
 void StaticDataManager::init()
@@ -36,10 +38,12 @@ void StaticDataManager::init()
     SelectionManger::sdmInit();
     PluginManager::sdmInit();
     EditorPickingManager::sdmInit();
+    MaterialGeneratorNodeFactory::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    MaterialGeneratorNodeFactory::sdmDestroy();
     GameStateMachine::sdmDestroy();
     UIManager::sdmDestroy();
     SelectionManger::sdmDestroy();

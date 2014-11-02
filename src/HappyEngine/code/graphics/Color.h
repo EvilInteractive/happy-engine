@@ -43,7 +43,22 @@ public:
     ~Color();
     //Default copy constructor and assignment operator are fine
 
+    /**
+     * fromHSB(float hue, float saturation, float brightness)
+     *  converts hsb colorspace to rgb
+     * \param hue  in degrees range [0, 360[
+     * \param saturation  in range [0, 1]
+     * \param brightness  in range [0, 1]
+     */
     static Color fromHSB(float hue, float saturation, float brightness);
+    
+    /**
+     * toHSB()
+     *  converts rgb colorspace to hsb
+     * \return  returns a vec3(hue, saturation, brightness)
+     * in ranges [0, 360[; [0, 1]; [0, 1]
+     */
+    he::vec3 toHSB() const;
 
     //-----------------------------------------//
     //                GETTERS                  // 

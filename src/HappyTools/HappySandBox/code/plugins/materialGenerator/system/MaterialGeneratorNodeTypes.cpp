@@ -21,8 +21,7 @@
 
 #include "MaterialGeneratorNodeTypes.h"
 
-namespace he {
-namespace tools {
+namespace hs {
     
 const char* materialGeneratorVariableTypeToString( const MaterialGeneratorVariableType type)
 {
@@ -54,7 +53,7 @@ const char* materialGeneratorVariableTypeToString( const MaterialGeneratorVariab
             result = "TextureCube";
         } break;
     default:
-        LOG(LogType_ProgrammerAssert, "Unknown MaterialGeneratorVariableType: %d", type);
+        LOG(he::LogType_ProgrammerAssert, "Unknown MaterialGeneratorVariableType: %d", type);
         break;
     }
     return result;
@@ -116,14 +115,14 @@ const char* materialGeneratorNodeTypeToString( const MaterialGeneratorNodeType t
         case MaterialGeneratorNodeType_TextureCube: result = "TextureCube"; break;
         case MaterialGeneratorNodeType_Texcoord: result = "Texture Coordinate"; break;
     default:
-        LOG(LogType_ProgrammerAssert, "Unknown MaterialGeneratorNodeType: %d", type);
+        LOG(he::LogType_ProgrammerAssert, "Unknown MaterialGeneratorNodeType: %d", type);
         break;
     }
 
     return result;
 }
 
-he::tools::MaterialGeneratorNodeType materialGeneratorNodeTypeFromString( const char* str )
+hs::MaterialGeneratorNodeType materialGeneratorNodeTypeFromString( const char* str )
 {
     MaterialGeneratorNodeType result(MaterialGeneratorNodeType_Unassigned);
 
@@ -178,90 +177,9 @@ he::tools::MaterialGeneratorNodeType materialGeneratorNodeTypeFromString( const 
     else if ( strcmp(str, "TextureCube") == 0 ) result = MaterialGeneratorNodeType_TextureCube;
     else if ( strcmp(str, "Texture Coordinate") == 0 ) result = MaterialGeneratorNodeType_Texcoord;
 
-    else { LOG(LogType_ProgrammerAssert, "Unknown MaterialGeneratorNodeType string: %s", str); }
+    else { LOG(he::LogType_ProgrammerAssert, "Unknown MaterialGeneratorNodeType string: %s", str); }
 
     return result;
 }
 
-he::tools::MaterialGeneratorNodeTypeSubdivion getMaterialGeneratorNodeTypeSubdivision( const MaterialGeneratorNodeType type )
-{
-    MaterialGeneratorNodeTypeSubdivion result(MaterialGeneratorNodeTypeSubdivion_None);
-    switch (type)
-    {
-    case MaterialGeneratorNodeType_RootNormalDraw: result = MaterialGeneratorNodeTypeSubdivion_None; break;
-
-    // Const
-    case MaterialGeneratorNodeType_Float1: result = MaterialGeneratorNodeTypeSubdivion_ConstNodes; break;
-    case MaterialGeneratorNodeType_Float2: result = MaterialGeneratorNodeTypeSubdivion_ConstNodes; break;
-    case MaterialGeneratorNodeType_Float3: result = MaterialGeneratorNodeTypeSubdivion_ConstNodes; break;
-    case MaterialGeneratorNodeType_Float4: result = MaterialGeneratorNodeTypeSubdivion_ConstNodes; break;
-
-    // Globals
-    case MaterialGeneratorNodeType_WorldViewPosition: result = MaterialGeneratorNodeTypeSubdivion_None; break;
-    case MaterialGeneratorNodeType_WorldViewNormal: result = MaterialGeneratorNodeTypeSubdivion_None; break;
-
-    // Vector
-    case MaterialGeneratorNodeType_Swizzle: result = MaterialGeneratorNodeTypeSubdivion_VectorNodes; break;
-    case MaterialGeneratorNodeType_ComposeVector: result = MaterialGeneratorNodeTypeSubdivion_VectorNodes; break;
-
-    // Math
-    // Basic
-    case MaterialGeneratorNodeType_Abs: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Add: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Cos: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Divide: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Multiply: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Sin: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Subtract: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    // Func
-    case MaterialGeneratorNodeType_Ceil: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Clamp: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Cross: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Distance: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_DistanceSqr: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Dot: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Floor: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Frac: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Lerp: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Max: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Min: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_OneMin: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Normalize: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Power: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Reflect: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-    case MaterialGeneratorNodeType_Sign: result = MaterialGeneratorNodeTypeSubdivion_MathNodes; break;
-
-            // Texture
-    case MaterialGeneratorNodeType_FlipBook: result = MaterialGeneratorNodeTypeSubdivion_TextureNodes; break;
-    case MaterialGeneratorNodeType_Panner: result = MaterialGeneratorNodeTypeSubdivion_TextureNodes; break;
-    case MaterialGeneratorNodeType_Rotator: result = MaterialGeneratorNodeTypeSubdivion_TextureNodes; break;
-    case MaterialGeneratorNodeType_Texture2D: result = MaterialGeneratorNodeTypeSubdivion_TextureNodes; break;
-    case MaterialGeneratorNodeType_TextureCube: result = MaterialGeneratorNodeTypeSubdivion_TextureNodes; break;
-    case MaterialGeneratorNodeType_Texcoord: result = MaterialGeneratorNodeTypeSubdivion_TextureNodes; break;
-    default:
-        LOG(LogType_ProgrammerAssert, "Unknown MaterialGeneratorNodeType: %s", materialGeneratorNodeTypeToString(type));
-        break;
-    }
-
-    return result;
-}
-
-const char* materialGeneratorNodeTypeSubdivionToString( const MaterialGeneratorNodeTypeSubdivion type )
-{
-    const char* result("Unknown Type");
-    switch (type)
-    {
-    case MaterialGeneratorNodeTypeSubdivion_ConstNodes: result = "Const Nodes"; break;
-    case MaterialGeneratorNodeTypeSubdivion_MathNodes: result = "Math Nodes"; break;
-    case MaterialGeneratorNodeTypeSubdivion_VectorNodes: result = "Vector Nodes"; break;
-    case MaterialGeneratorNodeTypeSubdivion_TextureNodes: result = "Texture Nodes"; break;
-    case MaterialGeneratorNodeTypeSubdivion_None: result = "None"; break;
-    default:
-        LOG(LogType_ProgrammerAssert, "Unknown MaterialGeneratorNodeTypeSubdivion: %d", type);
-        break;
-    }
-
-    return result;
-}
-
-} } //end namespace
+} //end namespace

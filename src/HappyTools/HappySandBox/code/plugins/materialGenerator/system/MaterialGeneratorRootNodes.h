@@ -24,11 +24,10 @@
 
 #include "MaterialGeneratorNodeClassHelper.h"
 
-namespace he {
-namespace tools {
+namespace hs {
     
 MaterialGeneratorNodeClass(RootNormalDraw)
 
-} } //end namespace
+} //end namespace
 
 #endif

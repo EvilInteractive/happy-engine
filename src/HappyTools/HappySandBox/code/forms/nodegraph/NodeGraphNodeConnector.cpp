@@ -68,7 +68,7 @@ void NodeGraphNodeConnector::draw( const NodeGraphDrawContext& context )
     context.canvas->fillRect(bound);
 
     context.canvas->setColor(m_Style.m_ConnectorBorderColor[m_State]);
-    context.canvas->fillRect(bound);
+    context.canvas->strokeRect(bound);
 
     if (m_Type == eNodeGraphNodeConnectorType_Input && isConnected())
     {
@@ -99,24 +99,28 @@ void NodeGraphNodeConnector::drawConnection( const NodeGraphDrawContext& context
     drawConnection(context, pos1);
 }
 
-void NodeGraphNodeConnector::connect( NodeGraphNodeConnector* other )
+bool NodeGraphNodeConnector::connect( NodeGraphNodeConnector* other )
 {
     if (!m_Connections.contains(other))
     {
         m_Connections.add(other);
         other->connect(this);
         HE_ASSERT(m_Type == eNodeGraphNodeConnectorType_Output || m_Connections.size() < 2, "An input connector can only have one connection!");
+        return true;
     }
+    return false;
 }
 
-void NodeGraphNodeConnector::disconnect(NodeGraphNodeConnector* other)
+bool NodeGraphNodeConnector::disconnect(NodeGraphNodeConnector* other)
 {
     size_t index(0);
     if (m_Connections.find(other, index))
     {
         m_Connections.removeAt(index);
         other->disconnect(this);
+        return true;
     }
+    return false;
 }
 
 void NodeGraphNodeConnector::disconnectAll()
@@ -124,8 +128,7 @@ void NodeGraphNodeConnector::disconnectAll()
     for (size_t i(0); i < m_Connections.size();)
     {
         NodeGraphNodeConnector* const connector(m_Connections[i]);
-        m_Connections.removeAt(i);
-        connector->disconnect(this);
+        disconnect(connector); // will do a find, but will always be index 0, this way we can always react to 'disconnect(NodeGraphNodeConnector* other)'
     }
 }
 

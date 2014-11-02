@@ -24,6 +24,14 @@
 
 namespace he {
 
+// Always use this macro when defining singletons in the HappyEngine
+// It makes sure the singleton is exported in the shared lib! This so we can share the singletons in the using app
+
+#define SINGLETON(className, ...) \
+    className; \
+    HAPPY_TEMPLATE_ENTRY template class HAPPY_ENTRY Singleton<className>; \
+    class className : public Singleton<className>,##__VA_ARGS__ 
+
 template<typename T>
 class Singleton
 {

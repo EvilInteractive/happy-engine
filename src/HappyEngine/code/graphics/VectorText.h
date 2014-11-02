@@ -58,6 +58,7 @@ public:
     void create(Font* font, HAlignment halign, VAlignment valign, const he::String& text);
     void setScale(const float scale) { m_Scale = scale; }
     void setPostion(const he::vec2& pos) { m_Position = pos; }
+    void setColor(const he::Color& color);
 
     he::RectF getBound() const;
     he::RectF getLineBound() const;
@@ -85,6 +86,7 @@ public:
 
     /* GENERAL */
     void create(Font* const font, const float size, const he::String& text);
+    void setColor(const he::Color& color);
 
     /* DRAW */
     void draw2D(he::gui::Canvas2D* canvas, const he::mat33& transform);

@@ -21,6 +21,7 @@
 #pragma once
 
 #include <VerticalLayout.h>
+#include <VectorText.h>
 
 namespace he {
 namespace gfx
@@ -59,7 +60,7 @@ public:
         static void sdmDestroy();
     };
     NodeGraphNode();
-    ~NodeGraphNode();
+    virtual ~NodeGraphNode();
 
     // Style
     void setStyle(const Style* style); // Does not take ownership
@@ -68,6 +69,7 @@ public:
     void startEdit();
     void endEdit();
     void addAttachment(NodeGraphNodeAttachment* att);
+    void setTitle(const char* title);
     
     // State
     bool isInside(const he::vec2& worldPos);
@@ -77,9 +79,7 @@ public:
     EState getState() const { return m_State; }
 
     void move(const he::vec2& worldDelta);
-
-    void setTitle(const char* title);
-
+    
     // Draw
     void draw(const NodeGraphDrawContext& context);
 
@@ -96,7 +96,7 @@ private:
     he::PrimitiveList<NodeGraphNodeAttachment*> m_Attachments;
     
     he::gui::VerticalLayout m_Layout;
-    he::gui::Text m_Title;
+    he::gui::LayoutableVectorText m_Title;
     he::vec2 m_Position;
 
     NodeGraphNode(const NodeGraphNode&);

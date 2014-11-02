@@ -156,16 +156,19 @@ void VectorText::create( Font* font, HAlignment halign, VAlignment valign, const
 
 void VectorText::draw2D( he::gui::Canvas2D* canvas, const he::mat33& transform )
 {
-    gfx::DrawContext context;
-    context.m_VBO = m_Text->getVBO();
-    context.m_IBO = m_Text->getIBO();
-    he::mat44 transform44(transform(0, 0), transform(0, 1), 0, transform(0, 2),
-                          transform(1, 0), transform(1, 1), 0, transform(1, 2),
-                                        0,               0, 1,              0,
-                          transform(2, 0), transform(2, 1), 0, transform(2, 2));
-    m_Effect->setWorldMatrix(canvas->getMatrix() * transform44 * mat44::createTranslation(he::vec3(m_Position.x, m_Position.y, 0)) * he::mat44::createScale(he::vec3(m_Scale, m_Scale, 1)));
-    m_Effect->apply(context);
-    m_Text->draw();
+    if (m_Text->getNumVertices() != 0)
+    {
+        gfx::DrawContext context;
+        context.m_VBO = m_Text->getVBO();
+        context.m_IBO = m_Text->getIBO();
+        he::mat44 transform44(transform(0, 0), transform(0, 1), 0, transform(0, 2),
+                              transform(1, 0), transform(1, 1), 0, transform(1, 2),
+                                            0,               0, 1,              0,
+                              transform(2, 0), transform(2, 1), 0, transform(2, 2));
+        m_Effect->setWorldMatrix(canvas->getMatrix() * transform44 * mat44::createTranslation(he::vec3(m_Position.x, m_Position.y, 0)) * he::mat44::createScale(he::vec3(m_Scale, m_Scale, 1)));
+        m_Effect->apply(context);
+        m_Text->draw();
+    }
 }
 
 he::RectF VectorText::getBound() const
@@ -190,6 +193,11 @@ he::RectF VectorText::getLineBound() const
     bound.height = m_Scale;
 
     return bound;
+}
+
+void VectorText::setColor( const he::Color& color )
+{
+    m_Effect->setColor(color);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -221,6 +229,11 @@ void LayoutableVectorText::draw2D( he::gui::Canvas2D* canvas, const he::mat33& t
     const he::RectF& bound(getLayoutBound());
     m_Text.setPostion(he::vec2(bound.x, bound.y));
     m_Text.draw2D(canvas, transform);
+}
+
+void LayoutableVectorText::setColor( const he::Color& color )
+{
+    m_Text.setColor(color);
 }
 
 } }

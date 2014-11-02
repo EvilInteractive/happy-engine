@@ -18,87 +18,85 @@
 //Author:  Bastian Damman
 //Created: 14/11/2012
 #include "HappySandBoxPCH.h" 
-
 #include "MaterialGeneratorMathNodes.h"
-#include "ShaderGeneratorVariableFactory.h"
-#include "MaterialGeneratorGraph.h"
+
+#include <ShaderGeneratorVariableFactory.h>
+#include "MaterialGeneratorNodeConnector.h"
+#include "../forms/MaterialGraph.h"
 
 #pragma region defines
 #define IMPLEMENT_EVALUATE1(class_, func)\
-bool class_::evaluate( MaterialGeneratorError& error )\
+bool class_::evaluate()\
 {\
-    const bool result(MaterialGeneratorNode::evaluate(error));\
+    const bool result(MaterialGeneratorNode::evaluate());\
     if (result)\
     {\
-        const ObjectHandle a(getInputConnection(0).getConnection().getVar());\
+        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());\
         \
-        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());\
-        const he::ObjectHandle handle(m_Parent->getGenerator()->addVariable());\
-        ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
+        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());\
+        const he::ObjectHandle handle(getParent()->getShaderGenerator()->addVariable());\
+        he::ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
         varResult->func(a);\
         \
-        getOutput(0).setVar(handle);\
+        getOutputConnector(0).setVar(handle);\
     }\
     return result;\
 }
 
 #define IMPLEMENT_EVALUATE2(class_, func)\
-    bool class_::evaluate( MaterialGeneratorError& error )\
+    bool class_::evaluate()\
 {\
-    const bool result(MaterialGeneratorNode::evaluate(error));\
+    const bool result(MaterialGeneratorNode::evaluate());\
     if (result)\
     {\
-        const ObjectHandle a(getInputConnection(0).getConnection().getVar());\
-        const ObjectHandle b(getInputConnection(1).getConnection().getVar());\
+        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());\
+        const he::ObjectHandle b(getInputConnector(1).getInputConnection()->getVar());\
         \
-        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());\
-        const he::ObjectHandle handle(m_Parent->getGenerator()->addVariable());\
-        ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
+        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());\
+        const he::ObjectHandle handle(getParent()->getShaderGenerator()->addVariable());\
+        he::ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
         varResult->func(a, b);\
         \
-        getOutput(0).setVar(handle);\
+        getOutputConnector(0).setVar(handle);\
     }\
     return result;\
 }
 
 #define IMPLEMENT_EVALUATE3(class_, func)\
-    bool class_::evaluate( MaterialGeneratorError& error )\
+    bool class_::evaluate()\
 {\
-    const bool result(MaterialGeneratorNode::evaluate(error));\
+    const bool result(MaterialGeneratorNode::evaluate());\
     if (result)\
     {\
-        const ObjectHandle a(getInputConnection(0).getConnection().getVar());\
-        const ObjectHandle b(getInputConnection(1).getConnection().getVar());\
-        const ObjectHandle c(getInputConnection(2).getConnection().getVar());\
+        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());\
+        const he::ObjectHandle b(getInputConnector(1).getInputConnection()->getVar());\
+        const he::ObjectHandle c(getInputConnector(2).getInputConnection()->getVar());\
         \
-        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());\
-        const he::ObjectHandle handle(m_Parent->getGenerator()->addVariable());\
-        ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
+        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());\
+        const he::ObjectHandle handle(getParent()->getShaderGenerator()->addVariable());\
+        he::ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
         varResult->func(a, b, c);\
         \
-        getOutput(0).setVar(handle);\
+        getOutputConnector(0).setVar(handle);\
     }\
     return result;\
 }
 #pragma endregion
 
-namespace he {
-namespace tools {
+namespace hs {
     
 // One Param
 
 #pragma region Abs
 MaterialGeneratorNodeAbs::MaterialGeneratorNodeAbs()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2), MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3), MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4), MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeAbs, setAbs)
@@ -108,15 +106,13 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeAbs, setAbs)
 #pragma region Cos
 MaterialGeneratorNodeCos::MaterialGeneratorNodeCos()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCos, setCos)
@@ -126,15 +122,13 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCos, setCos)
 #pragma region Sin
 MaterialGeneratorNodeSin::MaterialGeneratorNodeSin()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSin, setSin)
@@ -144,15 +138,13 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSin, setSin)
 #pragma region Ceil
 MaterialGeneratorNodeCeil::MaterialGeneratorNodeCeil()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCeil, setCeil)
@@ -162,15 +154,13 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCeil, setCeil)
 #pragma region Floor
 MaterialGeneratorNodeFloor::MaterialGeneratorNodeFloor()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFloor, setFloor)
@@ -180,15 +170,13 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFloor, setFloor)
 #pragma region Frac
 MaterialGeneratorNodeFrac::MaterialGeneratorNodeFrac()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFrac, setFrac)
@@ -197,42 +185,40 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFrac, setFrac)
 #pragma region OneMin
 MaterialGeneratorNodeOneMin::MaterialGeneratorNodeOneMin()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
-bool MaterialGeneratorNodeOneMin::evaluate( MaterialGeneratorError& error )
+bool MaterialGeneratorNodeOneMin::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate(error));
+    const bool result(MaterialGeneratorNode::evaluate());
     if (result)
     {
-        const ObjectHandle a(getInputConnection(0).getConnection().getVar());
+        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());
 
-        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());
+        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
 
-        const he::ObjectHandle oneHandle(m_Parent->getGenerator()->addVariable());
-        ct::ShaderGeneratorVariable* const varOne(factory->get(oneHandle));
+        const he::ObjectHandle oneHandle(getParent()->getShaderGenerator()->addVariable());
+        he::ct::ShaderGeneratorVariable* const varOne(factory->get(oneHandle));
         switch (factory->get(a)->getType())
         {
-        case ct::ShaderGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
-        case ct::ShaderGeneratorVariableType_Float2: varOne->setConstant(vec2(1.0f, 1.0f)); break;
-        case ct::ShaderGeneratorVariableType_Float3: varOne->setConstant(vec3(1.0f, 1.0f, 1.0f)); break;
-        case ct::ShaderGeneratorVariableType_Float4: varOne->setConstant(vec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
+        case he::ct::ShaderGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
+        case he::ct::ShaderGeneratorVariableType_Float2: varOne->setConstant(he::vec2(1.0f, 1.0f)); break;
+        case he::ct::ShaderGeneratorVariableType_Float3: varOne->setConstant(he::vec3(1.0f, 1.0f, 1.0f)); break;
+        case he::ct::ShaderGeneratorVariableType_Float4: varOne->setConstant(he::vec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
         default:
-            LOG(LogType_ProgrammerAssert, "Error unknown/unsupported variable type"); break;
+            LOG(he::LogType_ProgrammerAssert, "Error unknown/unsupported variable type"); break;
         }
 
-        const he::ObjectHandle resultHandle(m_Parent->getGenerator()->addVariable());
-        ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
+        const he::ObjectHandle resultHandle(getParent()->getShaderGenerator()->addVariable());
+        he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
         varResult->setSubtract(oneHandle, a);
 
-        getOutput(0).setVar(resultHandle);
+        getOutputConnector(0).setVar(resultHandle);
     }
     return result;
 }
@@ -242,15 +228,13 @@ bool MaterialGeneratorNodeOneMin::evaluate( MaterialGeneratorError& error )
 #pragma region Normalize
 MaterialGeneratorNodeNormalize::MaterialGeneratorNodeNormalize()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeNormalize, setNormalize)
@@ -259,15 +243,13 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeNormalize, setNormalize)
 #pragma region Sign
 MaterialGeneratorNodeSign::MaterialGeneratorNodeSign()
 {
-    addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
-    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSign, setSign)
 #pragma endregion
@@ -277,16 +259,14 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSign, setSign)
 #pragma region Add
 MaterialGeneratorNodeAdd::MaterialGeneratorNodeAdd()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeAdd, setAdd)
@@ -296,19 +276,17 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeAdd, setAdd)
 #pragma region Divide
 MaterialGeneratorNodeDivide::MaterialGeneratorNodeDivide()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDivide, setDivide)
@@ -318,16 +296,14 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDivide, setDivide)
 #pragma region Min
 MaterialGeneratorNodeMin::MaterialGeneratorNodeMin()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMin, setMin)
@@ -337,16 +313,14 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMin, setMin)
 #pragma region Max
     MaterialGeneratorNodeMax::MaterialGeneratorNodeMax()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMax, setMax)
@@ -356,22 +330,17 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMax, setMax)
 #pragma region Multiply
 MaterialGeneratorNodeMultiply::MaterialGeneratorNodeMultiply()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float4);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMultiply, setMultiply)
@@ -381,16 +350,14 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMultiply, setMultiply)
 #pragma region Subtract
 MaterialGeneratorNodeSubtract::MaterialGeneratorNodeSubtract()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeSubtract, setSubtract)
@@ -400,13 +367,11 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeSubtract, setSubtract)
 #pragma region Cross
 MaterialGeneratorNodeCross::MaterialGeneratorNodeCross()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeCross, setCross)
@@ -416,15 +381,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeCross, setCross)
 #pragma region Distance
 MaterialGeneratorNodeDistance::MaterialGeneratorNodeDistance()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDistance, setDistance)
@@ -434,36 +397,34 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDistance, setDistance)
 #pragma region DistanceSqr
 MaterialGeneratorNodeDistanceSqr::MaterialGeneratorNodeDistanceSqr()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
-bool MaterialGeneratorNodeDistanceSqr::evaluate( MaterialGeneratorError& error )
+bool MaterialGeneratorNodeDistanceSqr::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate(error));
+    const bool result(MaterialGeneratorNode::evaluate());
     if (result)
     {
-        const ObjectHandle a(getInputConnection(0).getConnection().getVar());
-        const ObjectHandle b(getInputConnection(1).getConnection().getVar());
+        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());
+        const he::ObjectHandle b(getInputConnector(1).getInputConnection()->getVar());
 
-        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());
+        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
 
-        const he::ObjectHandle subHandle(m_Parent->getGenerator()->addVariable());
-        ct::ShaderGeneratorVariable* const varSub(factory->get(subHandle));
+        const he::ObjectHandle subHandle(getParent()->getShaderGenerator()->addVariable());
+        he::ct::ShaderGeneratorVariable* const varSub(factory->get(subHandle));
         varSub->setSubtract(b, a);
 
-        const he::ObjectHandle resultHandle(m_Parent->getGenerator()->addVariable());
-        ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
+        const he::ObjectHandle resultHandle(getParent()->getShaderGenerator()->addVariable());
+        he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
         varResult->setDot(subHandle, subHandle);
 
-        getOutput(0).setVar(resultHandle);
+        getOutputConnector(0).setVar(resultHandle);
     }
     return result;
 }
@@ -473,16 +434,14 @@ bool MaterialGeneratorNodeDistanceSqr::evaluate( MaterialGeneratorError& error )
 #pragma region Dot
 MaterialGeneratorNodeDot::MaterialGeneratorNodeDot()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDot, setDot)
@@ -492,19 +451,17 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDot, setDot)
 #pragma region Power
 MaterialGeneratorNodePower::MaterialGeneratorNodePower()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodePower, setPower)
@@ -514,16 +471,11 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodePower, setPower)
 #pragma region Reflect
 MaterialGeneratorNodeReflect::MaterialGeneratorNodeReflect()
 {
-    addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 2> inputs;
-    inputs[0] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("Direction", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3), MGO_OUT(1, MaterialGeneratorVariableType_Float3));
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeReflect, setReflect)
@@ -535,20 +487,18 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeReflect, setReflect)
 #pragma region Clamp
 MaterialGeneratorNodeClamp::MaterialGeneratorNodeClamp()
 {
-    addOverload(1, 3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 3> inputs;
-    inputs[0] = ConnecterDesc("X", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("Min", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[2] = ConnecterDesc("Max", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("Min", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("Max", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE3(MaterialGeneratorNodeClamp, setClamp)
@@ -558,20 +508,18 @@ IMPLEMENT_EVALUATE3(MaterialGeneratorNodeClamp, setClamp)
 #pragma region Lerp
 MaterialGeneratorNodeLerp::MaterialGeneratorNodeLerp()
 {
-    addOverload(1, 3, MaterialGeneratorVariableType_Float,  MaterialGeneratorVariableType_Float,  MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 3> inputs;
-    inputs[0] = ConnecterDesc("X", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[1] = ConnecterDesc("Y", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    inputs[2] = ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    addConnecters( outputs, inputs );
+    addInput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("Y", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
 }
 
 IMPLEMENT_EVALUATE3(MaterialGeneratorNodeLerp, setLerp)
@@ -582,4 +530,4 @@ IMPLEMENT_EVALUATE3(MaterialGeneratorNodeLerp, setLerp)
 #undef IMPLEMENT_EVALUATE1
 #undef IMPLEMENT_EVALUATE2
 #undef IMPLEMENT_EVALUATE3
-} } //end namespace
+} //end namespace

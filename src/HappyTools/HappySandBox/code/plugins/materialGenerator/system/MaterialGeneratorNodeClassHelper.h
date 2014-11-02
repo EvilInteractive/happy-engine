@@ -24,8 +24,7 @@
 
 #include "MaterialGeneratorNode.h"
 
-namespace he {
-namespace tools {
+namespace hs {
 class MaterialGeneratorGraph;
 
 #define _MaterialGeneratorNodeClass(className, type) \
@@ -35,7 +34,7 @@ public:\
     className();\
     virtual ~className() {}\
     \
-    virtual bool evaluate(MaterialGeneratorError& error);\
+    virtual bool evaluate();\
     \
     virtual MaterialGeneratorNodeType getType() const { return MaterialGeneratorNodeType_##type; } \
     \
@@ -47,6 +46,28 @@ private:\
 
 #define MaterialGeneratorNodeClass(type) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type)
 
-} }
+#define MGO_IN(count, ...) count, __VA_ARGS__
+#define MGO_OUT(count, ...) count, __VA_ARGS__
+#define MGO_ADD_OVERLOAD_IO(inputs, outputs)\
+{\
+    MaterialGeneratorNodeOverload overload;\
+    overload.setInputs(inputs);\
+    overload.setOutputs(outputs);\
+    addOverload(std::move(overload));\
+}
+#define MGO_ADD_OVERLOAD_I(inputs)\
+{\
+    MaterialGeneratorNodeOverload overload;\
+    overload.setInputs(inputs);\
+    addOverload(std::move(overload));\
+}
+#define MGO_ADD_OVERLOAD_O(outputs)\
+{\
+    MaterialGeneratorNodeOverload overload;\
+    overload.setOutputs(outputs);\
+    addOverload(std::move(overload));\
+}
+
+}
 
 #endif

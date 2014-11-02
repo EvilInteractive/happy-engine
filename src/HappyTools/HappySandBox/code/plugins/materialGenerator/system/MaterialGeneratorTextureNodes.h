@@ -24,8 +24,7 @@
 
 #include "MaterialGeneratorNodeClassHelper.h"
 
-namespace he {
-namespace tools {
+namespace hs {
     
 MaterialGeneratorNodeClass(FlipBook)
 MaterialGeneratorNodeClass(Panner)
@@ -34,6 +33,6 @@ MaterialGeneratorNodeClass(Texture2D)
 MaterialGeneratorNodeClass(TextureCube)
 MaterialGeneratorNodeClass(Texcoord)
 
-} } //end namespace
+} //end namespace
 
 #endif

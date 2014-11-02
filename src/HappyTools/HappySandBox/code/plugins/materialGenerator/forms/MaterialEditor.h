@@ -2,6 +2,7 @@
 #define MATERIALEDITOR_H
 
 #include <QMainWindow>
+#include "../system/MaterialGeneratorNodeTypes.h"
 
 namespace Ui {
     class MaterialEditor;
@@ -20,6 +21,8 @@ public:
     void open();
 
     void bringToFront();
+
+    MaterialGeneratorNodeType getActiveCreateNode() const;
 
 public slots:
     void createNewGraph();

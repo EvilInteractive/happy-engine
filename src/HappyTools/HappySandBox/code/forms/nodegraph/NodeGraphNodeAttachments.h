@@ -42,7 +42,7 @@ namespace hs {
 
         // Connector
         NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) override;
-        NodeGraphNodeConnector& getNodeConnector()  { return m_Connector; }
+        virtual NodeGraphNodeConnector& getNodeConnector() = 0;
 
         // Draw
         void draw(const NodeGraphDrawContext& context) override;
@@ -52,7 +52,6 @@ namespace hs {
     private:
         he::gui::HorizontalLayout m_Layout;
         he::gui::LayoutableVectorText m_Text;
-        NodeGraphNodeConnector m_Connector;
     };
 
     class NodeGraphNodeTextureAttachment : public NodeGraphNodeAttachment

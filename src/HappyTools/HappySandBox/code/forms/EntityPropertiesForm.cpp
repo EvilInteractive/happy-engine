@@ -34,7 +34,9 @@ EntityPropertiesForm::EntityPropertiesForm(QWidget *parent) :
 EntityPropertiesForm::~EntityPropertiesForm()
 {
     delete m_UI;
-    hs::GameStateMachine::getInstance()->GameStateChanged -= m_GameStateChangedCallback;
+    hs::GameStateMachine* gm(hs::GameStateMachine::getInstance());
+    if (gm) // @exit it is already gone
+        gm->GameStateChanged -= m_GameStateChangedCallback;
 }
 
 // Panel methods

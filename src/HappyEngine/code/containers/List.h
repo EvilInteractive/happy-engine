@@ -115,12 +115,12 @@ public:
     explicit PrimitiveList(size_t capacity = 0): List<T, PrimitiveObjectAllocator<T>>(capacity) {}
     virtual ~PrimitiveList() {}
 
-    PrimitiveList(PrimitiveList<T>&& other) : List<T, PrimitiveObjectAllocator<T>>(std::forward(other)) 
+    PrimitiveList(PrimitiveList<T>&& other) : List<T, PrimitiveObjectAllocator<T>>(std::forward<List<T, PrimitiveObjectAllocator<T>>>(other)) 
     {
     }
     PrimitiveList<T>& operator=(PrimitiveList<T>&& other) 
     { 
-        List<T, PrimitiveObjectAllocator<T>>::operator=(std::forward(other));
+        List<T, PrimitiveObjectAllocator<T>>::operator=(std::forward<List<T, PrimitiveObjectAllocator<T>>>(other));
         return *this;
     }
 };

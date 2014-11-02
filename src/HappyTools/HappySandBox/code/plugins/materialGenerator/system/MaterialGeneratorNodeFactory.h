@@ -24,31 +24,31 @@
 
 #include "Singleton.h"
 #include "ObjectFactory.h"
+
 #include "MaterialGeneratorNode.h"
 
 
-namespace he {
-namespace tools {
+namespace hs {
 enum MaterialGeneratorNodeType;
 
-class MaterialGeneratorNodeFactory : public ObjectFactory<MaterialGeneratorNode>, public Singleton<MaterialGeneratorNodeFactory>
+class MaterialGeneratorNodeFactory : public he::ObjectFactory<MaterialGeneratorNode>, public he::Singleton<MaterialGeneratorNodeFactory>
 {
 public:
     MaterialGeneratorNodeFactory();
     virtual ~MaterialGeneratorNodeFactory();
 
     MaterialGeneratorNode* create(const MaterialGeneratorNodeType type);
-    MaterialGeneratorNode* create(const MaterialGeneratorNodeType type, const Guid& id);
+    MaterialGeneratorNode* create(const MaterialGeneratorNodeType type, const he::Guid& id);
     void destroy(MaterialGeneratorNode* const node);
 
 private:
-    virtual ObjectHandle create() { LOG(LogType_ProgrammerAssert, "Disabled!"); return ObjectHandle::unassigned; }
+    virtual he::ObjectHandle create() { LOG(he::LogType_ProgrammerAssert, "Disabled!"); return he::ObjectHandle::unassigned; }
 
     //Disable default copy constructor and default assignment operator
     MaterialGeneratorNodeFactory(const MaterialGeneratorNodeFactory&);
     MaterialGeneratorNodeFactory& operator=(const MaterialGeneratorNodeFactory&);
 };
 
-} } //end namespace
+} //end namespace
 
 #endif
