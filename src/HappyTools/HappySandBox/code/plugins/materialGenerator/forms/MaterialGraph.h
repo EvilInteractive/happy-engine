@@ -14,6 +14,7 @@ namespace ct {
 
 namespace hs {
 class MaterialEditor;
+class MaterialGeneratorNode;
 class MaterialGraph : public NodeGraph
 {
     Q_OBJECT
@@ -28,6 +29,8 @@ public:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
+    void compile();
+
 protected:
     // Called when left mouse is pressed (only return a node if you want to create one on click (with a shortcut))
     virtual NodeGraphNode* createNode() override;
@@ -39,6 +42,7 @@ protected:
 private:
     he::ct::ShaderGenerator* m_Generator;
     MaterialEditor* m_Parent;
+    MaterialGeneratorNode* m_ActiveRoot;
 };
 
 }

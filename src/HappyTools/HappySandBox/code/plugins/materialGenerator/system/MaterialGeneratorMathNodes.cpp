@@ -28,57 +28,57 @@
 #define IMPLEMENT_EVALUATE1(class_, func)\
 bool class_::evaluate()\
 {\
-    const bool result(MaterialGeneratorNode::evaluate());\
-    if (result)\
-    {\
-        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());\
-        \
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());\
-        const he::ObjectHandle handle(getParent()->getShaderGenerator()->addVariable());\
-        he::ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
-        varResult->func(a);\
-        \
-        getOutputConnector(0).setVar(handle);\
-    }\
+    bool result(false);\
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance()); \
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(getOutputConnector(0).getVar())); \
+    varResult->reset();\
+    \
+    const he::ObjectHandle input(getInputConnector(0).getVar());\
+    if (input != he::ObjectHandle::unassigned) \
+    { \
+        result = varResult->func(input);\
+    } \
+    result &= MaterialGeneratorNode::evaluate(); \
+    setCompileState(result);\
     return result;\
 }
 
 #define IMPLEMENT_EVALUATE2(class_, func)\
-    bool class_::evaluate()\
+bool class_::evaluate()\
 {\
-    const bool result(MaterialGeneratorNode::evaluate());\
-    if (result)\
+    bool result(false);\
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance()); \
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(getOutputConnector(0).getVar())); \
+    varResult->reset();\
+    \
+    const he::ObjectHandle a(getInputConnector(0).getVar());\
+    const he::ObjectHandle b(getInputConnector(1).getVar());\
+    if (a != he::ObjectHandle::unassigned && b != he::ObjectHandle::unassigned)\
     {\
-        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());\
-        const he::ObjectHandle b(getInputConnector(1).getInputConnection()->getVar());\
-        \
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());\
-        const he::ObjectHandle handle(getParent()->getShaderGenerator()->addVariable());\
-        he::ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
-        varResult->func(a, b);\
-        \
-        getOutputConnector(0).setVar(handle);\
+        result = varResult->func(a, b);\
     }\
+    result &= MaterialGeneratorNode::evaluate(); \
+    setCompileState(result);\
     return result;\
 }
 
 #define IMPLEMENT_EVALUATE3(class_, func)\
     bool class_::evaluate()\
 {\
-    const bool result(MaterialGeneratorNode::evaluate());\
-    if (result)\
+    bool result(false);\
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance()); \
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(getOutputConnector(0).getVar())); \
+    varResult->reset();\
+    \
+    const he::ObjectHandle a(getInputConnector(0).getVar());\
+    const he::ObjectHandle b(getInputConnector(1).getVar());\
+    const he::ObjectHandle c(getInputConnector(2).getVar());\
+    if (a != he::ObjectHandle::unassigned && b != he::ObjectHandle::unassigned && c != he::ObjectHandle::unassigned)\
     {\
-        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());\
-        const he::ObjectHandle b(getInputConnector(1).getInputConnection()->getVar());\
-        const he::ObjectHandle c(getInputConnector(2).getInputConnection()->getVar());\
-        \
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());\
-        const he::ObjectHandle handle(getParent()->getShaderGenerator()->addVariable());\
-        he::ct::ShaderGeneratorVariable* const varResult(factory->get(handle));\
-        varResult->func(a, b, c);\
-        \
-        getOutputConnector(0).setVar(handle);\
+        result = varResult->func(a, b, c);\
     }\
+    result &= MaterialGeneratorNode::evaluate(); \
+    setCompileState(result);\
     return result;\
 }
 #pragma endregion
@@ -88,15 +88,12 @@ namespace hs {
 // One Param
 
 #pragma region Abs
-MaterialGeneratorNodeAbs::MaterialGeneratorNodeAbs()
+void MaterialGeneratorNodeAbs::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2), MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3), MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4), MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeAbs, setAbs)
@@ -104,15 +101,12 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeAbs, setAbs)
 #pragma endregion
 
 #pragma region Cos
-MaterialGeneratorNodeCos::MaterialGeneratorNodeCos()
+void MaterialGeneratorNodeCos::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCos, setCos)
@@ -120,15 +114,12 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCos, setCos)
 #pragma endregion
 
 #pragma region Sin
-MaterialGeneratorNodeSin::MaterialGeneratorNodeSin()
+void MaterialGeneratorNodeSin::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSin, setSin)
@@ -136,15 +127,12 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSin, setSin)
 #pragma endregion
 
 #pragma region Ceil
-MaterialGeneratorNodeCeil::MaterialGeneratorNodeCeil()
+void MaterialGeneratorNodeCeil::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCeil, setCeil)
@@ -152,15 +140,12 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCeil, setCeil)
 #pragma endregion
 
 #pragma region Floor
-MaterialGeneratorNodeFloor::MaterialGeneratorNodeFloor()
+void MaterialGeneratorNodeFloor::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFloor, setFloor)
@@ -168,42 +153,49 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFloor, setFloor)
 #pragma endregion
 
 #pragma region Frac
-MaterialGeneratorNodeFrac::MaterialGeneratorNodeFrac()
+void MaterialGeneratorNodeFrac::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFrac, setFrac)
 #pragma endregion
 
 #pragma region OneMin
-MaterialGeneratorNodeOneMin::MaterialGeneratorNodeOneMin()
+void MaterialGeneratorNodeOneMin::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+                     
+    m_One = getParent()->getShaderGenerator()->addVariable();
 
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MaterialGeneratorNode::init();
+}
+void MaterialGeneratorNodeOneMin::destroy()
+{
+    if (m_One != he::ObjectHandle::unassigned)
+    {
+        getParent()->getShaderGenerator()->removeVariable(m_One);
+        m_One = he::ObjectHandle::unassigned;
+    }
+    MaterialGeneratorNode::destroy();
 }
 bool MaterialGeneratorNodeOneMin::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
+    bool result(false);
+
+    const he::ObjectHandle resultHandle(getOutputConnector(0).getVar());
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
+    varResult->reset();
+
+    const he::ObjectHandle a(getInputConnector(0).getVar());
+    if (a != he::ObjectHandle::unassigned)
     {
-        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());
-
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-
-        const he::ObjectHandle oneHandle(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varOne(factory->get(oneHandle));
+        he::ct::ShaderGeneratorVariable* const varOne(factory->get(m_One));
         switch (factory->get(a)->getType())
         {
         case he::ct::ShaderGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
@@ -214,42 +206,34 @@ bool MaterialGeneratorNodeOneMin::evaluate()
             LOG(he::LogType_ProgrammerAssert, "Error unknown/unsupported variable type"); break;
         }
 
-        const he::ObjectHandle resultHandle(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
-        varResult->setSubtract(oneHandle, a);
-
-        getOutputConnector(0).setVar(resultHandle);
+        result = varResult->setSubtract(m_One, a);
     }
+    result &= MaterialGeneratorNode::evaluate();
+    setCompileState(result);
     return result;
 }
 
 #pragma endregion
 
 #pragma region Normalize
-MaterialGeneratorNodeNormalize::MaterialGeneratorNodeNormalize()
+void MaterialGeneratorNodeNormalize::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeNormalize, setNormalize)
 #pragma endregion
 
 #pragma region Sign
-MaterialGeneratorNodeSign::MaterialGeneratorNodeSign()
+void MaterialGeneratorNodeSign::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSign, setSign)
 #pragma endregion
@@ -257,16 +241,13 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSign, setSign)
 // Two Params
 
 #pragma region Add
-MaterialGeneratorNodeAdd::MaterialGeneratorNodeAdd()
+void MaterialGeneratorNodeAdd::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeAdd, setAdd)
@@ -274,19 +255,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeAdd, setAdd)
 #pragma endregion
 
 #pragma region Divide
-MaterialGeneratorNodeDivide::MaterialGeneratorNodeDivide()
+void MaterialGeneratorNodeDivide::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                                 
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDivide, setDivide)
@@ -294,16 +269,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDivide, setDivide)
 #pragma endregion
 
 #pragma region Min
-MaterialGeneratorNodeMin::MaterialGeneratorNodeMin()
+void MaterialGeneratorNodeMin::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMin, setMin)
@@ -311,16 +283,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMin, setMin)
 #pragma endregion
 
 #pragma region Max
-    MaterialGeneratorNodeMax::MaterialGeneratorNodeMax()
+    void MaterialGeneratorNodeMax::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMax, setMax)
@@ -328,19 +297,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMax, setMax)
 #pragma endregion
 
 #pragma region Multiply
-MaterialGeneratorNodeMultiply::MaterialGeneratorNodeMultiply()
+void MaterialGeneratorNodeMultiply::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                                 
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMultiply, setMultiply)
@@ -348,16 +311,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMultiply, setMultiply)
 #pragma endregion
 
 #pragma region Subtract
-MaterialGeneratorNodeSubtract::MaterialGeneratorNodeSubtract()
+void MaterialGeneratorNodeSubtract::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeSubtract, setSubtract)
@@ -365,13 +325,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeSubtract, setSubtract)
 #pragma endregion
 
 #pragma region Cross
-MaterialGeneratorNodeCross::MaterialGeneratorNodeCross()
+void MaterialGeneratorNodeCross::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+         
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeCross, setCross)
@@ -379,15 +339,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeCross, setCross)
 #pragma endregion
 
 #pragma region Distance
-MaterialGeneratorNodeDistance::MaterialGeneratorNodeDistance()
+void MaterialGeneratorNodeDistance::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDistance, setDistance)
@@ -395,53 +353,62 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDistance, setDistance)
 #pragma endregion
 
 #pragma region DistanceSqr
-MaterialGeneratorNodeDistanceSqr::MaterialGeneratorNodeDistanceSqr()
+void MaterialGeneratorNodeDistanceSqr::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    m_TempVar = getParent()->getShaderGenerator()->addVariable();
+
+    MaterialGeneratorNode::init();
+}
+
+void MaterialGeneratorNodeDistanceSqr::destroy()
+{
+    if (m_TempVar != he::ObjectHandle::unassigned)
+    {
+        getParent()->getShaderGenerator()->removeVariable(m_TempVar);
+        m_TempVar = he::ObjectHandle::unassigned;
+    }
+
+    MaterialGeneratorNode::destroy();
 }
 
 bool MaterialGeneratorNodeDistanceSqr::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
+    bool result(false);
+
+    const he::ObjectHandle resultHandle(getOutputConnector(0).getVar());
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
+    varResult->reset();
+
+    const he::ObjectHandle a(getInputConnector(0).getVar());
+    const he::ObjectHandle b(getInputConnector(1).getVar());
+    if (a != he::ObjectHandle::unassigned && b != he::ObjectHandle::unassigned)
     {
-        const he::ObjectHandle a(getInputConnector(0).getInputConnection()->getVar());
-        const he::ObjectHandle b(getInputConnector(1).getInputConnection()->getVar());
-
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-
-        const he::ObjectHandle subHandle(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varSub(factory->get(subHandle));
-        varSub->setSubtract(b, a);
-
-        const he::ObjectHandle resultHandle(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
-        varResult->setDot(subHandle, subHandle);
-
-        getOutputConnector(0).setVar(resultHandle);
+        he::ct::ShaderGeneratorVariable* const varSub(factory->get(m_TempVar));
+        if (varSub->setSubtract(b, a))
+        {
+            result = varResult->setDot(m_TempVar, m_TempVar);
+        }
     }
+    result &= MaterialGeneratorNode::evaluate();
+    setCompileState(result);
     return result;
 }
 
 #pragma endregion
 
 #pragma region Dot
-MaterialGeneratorNodeDot::MaterialGeneratorNodeDot()
+void MaterialGeneratorNodeDot::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                     
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDot, setDot)
@@ -449,19 +416,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDot, setDot)
 #pragma endregion
 
 #pragma region Power
-MaterialGeneratorNodePower::MaterialGeneratorNodePower()
+void MaterialGeneratorNodePower::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                                 
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodePower, setPower)
@@ -469,13 +430,13 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodePower, setPower)
 #pragma endregion
 
 #pragma region Reflect
-MaterialGeneratorNodeReflect::MaterialGeneratorNodeReflect()
+void MaterialGeneratorNodeReflect::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("Direction", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_IO(MGO_IN(2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3), MGO_OUT(1, MaterialGeneratorVariableType_Float3));
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeReflect, setReflect)
@@ -485,20 +446,14 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeReflect, setReflect)
 // Three Params
 
 #pragma region Clamp
-MaterialGeneratorNodeClamp::MaterialGeneratorNodeClamp()
+void MaterialGeneratorNodeClamp::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("Min", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("Max", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE3(MaterialGeneratorNodeClamp, setClamp)
@@ -506,20 +461,14 @@ IMPLEMENT_EVALUATE3(MaterialGeneratorNodeClamp, setClamp)
 #pragma endregion
 
 #pragma region Lerp
-MaterialGeneratorNodeLerp::MaterialGeneratorNodeLerp()
+void MaterialGeneratorNodeLerp::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("Y", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),   MGO_OUT(1, MaterialGeneratorVariableType_Float));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(MGO_IN(3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float),  MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+                                 
+    MaterialGeneratorNode::init();
 }
 
 IMPLEMENT_EVALUATE3(MaterialGeneratorNodeLerp, setLerp)

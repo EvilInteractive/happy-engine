@@ -31,27 +31,25 @@ namespace hs {
 
 #pragma region Float
 
-MaterialGeneratorNodeFloat1::MaterialGeneratorNodeFloat1()
+void MaterialGeneratorNodeFloat1::init()
 {
     addOutput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.0f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_O(
-        MGO_OUT(1, MaterialGeneratorVariableType_Float));
-
     addParam(MaterialGeneratorNodeParam("Float", MaterialGeneratorNodeParam::Type_Float));
+
+    MaterialGeneratorNode::init();
 }
 bool MaterialGeneratorNodeFloat1::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
-    {
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-        const he::ObjectHandle resultHandle(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
-        varResult->setConstant(getParam(0).getFloat());
+    bool result(false);
 
-        getOutputConnector(0).setVar(resultHandle);
-    }
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(getOutputConnector(0).getVar()));
+    varResult->setConstant(getParam(0).getFloat());
+
+    result = MaterialGeneratorNode::evaluate();
+    setCompileState(result);
+
     return result;
 }
 
@@ -59,44 +57,38 @@ bool MaterialGeneratorNodeFloat1::evaluate()
 
 #pragma region Float2
 
-MaterialGeneratorNodeFloat2::MaterialGeneratorNodeFloat2()
+void MaterialGeneratorNodeFloat2::init()
 {
     addOutput(MaterialGeneratorNodeConnectorDesc("XY", he::Color(1.0f, 1.0f, 1.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.0f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Y", he::Color(0.0f, 1.0f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_O(
-        MGO_OUT(3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float));
-
     addParam(MaterialGeneratorNodeParam("Float2", MaterialGeneratorNodeParam::Type_Float2));
+
+    MaterialGeneratorNode::init();
 }
 bool MaterialGeneratorNodeFloat2::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
-    {
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    bool result(false);
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
 
-        const he::vec2 constant(getParam(0).getFloat2());
+    const he::vec2 constant(getParam(0).getFloat2());
 
-        // XY
-        const he::ObjectHandle resultHandleXY(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultXY(factory->get(resultHandleXY));
-        varResultXY->setConstant(constant);
-        getOutputConnector(0).setVar(resultHandleXY);
+    // XY
+    he::ct::ShaderGeneratorVariable* const varResultXY(factory->get(getOutputConnector(0).getVar()));
+    varResultXY->setConstant(constant);
 
-        // X
-        const he::ObjectHandle resultHandleX(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultX(factory->get(resultHandleX));
-        varResultX->setConstant(constant.x);
-        getOutputConnector(1).setVar(resultHandleX);
+    // X
+    he::ct::ShaderGeneratorVariable* const varResultX(factory->get(getOutputConnector(1).getVar()));
+    varResultX->setConstant(constant.x);
 
-        // Y
-        const he::ObjectHandle resultHandleY(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultY(factory->get(resultHandleY));
-        varResultY->setConstant(constant.y);
-        getOutputConnector(2).setVar(resultHandleY);
-    }
+    // Y
+    he::ct::ShaderGeneratorVariable* const varResultY(factory->get(getOutputConnector(2).getVar()));
+    varResultY->setConstant(constant.y);
+
+    result = MaterialGeneratorNode::evaluate();
+    setCompileState(result);
+
     return result;
 }
 
@@ -104,51 +96,43 @@ bool MaterialGeneratorNodeFloat2::evaluate()
 
 #pragma region Float3
 
-MaterialGeneratorNodeFloat3::MaterialGeneratorNodeFloat3()
+void MaterialGeneratorNodeFloat3::init()
 {
     addOutput(MaterialGeneratorNodeConnectorDesc("XYZ", he::Color(1.0f, 1.0f, 1.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.0f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Y", he::Color(0.0f, 1.0f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Z", he::Color(0.0f, 0.0f, 1.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_O(
-        MGO_OUT(4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float));
-
     addParam(MaterialGeneratorNodeParam("Float3", MaterialGeneratorNodeParam::Type_Float3));
+
+    MaterialGeneratorNode::init();
 }
 bool MaterialGeneratorNodeFloat3::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
-    {
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    bool result(false);
 
-        const he::vec3 constant(getParam(0).getFloat3());
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    const he::vec3 constant(getParam(0).getFloat3());
 
-        // XYZ
-        const he::ObjectHandle resultHandleXYZ(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultXYZ(factory->get(resultHandleXYZ));
-        varResultXYZ->setConstant(constant);
-        getOutputConnector(0).setVar(resultHandleXYZ);
+    // XYZ
+    he::ct::ShaderGeneratorVariable* const varResultXYZ(factory->get(getOutputConnector(0).getVar()));
+    varResultXYZ->setConstant(constant);
 
-        // X
-        const he::ObjectHandle resultHandleX(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultX(factory->get(resultHandleX));
-        varResultX->setConstant(constant.x);
-        getOutputConnector(1).setVar(resultHandleX);
+    // X
+    he::ct::ShaderGeneratorVariable* const varResultX(factory->get(getOutputConnector(1).getVar()));
+    varResultX->setConstant(constant.x);
 
-        // Y
-        const he::ObjectHandle resultHandleY(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultY(factory->get(resultHandleY));
-        varResultY->setConstant(constant.y);
-        getOutputConnector(2).setVar(resultHandleY);
+    // Y
+    he::ct::ShaderGeneratorVariable* const varResultY(factory->get(getOutputConnector(2).getVar()));
+    varResultY->setConstant(constant.y);
 
-        // Z
-        const he::ObjectHandle resultHandleZ(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultZ(factory->get(resultHandleZ));
-        varResultZ->setConstant(constant.z);
-        getOutputConnector(3).setVar(resultHandleZ);
-    }
+    // Z
+    he::ct::ShaderGeneratorVariable* const varResultZ(factory->get(getOutputConnector(3).getVar()));
+    varResultZ->setConstant(constant.z);
+
+    result = MaterialGeneratorNode::evaluate();
+    setCompileState(result);
+
     return result;
 }
 
@@ -156,7 +140,7 @@ bool MaterialGeneratorNodeFloat3::evaluate()
 
 #pragma region Float4
 
-MaterialGeneratorNodeFloat4::MaterialGeneratorNodeFloat4()
+void MaterialGeneratorNodeFloat4::init()
 {
     addOutput(MaterialGeneratorNodeConnectorDesc("XYZW", he::Color(1.0f, 1.0f, 1.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.0f, 0.0f, 1.0f)));
@@ -164,50 +148,41 @@ MaterialGeneratorNodeFloat4::MaterialGeneratorNodeFloat4()
     addOutput(MaterialGeneratorNodeConnectorDesc("Z", he::Color(0.0f, 0.0f, 1.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("W", he::Color(0.5f, 0.0f, 1.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_O(
-        MGO_OUT(5, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float));
-
     addParam(MaterialGeneratorNodeParam("Float4", MaterialGeneratorNodeParam::Type_Float4));
+
+    MaterialGeneratorNode::init();
 }
 bool MaterialGeneratorNodeFloat4::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
-    {
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    bool result(false);
 
-        const he::vec4 constant(getParam(0).getFloat4());
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
 
-        // RGBA
-        const he::ObjectHandle resultHandleRGBA(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultRGBA(factory->get(resultHandleRGBA));
-        varResultRGBA->setConstant(constant);
-        getOutputConnector(0).setVar(resultHandleRGBA);
+    const he::vec4 constant(getParam(0).getFloat4());
 
-        // R
-        const he::ObjectHandle resultHandleR(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultR(factory->get(resultHandleR));
-        varResultR->setConstant(constant.x);
-        getOutputConnector(1).setVar(resultHandleR);
+    // RGBA
+    he::ct::ShaderGeneratorVariable* const varResultRGBA(factory->get(getOutputConnector(0).getVar()));
+    varResultRGBA->setConstant(constant);
 
-        // G
-        const he::ObjectHandle resultHandleG(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultG(factory->get(resultHandleG));
-        varResultG->setConstant(constant.y);
-        getOutputConnector(2).setVar(resultHandleG);
+    // R
+    he::ct::ShaderGeneratorVariable* const varResultR(factory->get(getOutputConnector(1).getVar()));
+    varResultR->setConstant(constant.x);
 
-        // B
-        const he::ObjectHandle resultHandleB(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultB(factory->get(resultHandleB));
-        varResultB->setConstant(constant.z);
-        getOutputConnector(3).setVar(resultHandleB);
+    // G
+    he::ct::ShaderGeneratorVariable* const varResultG(factory->get(getOutputConnector(2).getVar()));
+    varResultG->setConstant(constant.y);
 
-        // A
-        const he::ObjectHandle resultHandleA(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResultA(factory->get(resultHandleA));
-        varResultA->setConstant(constant.w);
-        getOutputConnector(4).setVar(resultHandleA);
-    }
+    // B
+    he::ct::ShaderGeneratorVariable* const varResultB(factory->get(getOutputConnector(3).getVar()));
+    varResultB->setConstant(constant.z);
+
+    // A
+    he::ct::ShaderGeneratorVariable* const varResultA(factory->get(getOutputConnector(4).getVar()));
+    varResultA->setConstant(constant.w);
+
+    result = MaterialGeneratorNode::evaluate();
+    setCompileState(result);
+
     return result;
 }
 

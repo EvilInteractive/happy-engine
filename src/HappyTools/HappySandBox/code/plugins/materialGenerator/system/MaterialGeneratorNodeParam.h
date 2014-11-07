@@ -25,7 +25,7 @@
 #include "ShaderGeneratorEnums.h"
 
 namespace hs {
-
+class MaterialGeneratorNode;
 class MaterialGeneratorNodeParam
 {
 public:
@@ -43,7 +43,14 @@ public:
 
     MaterialGeneratorNodeParam();
     MaterialGeneratorNodeParam(const he::String& name, const Type type);
-    // Default copy and assignment are OK
+
+    ~MaterialGeneratorNodeParam();
+
+    MaterialGeneratorNodeParam(MaterialGeneratorNodeParam&& other);
+    MaterialGeneratorNodeParam& operator=(MaterialGeneratorNodeParam&& other);
+
+    void Init(MaterialGeneratorNode* node);
+    void Destroy(MaterialGeneratorNode* node);
 
     // Setters
     void setFloat(const float val);
@@ -61,10 +68,13 @@ public:
     bool  getBool() const;
     he::ct::ShaderGeneratorSwizzleMask  getSwizzleMask() const;
 
+    he::ObjectHandle getVar() const;
+
     Type getType() const { return m_Type; }
 
 private:
     he::String m_Name;
+    he::ObjectHandle m_Variable;
     Type m_Type;
     union Data
     {
@@ -72,6 +82,10 @@ private:
         float m_Float[4];
         he::ct::ShaderGeneratorSwizzleMask m_Mask;
     } m_Data;
+
+
+    MaterialGeneratorNodeParam(MaterialGeneratorNodeParam&);
+    MaterialGeneratorNodeParam& operator=(const MaterialGeneratorNodeParam&);
 };
 
 } //end namespace

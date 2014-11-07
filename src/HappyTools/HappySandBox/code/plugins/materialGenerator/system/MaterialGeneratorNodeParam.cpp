@@ -18,13 +18,18 @@
 //Author:  Bastian Damman
 //Created: 16/12/2012
 #include "HappySandBoxPCH.h"
-
 #include "MaterialGeneratorNodeParam.h"
+
+#include "../forms/MaterialGraph.h"
+#include "MaterialGeneratorNode.h"
+
+#include <ShaderGenerator.h>
+#include <ShaderGeneratorVariableFactory.h>
 
 namespace hs {
 
 MaterialGeneratorNodeParam::MaterialGeneratorNodeParam()
-    : m_Name("Unknown param"), m_Type(Type_Unknown)
+    : m_Name(""), m_Type(Type_Unknown)
 {
     he_memset(&m_Data, 0, sizeof(Data));
 }
@@ -35,15 +40,68 @@ MaterialGeneratorNodeParam::MaterialGeneratorNodeParam(const he::String& name, c
     he_memset(&m_Data, 0, sizeof(Data));
 }
 
+MaterialGeneratorNodeParam::~MaterialGeneratorNodeParam()
+{
+    HE_ASSERT(m_Variable == he::ObjectHandle::unassigned, "MaterialGeneratorNodeParam was not destroyed!");
+}
+
+MaterialGeneratorNodeParam::MaterialGeneratorNodeParam( MaterialGeneratorNodeParam&& other )
+    : m_Name(std::move(other.m_Name)), m_Type(other.m_Type), m_Data(other.m_Data), m_Variable(other.m_Variable)
+{
+    other.m_Variable = he::ObjectHandle::unassigned;
+    other.m_Type = Type_Unknown;
+}
+
+MaterialGeneratorNodeParam& MaterialGeneratorNodeParam::operator=( MaterialGeneratorNodeParam&& other )
+{
+    m_Name = std::move(other.m_Name);
+    m_Type = other.m_Type;
+    m_Data = other.m_Data;
+    std::swap(m_Variable, other.m_Variable);
+    other.m_Type = Type_Unknown;
+    return *this;
+}
+
+void MaterialGeneratorNodeParam::Init( MaterialGeneratorNode* node )
+{
+    switch (m_Type)
+    {
+    case hs::MaterialGeneratorNodeParam::Type_Float:
+    case hs::MaterialGeneratorNodeParam::Type_Float2:
+    case hs::MaterialGeneratorNodeParam::Type_Float3:
+    case hs::MaterialGeneratorNodeParam::Type_Float4:
+        {
+            m_Variable = node->getParent()->getShaderGenerator()->addVariable();
+        } break;
+    default:
+        break;
+    }
+}
+
+void MaterialGeneratorNodeParam::Destroy( MaterialGeneratorNode* node )
+{
+    if (m_Variable != he::ObjectHandle::unassigned)
+    {
+        node->getParent()->getShaderGenerator()->removeVariable(m_Variable);
+        m_Variable = he::ObjectHandle::unassigned;
+    }
+}
+
 void MaterialGeneratorNodeParam::setFloat( const float val )
 {
     HE_ASSERT(m_Type == Type_Float, "Type mismatch setting Float when var is not");
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
+    var->setConstant(val);
     m_Data.m_Float[0] = val;
 }
 
 void MaterialGeneratorNodeParam::setFloat2( const he::vec2& val )
 {
     HE_ASSERT(m_Type == Type_Float2, "Type mismatch setting Float2 when var is not");
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
+    var->setConstant(val);
     m_Data.m_Float[0] = val.x;
     m_Data.m_Float[1] = val.y;
 }
@@ -51,6 +109,9 @@ void MaterialGeneratorNodeParam::setFloat2( const he::vec2& val )
 void MaterialGeneratorNodeParam::setFloat3( const he::vec3& val )
 {
     HE_ASSERT(m_Type == Type_Float3, "Type mismatch setting Float3 when var is not");
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
+    var->setConstant(val);
     m_Data.m_Float[0] = val.x;
     m_Data.m_Float[1] = val.y;
     m_Data.m_Float[2] = val.z;
@@ -59,6 +120,9 @@ void MaterialGeneratorNodeParam::setFloat3( const he::vec3& val )
 void MaterialGeneratorNodeParam::setFloat4( const he::vec4& val )
 {
     HE_ASSERT(m_Type == Type_Float4, "Type mismatch setting Float4 when var is not");
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
+    var->setConstant(val);
     m_Data.m_Float[0] = val.x;
     m_Data.m_Float[1] = val.y;
     m_Data.m_Float[2] = val.z;
@@ -74,6 +138,9 @@ void MaterialGeneratorNodeParam::setSwizzleMask( const he::ct::ShaderGeneratorSw
 void MaterialGeneratorNodeParam::setBool( const bool val )
 {
     HE_ASSERT(m_Type == Type_Bool, "Type mismatch setting Bool when var is not");
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
+    var->setConstant(val);
     m_Data.m_Bool = val;
 }
 
@@ -111,6 +178,11 @@ he::ct::ShaderGeneratorSwizzleMask MaterialGeneratorNodeParam::getSwizzleMask() 
 {
     HE_ASSERT(m_Type == Type_SwizzleMask, "Type mismatch getting SwizzleMask when var is not");
     return m_Data.m_Mask;
+}
+
+he::ObjectHandle MaterialGeneratorNodeParam::getVar() const
+{
+    return m_Variable;
 }
 
 } //end namespace

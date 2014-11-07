@@ -51,14 +51,12 @@ public:
     MaterialGeneratorNode();
     virtual ~MaterialGeneratorNode();
 
-    // Evaluation
-    bool evaluate();
-
     // Override me
     virtual MaterialGeneratorNodeType getType() const { return MaterialGeneratorNodeType_Unassigned; }
+    virtual bool evaluate();
 
-    // Internal
-    void init();
+    virtual void init();
+    virtual void destroy();
 
     void setParent(MaterialGraph* const parent) { m_Parent = parent; }
     MaterialGraph* getParent() { return m_Parent; }
@@ -72,28 +70,23 @@ public:
     // Serializing
     void visit(he::io::StructuredVisitor* const visitor);
     void visit(he::io::BinaryFileVisitor* const visitor);
-
+    
 protected:
     // Setters
     void addInput(const MaterialGeneratorNodeConnectorDesc& desc);
     void addOutput(const MaterialGeneratorNodeConnectorDesc& desc);
-    void addOverload(MaterialGeneratorNodeOverload overload);
+    void setCompileState(const bool ok);
 
-    void addParam(const MaterialGeneratorNodeParam& param);
-    const MaterialGeneratorNodeParam& getParam(const size_t index) const;
+    void addParam(MaterialGeneratorNodeParam param);
+    MaterialGeneratorNodeParam& getParam(const size_t index);
 
     void setName(const he::String name);
 
+    // Usage
     MaterialGeneratorNodeConnector& getInputConnector(const size_t index) const;
     MaterialGeneratorNodeConnector& getOutputConnector(const size_t index) const;
 
 private:
-    void activateOverload(const size_t overload);
-    bool findOverload(size_t& outOverload) const;
-
-    he::ObjectList<MaterialGeneratorNodeOverload> m_Overloads;
-    size_t m_SelectedOverload;
-
     he::PrimitiveList<MaterialGeneratorNodeConnectorAttachment*> m_Inputs;
     he::PrimitiveList<MaterialGeneratorNodeConnectorAttachment*> m_Outputs;
 
@@ -101,6 +94,9 @@ private:
 
     he::Guid m_Guid;
     MaterialGraph* m_Parent;
+
+    bool m_CompileState;
+    bool m_Evaluating;
 
     //Disable default copy constructor and default assignment operator
     MaterialGeneratorNode(const MaterialGeneratorNode&);

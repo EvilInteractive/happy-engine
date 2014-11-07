@@ -30,7 +30,7 @@ namespace hs {
 
 #pragma region ComposeVector
 
-MaterialGeneratorNodeComposeVector::MaterialGeneratorNodeComposeVector()
+void MaterialGeneratorNodeComposeVector::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
@@ -39,88 +39,65 @@ MaterialGeneratorNodeComposeVector::MaterialGeneratorNodeComposeVector()
 
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    // FLOAT2
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float2));
-
-    // FLOAT3
-
-    // float2 + float
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-    // float + float + float
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float3));
-
-    // FLOAT4
-
-    // float + float + float + float
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-
-    // float2 + float + float
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-
-    // float2 + float2
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-
-    // float3 + float
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float4));
+    MaterialGeneratorNode::init();
 }
 
 bool MaterialGeneratorNodeComposeVector::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
+    bool result(false);
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+
+    he::ObjectHandle vars[4];
+    int components(0);
+    for (size_t i(0); i < 4; ++i)
     {
-        he::ObjectHandle vars[4];
+        vars[i] = getInputConnector(i).getVar();
+        if (vars[i] != he::ObjectHandle::unassigned)
+        {
+            he::ct::ShaderGeneratorVariable* const var(factory->get(vars[i]));
+            switch (var->getType())
+            {
+            case he::ct::ShaderGeneratorVariableType_Float: components += 1; break;
+            case he::ct::ShaderGeneratorVariableType_Float2: components += 2; break;
+            case he::ct::ShaderGeneratorVariableType_Float3: components += 3; break;
+            case he::ct::ShaderGeneratorVariableType_Float4: components += 4; break;
+            }
+        }
+    }
+
+    const he::ObjectHandle varResultHandle(getOutputConnector(0).getVar());
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(varResultHandle));
+    varResult->reset();
+
+    if (components > 0 && components <= 4)
+    {
+        he::ct::ShaderGeneratorVariableType type(he::checked_numcast<he::ct::ShaderGeneratorVariableType>(
+            he::ct::ShaderGeneratorVariableType_Float + components - 1));
+        
+        size_t actualindex(0);
+        // Shift everything so we have no holes
         for (size_t i(0); i < 4; ++i)
         {
-            MaterialGeneratorNodeConnector* c(getInputConnector(i).getInputConnection());
-            if (c)
-                vars[i] = c->getVar();
-            else
-                vars[i] = he::ObjectHandle::unassigned;
+            if (vars[i] != he::ObjectHandle::unassigned)
+            {
+                if (i != actualindex)
+                {
+                    vars[actualindex] = vars[i];
+                    vars[i] = he::ObjectHandle::unassigned;
+                }
+                ++actualindex;
+            }
         }
 
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-        const he::ObjectHandle varResultHandle(getParent()->getShaderGenerator()->addVariable());
-        he::ct::ShaderGeneratorVariable* const varResult(factory->get(varResultHandle));
-
-        MaterialGeneratorNodeConnector& output(getOutputConnector(0));
-        const MaterialGeneratorVariableType outputType(getOutputConnector(0).getVariableType());
-        switch (outputType)
+        switch (type)
         {
-            case MaterialGeneratorVariableType_Float2: varResult->setComposeFloat2(vars[0], vars[1]); break;
-            case MaterialGeneratorVariableType_Float3: varResult->setComposeFloat3(vars[0], vars[1], vars[2]); break;
-            case MaterialGeneratorVariableType_Float4: varResult->setComposeFloat4(vars[0], vars[1], vars[2], vars[3]); break;
-            default: LOG(he::LogType_ProgrammerAssert, "Unsupported Type!"); break;
+        case he::ct::ShaderGeneratorVariableType_Float2: result = varResult->setComposeFloat2(vars[0], vars[1]); break;
+        case he::ct::ShaderGeneratorVariableType_Float3: result = varResult->setComposeFloat3(vars[0], vars[1], vars[2]); break;
+        case he::ct::ShaderGeneratorVariableType_Float4: result = varResult->setComposeFloat4(vars[0], vars[1], vars[2], vars[3]); break;
         }
-
-        output.setVar(varResultHandle);
     }
+    result &= MaterialGeneratorNode::evaluate();
+    setCompileState(result);
     return result;
 }
 
@@ -128,75 +105,54 @@ bool MaterialGeneratorNodeComposeVector::evaluate()
 
 #pragma region Swizzle
 
-MaterialGeneratorNodeSwizzle::MaterialGeneratorNodeSwizzle()
+void MaterialGeneratorNodeSwizzle::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f)));
 
-    MGO_ADD_OVERLOAD_IO(
-        MGO_IN(1, MaterialGeneratorVariableType_Float),
-        MGO_OUT(1, MaterialGeneratorVariableType_Float));
-           
     addParam(MaterialGeneratorNodeParam("A", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("B", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("C", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("D", MaterialGeneratorNodeParam::Type_SwizzleMask));
+
+    MaterialGeneratorNode::init();
 }
 
 bool MaterialGeneratorNodeSwizzle::evaluate()
 {
-    bool result(MaterialGeneratorNode::evaluate());
-    if (result)
+    bool result(false);
+    he::ct::ShaderGeneratorSwizzleMask mask[4];
+    for (size_t i(0); i < 4; ++i)
     {
-        he::ct::ShaderGeneratorSwizzleMask mask[4];
-        for (size_t i(0); i < 4; ++i)
+        mask[i] = he::ct::ShaderGeneratorSwizzleMask_None;
+    }
+
+    size_t components(0);
+    for (size_t i(0); i < 4; ++i)
+    {
+        const MaterialGeneratorNodeParam& param(getParam(i));
+        if (param.getSwizzleMask() != he::ct::ShaderGeneratorSwizzleMask_None)
         {
-            mask[i] = he::ct::ShaderGeneratorSwizzleMask_None;
-        }
-
-        size_t components(0);
-        for (size_t i(0); i < 4; ++i)
-        {
-            const MaterialGeneratorNodeParam& param(getParam(i));
-            if (param.getSwizzleMask() != he::ct::ShaderGeneratorSwizzleMask_None)
-            {
-                mask[components] = param.getSwizzleMask();
-                ++components;
-            }
-        }
-
-        MaterialGeneratorVariableType outputType(MaterialGeneratorVariableType_Unknown);
-        switch (components)
-        {
-        case 0: break;
-        case 1: outputType = MaterialGeneratorVariableType_Float; break;
-        case 2: outputType = MaterialGeneratorVariableType_Float2; break;
-        case 3: outputType = MaterialGeneratorVariableType_Float3; break;
-        case 4: outputType = MaterialGeneratorVariableType_Float4; break;
-        default: LOG(he::LogType_ProgrammerAssert, "Unsupported component count"); break;
-        }
-
-        if (outputType != MaterialGeneratorVariableType_Unknown)
-        {
-            result = false;
-        }
-        else
-        {
-            MaterialGeneratorNodeConnector* connection(getInputConnector(0).getInputConnection());
-            if (connection)
-            {
-                const he::ObjectHandle a(connection->getVar());
-
-                he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-                const he::ObjectHandle resultHandle(getParent()->getShaderGenerator()->addVariable());
-                he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
-
-                varResult->setSwizzle(a, mask[0], mask[1], mask[2], mask[3]);
-
-                getOutputConnector(0).setVar(resultHandle);
-            }
+            mask[components] = param.getSwizzleMask();
+            ++components;
         }
     }
+
+    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    const he::ObjectHandle resultHandle(getOutputConnector(0).getVar());
+    he::ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
+    varResult->reset();
+
+    if (components > 0 && components <= 4)
+    {
+        const he::ObjectHandle a(getInputConnector(0).getVar());
+        if (a != he::ObjectHandle::unassigned)
+        {
+           result = varResult->setSwizzle(a, mask[0], mask[1], mask[2], mask[3]);
+        }
+    }
+    result &= MaterialGeneratorNode::evaluate();
+    setCompileState(result);
     return result;
 }
 

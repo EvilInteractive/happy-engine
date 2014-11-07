@@ -28,7 +28,7 @@
 namespace he {
 namespace ct {
 
-class ShaderGeneratorVariableFactory : public ObjectFactory<ShaderGeneratorVariable>, public Singleton<ShaderGeneratorVariableFactory>
+class SINGLETON(ShaderGeneratorVariableFactory, public ObjectFactory<ShaderGeneratorVariable>)
 {
 public:
     ShaderGeneratorVariableFactory();

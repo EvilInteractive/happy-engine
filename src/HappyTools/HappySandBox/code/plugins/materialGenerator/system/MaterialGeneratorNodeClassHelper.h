@@ -27,24 +27,29 @@
 namespace hs {
 class MaterialGeneratorGraph;
 
-#define _MaterialGeneratorNodeClass(className, type) \
+#define _MaterialGeneratorNodeClass(className, type, destroyImpl, extra, extraCtor) \
 class className : public MaterialGeneratorNode\
 {\
 public:\
-    className();\
-    virtual ~className() {}\
+    className() extraCtor {}\
+    ~className() {}\
     \
-    virtual bool evaluate();\
+    void init() final; \
+    void destroy() final destroyImpl \
     \
-    virtual MaterialGeneratorNodeType getType() const { return MaterialGeneratorNodeType_##type; } \
+    bool evaluate() final;\
+    \
+    MaterialGeneratorNodeType getType() const final { return MaterialGeneratorNodeType_##type; } \
     \
 private:\
+    extra\
     \
     className(const className&);\
     className& operator=(const className&);\
 };
 
-#define MaterialGeneratorNodeClass(type) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type)
+#define MaterialGeneratorNodeClass(type) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type, { MaterialGeneratorNode::destroy(); },,)
+#define MaterialGeneratorNodeClassTempVar(type, var) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type,;, he::ObjectHandle var;, : var(he::ObjectHandle::unassigned))
 
 #define MGO_IN(count, ...) count, __VA_ARGS__
 #define MGO_OUT(count, ...) count, __VA_ARGS__

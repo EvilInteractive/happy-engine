@@ -46,6 +46,8 @@ NodeGraphNode* MaterialGraph::createNode()
 
 void MaterialGraph::destroyNode( NodeGraphNode* node )
 {
+    if (node == m_ActiveRoot)
+        m_ActiveRoot = nullptr;
     MaterialGeneratorNodeFactory::getInstance()->destroy(he::checked_cast<MaterialGeneratorNode*>(node));
 }
 
@@ -75,10 +77,22 @@ void MaterialGraph::dropEvent( QDropEvent* event )
         MaterialGeneratorNodeType type(m_Parent->getActiveCreateNode());
         if (type != MaterialGeneratorNodeType_Unassigned)
         {
-            MaterialGeneratorNode* node(MaterialGeneratorNodeFactory::getInstance()->create(type));
+            MaterialGeneratorNode* node(MaterialGeneratorNodeFactory::getInstance()->create(this, type));
             addNode(node, he::vec2(event->posF().x(), event->posF().y()));
             event->acceptProposedAction();
+
+            if (type == MaterialGeneratorNodeType_RootNormalDraw)
+                m_ActiveRoot = node;
         }
+    }
+}
+
+void MaterialGraph::compile()
+{
+    m_Generator->reset();
+    if (m_ActiveRoot)
+    {
+        m_Generator->compile(CONTENT->getShaderFolderPath().append("Generated"), "TestShader");
     }
 }
 

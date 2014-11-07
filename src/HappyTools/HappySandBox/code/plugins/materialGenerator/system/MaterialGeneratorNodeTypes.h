@@ -39,10 +39,12 @@ const char* materialGeneratorVariableTypeToString(const MaterialGeneratorVariabl
 enum MaterialGeneratorNodeType
 {
     // Root
-    MaterialGeneratorNodeType_RootNormalDraw,
+    MaterialGeneratorNodeType_ROOT,
+    MaterialGeneratorNodeType_RootNormalDraw = MaterialGeneratorNodeType_ROOT,
+    MaterialGeneratorNodeType_ROOT_MAX,
 
     // Const
-    MaterialGeneratorNodeType_CONST,
+    MaterialGeneratorNodeType_CONST = MaterialGeneratorNodeType_ROOT_MAX,
     MaterialGeneratorNodeType_Float1 = MaterialGeneratorNodeType_CONST,
     MaterialGeneratorNodeType_Float2,
     MaterialGeneratorNodeType_Float3,

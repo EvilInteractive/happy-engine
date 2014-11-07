@@ -40,7 +40,12 @@ enum RootNodeNormalDrawConnection
     RootNodeNormalDrawConnection_WorldPositionOffset
 };
 
-MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw()
+enum RootNodeNormalDrawParam
+{
+    eRootNodeNormalDrawParam_AlphaTest
+};
+
+void MaterialGeneratorNodeRootNormalDraw::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("Diffuse", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("Emissive", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
@@ -50,65 +55,43 @@ MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw()
     addInput(MaterialGeneratorNodeConnectorDesc("Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("WorldPositionOffset", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    MGO_ADD_OVERLOAD_I(MGO_IN(7, MaterialGeneratorVariableType_Float3,      // Diffuse
-        MaterialGeneratorVariableType_Float3,                               // Emissive
-        MaterialGeneratorVariableType_Float3,                               // Specular
-        MaterialGeneratorVariableType_Float,                                // Gloss
-        MaterialGeneratorVariableType_Float,                                // Opacity
-        MaterialGeneratorVariableType_Float3,                               // Normal
-        MaterialGeneratorVariableType_Float3));                             // WorldPositionOffset
+    addParam(MaterialGeneratorNodeParam("Alpha Test Value", MaterialGeneratorNodeParam::Type_Float));
     
+    getParam(eRootNodeNormalDrawParam_AlphaTest).setFloat(0.5f);
+
+    MaterialGeneratorNode::init();
 }
 bool MaterialGeneratorNodeRootNormalDraw::evaluate()
 {
-    const bool result(MaterialGeneratorNode::evaluate());
-    if (result)
-    {
-        he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-        he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
+    bool result(false);
+    he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
         
-        const auto& diffuseConnection(getInputConnector(RootNodeNormalDrawConnection_Diffuse));
-        const auto& emissiveConnection(getInputConnector(RootNodeNormalDrawConnection_Emissive));
-        const auto& specularConnection(getInputConnector(RootNodeNormalDrawConnection_Specular));
-        const auto& glossConnection(getInputConnector(RootNodeNormalDrawConnection_Gloss));
-        const auto& opacityConnection(getInputConnector(RootNodeNormalDrawConnection_Opacity));
-        const auto& normalConnection(getInputConnector(RootNodeNormalDrawConnection_Normal));
-        const auto& worldPosOffsetConnection(getInputConnector(RootNodeNormalDrawConnection_WorldPositionOffset));
-        if (diffuseConnection.isConnected())
-        {
-            shaderGenerator->setDiffuse(diffuseConnection.getInputConnection()->getVar());
-        }
-        if (emissiveConnection.isConnected())
-        {
-            shaderGenerator->setEmissive(emissiveConnection.getInputConnection()->getVar());
-        }
-        if (specularConnection.isConnected())
-        {
-            shaderGenerator->setSpecular(specularConnection.getInputConnection()->getVar());
-        }
-        if (glossConnection.isConnected())
-        {
-            shaderGenerator->setGloss(glossConnection.getInputConnection()->getVar());
-        }
-        if (opacityConnection.isConnected())
-        {
-            shaderGenerator->setOpacity(opacityConnection.getInputConnection()->getVar());
-            he::ct::ShaderGeneratorVariable* const testValue(factory->get(shaderGenerator->addVariable()));
-            testValue->setConstant(0.5f);
-            shaderGenerator->setAlphaTestValue(testValue->getHandle());
-        }
-        if (normalConnection.isConnected())
-        {
-            shaderGenerator->setNormal(normalConnection.getInputConnection()->getVar());
-        }
-        if (worldPosOffsetConnection.isConnected())
-        {
-            shaderGenerator->setWorldPositionOffset(worldPosOffsetConnection.getInputConnection()->getVar());
-        }
+    const he::ObjectHandle diffuseConnection(getInputConnector(RootNodeNormalDrawConnection_Diffuse).getVar());
+    if (diffuseConnection != he::ObjectHandle::unassigned)
+    {
+        const he::ObjectHandle emissiveConnection(getInputConnector(RootNodeNormalDrawConnection_Emissive).getVar());
+        const he::ObjectHandle specularConnection(getInputConnector(RootNodeNormalDrawConnection_Specular).getVar());
+        const he::ObjectHandle glossConnection(getInputConnector(RootNodeNormalDrawConnection_Gloss).getVar());
+        const he::ObjectHandle opacityConnection(getInputConnector(RootNodeNormalDrawConnection_Opacity).getVar());
+        const he::ObjectHandle normalConnection(getInputConnector(RootNodeNormalDrawConnection_Normal).getVar());
+        const he::ObjectHandle worldPosOffsetConnection(getInputConnector(RootNodeNormalDrawConnection_WorldPositionOffset).getVar());
+        const he::ObjectHandle alphaTest(getParam(eRootNodeNormalDrawParam_AlphaTest).getVar());
+        
+        shaderGenerator->setDiffuse(diffuseConnection);
+        shaderGenerator->setEmissive(emissiveConnection);
+        shaderGenerator->setSpecular(specularConnection);
+        shaderGenerator->setGloss(glossConnection);
 
-        shaderGenerator->compile(he::Path(CONTENT->getShaderFolderPath().append("generateTest")), "testShader");
-        shaderGenerator->reset();
+        shaderGenerator->setOpacity(opacityConnection);
+        shaderGenerator->setAlphaTestValue(alphaTest);
+
+        shaderGenerator->setNormal(normalConnection);
+        shaderGenerator->setWorldPositionOffset(worldPosOffsetConnection);
+
+        result = true;
     }
+    result &= MaterialGeneratorNode::evaluate();
+    setCompileState(result);
     return result;
 }
 

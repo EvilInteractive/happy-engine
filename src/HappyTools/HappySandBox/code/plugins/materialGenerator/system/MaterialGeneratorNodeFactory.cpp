@@ -41,12 +41,12 @@ MaterialGeneratorNodeFactory::~MaterialGeneratorNodeFactory()
 {
 }
 
-MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGeneratorNodeType type )
+MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( MaterialGraph* const graph, const MaterialGeneratorNodeType type )
 {
-    return create(type, he::Guid::generateGuid());
+    return create(graph, type, he::Guid::generateGuid());
 }
 
-MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGeneratorNodeType type, const he::Guid& id )
+MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( MaterialGraph* const graph, const MaterialGeneratorNodeType type, const he::Guid& id )
 {
     MaterialGeneratorNode* node(nullptr);
     switch (type)
@@ -107,6 +107,7 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
             LOG(he::LogType_ProgrammerAssert, "Unknown node in factory: %s", materialGeneratorNodeTypeToString(type));
     }
     registerObject(node);
+    node->setParent(graph);
     node->init();
     node->setGuid(id);
     return node;

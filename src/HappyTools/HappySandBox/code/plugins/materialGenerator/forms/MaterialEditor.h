@@ -27,6 +27,7 @@ public:
 public slots:
     void createNewGraph();
     void tabCloseRequested(const int tab);
+    void compile();
     
 private:
     Ui::MaterialEditor* m_UI;

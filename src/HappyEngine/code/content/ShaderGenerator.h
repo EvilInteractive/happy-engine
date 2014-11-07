@@ -60,6 +60,7 @@ public:
     void reset();
 
     ObjectHandle addVariable();
+    void removeVariable(const ObjectHandle& var);
     const ObjectHandle& getVariable(const ShaderGeneratorGlobalInputVariableType type);
     const ObjectHandle& getVariable(const ShaderGeneratorGlobalFragmentVariableType type);
     const ObjectHandle& getVariable(const ShaderGeneratorGlobalCodeVariableType type);

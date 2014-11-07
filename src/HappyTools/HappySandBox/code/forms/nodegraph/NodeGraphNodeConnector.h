@@ -62,7 +62,7 @@ public:
     void setState(const EConnectorState state) { m_State = state; }
 
     ENodeGraphNodeConnectorType getType() const { return m_Type; }
-    void setType(const ENodeGraphNodeConnectorType type) { m_Type = type; }
+    virtual void setType(const ENodeGraphNodeConnectorType type) { m_Type = type; }
 
     // Returns true if something actually changed
     virtual bool connect(NodeGraphNodeConnector* other);

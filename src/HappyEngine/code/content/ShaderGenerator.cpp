@@ -115,6 +115,13 @@ he::ObjectHandle ShaderGenerator::addVariable()
     return result;
 }
 
+void ShaderGenerator::removeVariable( const ObjectHandle& var )
+{
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+    factory->destroyObject(var);
+    m_Variables.remove(var);
+}
+
 ShaderGeneratorVariable* ShaderGenerator::addInternalVariable()
 {
     ShaderGeneratorVariableFactory* factory(ShaderGeneratorVariableFactory::getInstance());
@@ -833,7 +840,7 @@ void ShaderGenerator::writeVariable( const ShaderGeneratorVariable* const var, c
 void ShaderGenerator::writeHeader()
 {
     m_ShaderFile << 
-        "//HappyEngine Copyright (C) 2012 Evil Interactive                                \n"
+        "//HappyEngine Copyright (C) 2012 - 2014 Evil Interactive                         \n"
         "//                                                                               \n"
         "//This file is part of HappyEngine.                                              \n"
         "//                                                                               \n"

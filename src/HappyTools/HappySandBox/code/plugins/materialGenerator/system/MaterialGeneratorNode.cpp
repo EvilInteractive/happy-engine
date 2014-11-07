@@ -27,31 +27,38 @@
 #include "BinaryFileVisitor.h"
 
 namespace hs {
-    
+
 //////////////////////////////////////////////////////////////////////////
 // MaterialGeneratorNode
 //////////////////////////////////////////////////////////////////////////
 IMPLEMENT_OBJECT(MaterialGeneratorNode)
 
 MaterialGeneratorNode::MaterialGeneratorNode(): 
-    m_SelectedOverload(0), m_Overloads(1)
+    m_Parent(nullptr),
+    m_Evaluating(false), m_CompileState(true)
 {
     startEdit();
 }
 
 void MaterialGeneratorNode::init()
 {
-    HE_ASSERT(m_Overloads.size() > 0, "Node does not have any overloads?");
-    if (m_Overloads.size() > 0)
-    {
-        activateOverload(0);
-    }
     setTitle(materialGeneratorNodeTypeToString(getType()));
     endEdit();
+
+    evaluate();
+}
+
+void MaterialGeneratorNode::destroy()
+{
+
 }
 
 MaterialGeneratorNode::~MaterialGeneratorNode()
 {
+    m_Params.forEach([this](MaterialGeneratorNodeParam& param)
+    {
+        param.Destroy(this);
+    });
 }
 
 void MaterialGeneratorNode::addInput( const MaterialGeneratorNodeConnectorDesc& desc )
@@ -59,6 +66,7 @@ void MaterialGeneratorNode::addInput( const MaterialGeneratorNodeConnectorDesc& 
     MaterialGeneratorNodeConnectorAttachment* att(NEW MaterialGeneratorNodeConnectorAttachment(this, desc));
     att->init(eNodeGraphNodeConnectorType_Input, desc.m_Name.c_str());
     addAttachment(att);
+    m_Inputs.add(att);
 }
 
 void MaterialGeneratorNode::addOutput( const MaterialGeneratorNodeConnectorDesc& desc )
@@ -66,96 +74,33 @@ void MaterialGeneratorNode::addOutput( const MaterialGeneratorNodeConnectorDesc&
     MaterialGeneratorNodeConnectorAttachment* att(NEW MaterialGeneratorNodeConnectorAttachment(this, desc));
     att->init(eNodeGraphNodeConnectorType_Output, desc.m_Name.c_str());
     addAttachment(att);
-}
-
-void MaterialGeneratorNode::addOverload( MaterialGeneratorNodeOverload overload )
-{
-    HE_ASSERT(m_Overloads.size() == 0 || 
-        (m_Overloads[0].getInputs().size() == overload.getInputs().size() && 
-         m_Overloads[0].getOutputs().size() == overload.getOutputs().size()), 
-        "Incompatible amount of inputs or outputs supplied with overload:\n Outputs: %d/%d\n Inputs: %d/%d", 
-        overload.getOutputs().size(), m_Overloads[0].getOutputs().size(), overload.getInputs().size(), m_Overloads[0].getInputs().size());
-
-    m_Overloads.add(std::move(overload));
+    m_Outputs.add(att);
 }
 
 bool MaterialGeneratorNode::evaluate()
 {
-    bool result(false);
-    size_t overload(0);
-    if (findOverload(overload))
+    if (!m_Evaluating) // Prevent infinite loops
     {
-        result = true;
-        activateOverload(overload);
-    }
-    else
-    {
-        //error.setMessage("Error! Incorrect input/output types, could not find compatible overload! Check your input and outputs.");
-        result = false;
-    }
-    return result;
-}
-
-void MaterialGeneratorNode::activateOverload( size_t overloadIndex )
-{
-    HE_IF_ASSERT(overloadIndex < m_Overloads.size(), "Overload out of range!")
-    {
-        MaterialGeneratorNodeOverload& overload(m_Overloads[overloadIndex]);
-        const MaterialGeneratorNodeOverload::TTypeList& outputs(overload.getOutputs());
-        const MaterialGeneratorNodeOverload::TTypeList& inputs(overload.getInputs());
-
-        size_t outputCount(m_Outputs.size());
-        size_t inputCount(m_Inputs.size());
-
-        for (size_t i(0); i < outputCount; ++i)
+        m_Evaluating = true;
+        m_Outputs.forEach([](MaterialGeneratorNodeConnectorAttachment* output)
         {
-            MaterialGeneratorNodeConnectorAttachment* connectorAtt(m_Outputs[i]);
-            MaterialGeneratorNodeConnector& connector(connectorAtt->getMaterialNodeConnector());
-            connector.setVariableType(outputs[i]);
-        }
-        for (size_t i(0); i < inputCount; ++i)
-        {
-            MaterialGeneratorNodeConnectorAttachment* connectorAtt(m_Inputs[i]);
-            MaterialGeneratorNodeConnector& connector(connectorAtt->getMaterialNodeConnector());
-            connector.setVariableType(inputs[i]);
-        }
-    }
-}
-
-bool MaterialGeneratorNode::findOverload( size_t& outOverload ) const
-{
-    bool result(false);
-    const size_t inputCount(m_Inputs.size());
-
-    const size_t overloadCount(m_Overloads.size());
-    for (size_t i(0); i < overloadCount && result == false; ++i)
-    {
-        const MaterialGeneratorNodeOverload& overload(m_Overloads[i]);
-        result = true;
-        outOverload = i;
-        for (size_t inputIndex(0); inputIndex < inputCount; ++inputIndex)
-        {
-            const MaterialGeneratorNodeConnector& connection(m_Inputs[inputIndex]->getMaterialNodeConnector());
-            if (connection.isConnected()) // if input is connected
+            output->getMaterialNodeConnector().getConnections().forEach([](NodeGraphNodeConnector* input)
             {
-                const MaterialGeneratorNodeConnector* connectedConnector(he::checked_cast<const MaterialGeneratorNodeConnector*>(connection.getConnections()[0]));
-                if (connectedConnector->getVariableType() != overload.getInputs()[inputIndex]) // if inputs type is not compatible with overload
-                {
-                    result = false; // result = false -> try other overload
-                }
-                break;
-            }
-        }
+                he::checked_cast<MaterialGeneratorNodeConnector*>(input)->getParent()->evaluate();
+            });
+        });
+        m_Evaluating = false;
     }
-    return result;
+    return true;
 }
 
-void MaterialGeneratorNode::addParam( const MaterialGeneratorNodeParam& param )
+void MaterialGeneratorNode::addParam( MaterialGeneratorNodeParam param )
 {
-    m_Params.add(param);
+    param.Init(this);
+    m_Params.add(std::move(param));
 }
 
-const MaterialGeneratorNodeParam& MaterialGeneratorNode::getParam( const size_t index ) const
+MaterialGeneratorNodeParam& MaterialGeneratorNode::getParam( const size_t index )
 {
     return m_Params[index];
 }
@@ -182,15 +127,48 @@ MaterialGeneratorNodeConnector& MaterialGeneratorNode::getOutputConnector( const
     return m_Outputs[index]->getMaterialNodeConnector();
 }
 
-void MaterialGeneratorNode::notifyNodeConnected( MaterialGeneratorNodeConnector* /*a*/, MaterialGeneratorNodeConnector* /*b*/ )
+void MaterialGeneratorNode::notifyNodeConnected( MaterialGeneratorNodeConnector* a, MaterialGeneratorNodeConnector* b )
 {
-
+    MaterialGeneratorNodeConnector* outputNode(a);
+    MaterialGeneratorNodeConnector* inputNode(b);
+    if (outputNode->getType() == eNodeGraphNodeConnectorType_Input)
+    {
+        outputNode = b;
+        inputNode = a;
+    }
+    if (inputNode->getParent() == this) // only operator when input node is this node (else calculations are done twice)
+    {
+        inputNode->setVar(outputNode->getVar());
+        evaluate();
+    }
 }
 
-void MaterialGeneratorNode::notifyNodeDisconnected( MaterialGeneratorNodeConnector* /*a*/, MaterialGeneratorNodeConnector* /*b*/ )
+void MaterialGeneratorNode::notifyNodeDisconnected( MaterialGeneratorNodeConnector* a, MaterialGeneratorNodeConnector* b )
 {
-
+    MaterialGeneratorNodeConnector* outputNode(a);
+    MaterialGeneratorNodeConnector* inputNode(b);
+    if (outputNode->getType() == eNodeGraphNodeConnectorType_Input)
+    {
+        outputNode = b;
+        inputNode = a;
+    }
+    if (inputNode->getParent() == this) // only operator when input node is this node (else calculations are done twice)
+    {
+        inputNode->setVar(he::ObjectHandle::unassigned);
+        evaluate();
+    }
 }
 
+void MaterialGeneratorNode::setCompileState( const bool ok )
+{
+    if (m_CompileState != ok)
+    {
+        m_CompileState = ok;
+        if (ok)
+            setStyle(&Style::s_DefaultStyle);
+        else
+            setStyle(&Style::s_ErrorStyle);
+    }
+}
 
 } //end namespace

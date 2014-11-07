@@ -22,6 +22,10 @@
 
 #include "MaterialGeneratorNode.h"
 #include "MaterialGeneratorNodeTypes.h"
+#include "../forms/MaterialGraph.h"
+
+#include <ShaderGeneratorVariableFactory.h>
+#include <ShaderGenerator.h>
 
 namespace hs {
 
@@ -46,7 +50,27 @@ MaterialGeneratorNodeConnector::MaterialGeneratorNodeConnector( MaterialGenerato
 
 MaterialGeneratorNodeConnector::~MaterialGeneratorNodeConnector()
 {
+    if (getType() == eNodeGraphNodeConnectorType_Output && m_Variable != he::ObjectHandle::unassigned)
+    {
+        m_Parent->getParent()->getShaderGenerator()->removeVariable(m_Variable);
+    }
+}
 
+void MaterialGeneratorNodeConnector::setType( const ENodeGraphNodeConnectorType type )
+{
+    if (getType() != type)
+    {
+        NodeGraphNodeConnector::setType(type);
+        if (type == eNodeGraphNodeConnectorType_Output)
+        {
+            m_Variable = m_Parent->getParent()->getShaderGenerator()->addVariable();
+        }
+        else
+        {
+            m_Parent->getParent()->getShaderGenerator()->removeVariable(m_Variable);
+            m_Variable = he::ObjectHandle::unassigned;
+        }
+    }
 }
 
 bool MaterialGeneratorNodeConnector::connect( NodeGraphNodeConnector* other )
@@ -69,13 +93,9 @@ bool MaterialGeneratorNodeConnector::disconnect( NodeGraphNodeConnector* other )
     return false;
 }
 
-MaterialGeneratorNodeConnector* MaterialGeneratorNodeConnector::getInputConnection() const
+void MaterialGeneratorNodeConnector::setVar( const he::ObjectHandle var )
 {
-    if (isConnected())
-    {
-        return he::checked_cast<MaterialGeneratorNodeConnector*>(getConnections()[0]);
-    }
-    return nullptr;
+    m_Variable = var;
 }
 
 //////////////////////////////////////////////////////////////////////////

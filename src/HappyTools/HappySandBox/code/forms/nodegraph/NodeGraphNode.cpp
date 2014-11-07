@@ -47,6 +47,10 @@ void NodeGraphNode::Style::sdmInit()
     Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Normal] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch.png");
     Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Hover] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch_hover.png");
     Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Selected] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch_selected.png");
+
+    Style::s_ErrorStyle.m_NinePatchTextureBackground[eState_Normal] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch_error.png");
+    Style::s_ErrorStyle.m_NinePatchTextureBackground[eState_Hover] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch_hover_error.png");
+    Style::s_ErrorStyle.m_NinePatchTextureBackground[eState_Selected] = CONTENT->asyncLoadTexture2D("sandbox/ui/nodeninepatch_selected_error.png");
 }
 
 void NodeGraphNode::Style::sdmDestroy()
@@ -54,9 +58,14 @@ void NodeGraphNode::Style::sdmDestroy()
     Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Normal]->release();
     Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Hover]->release();
     Style::s_DefaultStyle.m_NinePatchTextureBackground[eState_Selected]->release();
+
+    Style::s_ErrorStyle.m_NinePatchTextureBackground[eState_Normal]->release();
+    Style::s_ErrorStyle.m_NinePatchTextureBackground[eState_Hover]->release();
+    Style::s_ErrorStyle.m_NinePatchTextureBackground[eState_Selected]->release();
 }
 
 NodeGraphNode::Style NodeGraphNode::Style::s_DefaultStyle;
+NodeGraphNode::Style NodeGraphNode::Style::s_ErrorStyle;
 
 NodeGraphNode::NodeGraphNode()
     : m_State(eState_Normal)
@@ -78,6 +87,11 @@ NodeGraphNode::~NodeGraphNode()
     {
         delete att;
     });
+}
+
+void NodeGraphNode::setStyle( const Style* style )
+{
+    m_Style = style;
 }
 
 bool NodeGraphNode::isInside( const he::vec2& worldPos )

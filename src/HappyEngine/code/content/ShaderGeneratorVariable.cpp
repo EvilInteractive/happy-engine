@@ -43,29 +43,38 @@ ShaderGeneratorVariable::~ShaderGeneratorVariable()
 {
 }
 
-void ShaderGeneratorVariable::setConstant( const float a )
+void ShaderGeneratorVariable::reset()
+{
+    m_Type = ShaderGeneratorVariableType_Unknown;
+    he_memset(&m_ConstantData, 0, sizeof(m_ConstantData));
+}
+
+bool ShaderGeneratorVariable::setConstant( const float a )
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
     m_Type = ShaderGeneratorVariableType_Float;
     m_ConstantData.floatData[0] = a;
     setForceInline(true);
+    return true;
 }
-void ShaderGeneratorVariable::setConstant( const vec2& a )
+bool ShaderGeneratorVariable::setConstant( const vec2& a )
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
     m_Type = ShaderGeneratorVariableType_Float2;
     m_ConstantData.floatData[0] = a.x;
     m_ConstantData.floatData[1] = a.y;
+    return true;
 }
-void ShaderGeneratorVariable::setConstant( const vec3& a )
+bool ShaderGeneratorVariable::setConstant( const vec3& a )
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
     m_Type = ShaderGeneratorVariableType_Float3;
     m_ConstantData.floatData[0] = a.x;
     m_ConstantData.floatData[1] = a.y;
     m_ConstantData.floatData[2] = a.z;
+    return true;
 }
-void ShaderGeneratorVariable::setConstant( const vec4& a )
+bool ShaderGeneratorVariable::setConstant( const vec4& a )
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
     m_Type = ShaderGeneratorVariableType_Float4;
@@ -73,91 +82,97 @@ void ShaderGeneratorVariable::setConstant( const vec4& a )
     m_ConstantData.floatData[1] = a.y;
     m_ConstantData.floatData[2] = a.z;
     m_ConstantData.floatData[3] = a.w;
+    return true;
 }
 
-void ShaderGeneratorVariable::setExposedVar( const ShaderGeneratorVariableType type )
+bool ShaderGeneratorVariable::setExposedVar( const ShaderGeneratorVariableType type )
 {
     m_Type = type;
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
     setHasDeclaration(true);
     setForceDeclare(true);
+    return true;
 }
 
-void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariableType type)
 {
     setLocalName(he::String(getGlobalInputVariableName(type)));
     setType(getGlobalInputVariableType(type));
     setHasDeclaration(true);
     setForceDeclare(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    return true;
 }
-void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVariableType type)
 {
     setLocalName(he::String(getGlobalFragmentVariableName(type)));
     setType(getGlobalFragmentVariableType(type));
     setHasDeclaration(true);
     setForceDeclare(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    return true;
 }
-void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableType type)
 {
     setLocalName(he::String(getGlobalCodeVariableName(type)));
     setType(getGlobalCodeVariableType(type));
     setHasDeclaration(true);
     setForceDeclare(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    return true;
 }
-void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorOutVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorOutVariableType type)
 {
     setLocalName(he::String(getOutVariableName(type)));
     setType(getOutVariableType(type));
     setForceInline(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    return true;
 }
 
 
 #define FUNC1(name, oper) \
-void ShaderGeneratorVariable::name( const ObjectHandle& a )\
+bool ShaderGeneratorVariable::name( const ObjectHandle& a )\
 {\
     m_Operation.type = oper; \
     m_Operation.params[0] = a; \
     m_Operation.params[1] = ObjectHandle::unassigned; \
     m_Operation.params[2] = ObjectHandle::unassigned; \
     m_Operation.params[3] = ObjectHandle::unassigned; \
-    setTypeFromOther(a);\
+    return setTypeFromOther(a);\
 }
 
 #define FUNC2(name, oper) \
-void ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b )\
+bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b )\
 {\
     m_Operation.type = oper; \
     m_Operation.params[0] = a; \
     m_Operation.params[1] = b; \
     m_Operation.params[2] = ObjectHandle::unassigned; \
     m_Operation.params[3] = ObjectHandle::unassigned; \
-    setTypeFromOther(a); \
+    return setTypeFromOther(a); \
 }
 
 #define FUNC3(name, oper) \
-void ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c )\
+bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c )\
 {\
     m_Operation.type = oper; \
     m_Operation.params[0] = a; \
     m_Operation.params[1] = b; \
     m_Operation.params[2] = c; \
     m_Operation.params[3] = ObjectHandle::unassigned; \
-    setTypeFromOther(a); \
+    return setTypeFromOther(a); \
 }
 
 #define FUNC4(name, oper) \
-void ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c, const ObjectHandle& d )\
+bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c, const ObjectHandle& d )\
 {\
     m_Operation.type = oper; \
     m_Operation.params[0] = a; \
     m_Operation.params[1] = b; \
     m_Operation.params[2] = c; \
     m_Operation.params[3] = d; \
-    setTypeFromOther(a); \
+    return setTypeFromOther(a); \
 }
 
 FUNC1(setAbs, ShaderGeneratorVariableOperationType_Abs)
@@ -188,7 +203,7 @@ FUNC3(setLerp, ShaderGeneratorVariableOperationType_Lerp)
 FUNC3(setSmoothStep, ShaderGeneratorVariableOperationType_SmoothStep)
 FUNC3(setCalculateNormal, ShaderGeneratorVariableOperationType_CalcNormal)
 
-void ShaderGeneratorVariable::setComposeFloat2( const ObjectHandle& a, const ObjectHandle& b )\
+bool ShaderGeneratorVariable::setComposeFloat2( const ObjectHandle& a, const ObjectHandle& b )\
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_ComposeFloat2;
     m_Operation.params[0] = a;
@@ -196,8 +211,9 @@ void ShaderGeneratorVariable::setComposeFloat2( const ObjectHandle& a, const Obj
     m_Operation.params[2] = ObjectHandle::unassigned;
     m_Operation.params[3] = ObjectHandle::unassigned;
     m_Type = ShaderGeneratorVariableType_Float2;
+    return true;
 }
-void ShaderGeneratorVariable::setComposeFloat3( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c )\
+bool ShaderGeneratorVariable::setComposeFloat3( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c )\
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_ComposeFloat3;
     m_Operation.params[0] = a;
@@ -205,8 +221,9 @@ void ShaderGeneratorVariable::setComposeFloat3( const ObjectHandle& a, const Obj
     m_Operation.params[2] = c;
     m_Operation.params[3] = ObjectHandle::unassigned;
     m_Type = ShaderGeneratorVariableType_Float3;
+    return true;
 }
-void ShaderGeneratorVariable::setComposeFloat4( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c, const ObjectHandle& d )\
+bool ShaderGeneratorVariable::setComposeFloat4( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c, const ObjectHandle& d )\
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_ComposeFloat4;
     m_Operation.params[0] = a;
@@ -214,9 +231,10 @@ void ShaderGeneratorVariable::setComposeFloat4( const ObjectHandle& a, const Obj
     m_Operation.params[2] = c;
     m_Operation.params[3] = d;
     m_Type = ShaderGeneratorVariableType_Float4;
+    return true;
 }
 
-void ShaderGeneratorVariable::setSwizzle( const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskC /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskD /*= ShaderGeneratorSwizzleMask_None*/ )
+bool ShaderGeneratorVariable::setSwizzle( const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskC /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskD /*= ShaderGeneratorSwizzleMask_None*/ )
 {
     m_Operation.type = ShaderGeneratorVariableOperationType_Swizzle;
     m_Operation.params[0] = a;
@@ -247,17 +265,18 @@ void ShaderGeneratorVariable::setSwizzle( const ObjectHandle& a, const ShaderGen
         m_Type = ShaderGeneratorVariableType_Float4;
     }
     setForceInline(true);
+    return true;
 }
 
 #undef FUNC1                                           
 #undef FUNC2
 #undef FUNC3
 
-void ShaderGeneratorVariable::setTypeFromOther( const ObjectHandle& handle )
+bool ShaderGeneratorVariable::setTypeFromOther( const ObjectHandle& handle )
 {
     const ShaderGeneratorVariableFactory* factory(ShaderGeneratorVariableFactory::getInstance());
     m_Type = factory->get(handle)->getType();
-    HE_ASSERT(m_Type != ShaderGeneratorVariableType_Unknown, "Variable type is Unknown!");
+    return m_Type != ShaderGeneratorVariableType_Unknown;
 }
 
 float ShaderGeneratorVariable::getFloatData() const

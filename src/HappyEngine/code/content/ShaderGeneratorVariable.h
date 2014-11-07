@@ -34,55 +34,57 @@ public:
     ShaderGeneratorVariable();
     ~ShaderGeneratorVariable();
 
+    void reset();
+
     // Const
-    void setConstant(const float a);
-    void setConstant(const vec2& a);
-    void setConstant(const vec3& a);
-    void setConstant(const vec4& a);
-    void setExposedVar(const ShaderGeneratorVariableType type);
-    void setGlobal(const ShaderGeneratorGlobalInputVariableType type);
-    void setGlobal(const ShaderGeneratorGlobalFragmentVariableType type);
-    void setGlobal(const ShaderGeneratorGlobalCodeVariableType type);
-    void setGlobal(const ShaderGeneratorOutVariableType type);
+    bool setConstant(const float a);
+    bool setConstant(const vec2& a);
+    bool setConstant(const vec3& a);
+    bool setConstant(const vec4& a);
+    bool setExposedVar(const ShaderGeneratorVariableType type);
+    bool setGlobal(const ShaderGeneratorGlobalInputVariableType type);
+    bool setGlobal(const ShaderGeneratorGlobalFragmentVariableType type);
+    bool setGlobal(const ShaderGeneratorGlobalCodeVariableType type);
+    bool setGlobal(const ShaderGeneratorOutVariableType type);
 
     // One param
-    void setAbs(const ObjectHandle& a);
-    void setCeil(const ObjectHandle& a);
-    void setCos(const ObjectHandle& a);
-    void setFloor(const ObjectHandle& a);
-    void setFrac(const ObjectHandle& a);
-    void setNormalize(const ObjectHandle& a);
-    void setSign(const ObjectHandle& a);
-    void setSin(const ObjectHandle& a);
+    bool setAbs(const ObjectHandle& a);
+    bool setCeil(const ObjectHandle& a);
+    bool setCos(const ObjectHandle& a);
+    bool setFloor(const ObjectHandle& a);
+    bool setFrac(const ObjectHandle& a);
+    bool setNormalize(const ObjectHandle& a);
+    bool setSign(const ObjectHandle& a);
+    bool setSin(const ObjectHandle& a);
 
     // Two params
-    void setAdd(const ObjectHandle& a, const ObjectHandle& b);
-    void setCross(const ObjectHandle& a, const ObjectHandle& b);
-    void setDistance(const ObjectHandle& a, const ObjectHandle& b);
-    void setDivide(const ObjectHandle& a, const ObjectHandle& b);
-    void setDot(const ObjectHandle& a, const ObjectHandle& b);
-    void setMultiply(const ObjectHandle& a, const ObjectHandle& b);
-    void setMin(const ObjectHandle& a, const ObjectHandle& b);
-    void setMax(const ObjectHandle& a, const ObjectHandle& b);
-    void setPower(const ObjectHandle& a, const ObjectHandle& b);
-    void setReflect(const ObjectHandle& in, const ObjectHandle& normal);
-    void setSubtract(const ObjectHandle& a, const ObjectHandle& b);
-    void setStep(const ObjectHandle& edge, const ObjectHandle& a);
-    void setComposeFloat2(const ObjectHandle& a, const ObjectHandle& b);
+    bool setAdd(const ObjectHandle& a, const ObjectHandle& b);
+    bool setCross(const ObjectHandle& a, const ObjectHandle& b);
+    bool setDistance(const ObjectHandle& a, const ObjectHandle& b);
+    bool setDivide(const ObjectHandle& a, const ObjectHandle& b);
+    bool setDot(const ObjectHandle& a, const ObjectHandle& b);
+    bool setMultiply(const ObjectHandle& a, const ObjectHandle& b);
+    bool setMin(const ObjectHandle& a, const ObjectHandle& b);
+    bool setMax(const ObjectHandle& a, const ObjectHandle& b);
+    bool setPower(const ObjectHandle& a, const ObjectHandle& b);
+    bool setReflect(const ObjectHandle& in, const ObjectHandle& normal);
+    bool setSubtract(const ObjectHandle& a, const ObjectHandle& b);
+    bool setStep(const ObjectHandle& edge, const ObjectHandle& a);
+    bool setComposeFloat2(const ObjectHandle& a, const ObjectHandle& b);
 
     // Three params
-    void setClamp(const ObjectHandle& a, const ObjectHandle& min, const ObjectHandle& max);
-    void setLerp(const ObjectHandle& x, const ObjectHandle& y, const ObjectHandle& a);
-    void setSmoothStep(const ObjectHandle& edge1, const ObjectHandle& edge2, const ObjectHandle& a);
+    bool setClamp(const ObjectHandle& a, const ObjectHandle& min, const ObjectHandle& max);
+    bool setLerp(const ObjectHandle& x, const ObjectHandle& y, const ObjectHandle& a);
+    bool setSmoothStep(const ObjectHandle& edge1, const ObjectHandle& edge2, const ObjectHandle& a);
 
     // Mutiple
-    void setComposeFloat3(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned);
-    void setComposeFloat4(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned, const ObjectHandle& d = ObjectHandle::unassigned);
-    void setSwizzle(const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskC = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskD = ShaderGeneratorSwizzleMask_None);
+    bool setComposeFloat3(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned);
+    bool setComposeFloat4(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned, const ObjectHandle& d = ObjectHandle::unassigned);
+    bool setSwizzle(const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskC = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskD = ShaderGeneratorSwizzleMask_None);
     
     // Custom
-    void setCalculateNormal(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c);
-    void setEncodeNormal(const ObjectHandle& a);
+    bool setCalculateNormal(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c);
+    bool setEncodeNormal(const ObjectHandle& a);
 
     // Getters
     float getFloatData() const;
@@ -130,7 +132,7 @@ private:
     bool m_ForceInline;
     bool m_ForceDeclare;
 
-    void setTypeFromOther(const ObjectHandle& handle);
+    bool setTypeFromOther(const ObjectHandle& handle);
 
     //Disable default copy constructor and default assignment operator
     ShaderGeneratorVariable(const ShaderGeneratorVariable&);

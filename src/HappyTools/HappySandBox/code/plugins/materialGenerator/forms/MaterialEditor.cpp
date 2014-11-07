@@ -16,7 +16,25 @@ MaterialEditor::MaterialEditor() :
     m_UI->setupUi(this);
 
     connect(m_UI->actionNew, SIGNAL(triggered()), this, SLOT(createNewGraph()));
+    connect(m_UI->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
+
     connect(m_UI->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
+
+    // Root
+    {
+        QTreeWidgetItem* rootNodes(NEW QTreeWidgetItem());
+        rootNodes->setData(0, Qt::DisplayRole, "Root");
+        rootNodes->setData(0, Qt::UserRole, MaterialGeneratorNodeType_Unassigned);
+
+        for (size_t i(MaterialGeneratorNodeType_ROOT); i < MaterialGeneratorNodeType_ROOT_MAX; ++i)
+        {
+            QTreeWidgetItem* sub(NEW QTreeWidgetItem());
+            sub->setData(0, Qt::DisplayRole, materialGeneratorNodeTypeToString(he::checked_numcast<MaterialGeneratorNodeType>(i)));
+            sub->setData(0, Qt::UserRole, i);
+            rootNodes->addChild(sub);
+        }
+        m_UI->nodeTypeList->addTopLevelItem(rootNodes);
+    }
 
     // Const
     {
@@ -48,6 +66,22 @@ MaterialEditor::MaterialEditor() :
             math->addChild(sub);
         }
         m_UI->nodeTypeList->addTopLevelItem(math);
+    }
+
+    // Vector
+    {
+        QTreeWidgetItem* vec(NEW QTreeWidgetItem());
+        vec->setData(0, Qt::DisplayRole, "Vector");
+        vec->setData(0, Qt::UserRole, MaterialGeneratorNodeType_Unassigned);
+
+        for (size_t i(MaterialGeneratorNodeType_VECTOR); i < MaterialGeneratorNodeType_VECTOR_MAX; ++i)
+        {
+            QTreeWidgetItem* sub(NEW QTreeWidgetItem());
+            sub->setData(0, Qt::DisplayRole, materialGeneratorNodeTypeToString(he::checked_numcast<MaterialGeneratorNodeType>(i)));
+            sub->setData(0, Qt::UserRole, i);
+            vec->addChild(sub);
+        }
+        m_UI->nodeTypeList->addTopLevelItem(vec);
     }
 }
 
@@ -115,6 +149,15 @@ hs::MaterialGeneratorNodeType MaterialEditor::getActiveCreateNode() const
         result = he::checked_numcast<MaterialGeneratorNodeType>(item->data(0, Qt::UserRole).toInt());
     }
     return result;
+}
+
+void MaterialEditor::compile()
+{
+    MaterialGraph* graph(he::checked_cast<MaterialGraph*>(m_UI->tabWidget->currentWidget()));
+    if (graph)
+    {
+        graph->compile();
+    }
 }
 
 }

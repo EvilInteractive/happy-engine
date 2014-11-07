@@ -37,8 +37,8 @@ public:
     MaterialGeneratorNodeFactory();
     virtual ~MaterialGeneratorNodeFactory();
 
-    MaterialGeneratorNode* create(const MaterialGeneratorNodeType type);
-    MaterialGeneratorNode* create(const MaterialGeneratorNodeType type, const he::Guid& id);
+    MaterialGeneratorNode* create(MaterialGraph* const graph, const MaterialGeneratorNodeType type);
+    MaterialGeneratorNode* create(MaterialGraph* const graph, const MaterialGeneratorNodeType type, const he::Guid& id);
     void destroy(MaterialGeneratorNode* const node);
 
 private:

@@ -48,14 +48,15 @@ public:
 
     bool connect(NodeGraphNodeConnector* other) final;
     bool disconnect(NodeGraphNodeConnector* other) final;
+    void setType(const ENodeGraphNodeConnectorType type) final;
 
     void setVariableType(const MaterialGeneratorVariableType type) { m_VariableType = type; }
     MaterialGeneratorVariableType getVariableType() const { return m_VariableType; }
 
     he::ObjectHandle getVar() const { return m_Variable; }
-    void setVar(const he::ObjectHandle var) { m_Variable = var; }
+    void setVar(const he::ObjectHandle var);
 
-    MaterialGeneratorNodeConnector* getInputConnection() const;
+    MaterialGeneratorNode* getParent() const { return m_Parent; }
 
 private:
     MaterialGeneratorVariableType m_VariableType;

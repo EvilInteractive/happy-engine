@@ -55,6 +55,7 @@ public:
         float m_TitleSize;
 
         static Style s_DefaultStyle;
+        static Style s_ErrorStyle;
 
         static void sdmInit();
         static void sdmDestroy();
