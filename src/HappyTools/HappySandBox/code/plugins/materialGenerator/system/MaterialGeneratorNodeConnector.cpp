@@ -63,7 +63,7 @@ void MaterialGeneratorNodeConnector::setType( const ENodeGraphNodeConnectorType 
         NodeGraphNodeConnector::setType(type);
         if (type == eNodeGraphNodeConnectorType_Output)
         {
-            m_Variable = m_Parent->getParent()->getShaderGenerator()->addVariable();
+            m_Variable = m_Parent->getParent()->getShaderGenerator()->addVariable(materialGeneratorNodeTypeToString(m_Parent->getType()));
         }
         else
         {

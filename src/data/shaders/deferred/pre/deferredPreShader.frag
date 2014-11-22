@@ -27,6 +27,7 @@
 
 #include "packing/encode.frag"
 #include "shared/perCameraUniformBuffer.frag"
+#include "shared/calcNormal.frag"
 
 in vec2 passTexCoord;
 in vec3 passNormal;
@@ -40,21 +41,6 @@ out vec3 outNormalDepth;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D specGlossIllMap;
-
-vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
-{
-    //NormalMap
-    tangent = normalize(tangent);
-    normal = normalize(normal);
-
-    vec3 binormal = cross(tangent, normal);
-
-    mat3 axis = mat3(binormal, tangent, normal);
-
-    vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
-
-    return normalize(axis * xyz);
-}
 
 void main()
 {

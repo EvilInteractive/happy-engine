@@ -57,10 +57,10 @@ bool MaterialGeneratorNodeComposeVector::evaluate()
             he::ct::ShaderGeneratorVariable* const var(factory->get(vars[i]));
             switch (var->getType())
             {
-            case he::ct::ShaderGeneratorVariableType_Float: components += 1; break;
-            case he::ct::ShaderGeneratorVariableType_Float2: components += 2; break;
-            case he::ct::ShaderGeneratorVariableType_Float3: components += 3; break;
-            case he::ct::ShaderGeneratorVariableType_Float4: components += 4; break;
+            case he::ct::eShaderGeneratorVariableType_Float: components += 1; break;
+            case he::ct::eShaderGeneratorVariableType_Float2: components += 2; break;
+            case he::ct::eShaderGeneratorVariableType_Float3: components += 3; break;
+            case he::ct::eShaderGeneratorVariableType_Float4: components += 4; break;
             }
         }
     }
@@ -71,8 +71,8 @@ bool MaterialGeneratorNodeComposeVector::evaluate()
 
     if (components > 0 && components <= 4)
     {
-        he::ct::ShaderGeneratorVariableType type(he::checked_numcast<he::ct::ShaderGeneratorVariableType>(
-            he::ct::ShaderGeneratorVariableType_Float + components - 1));
+        he::ct::EShaderGeneratorVariableType type(he::checked_numcast<he::ct::EShaderGeneratorVariableType>(
+            he::ct::eShaderGeneratorVariableType_Float + components - 1));
         
         size_t actualindex(0);
         // Shift everything so we have no holes
@@ -91,9 +91,9 @@ bool MaterialGeneratorNodeComposeVector::evaluate()
 
         switch (type)
         {
-        case he::ct::ShaderGeneratorVariableType_Float2: result = varResult->setComposeFloat2(vars[0], vars[1]); break;
-        case he::ct::ShaderGeneratorVariableType_Float3: result = varResult->setComposeFloat3(vars[0], vars[1], vars[2]); break;
-        case he::ct::ShaderGeneratorVariableType_Float4: result = varResult->setComposeFloat4(vars[0], vars[1], vars[2], vars[3]); break;
+        case he::ct::eShaderGeneratorVariableType_Float2: result = varResult->setComposeFloat2(vars[0], vars[1]); break;
+        case he::ct::eShaderGeneratorVariableType_Float3: result = varResult->setComposeFloat3(vars[0], vars[1], vars[2]); break;
+        case he::ct::eShaderGeneratorVariableType_Float4: result = varResult->setComposeFloat4(vars[0], vars[1], vars[2], vars[3]); break;
         }
     }
     result &= MaterialGeneratorNode::evaluate();
@@ -110,10 +110,15 @@ void MaterialGeneratorNodeSwizzle::init()
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f)));
 
-    addParam(MaterialGeneratorNodeParam("A", MaterialGeneratorNodeParam::Type_SwizzleMask));
-    addParam(MaterialGeneratorNodeParam("B", MaterialGeneratorNodeParam::Type_SwizzleMask));
-    addParam(MaterialGeneratorNodeParam("C", MaterialGeneratorNodeParam::Type_SwizzleMask));
-    addParam(MaterialGeneratorNodeParam("D", MaterialGeneratorNodeParam::Type_SwizzleMask));
+    addParam(MaterialGeneratorNodeParam(HSFS::strA, MaterialGeneratorNodeParam::Type_SwizzleMask));
+    addParam(MaterialGeneratorNodeParam(HSFS::strB, MaterialGeneratorNodeParam::Type_SwizzleMask));
+    addParam(MaterialGeneratorNodeParam(HSFS::strC, MaterialGeneratorNodeParam::Type_SwizzleMask));
+    addParam(MaterialGeneratorNodeParam(HSFS::strD, MaterialGeneratorNodeParam::Type_SwizzleMask));
+
+    getParam(0).setSwizzleMask(he::ct::eShaderGeneratorSwizzleMask_X);
+    getParam(1).setSwizzleMask(he::ct::eShaderGeneratorSwizzleMask_Y);
+    getParam(2).setSwizzleMask(he::ct::eShaderGeneratorSwizzleMask_Z);
+    getParam(3).setSwizzleMask(he::ct::eShaderGeneratorSwizzleMask_W);
 
     MaterialGeneratorNode::init();
 }
@@ -121,17 +126,17 @@ void MaterialGeneratorNodeSwizzle::init()
 bool MaterialGeneratorNodeSwizzle::evaluate()
 {
     bool result(false);
-    he::ct::ShaderGeneratorSwizzleMask mask[4];
+    he::ct::EShaderGeneratorSwizzleMask mask[4];
     for (size_t i(0); i < 4; ++i)
     {
-        mask[i] = he::ct::ShaderGeneratorSwizzleMask_None;
+        mask[i] = he::ct::eShaderGeneratorSwizzleMask_None;
     }
 
     size_t components(0);
     for (size_t i(0); i < 4; ++i)
     {
         const MaterialGeneratorNodeParam& param(getParam(i));
-        if (param.getSwizzleMask() != he::ct::ShaderGeneratorSwizzleMask_None)
+        if (param.getSwizzleMask() != he::ct::eShaderGeneratorSwizzleMask_None)
         {
             mask[components] = param.getSwizzleMask();
             ++components;

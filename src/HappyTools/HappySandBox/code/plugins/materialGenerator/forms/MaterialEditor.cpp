@@ -17,8 +17,10 @@ MaterialEditor::MaterialEditor() :
 
     connect(m_UI->actionNew, SIGNAL(triggered()), this, SLOT(createNewGraph()));
     connect(m_UI->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
-
     connect(m_UI->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
+
+    he::eventCallback1<void, he::ge::Property*> valueChangeCallback(std::bind(&MaterialEditor::onValueChange, this, std::placeholders::_1));
+    m_UI->propertyList->ValueChanged += valueChangeCallback;
 
     // Root
     {
@@ -158,6 +160,26 @@ void MaterialEditor::compile()
     {
         graph->compile();
     }
+}
+
+void MaterialEditor::clearProperties()
+{
+    m_UI->propertyList->clear();
+}
+
+void MaterialEditor::addProperty( const he::ge::PropertyDesc& propDesc )
+{
+    m_UI->propertyList->addProperty(propDesc);
+}
+
+void MaterialEditor::onValueChange( he::ge::Property* prop )
+{
+    MaterialGraph* graph(he::checked_cast<MaterialGraph*>(m_UI->tabWidget->currentWidget()));
+    if (graph)
+    {
+        graph->onPropertyValueChanged(prop);
+    }
+    emit propertyChanged(prop);
 }
 
 }

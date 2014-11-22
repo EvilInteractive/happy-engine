@@ -23,6 +23,7 @@
 #pragma once
 
 #include <QTableWidget>
+#include <PropertyDesc.h>
 
 namespace he {
 namespace ge {
@@ -31,7 +32,7 @@ namespace ge {
 
 namespace hs {
 
-class EntityPropertyFeel;
+class PropertyFeel;
 
 enum EEntityPropertyListItem
 {
@@ -41,25 +42,24 @@ enum EEntityPropertyListItem
     eEntityPropertyListItem_DropDown,
 };
 
-class EntityPropertyListItem : public QObject, public QTableWidgetItem
+class PropertyListItem : public QObject, public QTableWidgetItem
 {
     Q_OBJECT
 public:
-    EntityPropertyListItem(const he::FixedString& component, const he::FixedString& prop, EntityPropertyFeel* feel);
-    virtual ~EntityPropertyListItem();
+    explicit PropertyListItem(const he::ge::PropertyDesc& propDesc, PropertyFeel* uiFeel);
+    virtual ~PropertyListItem();
     
     virtual void setValue(const he::String& value);
     virtual void setValueMixed();
     
-    he::event2<void, const he::FixedString& /*component*/, he::ge::Property*> ValueChanged;
+    he::event1<void, he::ge::Property*> ValueChanged;
 
 protected:
     void applyNewValue(const he::String& newValue);
 
 private:
-    he::FixedString m_Component;
-    he::FixedString m_Property;
-    EntityPropertyFeel* m_Feel;
+    he::ge::PropertyDesc m_Desc;
+    PropertyFeel* m_Feel;
 };
 
 } //end namespace

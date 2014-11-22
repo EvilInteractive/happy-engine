@@ -20,3 +20,12 @@
 
 DEF_FS(EditorComponent);
 DEF_FS(QTWindow);
+DEF_FS(A);
+DEF_FS(B);
+DEF_FS(C);
+DEF_FS(D);
+DEF_FS(Float);
+DEF_FS(Float2);
+DEF_FS(Float3);
+DEF_FS(Float4);
+DEF_FS(AlphaTestValue);

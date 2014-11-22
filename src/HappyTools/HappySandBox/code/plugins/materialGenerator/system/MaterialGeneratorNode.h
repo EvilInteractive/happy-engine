@@ -67,6 +67,9 @@ public:
     void notifyNodeConnected(MaterialGeneratorNodeConnector* a, MaterialGeneratorNodeConnector* b);
     void notifyNodeDisconnected(MaterialGeneratorNodeConnector* a, MaterialGeneratorNodeConnector* b);
 
+    size_t getParamCount() const;
+    MaterialGeneratorNodeParam& getParam(const size_t index);
+
     // Serializing
     void visit(he::io::StructuredVisitor* const visitor);
     void visit(he::io::BinaryFileVisitor* const visitor);
@@ -78,7 +81,6 @@ protected:
     void setCompileState(const bool ok);
 
     void addParam(MaterialGeneratorNodeParam param);
-    MaterialGeneratorNodeParam& getParam(const size_t index);
 
     void setName(const he::String name);
 

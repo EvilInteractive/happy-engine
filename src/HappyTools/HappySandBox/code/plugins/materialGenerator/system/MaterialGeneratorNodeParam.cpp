@@ -25,164 +25,201 @@
 
 #include <ShaderGenerator.h>
 #include <ShaderGeneratorVariableFactory.h>
+#include <ShaderGeneratorEnums.h>
+#include <Property.h>
 
 namespace hs {
 
-MaterialGeneratorNodeParam::MaterialGeneratorNodeParam()
-    : m_Name(""), m_Type(Type_Unknown)
+he::ge::PropertyFeelDropDown* MaterialGeneratorNodeParam::s_SwizzleFeel(nullptr);
+he::ge::PropertyFeelColor* MaterialGeneratorNodeParam::s_ColorFeel(nullptr);
+he::ge::PropertyFeelCheckBox* MaterialGeneratorNodeParam::s_CheckBoxFeel(nullptr);
+he::ge::PropertyFeelDefault* MaterialGeneratorNodeParam::s_DefaultFeel(nullptr);
+he::ge::PropertyConverterEnum<he::ct::EShaderGeneratorSwizzleMask>* MaterialGeneratorNodeParam::s_SwizzleConverter(nullptr);
+he::ge::PropertyConverterVec4* MaterialGeneratorNodeParam::s_Vec4Converter(nullptr);
+he::ge::PropertyConverterVec3* MaterialGeneratorNodeParam::s_Vec3Converter(nullptr);
+he::ge::PropertyConverterVec2* MaterialGeneratorNodeParam::s_Vec2Converter(nullptr);
+he::ge::PropertyConverterFloat* MaterialGeneratorNodeParam::s_FloatConverter(nullptr);
+he::ge::PropertyConverterBool* MaterialGeneratorNodeParam::s_BoolConverter(nullptr);
+
+void MaterialGeneratorNodeParam::sdmInit()
 {
-    he_memset(&m_Data, 0, sizeof(Data));
+    s_SwizzleFeel = NEW he::ge::PropertyFeelDropDown();
+    s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_X));
+    s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_Y));
+    s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_Z));
+    s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_W));
+    s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_None));
+
+    s_ColorFeel = NEW he::ge::PropertyFeelColor();
+    s_CheckBoxFeel = NEW he::ge::PropertyFeelCheckBox();
+    s_DefaultFeel = NEW he::ge::PropertyFeelDefault();
+    
+    s_SwizzleConverter = NEW he::ge::PropertyConverterEnum<he::ct::EShaderGeneratorSwizzleMask>(he::ct::shaderGeneratorSwizzleMaskFromString, he::ct::shaderGeneratorSwizzleMaskToString);
+    s_Vec4Converter = NEW he::ge::PropertyConverterVec4();
+    s_Vec3Converter = NEW he::ge::PropertyConverterVec3();
+    s_Vec2Converter = NEW he::ge::PropertyConverterVec2();
+    s_FloatConverter = NEW he::ge::PropertyConverterFloat();
+    s_BoolConverter = NEW he::ge::PropertyConverterBool();
 }
 
-MaterialGeneratorNodeParam::MaterialGeneratorNodeParam(const he::String& name, const Type type)
-    : m_Name(name), m_Type(type)
+void MaterialGeneratorNodeParam::sdmDestroy()
 {
-    he_memset(&m_Data, 0, sizeof(Data));
+    delete s_SwizzleFeel;
+    delete s_ColorFeel;
+    delete s_CheckBoxFeel;
+    delete s_DefaultFeel;
+    delete s_SwizzleConverter;
+    delete s_Vec4Converter;
+    delete s_Vec3Converter; 
+    delete s_Vec2Converter; 
+    delete s_FloatConverter;
+    delete s_BoolConverter; 
+}
+
+MaterialGeneratorNodeParam::MaterialGeneratorNodeParam()
+    : m_Type(Type_Unknown)
+{
+}
+
+MaterialGeneratorNodeParam::MaterialGeneratorNodeParam(const he::FixedString& name, const Type type)
+    : m_Type(type)
+{
+    switch (type)
+    {
+    case Type_Float: m_Property.init(name, 0.0f); break;
+    case Type_Float2: m_Property.init(name, he::vec2(0.0f)); break;
+    case Type_Float3: m_Property.init(name, he::vec3(0.0f)); break;
+    case Type_Float4: m_Property.init(name, he::vec4(0.0f)); break;
+    case Type_Bool: m_Property.init(name, false); break;
+    case Type_SwizzleMask: m_Property.init(name, he::ct::eShaderGeneratorSwizzleMask_None); break;
+    default: LOG(he::LogType_ProgrammerAssert, "Unknown material parameter type %d", type);
+    }
 }
 
 MaterialGeneratorNodeParam::~MaterialGeneratorNodeParam()
 {
-    HE_ASSERT(m_Variable == he::ObjectHandle::unassigned, "MaterialGeneratorNodeParam was not destroyed!");
 }
 
 MaterialGeneratorNodeParam::MaterialGeneratorNodeParam( MaterialGeneratorNodeParam&& other )
-    : m_Name(std::move(other.m_Name)), m_Type(other.m_Type), m_Data(other.m_Data), m_Variable(other.m_Variable)
+    : m_Type(other.m_Type), m_Property(std::move(other.m_Property))
 {
-    other.m_Variable = he::ObjectHandle::unassigned;
     other.m_Type = Type_Unknown;
 }
 
 MaterialGeneratorNodeParam& MaterialGeneratorNodeParam::operator=( MaterialGeneratorNodeParam&& other )
 {
-    m_Name = std::move(other.m_Name);
     m_Type = other.m_Type;
-    m_Data = other.m_Data;
-    std::swap(m_Variable, other.m_Variable);
+    m_Property = std::move(other.m_Property);
     other.m_Type = Type_Unknown;
     return *this;
 }
-
-void MaterialGeneratorNodeParam::Init( MaterialGeneratorNode* node )
-{
-    switch (m_Type)
-    {
-    case hs::MaterialGeneratorNodeParam::Type_Float:
-    case hs::MaterialGeneratorNodeParam::Type_Float2:
-    case hs::MaterialGeneratorNodeParam::Type_Float3:
-    case hs::MaterialGeneratorNodeParam::Type_Float4:
-        {
-            m_Variable = node->getParent()->getShaderGenerator()->addVariable();
-        } break;
-    default:
-        break;
-    }
-}
-
-void MaterialGeneratorNodeParam::Destroy( MaterialGeneratorNode* node )
-{
-    if (m_Variable != he::ObjectHandle::unassigned)
-    {
-        node->getParent()->getShaderGenerator()->removeVariable(m_Variable);
-        m_Variable = he::ObjectHandle::unassigned;
-    }
-}
-
 void MaterialGeneratorNodeParam::setFloat( const float val )
 {
     HE_ASSERT(m_Type == Type_Float, "Type mismatch setting Float when var is not");
-    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
-    var->setConstant(val);
-    m_Data.m_Float[0] = val;
+    m_Property.set(val);
 }
 
 void MaterialGeneratorNodeParam::setFloat2( const he::vec2& val )
 {
     HE_ASSERT(m_Type == Type_Float2, "Type mismatch setting Float2 when var is not");
-    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
-    var->setConstant(val);
-    m_Data.m_Float[0] = val.x;
-    m_Data.m_Float[1] = val.y;
+    m_Property.set(val);
 }
 
 void MaterialGeneratorNodeParam::setFloat3( const he::vec3& val )
 {
     HE_ASSERT(m_Type == Type_Float3, "Type mismatch setting Float3 when var is not");
-    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
-    var->setConstant(val);
-    m_Data.m_Float[0] = val.x;
-    m_Data.m_Float[1] = val.y;
-    m_Data.m_Float[2] = val.z;
+    m_Property.set(val);
 }
 
 void MaterialGeneratorNodeParam::setFloat4( const he::vec4& val )
 {
     HE_ASSERT(m_Type == Type_Float4, "Type mismatch setting Float4 when var is not");
-    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
-    var->setConstant(val);
-    m_Data.m_Float[0] = val.x;
-    m_Data.m_Float[1] = val.y;
-    m_Data.m_Float[2] = val.z;
-    m_Data.m_Float[3] = val.w;
+    m_Property.set(val);
 }
 
-void MaterialGeneratorNodeParam::setSwizzleMask( const he::ct::ShaderGeneratorSwizzleMask val )
+void MaterialGeneratorNodeParam::setSwizzleMask( const he::ct::EShaderGeneratorSwizzleMask val )
 {
     HE_ASSERT(m_Type == Type_SwizzleMask, "Type mismatch setting SwizzleMask when var is not");
-    m_Data.m_Mask = val;
+    m_Property.set(val);
 }
 
 void MaterialGeneratorNodeParam::setBool( const bool val )
 {
     HE_ASSERT(m_Type == Type_Bool, "Type mismatch setting Bool when var is not");
-    he::ct::ShaderGeneratorVariableFactory* const factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-    he::ct::ShaderGeneratorVariable* var(factory->get(m_Variable));
-    var->setConstant(val);
-    m_Data.m_Bool = val;
+    m_Property.set(val);
 }
 
 float MaterialGeneratorNodeParam::getFloat() const
 {
     HE_ASSERT(m_Type == Type_Float, "Type mismatch getting Float when var is not");
-    return m_Data.m_Float[0];
+    return m_Property.get<float>();
 }
 
 he::vec2 MaterialGeneratorNodeParam::getFloat2() const
 {
     HE_ASSERT(m_Type == Type_Float2, "Type mismatch getting Float2 when var is not");
-    return he::vec2(m_Data.m_Float[0], m_Data.m_Float[1]);
+    return m_Property.get<he::vec2>();
 }
 
 he::vec3 MaterialGeneratorNodeParam::getFloat3() const
 {
     HE_ASSERT(m_Type == Type_Float3, "Type mismatch getting Float3 when var is not");
-    return he::vec3(m_Data.m_Float[0], m_Data.m_Float[1], m_Data.m_Float[2]);
+    return m_Property.get<he::vec3>();
 }
 
 he::vec4 MaterialGeneratorNodeParam::getFloat4() const
 {
     HE_ASSERT(m_Type == Type_Float4, "Type mismatch getting Float4 when var is not");
-    return he::vec4(m_Data.m_Float[0], m_Data.m_Float[1], m_Data.m_Float[2], m_Data.m_Float[3]);
+    return m_Property.get<he::vec4>();
 }
 
 bool MaterialGeneratorNodeParam::getBool() const
 {
     HE_ASSERT(m_Type == Type_Bool, "Type mismatch getting Bool when var is not");
-    return m_Data.m_Bool;
+    return m_Property.get<bool>();
 }
 
-he::ct::ShaderGeneratorSwizzleMask MaterialGeneratorNodeParam::getSwizzleMask() const
+he::ct::EShaderGeneratorSwizzleMask MaterialGeneratorNodeParam::getSwizzleMask() const
 {
     HE_ASSERT(m_Type == Type_SwizzleMask, "Type mismatch getting SwizzleMask when var is not");
-    return m_Data.m_Mask;
+    return m_Property.get<he::ct::EShaderGeneratorSwizzleMask>();
 }
 
-he::ObjectHandle MaterialGeneratorNodeParam::getVar() const
+he::ge::PropertyDesc MaterialGeneratorNodeParam::getPropertyDesc()
 {
-    return m_Variable;
+    he::ge::PropertyConverter* conv(nullptr);
+    he::ge::PropertyFeel* feel(nullptr);
+    switch (m_Type)
+    {
+    case hs::MaterialGeneratorNodeParam::Type_Float:
+        conv = s_FloatConverter;
+        feel = s_DefaultFeel;
+        break;
+    case hs::MaterialGeneratorNodeParam::Type_Float2:
+        conv = s_Vec2Converter;
+        feel = s_DefaultFeel;
+        break;
+    case hs::MaterialGeneratorNodeParam::Type_Float3:
+        conv = s_Vec3Converter;
+        feel = s_DefaultFeel;
+        break;
+    case hs::MaterialGeneratorNodeParam::Type_Float4:
+        conv = s_Vec4Converter;
+        feel = s_DefaultFeel;
+        break;
+    case hs::MaterialGeneratorNodeParam::Type_Bool:
+        conv = s_BoolConverter;
+        feel = s_CheckBoxFeel;
+        break;
+    case hs::MaterialGeneratorNodeParam::Type_SwizzleMask:
+        conv = s_SwizzleConverter;
+        feel = s_SwizzleFeel;
+        break;
+    default: LOG(he::LogType_ProgrammerAssert, "Unknown material parameter type %d", m_Type); break;
+    }
+    he::ge::PropertyDesc desc(&m_Property, m_Property.getName().c_str(), "", conv, feel);
+    return std::move(desc);
 }
+
 
 } //end namespace

@@ -1,15 +1,15 @@
 #include "HappySandBoxPCH.h"
-#include "EntityPropertyFeel.h"
+#include "PropertyFeel.h"
 
 namespace hs {
 
-EntityPropertyFeel::EntityPropertyFeel()
+PropertyFeel::PropertyFeel()
     : m_Dirty(false)
 {
 
 }
 
-void EntityPropertyFeel::setDirty( const bool dirty )
+void PropertyFeel::setDirty( const bool dirty )
 {
     if (m_Dirty != dirty)
     {

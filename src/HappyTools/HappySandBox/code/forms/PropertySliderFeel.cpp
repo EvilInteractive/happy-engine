@@ -1,15 +1,15 @@
 #include "HappySandBoxPCH.h"
-#include "EntityPropertySliderFeel.h"
-#include "ui_EntityPropertySliderFeel.h"
+#include "PropertySliderFeel.h"
+#include "ui_PropertySliderFeel.h"
 
 #include <PropertyConverter.h>
 
 namespace hs {
 
-EntityPropertySliderFeel::EntityPropertySliderFeel(QWidget *parent) :
+PropertySliderFeel::PropertySliderFeel(QWidget *parent) :
     QWidget(parent),
     m_Decimals(0),
-    m_UI(NEW Ui::EntityPropertySliderFeel)
+    m_UI(NEW Ui::PropertySliderFeel)
 {
     m_UI->setupUi(this);
 
@@ -19,30 +19,30 @@ EntityPropertySliderFeel::EntityPropertySliderFeel(QWidget *parent) :
     m_UI->m_SpinBox->setDecimals(m_Decimals);
 }
 
-EntityPropertySliderFeel::~EntityPropertySliderFeel()
+PropertySliderFeel::~PropertySliderFeel()
 {
     delete m_UI;
 }
 
-void EntityPropertySliderFeel::setValue(const he::String& value)
+void PropertySliderFeel::setValue(const he::String& value)
 {
     const float val(he::ge::PropertyConverterFloat::fromString(value));
     m_UI->m_Slider->setValue(static_cast<int>(val * (m_Decimals + 1.0f)));
     m_UI->m_SpinBox->setValue(val);
 }
 
-void EntityPropertySliderFeel::setValueMixed()
+void PropertySliderFeel::setValueMixed()
 {
     m_UI->m_SpinBox->clear();
 
 }
 
-void EntityPropertySliderFeel::onDirtyChanged(const bool /*newDirty*/)
+void PropertySliderFeel::onDirtyChanged(const bool /*newDirty*/)
 {
 
 }
 
-void EntityPropertySliderFeel::setDecimals(const int numb)
+void PropertySliderFeel::setDecimals(const int numb)
 {
     if (m_Decimals != numb)
     {
@@ -58,25 +58,25 @@ void EntityPropertySliderFeel::setDecimals(const int numb)
     }
 }
 
-void EntityPropertySliderFeel::setRange(const float min, const float max)
+void PropertySliderFeel::setRange(const float min, const float max)
 {
     m_UI->m_Slider->setRange(static_cast<int>(min * (m_Decimals + 1)), static_cast<int>(max * (m_Decimals + 1)));
     m_UI->m_SpinBox->setRange(min, max);
 }
 
-void EntityPropertySliderFeel::setTicksInterval(const float tickinterval)
+void PropertySliderFeel::setTicksInterval(const float tickinterval)
 {
     m_UI->m_Slider->setTickInterval(static_cast<int>(tickinterval * (m_Decimals + 1)));
 }
 
-void EntityPropertySliderFeel::onSliderMoved(const int value)
+void PropertySliderFeel::onSliderMoved(const int value)
 {
     const float newValue(value / (m_Decimals + 1.0f));
     he::String str(he::ge::PropertyConverterFloat::toString(newValue, m_Decimals));
     ValueChanged(str);
 }
 
-void EntityPropertySliderFeel::onNumericChanged(const double value)
+void PropertySliderFeel::onNumericChanged(const double value)
 {
     he::String str(he::ge::PropertyConverterFloat::toString(static_cast<float>(value), m_Decimals));
     ValueChanged(str);

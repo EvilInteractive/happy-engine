@@ -37,7 +37,6 @@ public:
     virtual void tick(float dTime);
 
     void stricmpTest();
-    void nodeGraphUnitTest();
     void listUnitTest();
     void guidUnitTest();
     void mat33UnitTest();

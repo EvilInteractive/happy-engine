@@ -20,10 +20,11 @@
 #include "HappySandBoxPCH.h" 
 
 #include "MaterialGeneratorRootNodes.h"
-#include "ShaderGeneratorVariableFactory.h"
-#include "ContentManager.h"
 #include "MaterialGeneratorNodeConnector.h"
 #include "../forms/MaterialGraph.h"
+
+#include <ShaderGeneratorVariableFactory.h>
+#include <ShaderGeneratorVariable.h>
 
 namespace hs {
     
@@ -45,6 +46,11 @@ enum RootNodeNormalDrawParam
     eRootNodeNormalDrawParam_AlphaTest
 };
 
+MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw()
+{
+
+}
+
 void MaterialGeneratorNodeRootNormalDraw::init()
 {
     addInput(MaterialGeneratorNodeConnectorDesc("Diffuse", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
@@ -55,44 +61,172 @@ void MaterialGeneratorNodeRootNormalDraw::init()
     addInput(MaterialGeneratorNodeConnectorDesc("Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addInput(MaterialGeneratorNodeConnectorDesc("WorldPositionOffset", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    addParam(MaterialGeneratorNodeParam("Alpha Test Value", MaterialGeneratorNodeParam::Type_Float));
+    addParam(MaterialGeneratorNodeParam(HSFS::strAlphaTestValue, MaterialGeneratorNodeParam::Type_Float));
     
     getParam(eRootNodeNormalDrawParam_AlphaTest).setFloat(0.5f);
 
     MaterialGeneratorNode::init();
 }
+
+void MaterialGeneratorNodeRootNormalDraw::destroy()
+{
+    removeAllTempVars();
+    MaterialGeneratorNode::destroy();
+}
+
+bool MaterialGeneratorNodeRootNormalDraw::areConnectionsValid()
+{
+    he::ct::ShaderGeneratorVariableFactory* factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGeneratorVariable* diffuseConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Diffuse).getVar()));
+    // At least we need a diffuse connection
+    bool result(false);
+    if (diffuseConnection && diffuseConnection->getType() == he::ct::eShaderGeneratorVariableType_Float3)
+    {
+        result = true;
+        he::ct::ShaderGeneratorVariable* emissiveConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Emissive).getVar()));
+        result &= !emissiveConnection || emissiveConnection->getType() == he::ct::eShaderGeneratorVariableType_Float;
+
+        he::ct::ShaderGeneratorVariable* specularConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Specular).getVar()));
+        result &= !specularConnection || specularConnection->getType() == he::ct::eShaderGeneratorVariableType_Float || specularConnection->getType() == he::ct::eShaderGeneratorVariableType_Float3;
+
+        he::ct::ShaderGeneratorVariable* glossConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Gloss).getVar()));
+        result &= !glossConnection || glossConnection->getType() == he::ct::eShaderGeneratorVariableType_Float;
+
+        he::ct::ShaderGeneratorVariable* opacityConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Opacity).getVar()));
+        result &= !opacityConnection || opacityConnection->getType() == he::ct::eShaderGeneratorVariableType_Float;
+
+        he::ct::ShaderGeneratorVariable* normalConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Normal).getVar()));
+        result &= !normalConnection || normalConnection->getType() == he::ct::eShaderGeneratorVariableType_Float3;
+
+        he::ct::ShaderGeneratorVariable* worldPosOffsetConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_WorldPositionOffset).getVar()));
+        result &= !worldPosOffsetConnection || worldPosOffsetConnection->getType() == he::ct::eShaderGeneratorVariableType_Float3;
+    }
+    return result;
+}
+
 bool MaterialGeneratorNodeRootNormalDraw::evaluate()
 {
-    bool result(false);
-    he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
-        
+    bool result(false);        
     const he::ObjectHandle diffuseConnection(getInputConnector(RootNodeNormalDrawConnection_Diffuse).getVar());
-    if (diffuseConnection != he::ObjectHandle::unassigned)
+    if (areConnectionsValid())
     {
-        const he::ObjectHandle emissiveConnection(getInputConnector(RootNodeNormalDrawConnection_Emissive).getVar());
-        const he::ObjectHandle specularConnection(getInputConnector(RootNodeNormalDrawConnection_Specular).getVar());
-        const he::ObjectHandle glossConnection(getInputConnector(RootNodeNormalDrawConnection_Gloss).getVar());
-        const he::ObjectHandle opacityConnection(getInputConnector(RootNodeNormalDrawConnection_Opacity).getVar());
-        const he::ObjectHandle normalConnection(getInputConnector(RootNodeNormalDrawConnection_Normal).getVar());
-        const he::ObjectHandle worldPosOffsetConnection(getInputConnector(RootNodeNormalDrawConnection_WorldPositionOffset).getVar());
-        const he::ObjectHandle alphaTest(getParam(eRootNodeNormalDrawParam_AlphaTest).getVar());
+        he::ct::ShaderGeneratorVariableFactory* factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+        he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
+
+        removeAllTempVars();
+
+        he::ct::ShaderGeneratorVariable* diffuseConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Diffuse).getVar()));
+        he::ct::ShaderGeneratorVariable* emissiveConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Emissive).getVar()));
+        he::ct::ShaderGeneratorVariable* specularConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Specular).getVar()));
+        he::ct::ShaderGeneratorVariable* glossConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Gloss).getVar()));
+        //he::ct::ShaderGeneratorVariable* opacityConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Opacity).getVar()));
+        he::ct::ShaderGeneratorVariable* normalConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_Normal).getVar()));
+        //he::ct::ShaderGeneratorVariable* worldPosOffsetConnection(factory->get(getInputConnector(RootNodeNormalDrawConnection_WorldPositionOffset).getVar()));
+        //const he::ObjectHandle alphaTest(getParam(eRootNodeNormalDrawParam_AlphaTest).getVar());
         
-        shaderGenerator->setDiffuse(diffuseConnection);
-        shaderGenerator->setEmissive(emissiveConnection);
-        shaderGenerator->setSpecular(specularConnection);
-        shaderGenerator->setGloss(glossConnection);
+        he::ct::ShaderGeneratorVariable* outColor(factory->get(shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalOutVariableType_OutColor)));
+        he::ct::ShaderGeneratorVariable* outSpecGloss(factory->get(shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalOutVariableType_OutSG)));
+        he::ct::ShaderGeneratorVariable* outNormalDepth(factory->get(shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalOutVariableType_OutNormalDepth)));
 
-        shaderGenerator->setOpacity(opacityConnection);
-        shaderGenerator->setAlphaTestValue(alphaTest);
+        he::ct::ShaderGeneratorVariable* zero(addTempVar("zero"));
+        zero->setConstant(0.0f);
+        he::ct::ShaderGeneratorVariable* one(addTempVar("one"));
+        one->setConstant(1.0f);
 
-        shaderGenerator->setNormal(normalConnection);
-        shaderGenerator->setWorldPositionOffset(worldPosOffsetConnection);
+        // Color
+        he::ObjectHandle illumination(emissiveConnection? emissiveConnection->getHandle() : zero->getHandle());
+        outColor->setComposeFloat4(diffuseConnection->getHandle(), illumination);
+        
+        // SG
+        he::ObjectHandle spec(he::ObjectHandle::unassigned);
+        if (specularConnection)
+        {
+            if (specularConnection->getType() == he::ct::eShaderGeneratorVariableType_Float)
+            {
+                he::ct::ShaderGeneratorVariable* composedSpec(addTempVar("spec"));
+                composedSpec->setComposeFloat3(specularConnection->getHandle(), specularConnection->getHandle(), specularConnection->getHandle());
+                spec = composedSpec->getHandle();
+            }
+            else
+            {
+                spec = specularConnection->getHandle();
+            }
+        }
+        else
+        {
+            he::ct::ShaderGeneratorVariable* composedSpec(addTempVar("spec"));
+            composedSpec->setComposeFloat3(zero->getHandle(), zero->getHandle(), zero->getHandle());
+            spec = composedSpec->getHandle();
+        }
+        he::ObjectHandle gloss(glossConnection? glossConnection->getHandle() : one->getHandle());
+        outSpecGloss->setComposeFloat4(spec, gloss);
 
+        // Normal
+        he::ct::ShaderGeneratorVariable* encodedNormal(addTempVar("encodedNormal"));
+        if (normalConnection)
+        {
+            he::ct::ShaderGeneratorVariable* calcNormal(addTempVar("calcNormal"));
+            calcNormal->setCalculateNormal(
+                shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalInputVariableType_Normal),
+                shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalInputVariableType_Tangent),
+                normalConnection->getHandle());
+            encodedNormal->setEncodeNormal(calcNormal->getHandle());
+        }
+        else
+        {
+            encodedNormal->setEncodeNormal(shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalInputVariableType_Normal));
+        }
+
+        // Depth
+        he::ct::ShaderGeneratorVariable* camNear(addTempVar("camNear"));
+        he::ct::ShaderGeneratorVariable* camFar(addTempVar("camFar"));
+        he::ct::ShaderGeneratorVariable* depthMinusNear(addTempVar("depthMinusNear"));
+        he::ct::ShaderGeneratorVariable* depthRange(addTempVar("depthRange"));
+        he::ct::ShaderGeneratorVariable* linDepth(addTempVar("linDepth"));
+        camNear->setSwizzle(
+            shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalCameraVariableType_CameraNearFar), 
+            he::ct::eShaderGeneratorSwizzleMask_X);
+        camFar->setSwizzle(
+            shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalCameraVariableType_CameraNearFar), 
+            he::ct::eShaderGeneratorSwizzleMask_Y);
+        depthMinusNear->setSubtract(
+            shaderGenerator->getVariable(he::ct::eShaderGeneratorGlobalInputVariableType_Depth),
+            camNear->getHandle());
+        depthRange->setSubtract(camFar->getHandle(), camNear->getHandle());
+        linDepth->setDivide(depthMinusNear->getHandle(), depthRange->getHandle());
+
+        // OutNormalDepth
+        outNormalDepth->setComposeFloat3(encodedNormal->getHandle(), linDepth->getHandle());
+
+        shaderGenerator->clearOutputVariables();
+        shaderGenerator->addOutputVariable(outColor->getHandle());
+        shaderGenerator->addOutputVariable(outSpecGloss->getHandle());
+        shaderGenerator->addOutputVariable(outNormalDepth->getHandle());
+        
         result = true;
     }
     result &= MaterialGeneratorNode::evaluate();
     setCompileState(result);
     return result;
+}
+
+void MaterialGeneratorNodeRootNormalDraw::removeAllTempVars()
+{
+    he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
+    m_TempVars.forEach([&](const he::ObjectHandle handle)
+    {
+        shaderGenerator->removeVariable(handle);
+    });
+    m_TempVars.clear();
+}
+
+he::ct::ShaderGeneratorVariable* MaterialGeneratorNodeRootNormalDraw::addTempVar( const char* nameHint )
+{
+    he::ct::ShaderGeneratorVariableFactory* factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
+    he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
+    he::ct::ShaderGeneratorVariable* var(factory->get(shaderGenerator->addVariable(nameHint)));
+    m_TempVars.add(var->getHandle());
+    return var;
 }
 
 #pragma endregion

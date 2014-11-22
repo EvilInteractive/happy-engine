@@ -23,6 +23,10 @@
 #pragma once
 
 #include "ShaderGeneratorEnums.h"
+#include <Property.h>
+#include <PropertyDesc.h>
+#include <PropertyFeel.h>
+#include <PropertyConverter.h>
 
 namespace hs {
 class MaterialGeneratorNode;
@@ -42,23 +46,20 @@ public:
     };
 
     MaterialGeneratorNodeParam();
-    MaterialGeneratorNodeParam(const he::String& name, const Type type);
+    MaterialGeneratorNodeParam(const he::FixedString& name, const Type type);
 
     ~MaterialGeneratorNodeParam();
 
     MaterialGeneratorNodeParam(MaterialGeneratorNodeParam&& other);
     MaterialGeneratorNodeParam& operator=(MaterialGeneratorNodeParam&& other);
-
-    void Init(MaterialGeneratorNode* node);
-    void Destroy(MaterialGeneratorNode* node);
-
+    
     // Setters
     void setFloat(const float val);
     void setFloat2(const he::vec2& val);
     void setFloat3(const he::vec3& val);
     void setFloat4(const he::vec4& val);
     void setBool(const bool val);
-    void setSwizzleMask(const he::ct::ShaderGeneratorSwizzleMask val);
+    void setSwizzleMask(const he::ct::EShaderGeneratorSwizzleMask val);
 
     // Getters
     float getFloat() const;
@@ -66,23 +67,29 @@ public:
     he::vec3  getFloat3() const;
     he::vec4  getFloat4() const;
     bool  getBool() const;
-    he::ct::ShaderGeneratorSwizzleMask  getSwizzleMask() const;
-
-    he::ObjectHandle getVar() const;
+    he::ct::EShaderGeneratorSwizzleMask  getSwizzleMask() const;
+    he::ge::PropertyDesc getPropertyDesc();
 
     Type getType() const { return m_Type; }
 
-private:
-    he::String m_Name;
-    he::ObjectHandle m_Variable;
-    Type m_Type;
-    union Data
-    {
-        bool m_Bool;
-        float m_Float[4];
-        he::ct::ShaderGeneratorSwizzleMask m_Mask;
-    } m_Data;
+    static void sdmInit();
+    static void sdmDestroy();
 
+private:
+    static he::ge::PropertyConverterBool* s_BoolConverter;
+    static he::ge::PropertyConverterFloat* s_FloatConverter;
+    static he::ge::PropertyConverterVec2* s_Vec2Converter;
+    static he::ge::PropertyConverterVec3* s_Vec3Converter;
+    static he::ge::PropertyConverterVec4* s_Vec4Converter;
+    static he::ge::PropertyConverterEnum<he::ct::EShaderGeneratorSwizzleMask>* s_SwizzleConverter;
+
+    static he::ge::PropertyFeelDefault* s_DefaultFeel;
+    static he::ge::PropertyFeelCheckBox* s_CheckBoxFeel;
+    static he::ge::PropertyFeelColor* s_ColorFeel;
+    static he::ge::PropertyFeelDropDown* s_SwizzleFeel;
+
+    he::ge::Property m_Property;
+    Type m_Type;
 
     MaterialGeneratorNodeParam(MaterialGeneratorNodeParam&);
     MaterialGeneratorNodeParam& operator=(const MaterialGeneratorNodeParam&);

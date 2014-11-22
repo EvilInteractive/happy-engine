@@ -230,4 +230,27 @@ he::String PropertyConverterFloat::toString(const float val, const int decimals)
     return he::String(buf);
 }
 
+
+void PropertyConverterBool::fromString( Property* const prop, const he::String& str )
+{
+    return prop->set<bool>(fromString(str));
+}
+
+he::String PropertyConverterBool::toString( const Property* const prop )
+{
+    return toString(prop->get<bool>());
+}
+
+bool PropertyConverterBool::fromString( const he::String& str )
+{
+    if (stricmp(str.c_str(), "true") == 0)
+        return true;
+    return false;
+}
+
+he::String PropertyConverterBool::toString( const bool val )
+{
+    return val? "true" : "false";
+}
+
 } } //end namespace

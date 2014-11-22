@@ -89,10 +89,33 @@ void MaterialGraph::dropEvent( QDropEvent* event )
 
 void MaterialGraph::compile()
 {
-    m_Generator->reset();
     if (m_ActiveRoot)
     {
         m_Generator->compile(CONTENT->getShaderFolderPath().append("Generated"), "TestShader");
+    }
+}
+
+void MaterialGraph::onSelectionChanged()
+{
+    const he::PrimitiveList<NodeGraphNode*>& selection(getSelection());
+    m_Parent->clearProperties();
+    if (selection.size() == 1)
+    {
+        MaterialGeneratorNode* node(he::checked_cast<MaterialGeneratorNode*>(selection[0]));
+        size_t paramCount(node->getParamCount());
+        for (size_t i(0); i < paramCount; ++i)
+        {
+            m_Parent->addProperty(node->getParam(i).getPropertyDesc());
+        }
+    }
+}
+
+void MaterialGraph::onPropertyValueChanged( he::ge::Property* /*prop*/ )
+{
+    const he::PrimitiveList<NodeGraphNode*>& selection(getSelection());
+    if (selection.size() == 1)
+    {
+        he::checked_cast<MaterialGeneratorNode*>(selection[0])->evaluate();
     }
 }
 

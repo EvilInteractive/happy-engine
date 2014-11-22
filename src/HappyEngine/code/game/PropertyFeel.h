@@ -28,6 +28,7 @@ namespace ge {
 enum EPropertyFeel
 {
     ePropertyFeel_Default,
+    ePropertyFeel_CheckBox,
     ePropertyFeel_Color,
     ePropertyFeel_Slider,
     ePropertyFeel_DropDown
@@ -38,7 +39,7 @@ class HAPPY_ENTRY PropertyFeel
 public:
     virtual ~PropertyFeel() {}
 
-    virtual EPropertyFeel getType() = 0;
+    virtual EPropertyFeel getType() const = 0;
 };
 
 class HAPPY_ENTRY PropertyFeelDefault : public PropertyFeel
@@ -47,7 +48,7 @@ public:
     PropertyFeelDefault() {}
     virtual ~PropertyFeelDefault() {}
 
-    virtual EPropertyFeel getType() { return ePropertyFeel_Default; }
+    virtual EPropertyFeel getType() const override { return ePropertyFeel_Default; }
 
 private:
 
@@ -56,13 +57,27 @@ private:
     PropertyFeelDefault& operator=(const PropertyFeelDefault&);
 };
 
+class HAPPY_ENTRY PropertyFeelCheckBox : public PropertyFeel
+{
+public:
+    PropertyFeelCheckBox() {}
+    virtual ~PropertyFeelCheckBox() {}
+
+    virtual EPropertyFeel getType() const override  { return ePropertyFeel_CheckBox; }
+
+private:
+
+    //Disable default copy constructor and default assignment operator
+    PropertyFeelCheckBox(const PropertyFeelCheckBox&);
+    PropertyFeelCheckBox& operator=(const PropertyFeelCheckBox&);
+};
 class HAPPY_ENTRY PropertyFeelColor : public PropertyFeel
 {
 public:
     PropertyFeelColor() {}
     virtual ~PropertyFeelColor() {}
 
-    virtual EPropertyFeel getType() { return ePropertyFeel_Color; }
+    virtual EPropertyFeel getType() const override  { return ePropertyFeel_Color; }
 
 private:
 
@@ -77,7 +92,7 @@ public:
     PropertyFeelSlider(const float min, const float max) : m_Min(min), m_Max(max) {}
     virtual ~PropertyFeelSlider() {}
 
-    virtual EPropertyFeel getType() { return ePropertyFeel_Slider; }
+    virtual EPropertyFeel getType() const override  { return ePropertyFeel_Slider; }
 
     float getMin() const { return m_Min; }
     float getMax() const { return m_Max; }
@@ -97,7 +112,7 @@ public:
     PropertyFeelDropDown() {}
     virtual ~PropertyFeelDropDown() {}
 
-    virtual EPropertyFeel getType() { return ePropertyFeel_DropDown; }
+    virtual EPropertyFeel getType() const override  { return ePropertyFeel_DropDown; }
 
     void addItem(const char* item) { m_List.add(he::String(item)); }
     const he::ObjectList<he::String>& getList() const { return m_List; }

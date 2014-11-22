@@ -35,7 +35,7 @@ void MaterialGeneratorNodeFloat1::init()
 {
     addOutput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.0f, 0.0f, 1.0f)));
 
-    addParam(MaterialGeneratorNodeParam("Float", MaterialGeneratorNodeParam::Type_Float));
+    addParam(MaterialGeneratorNodeParam(HSFS::strFloat, MaterialGeneratorNodeParam::Type_Float));
 
     MaterialGeneratorNode::init();
 }
@@ -63,7 +63,7 @@ void MaterialGeneratorNodeFloat2::init()
     addOutput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.0f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Y", he::Color(0.0f, 1.0f, 0.0f, 1.0f)));
 
-    addParam(MaterialGeneratorNodeParam("Float2", MaterialGeneratorNodeParam::Type_Float2));
+    addParam(MaterialGeneratorNodeParam(HSFS::strFloat2, MaterialGeneratorNodeParam::Type_Float2));
 
     MaterialGeneratorNode::init();
 }
@@ -103,7 +103,7 @@ void MaterialGeneratorNodeFloat3::init()
     addOutput(MaterialGeneratorNodeConnectorDesc("Y", he::Color(0.0f, 1.0f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Z", he::Color(0.0f, 0.0f, 1.0f, 1.0f)));
 
-    addParam(MaterialGeneratorNodeParam("Float3", MaterialGeneratorNodeParam::Type_Float3));
+    addParam(MaterialGeneratorNodeParam(HSFS::strFloat3, MaterialGeneratorNodeParam::Type_Float3));
 
     MaterialGeneratorNode::init();
 }
@@ -148,7 +148,7 @@ void MaterialGeneratorNodeFloat4::init()
     addOutput(MaterialGeneratorNodeConnectorDesc("Z", he::Color(0.0f, 0.0f, 1.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("W", he::Color(0.5f, 0.0f, 1.0f, 1.0f)));
 
-    addParam(MaterialGeneratorNodeParam("Float4", MaterialGeneratorNodeParam::Type_Float4));
+    addParam(MaterialGeneratorNodeParam(HSFS::strFloat4, MaterialGeneratorNodeParam::Type_Float4));
 
     MaterialGeneratorNode::init();
 }

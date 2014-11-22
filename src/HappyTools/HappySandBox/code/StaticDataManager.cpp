@@ -28,27 +28,32 @@
 #include "Sandbox.h"
 
 #include "plugins/materialGenerator/system/MaterialGeneratorNodeFactory.h"
+#include "plugins/materialGenerator/system/MaterialGeneratorNodeParam.h"
 
 namespace hs {
 
 void StaticDataManager::init()
 {
+    HSFS::sdmInit();
     GameStateMachine::sdmInit();
     UIManager::sdmInit();
     SelectionManger::sdmInit();
     PluginManager::sdmInit();
     EditorPickingManager::sdmInit();
     MaterialGeneratorNodeFactory::sdmInit();
+    MaterialGeneratorNodeParam::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    MaterialGeneratorNodeParam::sdmDestroy();
     MaterialGeneratorNodeFactory::sdmDestroy();
     GameStateMachine::sdmDestroy();
     UIManager::sdmDestroy();
     SelectionManger::sdmDestroy();
     PluginManager::sdmDestroy();
     EditorPickingManager::sdmDestroy();
+    HSFS::sdmDestroy();
 }
 
 } //end namespace

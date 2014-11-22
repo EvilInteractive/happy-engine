@@ -144,6 +144,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HappyInfo.h"
 #include "HeAssert.h"
 
+#include "HappyHelpers.h"
 #include "HappyFunctions.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"

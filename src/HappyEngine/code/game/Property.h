@@ -30,8 +30,8 @@ class IPropertyValue
 public:
     virtual ~IPropertyValue() {}
 
-    virtual IPropertyValue* Clone() const = 0;
-    virtual bool Equals(const IPropertyValue* const value) const = 0;
+    virtual IPropertyValue* clone() const = 0;
+    virtual bool equals(const IPropertyValue* const value) const = 0;
 };
 
 template<typename T>
@@ -41,8 +41,8 @@ public:
     explicit PropertyValue(const T& defaultValue): m_Value(defaultValue)  {}
     virtual ~PropertyValue() {}
 
-    IPropertyValue* Clone() const { return NEW PropertyValue<T>(m_Value); }
-    bool Equals(const IPropertyValue* const value) const
+    IPropertyValue* clone() const override { return NEW PropertyValue<T>(m_Value); }
+    bool equals(const IPropertyValue* const value) const override
     {
         return checked_cast<const PropertyValue<T>*>(value)->get() == get();
     }
@@ -65,12 +65,25 @@ public:
     {
         delete m_Value;
     }
+    Property(Property&& other)
+        : m_Name(other.m_Name)
+        , m_Value(other.m_Value)
+    {
+        other.m_Name = HEFS::str;
+        other.m_Value = nullptr;
+    }
+    Property& operator=(Property&& other)
+    {
+        std::swap(other.m_Name, m_Name);
+        std::swap(other.m_Value, m_Value);
+        return *this;
+    }
 
-    Property* Clone() const
+    Property* clone() const
     {
         Property* newProp(NEW Property);
         newProp->m_Name = m_Name;
-        newProp->m_Value = m_Value->Clone();
+        newProp->m_Value = m_Value->clone();
         return newProp;
     }
 
@@ -96,9 +109,9 @@ public:
         return prop->get();
     }
 
-    const bool Equals(const Property* const other) const
+    const bool equals(const Property* const other) const
     {
-        return m_Name == other->m_Name && m_Value->Equals(other->m_Value);
+        return m_Name == other->m_Name && m_Value->equals(other->m_Value);
     }
 
     const he::FixedString& getName() const { return m_Name; }

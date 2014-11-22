@@ -1,6 +1,6 @@
 #include "HappySandBoxPCH.h"
-#include "EntityPropertyColorFeel.h"
-#include "ui_EntityPropertyColorFeel.h"
+#include "PropertyColorFeel.h"
+#include "ui_PropertyColorFeel.h"
 
 #include "Sandbox.h"
 
@@ -10,34 +10,34 @@
 
 namespace hs {
 
-EntityPropertyColorFeel::EntityPropertyColorFeel(QWidget *parent) :
+PropertyColorFeel::PropertyColorFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::EntityPropertyColorFeel)
+    m_UI(NEW Ui::PropertyColorFeel)
 {
     m_UI->setupUi(this);
     m_UI->m_ColorBox->installEventFilter(this);
 }
 
-EntityPropertyColorFeel::~EntityPropertyColorFeel()
+PropertyColorFeel::~PropertyColorFeel()
 {
     delete m_UI;
 }
 
-void EntityPropertyColorFeel::setValue( const he::String& value )
+void PropertyColorFeel::setValue( const he::String& value )
 {
     m_UI->m_ColorBox->setText(value.c_str());
     UpdateBackground(value);
     setDirty(false);
 }
 
-void EntityPropertyColorFeel::setValueMixed()
+void PropertyColorFeel::setValueMixed()
 {
     m_UI->m_ColorBox->setPlaceholderText("<Mixed Values>");
     m_UI->m_ColorBox->setText("");
     setDirty(false);
 }
 
-void EntityPropertyColorFeel::onColorChanged(const QColor& color)
+void PropertyColorFeel::onColorChanged(const QColor& color)
 {
     UpdateBackground(color);
     qreal r, g, b, a;
@@ -49,12 +49,12 @@ void EntityPropertyColorFeel::onColorChanged(const QColor& color)
     ValueChanged(value);
 }
 
-void EntityPropertyColorFeel::onColorApplied()
+void PropertyColorFeel::onColorApplied()
 {
 
 }
 
-bool EntityPropertyColorFeel::eventFilter(QObject* object, QEvent* event)
+bool PropertyColorFeel::eventFilter(QObject* object, QEvent* event)
 {
     if(object == m_UI->m_ColorBox && event->type() == QEvent::MouseButtonPress) 
     {
@@ -64,7 +64,7 @@ bool EntityPropertyColorFeel::eventFilter(QObject* object, QEvent* event)
     return false;
 }
 
-void EntityPropertyColorFeel::onColorBoxClicked()
+void PropertyColorFeel::onColorBoxClicked()
 {
     QColorDialog* colorDialog(Sandbox::getInstance()->getColorPicker());
     QMetaObject::Connection connection(connect(colorDialog, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onColorChanged(const QColor&))));
@@ -86,7 +86,7 @@ void EntityPropertyColorFeel::onColorBoxClicked()
     disconnect(connection);
 }
 
-void EntityPropertyColorFeel::onDirtyChanged( const bool newDirty )
+void PropertyColorFeel::onDirtyChanged( const bool newDirty )
 {
     if (newDirty)
     {
@@ -99,13 +99,13 @@ void EntityPropertyColorFeel::onDirtyChanged( const bool newDirty )
     }
 }
 
-void EntityPropertyColorFeel::UpdateBackground( const he::String& colorStr )
+void PropertyColorFeel::UpdateBackground( const he::String& colorStr )
 {
     he::vec4 color(he::ge::PropertyConverterVec4::fromString(colorStr));
     UpdateBackground(QColor::fromRgbF(color.x, color.y, color.z, color.w));
 }
 
-void EntityPropertyColorFeel::UpdateBackground( const QColor& color )
+void PropertyColorFeel::UpdateBackground( const QColor& color )
 {
     m_UI->m_ColorBox->setStyleSheet(QString("background-color: ") + color.name());
 }

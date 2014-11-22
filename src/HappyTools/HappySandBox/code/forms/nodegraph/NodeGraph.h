@@ -58,6 +58,10 @@ protected:
     virtual bool connect(NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to);
     virtual bool disconnect(NodeGraphNodeConnector* const connection);
 
+    // If the selection changed
+    const he::PrimitiveList<NodeGraphNode*>& getSelection() const { return m_SelectedNodes; }
+    virtual void onSelectionChanged() {}
+
 private:
     enum State
     {

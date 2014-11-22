@@ -24,6 +24,7 @@ addFilter(CODE_SRCS src code/
             HappyMemory.h
             HappyNew.h
             HappyPCH.h              HappyPCH.cpp
+            HappyHelpers.h          HappyHelpers.cpp
             HappyTargetDefines.h
             HappyTypes.h            HappyTypes.cpp
             HappyGuid.h             HappyGuid.cpp

@@ -3,11 +3,11 @@
 
 namespace hs {
 
-class EntityPropertyFeel
+class PropertyFeel
 {
 public:
-    EntityPropertyFeel();
-    virtual ~EntityPropertyFeel() {}
+    PropertyFeel();
+    virtual ~PropertyFeel() {}
 
     virtual void setValue(const he::String& value) = 0;
     virtual void setValueMixed() = 0;

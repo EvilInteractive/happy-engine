@@ -1,23 +1,23 @@
 #ifndef ENTITYPROPERTYCOLORFEEL_H
 #define ENTITYPROPERTYCOLORFEEL_H
 
-#include "EntityPropertyFeel.h"
+#include "PropertyFeel.h"
 
 #include <QWidget>
 
 namespace Ui {
-class EntityPropertyColorFeel;
+class PropertyColorFeel;
 }
 
 namespace hs {
 
-class EntityPropertyColorFeel : public QWidget, public EntityPropertyFeel
+class PropertyColorFeel : public QWidget, public PropertyFeel
 {
     Q_OBJECT
 
 public:
-    explicit EntityPropertyColorFeel(QWidget *parent = 0);
-    ~EntityPropertyColorFeel();
+    explicit PropertyColorFeel(QWidget *parent = 0);
+    ~PropertyColorFeel();
 
     void setValue(const he::String& value) override;
     void setValueMixed() override;
@@ -33,7 +33,7 @@ private:
     void UpdateBackground(const he::String& color);
     void UpdateBackground(const QColor& color);
 
-    Ui::EntityPropertyColorFeel* m_UI;
+    Ui::PropertyColorFeel* m_UI;
 };
 
 }

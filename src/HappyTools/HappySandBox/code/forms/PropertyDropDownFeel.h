@@ -1,23 +1,23 @@
 #ifndef ENTITYPROPERTYDROPDOWNFEEL_H
 #define ENTITYPROPERTYDROPDOWNFEEL_H
 
-#include "EntityPropertyFeel.h"
+#include "PropertyFeel.h"
 
 #include <QWidget>
 
 namespace Ui {
-class EntityPropertyDropDownFeel;
+class PropertyDropDownFeel;
 }
 
 namespace hs {
 
-class EntityPropertyDropDownFeel : public QWidget, public EntityPropertyFeel
+class PropertyDropDownFeel : public QWidget, public PropertyFeel
 {
     Q_OBJECT
 
 public:
-    explicit EntityPropertyDropDownFeel(QWidget *parent = 0);
-    ~EntityPropertyDropDownFeel();
+    explicit PropertyDropDownFeel(QWidget *parent = 0);
+    ~PropertyDropDownFeel();
 
     void setValue(const he::String& value) override;
     void setValueMixed() override;
@@ -29,7 +29,7 @@ private slots:
     void onSelectionChanged(const QString& text);
 
 private:
-    Ui::EntityPropertyDropDownFeel* m_UI;
+    Ui::PropertyDropDownFeel* m_UI;
     bool m_HoldEvents;
 };
 

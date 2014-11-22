@@ -18,11 +18,11 @@
 //Author:  Bastian Damman
 //Created: 2014/07/18
 #include "HappySandBoxPCH.h" 
-#include "EntityPropertyListItem.h"
+#include "PropertyListItem.h"
 
 #include "Sandbox.h"
 #include "system/EntityManager.h"
-#include "EntityPropertyFeel.h"
+#include "PropertyFeel.h"
 
 #include <EntityComponentDesc.h>
 #include <PropertyFeel.h>
@@ -33,41 +33,34 @@
 
 namespace hs {
 
-    EntityPropertyListItem::EntityPropertyListItem(const he::FixedString& component, const he::FixedString& prop, EntityPropertyFeel* const feel) 
+    PropertyListItem::PropertyListItem(const he::ge::PropertyDesc& propDesc, PropertyFeel* uiFeel) 
         : QObject()
         , QTableWidgetItem(eEntityPropertyListItem_Default)
-        , m_Component(component)
-        , m_Property(prop)
-        , m_Feel(feel)
+        , m_Desc(propDesc)
+        , m_Feel(uiFeel)
     {
-        he::eventCallback1<void, const he::String&> valueChangedCallback(std::bind(&EntityPropertyListItem::applyNewValue, this, std::placeholders::_1));
+        he::eventCallback1<void, const he::String&> valueChangedCallback(std::bind(&PropertyListItem::applyNewValue, this, std::placeholders::_1));
         m_Feel->ValueChanged += valueChangedCallback;
+        setValue(m_Desc.m_Converter->toString(m_Desc.m_Property));
     }
 
-    EntityPropertyListItem::~EntityPropertyListItem()
+    PropertyListItem::~PropertyListItem()
     {
     }
 
-    void EntityPropertyListItem::applyNewValue(const he::String& value)
+    void PropertyListItem::applyNewValue(const he::String& value)
     {
-        he::ge::EntityComponentDesc* desc(
-            hs::Sandbox::getInstance()->getEntityManager()->getComponentDescriptor(m_Component));
-        he::ge::PropertyDesc* propDesc(desc->m_Properties.find(m_Property));
-        HE_ASSERT(propDesc, "Could not find propertydesc %s for component %s", m_Component.c_str(), m_Property.c_str());
-        if (propDesc)
-        {
-            propDesc->m_Converter->fromString(propDesc->m_Property, value);
-            ValueChanged(m_Component, propDesc->m_Property);
-            setValue(propDesc->m_Converter->toString(propDesc->m_Property));
-        }
+        m_Desc.m_Converter->fromString(m_Desc.m_Property, value);
+        ValueChanged(m_Desc.m_Property);
+        setValue(m_Desc.m_Converter->toString(m_Desc.m_Property));
     }
 
-    void EntityPropertyListItem::setValue( const he::String& value )
+    void PropertyListItem::setValue( const he::String& value )
     {
         m_Feel->setValue(value);
     }
 
-    void EntityPropertyListItem::setValueMixed()
+    void PropertyListItem::setValueMixed()
     {
         m_Feel->setValueMixed();
     }

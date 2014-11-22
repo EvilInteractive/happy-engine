@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EntityPropertyDefaultFeel</class>
- <widget class="QWidget" name="EntityPropertyDefaultFeel">
+ <class>PropertyCheckBoxFeel</class>
+ <widget class="QWidget" name="PropertyCheckBoxFeel">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>390</width>
-    <height>22</height>
+    <width>114</width>
+    <height>16</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,11 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QLineEdit" name="m_TextBox"/>
+    <widget class="QCheckBox" name="m_CheckBox">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

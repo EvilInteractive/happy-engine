@@ -18,14 +18,20 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/nodeGraph code/forms/nodegraph/
     )
 addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/entity code/forms/
         EntityPropertiesForm.cpp        EntityPropertiesForm.h          EntityPropertiesForm.ui
-        EntityPropertyList.cpp          EntityPropertyList.h            EntityPropertyList.ui
-        EntityPropertyListItem.cpp      EntityPropertyListItem.h
     )
     
-addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/entity/feels code/forms/
-        EntityPropertyFeel.cpp              EntityPropertyFeel.h
-        EntityPropertyColorFeel.cpp         EntityPropertyColorFeel.h           EntityPropertyColorFeel.ui
-        EntityPropertyDefaultFeel.cpp       EntityPropertyDefaultFeel.h         EntityPropertyDefaultFeel.ui
-        EntityPropertyDropDownFeel.cpp      EntityPropertyDropDownFeel.h        EntityPropertyDropDownFeel.ui
-        EntityPropertySliderFeel.cpp        EntityPropertySliderFeel.h          EntityPropertySliderFeel.ui
+
+addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/property code/forms/
+        PropertyList.cpp          PropertyList.h            PropertyList.ui
+        PropertyListItem.cpp      PropertyListItem.h
+        EntityPropertyList.cpp	  EntityPropertyList.h
+)
+
+addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/property/feels code/forms/
+        PropertyFeel.cpp              PropertyFeel.h
+        PropertyColorFeel.cpp         PropertyColorFeel.h           PropertyColorFeel.ui
+        PropertyDefaultFeel.cpp       PropertyDefaultFeel.h         PropertyDefaultFeel.ui
+        PropertyDropDownFeel.cpp      PropertyDropDownFeel.h        PropertyDropDownFeel.ui
+        PropertySliderFeel.cpp        PropertySliderFeel.h          PropertySliderFeel.ui
+        PropertyCheckBoxFeel.cpp      PropertyCheckBoxFeel.h        PropertyCheckBoxFeel.ui
     )

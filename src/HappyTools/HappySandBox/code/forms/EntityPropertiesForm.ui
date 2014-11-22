@@ -18,7 +18,11 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QLineEdit" name="m_Name"/>
+    <widget class="QLineEdit" name="m_Name">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QFrame" name="frame_2">

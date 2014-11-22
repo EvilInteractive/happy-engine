@@ -31,7 +31,7 @@ struct ShaderGeneratorVariableOperation
 {
     static const int MAX_PARAMS = 4;
 
-    ShaderGeneratorVariableOperation() : type(ShaderGeneratorVariableOperationType_Invalid)
+    ShaderGeneratorVariableOperation() : type(eShaderGeneratorVariableOperationType_Invalid), scope(eShaderGeneratorVariableScope_Local)
     {
         for (size_t i(0); i < MAX_PARAMS; ++i)
         {
@@ -39,13 +39,14 @@ struct ShaderGeneratorVariableOperation
         }
         for (size_t i(0); i < 4; ++i)
         {
-            swizzleParams[i] = ShaderGeneratorSwizzleMask_None;
+            swizzleParams[i] = eShaderGeneratorSwizzleMask_None;
         }
     }
-    ShaderGeneratorVariableOperationType type;
-
+    EShaderGeneratorVariableOperationType type;
+    
     ObjectHandle params[MAX_PARAMS];
-    ShaderGeneratorSwizzleMask swizzleParams[4];
+    EShaderGeneratorSwizzleMask swizzleParams[4];
+    EShaderGeneratorVariableScope scope;
 };
 
 class ShaderGeneratorVariable;
@@ -57,130 +58,67 @@ public:
     ~ShaderGenerator();
 
     bool compile(const Path& shaderPath, const he::String& shaderName);
-    void reset();
 
-    ObjectHandle addVariable();
+    ObjectHandle addVariable(const char* nameHint);
     void removeVariable(const ObjectHandle& var);
-    const ObjectHandle& getVariable(const ShaderGeneratorGlobalInputVariableType type);
-    const ObjectHandle& getVariable(const ShaderGeneratorGlobalFragmentVariableType type);
-    const ObjectHandle& getVariable(const ShaderGeneratorGlobalCodeVariableType type);
-    const ObjectHandle& getVariable(const ShaderGeneratorOutVariableType type);
 
-    void setDiffuse(const ObjectHandle& var) { m_DiffuseVar = var; }
-    void setEmissive(const ObjectHandle& var) { m_EmissiveVar = var; }
-    void setSpecular(const ObjectHandle& var) { m_SpecularVar = var; }
-    void setGloss(const ObjectHandle& var) { m_GlossVar = var; }
-    void setOpacity(const ObjectHandle& var) { m_OpacityVar = var; }
-    void setNormal(const ObjectHandle& var) { m_NormalVar = var; }
-    void setWorldPositionOffset(const ObjectHandle& var) { m_WorldPositionOffsetVar = var; }
-    void setAlphaTestValue(const ObjectHandle& var) { m_AlphaTestValue = var; }
+    ObjectHandle getVariable(const EShaderGeneratorGlobalInputVariableType type);
+    ObjectHandle getVariable(const EShaderGeneratorGlobalCameraVariableType type);
+    ObjectHandle getVariable(const EShaderGeneratorGlobalFrameVariableType type);
+    ObjectHandle getVariable(const EShaderGeneratorGlobalSamplerVariableType type);
+    ObjectHandle getVariable(const EShaderGeneratorGlobalSceneVariableType type);
+    ObjectHandle getVariable(const EShaderGeneratorGlobalOutVariableType type);
+    
+    void clearOutputVariables();
+    void addOutputVariable(const ObjectHandle handle);
 
 private:
-    struct GlobalGeneratorSwitches
-    {
-        GlobalGeneratorSwitches()
-          : m_UseNormalMap(false)
-          , m_UseTexcoord(false) 
-          , m_AlphaTest(false)
-        {}
-
-        bool m_UseNormalMap;
-        bool m_UseTexcoord;
-        bool m_AlphaTest;
-    };
-    enum ShadingType
-    {
-        ShadingType_Forward,
-        ShadingType_Deferred
-    };
-    enum DrawType
-    {
-        DrawType_Single,
-        DrawType_Skinned,
-        DrawType_Instanced,
-        DrawType_Unused
-    };
-    void clearShader();
-
-    bool generateShader(const ShaderGeneratorType genType, const ShadingType shadingType, const DrawType drawType = DrawType_Unused);
-    void saveShader(const Path& shaderPath);
-
-    void inititalizeInternalVertexVars(const ShadingType shadingType, const DrawType drawType);
-    void inititalizeInternalFragmentVars(const ShadingType shadingType);
-    ShaderGeneratorVariable* addInternalVariable();
-
-    void resetAnalyse();
-    void analyseVariables();
-    void analyseVariable( ShaderGeneratorVariable* const var);
-
-    void writeTypeName(const ShaderGeneratorVariableType type);
-    void writeOperation(const ShaderGeneratorVariableOperation& operation);
-
-    void writeHeader();
-
-    void writeOpenMain();
-    void writeCloseMain();
-
-    void writeGlobalVertexVariablesDeclarations();
-    void writeGlobalFragmentVariablesDeclarations();
-    void writeInVarDeclaration(const ShaderGeneratorVariable* const var);
-    void writeOutVarDeclaration(const ShaderGeneratorVariable* const var);
-    void writeCodeVarDeclaration(const ShaderGeneratorVariable* const var);
-
-    void writeVariableDeclarations();
-    void writeVariableDeclaration(ShaderGeneratorVariable* const var);
-    void writeVariable(const ShaderGeneratorVariable* const var, const bool forceInline = false);
-    void writeConstant(const ShaderGeneratorVariable* const var);
-    
-    void writeFloat(const float value);
-    void writeFloat2(const vec2& value);
-    void writeFloat3(const vec3& value);
-    void writeFloat4(const vec4& value);
-
-    void writeAssignment() { m_ShaderFile << " = "; }
-    void writeEndLine() { m_ShaderFile << ";"; }
-    void writeNewLine();
-
-    void write(const char* const text);
-    void write(const he::String& text);
-    void writeIndend();
-
-    void writeOpenScope();
-    void writeCloseScope();
-
-    void writeNormalFunction();
-    void writeDiscardTest(const ShaderGeneratorVariable* const value, const ShaderGeneratorVariable* const test);
-
-    uint32 m_LocalVarUID;
-
-    uint8 m_ScopeDepth;
-
-    he::StringStream m_ShaderFile;
-    
-    he::ObjectList<ObjectHandle> m_Variables;
-    he::ObjectList<ObjectHandle> m_InternalVariables;
-    he::ObjectList<ObjectHandle> m_OutVariables;
+    void resetShader();
+    void startShader();
+    void endShader();
+    void saveShader(const he::Path& path);
 
     void createGlobalVariables();
     void destroyGlobalVariables();
 
-    // not a handle because lifetime == my lifetime
-    ShaderGeneratorVariable* m_GlobalInputVariables[ShaderGeneratorGlobalInputVariableType_MAX];
-    ShaderGeneratorVariable* m_GlobalFragmentVariables[ShaderGeneratorGlobalFragmentVariableType_MAX];
-    ShaderGeneratorVariable* m_GlobalCodeVariables[ShaderGeneratorGlobalCodeVariableType_MAX];
-    ShaderGeneratorVariable* m_GlobalOutVariables[ShaderGeneratorOutVariableType_MAX];
+    void calculateUseCounts();
+    void recureCalculateUseCountVariable(const he::ObjectHandle handle);
 
-    ObjectHandle m_DiffuseVar;
-    ObjectHandle m_EmissiveVar;
-    ObjectHandle m_SpecularVar;
-    ObjectHandle m_GlossVar;
-    ObjectHandle m_OpacityVar;
-    ObjectHandle m_NormalVar;
-    ObjectHandle m_WorldPositionOffsetVar;
+    void recurseDeclareDependencies( const ObjectHandle handle );
+    void recurseWriteDeclarations( const ObjectHandle handle );
+    void recurseWriteOutput( const ObjectHandle handle );
 
-    ObjectHandle m_AlphaTestValue;
+    void writeHeader();
+    void writeLineFeed( he::StringStream& body, const bool indent = true );
+    void writeGlobalVariableDeclaration( const ShaderGeneratorVariable& var );
+    void writeType( he::StringStream& stream, EShaderGeneratorVariableType type );
+    void writeOperation( he::StringStream& stream, const ShaderGeneratorVariable& var );
+    void writeGLFunc(he::StringStream& stream, const int params, const ShaderGeneratorVariableOperation& op, const char* glName);
+    void writeGLSwizzle(he::StringStream& stream, const ShaderGeneratorVariableOperation& op);
+    void writeGLOperator(he::StringStream& stream, const ShaderGeneratorVariableOperation& op, const char* glOperator);
+    void writeConstant(he::StringStream& stream, const ShaderGeneratorVariable& var);
+    void writeInclude(const char* include);
+    void IncludeNormalCalc();
+    void IncludeEncoding();
 
-    GlobalGeneratorSwitches m_GlobalSwitches;
+    he::ObjectList<ObjectHandle> m_Variables;
+    he::ObjectList<ObjectHandle> m_OutputVariables;
+
+    he::StringStream m_IncludeSection;
+    he::StringStream m_GlobalSection;
+    he::StringStream m_BodySection;
+
+    ObjectHandle m_GlobalInputVariables[eShaderGeneratorGlobalInputVariableType_MAX];
+    ObjectHandle m_GlobalCameraVariables[eShaderGeneratorGlobalCameraVariableType_MAX];
+    ObjectHandle m_GlobalFrameVariables[eShaderGeneratorGlobalFrameVariableType_MAX];
+    ObjectHandle m_GlobalSamplerVariables[eShaderGeneratorGlobalSamplerVariableType_MAX];
+    ObjectHandle m_GlobalSceneVariables[eShaderGeneratorGlobalSceneVariableType_MAX];
+    ObjectHandle m_GlobalOutVariables[eShaderGeneratorGlobalOutVariableType_MAX];
+
+    EShaderGeneratorType m_ShaderType;
+    bool m_CalcNormalIncluded;
+    bool m_EncodeIncluded;
+
 };                 
 
 } } //end namespace

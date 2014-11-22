@@ -16,22 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2014/11/22
-#include "HappySandBoxPCH.h"
-#include "EntityPropertyList.h"
+//Created: 10/03/2013
 
-namespace hs {
+#ifndef _HE_PropertyDesc_H_
+#define _HE_PropertyDesc_H_
+#pragma once
 
-EntityPropertyList::EntityPropertyList( QWidget *parent /*= 0*/ )
-    : PropertyList(parent)
+namespace he {
+namespace ge {
+
+class Property;
+class PropertyConverter;
+class PropertyFeel;
+struct HAPPY_ENTRY PropertyDesc
 {
+    Property* m_Property;
+    he::String m_DisplayName;
+    he::String m_Tooltip;
+    PropertyConverter* m_Converter;
+    PropertyFeel* m_Feel;
 
-}
+    PropertyDesc();
+    PropertyDesc(Property* const prop, const char* displayName, const char* tooltip, 
+        PropertyConverter* const converter, PropertyFeel* const feel); // Does not take any ownership
+    ~PropertyDesc();
+    PropertyDesc(PropertyDesc&& other);
+    PropertyDesc& operator=(PropertyDesc&& other);
+    PropertyDesc(const PropertyDesc& desc);
+    PropertyDesc& operator=(const PropertyDesc&);
+};
 
-EntityPropertyList::~EntityPropertyList()
-{
+} } //end namespace
 
-}
-
-}
-
+#endif

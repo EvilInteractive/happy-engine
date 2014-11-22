@@ -40,6 +40,7 @@ addFilter(CODE_SRCS src/game/components/base code/game/
 
 addFilter(CODE_SRCS src/game/components/editor code/game/
             Property.cpp                            Property.h
+            PropertyDesc.cpp                        PropertyDesc.h
             PropertyFeel.cpp                        PropertyFeel.h
             PropertyConverter.cpp                   PropertyConverter.h
         )

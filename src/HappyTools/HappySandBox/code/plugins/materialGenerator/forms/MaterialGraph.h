@@ -8,6 +8,9 @@ namespace Ui {
 }
 
 namespace he {
+namespace ge {
+    class Property;
+}
 namespace ct {
     class ShaderGenerator;
 } }
@@ -30,6 +33,7 @@ public:
     void dropEvent(QDropEvent* event) override;
 
     void compile();
+    void onPropertyValueChanged(he::ge::Property* prop);
 
 protected:
     // Called when left mouse is pressed (only return a node if you want to create one on click (with a shortcut))
@@ -38,6 +42,9 @@ protected:
 
     // Called when a connection is made between two connectors, returns if successful
     virtual bool connect(NodeGraphNodeConnector* const from, NodeGraphNodeConnector* const to) override;
+
+    // If selection 
+    virtual void onSelectionChanged();
 
 private:
     he::ct::ShaderGenerator* m_Generator;

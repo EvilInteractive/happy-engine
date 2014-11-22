@@ -1,53 +1,47 @@
-#ifndef ENTITYPROPERTYLIST_H
-#define ENTITYPROPERTYLIST_H
+//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
+//
+//This file is part of HappyEngine.
+//
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
+//
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 2014/11/22
 
-#include <QWidget>
-#include <QTableWidget>
+#ifndef EntityPropertyList_h__
+#define EntityPropertyList_h__
 
-#include <FixedStringMap.h>
-
-class QLineEdit;
-
-namespace Ui {
-class EntityPropertyList;
-}
-
-namespace he {
-namespace ge {
-    struct PropertyDesc;
-    class Property;
-}
-}
+#include "PropertyList.h"
 
 namespace hs {
-class EntityPropertyListItem;
 
-class EntityPropertyList : public QWidget
+class EntityPropertyList : public PropertyList
 {
     Q_OBJECT
-
 public:
     explicit EntityPropertyList(QWidget *parent = 0);
     ~EntityPropertyList();
 
-    void setComponentType(const he::FixedString& type) { m_Component = type; }
-
-    void addProperty(const he::ge::PropertyDesc& prop);
-    void setValue(const he::FixedString& prop, const he::String& value);
-    void setValueMixed(const he::FixedString& prop);
-
-    void clear();
-
-    he::event2<void, const he::FixedString& /*component*/, he::ge::Property*> ValueChanged;
+    void setComponentType(const he::FixedString& compType) { m_ComponentType = compType; }
+    const he::FixedString& getComponentType() const { return m_ComponentType; }
 
 private:
-    void getRowContents(const he::FixedString& component, const he::ge::PropertyDesc& prop, QTableWidgetItem*& outName, hs::EntityPropertyListItem*& outItem, QWidget*& outWidget );
+    he::FixedString m_ComponentType;
 
-    he::FixedString m_Component;
-    he::FixedStringMap<EntityPropertyListItem*> m_Items;
-    Ui::EntityPropertyList* m_UI;
-    int m_CurrentRow;
+    EntityPropertyList(const EntityPropertyList&);
+    EntityPropertyList& operator=(const EntityPropertyList&);
 };
+
 }
 
-#endif // ENTITYPROPERTYLIST_H
+#endif // EntityPropertyList_h__

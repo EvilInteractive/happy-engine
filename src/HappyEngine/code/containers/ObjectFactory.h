@@ -190,10 +190,16 @@ public:
 
     virtual T* get(const ObjectHandle handle) const
     {
-        HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): getting unassigned handle", m_DisplayName.c_str());
-        HE_ASSERT(handle.getType() == m_Type, "ObjectHandle does not belong to this factory!");
-        HE_ASSERT(m_Salt[handle.getIndex()] == handle.getSalt(), "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
-        return m_Pool[handle.getIndex()];
+        if (handle != ObjectHandle::unassigned)
+        {
+            HE_ASSERT(handle.getType() == m_Type, "ObjectHandle does not belong to this factory!");
+            HE_ASSERT(m_Salt[handle.getIndex()] == handle.getSalt(), "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
+            return m_Pool[handle.getIndex()];
+        }
+        else
+        {
+            return nullptr;
+        }
     }
     virtual T* getAt(const ObjectHandle::IndexType index) const
     {

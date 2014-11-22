@@ -81,12 +81,12 @@ namespace
         return list;
     }
     
-    void addProperty(hs::EntityPropertyList* list, const he::ge::PropertyDesc& prop)
+    void addProperty(hs::PropertyList* list, const he::ge::PropertyDesc& prop)
     {
         list->addProperty(prop);
     }
 
-    void setProperty(hs::EntityPropertyList* list, const he::ge::PropertyDesc& prop, const bool mixed)
+    void setProperty(hs::PropertyList* list, const he::ge::PropertyDesc& prop, const bool mixed)
     {
         if (mixed)
         {
@@ -119,7 +119,7 @@ void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, 
             const size_t selectionSize(selection.size());
 
             he::ge::Property* prop(propDesc.m_Property);
-            he::ge::Property* tempProp(prop->Clone());
+            he::ge::Property* tempProp(prop->clone());
 
             for (size_t i(0); i < selectionSize && !isMixed; ++i)
             {
@@ -131,7 +131,7 @@ void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, 
                     {
                         if (hasResult)
                         {
-                            isMixed = !tempProp->Equals(prop);
+                            isMixed = !tempProp->equals(prop);
                         }
                         else
                         {
@@ -149,17 +149,18 @@ void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, 
         });
 
         // Add event handler is the propery is edited
-        he::eventCallback2<void, const he::FixedString&, he::ge::Property*> valueChangedCallback(
-        [this](const he::FixedString& compId, he::ge::Property* prop)
+        he::eventCallback1<void, he::ge::Property*> valueChangedCallback(
+        [this, list](he::ge::Property* prop)
         { 
+            const he::FixedString& compID(list->getComponentType());
             he::ge::EntityManager* const entityManager(he::ge::EntityManager::getInstance());
             const hs::TSelectionSet& selection(hs::SelectionManger::getInstance()->getSelection());
-            selection.forEach([&compId, prop, entityManager](const he::ObjectHandle handle)
+            selection.forEach([&compID, prop, entityManager](const he::ObjectHandle handle)
             {
                 he::ge::Entity* entity(entityManager->getEntity(handle));
                 if (entity)
                 {
-                    he::ge::EntityComponent* const comp(compId == he::HEFS::strEntity? entity : entity->getComponent(compId));
+                    he::ge::EntityComponent* const comp(compID == he::HEFS::strEntity? entity : entity->getComponent(compID));
                     if (comp)
                     {
                         comp->setProperty(prop);

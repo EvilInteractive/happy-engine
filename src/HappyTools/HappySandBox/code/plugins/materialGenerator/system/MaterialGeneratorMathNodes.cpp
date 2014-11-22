@@ -170,7 +170,7 @@ void MaterialGeneratorNodeOneMin::init()
     addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
-    m_One = getParent()->getShaderGenerator()->addVariable();
+    m_One = getParent()->getShaderGenerator()->addVariable("OneMin");
 
     MaterialGeneratorNode::init();
 }
@@ -198,10 +198,10 @@ bool MaterialGeneratorNodeOneMin::evaluate()
         he::ct::ShaderGeneratorVariable* const varOne(factory->get(m_One));
         switch (factory->get(a)->getType())
         {
-        case he::ct::ShaderGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
-        case he::ct::ShaderGeneratorVariableType_Float2: varOne->setConstant(he::vec2(1.0f, 1.0f)); break;
-        case he::ct::ShaderGeneratorVariableType_Float3: varOne->setConstant(he::vec3(1.0f, 1.0f, 1.0f)); break;
-        case he::ct::ShaderGeneratorVariableType_Float4: varOne->setConstant(he::vec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
+        case he::ct::eShaderGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
+        case he::ct::eShaderGeneratorVariableType_Float2: varOne->setConstant(he::vec2(1.0f, 1.0f)); break;
+        case he::ct::eShaderGeneratorVariableType_Float3: varOne->setConstant(he::vec3(1.0f, 1.0f, 1.0f)); break;
+        case he::ct::eShaderGeneratorVariableType_Float4: varOne->setConstant(he::vec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
         default:
             LOG(he::LogType_ProgrammerAssert, "Error unknown/unsupported variable type"); break;
         }
@@ -359,7 +359,7 @@ void MaterialGeneratorNodeDistanceSqr::init()
     addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
     addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    m_TempVar = getParent()->getShaderGenerator()->addVariable();
+    m_TempVar = getParent()->getShaderGenerator()->addVariable("DistanceSqr");
 
     MaterialGeneratorNode::init();
 }

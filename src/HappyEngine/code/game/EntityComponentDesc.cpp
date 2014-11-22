@@ -29,51 +29,6 @@ namespace he {
 namespace ge {
 
 //////////////////////////////////////////////////////////////////////////
-// PropertyDesc
-//////////////////////////////////////////////////////////////////////////
-PropertyDesc::PropertyDesc() : m_Property(nullptr), m_DisplayName(""), m_Tooltip(""), m_Converter(nullptr), m_Feel(nullptr)
-{
-
-}
-
-PropertyDesc::PropertyDesc( Property* const prop, const char* displayName, const char* tooltip, 
-    PropertyConverter* const converter, PropertyFeel* const feel) 
-    : m_Property(prop)
-    , m_DisplayName(displayName)
-    , m_Tooltip(tooltip)
-    , m_Converter(converter)
-    , m_Feel(feel)
-{
-
-}
-
-PropertyDesc::PropertyDesc( PropertyDesc&& other ) : m_Property(other.m_Property), m_DisplayName(std::move(other.m_DisplayName)), 
-    m_Tooltip(std::move(other.m_Tooltip)), m_Converter(other.m_Converter), m_Feel(other.m_Feel)
-{
-    other.m_Property = nullptr;
-    other.m_Converter = nullptr;
-    other.m_Feel = nullptr;
-}
-
-PropertyDesc& PropertyDesc::operator=( PropertyDesc&& other )
-{
-    m_Property = other.m_Property;
-    other.m_Property = nullptr;
-    std::swap(m_DisplayName, other.m_DisplayName);
-    std::swap(m_Tooltip, other.m_Tooltip);
-    m_Converter = other.m_Converter;
-    other.m_Converter = nullptr;
-    m_Feel = other.m_Feel;
-    other.m_Feel = nullptr;
-    return *this;
-}
-
-PropertyDesc::~PropertyDesc()
-{
-
-}
-
-//////////////////////////////////////////////////////////////////////////
 // EntityComponentDesc
 //////////////////////////////////////////////////////////////////////////
 

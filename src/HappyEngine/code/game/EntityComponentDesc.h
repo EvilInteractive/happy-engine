@@ -23,32 +23,10 @@
 #pragma once
 
 #include <FixedStringMap.h>
+#include "PropertyDesc.h"
 
 namespace he {
 namespace ge {
-
-class Property;
-class PropertyConverter;
-class PropertyFeel;
-struct HAPPY_ENTRY PropertyDesc
-{
-    Property* m_Property;
-    he::String m_DisplayName;
-    he::String m_Tooltip;
-    PropertyConverter* m_Converter;
-    PropertyFeel* m_Feel;
-
-    PropertyDesc();
-    PropertyDesc(Property* const prop, const char* displayName, const char* tooltip, 
-        PropertyConverter* const converter, PropertyFeel* const feel);
-    ~PropertyDesc();
-    PropertyDesc(PropertyDesc&& other);
-    PropertyDesc& operator=(PropertyDesc&& other);
-
-private:
-    PropertyDesc(const PropertyDesc& desc);
-    PropertyDesc& operator=(const PropertyDesc&);
-};
 
 struct HAPPY_ENTRY EntityComponentDesc
 {

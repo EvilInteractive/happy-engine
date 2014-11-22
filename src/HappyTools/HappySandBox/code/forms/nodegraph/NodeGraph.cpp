@@ -425,7 +425,11 @@ bool NodeGraph::doNodeSelect( const bool keepSelection, const bool removeSelecti
         {
             node->setState(NodeGraphNode::eState_Normal);
         });
-        m_SelectedNodes.clear();
+        if (!m_SelectedNodes.empty())
+        {
+            m_SelectedNodes.clear();
+            onSelectionChanged();
+        }
     }
     if (m_HoverNode != nullptr)
     {
@@ -434,12 +438,18 @@ bool NodeGraph::doNodeSelect( const bool keepSelection, const bool removeSelecti
         if (m_SelectedNodes.find(m_HoverNode, index))
         {
             if (removeSelection)
+            {
                 m_SelectedNodes.removeAt(index);
+                onSelectionChanged();
+            }
         }
         else
         {
             if (!removeSelection)
+            {
                 m_SelectedNodes.add(m_HoverNode);
+                onSelectionChanged();
+            }
         }
     }
     return m_HoverNode != nullptr;

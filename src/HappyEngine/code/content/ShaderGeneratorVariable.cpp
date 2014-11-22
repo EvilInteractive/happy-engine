@@ -28,12 +28,11 @@ namespace ct {
 IMPLEMENT_OBJECT(ShaderGeneratorVariable)
 
 ShaderGeneratorVariable::ShaderGeneratorVariable()
-: m_Type(ShaderGeneratorVariableType_Unknown)
+: m_Type(eShaderGeneratorVariableType_Unknown)
 , m_LocalName("")
-, m_RefCounter(0)
+, m_UseCount(0)
 , m_HasDeclaration(false)
-, m_ForceInline(false)
-, m_ForceDeclare(false)
+, m_Inline(false)
 {
     he_memset(&m_ConstantData, 0, sizeof(m_ConstantData));
 }
@@ -45,30 +44,33 @@ ShaderGeneratorVariable::~ShaderGeneratorVariable()
 
 void ShaderGeneratorVariable::reset()
 {
-    m_Type = ShaderGeneratorVariableType_Unknown;
+    m_Type = eShaderGeneratorVariableType_Unknown;
     he_memset(&m_ConstantData, 0, sizeof(m_ConstantData));
 }
 
 bool ShaderGeneratorVariable::setConstant( const float a )
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
-    m_Type = ShaderGeneratorVariableType_Float;
+    m_Operation.type = eShaderGeneratorVariableOperationType_Constant;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
+    m_Type = eShaderGeneratorVariableType_Float;
     m_ConstantData.floatData[0] = a;
-    setForceInline(true);
+    m_Inline = true;
     return true;
 }
 bool ShaderGeneratorVariable::setConstant( const vec2& a )
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
-    m_Type = ShaderGeneratorVariableType_Float2;
+    m_Operation.type = eShaderGeneratorVariableOperationType_Constant;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
+    m_Type = eShaderGeneratorVariableType_Float2;
     m_ConstantData.floatData[0] = a.x;
     m_ConstantData.floatData[1] = a.y;
     return true;
 }
 bool ShaderGeneratorVariable::setConstant( const vec3& a )
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
-    m_Type = ShaderGeneratorVariableType_Float3;
+    m_Operation.type = eShaderGeneratorVariableOperationType_Constant;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
+    m_Type = eShaderGeneratorVariableType_Float3;
     m_ConstantData.floatData[0] = a.x;
     m_ConstantData.floatData[1] = a.y;
     m_ConstantData.floatData[2] = a.z;
@@ -76,8 +78,9 @@ bool ShaderGeneratorVariable::setConstant( const vec3& a )
 }
 bool ShaderGeneratorVariable::setConstant( const vec4& a )
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
-    m_Type = ShaderGeneratorVariableType_Float4;
+    m_Operation.type = eShaderGeneratorVariableOperationType_Constant;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
+    m_Type = eShaderGeneratorVariableType_Float4;
     m_ConstantData.floatData[0] = a.x;
     m_ConstantData.floatData[1] = a.y;
     m_ConstantData.floatData[2] = a.z;
@@ -85,48 +88,68 @@ bool ShaderGeneratorVariable::setConstant( const vec4& a )
     return true;
 }
 
-bool ShaderGeneratorVariable::setExposedVar( const ShaderGeneratorVariableType type )
+bool ShaderGeneratorVariable::setExposed( const he::String& name )
 {
-    m_Type = type;
-    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
-    setHasDeclaration(true);
-    setForceDeclare(true);
-    return true;
+    if (m_Operation.type == eShaderGeneratorVariableOperationType_Constant)
+    {
+        setLocalName(name);
+        m_Operation.type = eShaderGeneratorVariableOperationType_Named;
+        m_Operation.scope = eShaderGeneratorVariableScope_Exposed;
+        return true;
+    }
+    else
+    {
+        LOG(he::LogType_ProgrammerAssert, "Variable must be constant before making it exposed!");
+        return false;
+    }
 }
 
-bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const EShaderGeneratorGlobalInputVariableType type)
 {
     setLocalName(he::String(getGlobalInputVariableName(type)));
     setType(getGlobalInputVariableType(type));
-    setHasDeclaration(true);
-    setForceDeclare(true);
-    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    m_Operation.type = eShaderGeneratorVariableOperationType_Named;
+    m_Operation.scope = eShaderGeneratorVariableScope_GlobalInput;
     return true;
 }
-bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const EShaderGeneratorGlobalCameraVariableType type)
 {
-    setLocalName(he::String(getGlobalFragmentVariableName(type)));
-    setType(getGlobalFragmentVariableType(type));
-    setHasDeclaration(true);
-    setForceDeclare(true);
-    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    setLocalName(he::String(getGlobalCameraVariableName(type)));
+    setType(getGlobalCameraVariableType(type));
+    m_Operation.type = eShaderGeneratorVariableOperationType_Named;
+    m_Operation.scope = eShaderGeneratorVariableScope_GlobalCamera;
     return true;
 }
-bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const EShaderGeneratorGlobalFrameVariableType type)
 {
-    setLocalName(he::String(getGlobalCodeVariableName(type)));
-    setType(getGlobalCodeVariableType(type));
-    setHasDeclaration(true);
-    setForceDeclare(true);
-    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    setLocalName(he::String(getGlobalFrameVariableName(type)));
+    setType(getGlobalFrameVariableType(type));
+    m_Operation.type = eShaderGeneratorVariableOperationType_Named;
+    m_Operation.scope = eShaderGeneratorVariableScope_GlobalFrame;
     return true;
 }
-bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorOutVariableType type)
+bool ShaderGeneratorVariable::setGlobal(const EShaderGeneratorGlobalSamplerVariableType type)
+{
+    setLocalName(he::String(getGlobalSamplerVariableName(type)));
+    setType(getGlobalSamplerVariableType(type));
+    m_Operation.type = eShaderGeneratorVariableOperationType_Named;
+    m_Operation.scope = eShaderGeneratorVariableScope_GlobalSampler;
+    return true;
+}
+bool ShaderGeneratorVariable::setGlobal(const EShaderGeneratorGlobalSceneVariableType type)
+{
+    setLocalName(he::String(getGlobalSceneVariableName(type)));
+    setType(getGlobalSceneVariableType(type));
+    m_Operation.type = eShaderGeneratorVariableOperationType_Named;
+    m_Operation.scope = eShaderGeneratorVariableScope_GlobalScene;
+    return true;
+}
+bool ShaderGeneratorVariable::setGlobal(const EShaderGeneratorGlobalOutVariableType type)
 {
     setLocalName(he::String(getOutVariableName(type)));
     setType(getOutVariableType(type));
-    setForceInline(true);
-    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    m_Operation.type = eShaderGeneratorVariableOperationType_Named;
+    m_Operation.scope = eShaderGeneratorVariableScope_GlobalOutput;
     return true;
 }
 
@@ -135,6 +158,7 @@ bool ShaderGeneratorVariable::setGlobal(const ShaderGeneratorOutVariableType typ
 bool ShaderGeneratorVariable::name( const ObjectHandle& a )\
 {\
     m_Operation.type = oper; \
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;\
     m_Operation.params[0] = a; \
     m_Operation.params[1] = ObjectHandle::unassigned; \
     m_Operation.params[2] = ObjectHandle::unassigned; \
@@ -146,6 +170,7 @@ bool ShaderGeneratorVariable::name( const ObjectHandle& a )\
 bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b )\
 {\
     m_Operation.type = oper; \
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;\
     m_Operation.params[0] = a; \
     m_Operation.params[1] = b; \
     m_Operation.params[2] = ObjectHandle::unassigned; \
@@ -157,6 +182,7 @@ bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b
 bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c )\
 {\
     m_Operation.type = oper; \
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;\
     m_Operation.params[0] = a; \
     m_Operation.params[1] = b; \
     m_Operation.params[2] = c; \
@@ -168,6 +194,7 @@ bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b
 bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c, const ObjectHandle& d )\
 {\
     m_Operation.type = oper; \
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;\
     m_Operation.params[0] = a; \
     m_Operation.params[1] = b; \
     m_Operation.params[2] = c; \
@@ -175,96 +202,100 @@ bool ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b
     return setTypeFromOther(a); \
 }
 
-FUNC1(setAbs, ShaderGeneratorVariableOperationType_Abs)
-FUNC1(setCeil, ShaderGeneratorVariableOperationType_Ceil)
-FUNC1(setCos, ShaderGeneratorVariableOperationType_Cos)
-FUNC1(setFloor, ShaderGeneratorVariableOperationType_Floor)
-FUNC1(setFrac, ShaderGeneratorVariableOperationType_Frac)
-FUNC1(setNormalize, ShaderGeneratorVariableOperationType_Normalize)
-FUNC1(setSign, ShaderGeneratorVariableOperationType_Sign)
-FUNC1(setSin, ShaderGeneratorVariableOperationType_Sin)
-FUNC1(setEncodeNormal, ShaderGeneratorVariableOperationType_EncodeNormal)
+FUNC1(setAbs, eShaderGeneratorVariableOperationType_Abs)
+FUNC1(setCeil, eShaderGeneratorVariableOperationType_Ceil)
+FUNC1(setCos, eShaderGeneratorVariableOperationType_Cos)
+FUNC1(setFloor, eShaderGeneratorVariableOperationType_Floor)
+FUNC1(setFrac, eShaderGeneratorVariableOperationType_Frac)
+FUNC1(setNormalize, eShaderGeneratorVariableOperationType_Normalize)
+FUNC1(setSign, eShaderGeneratorVariableOperationType_Sign)
+FUNC1(setSin, eShaderGeneratorVariableOperationType_Sin)
+FUNC1(setEncodeNormal, eShaderGeneratorVariableOperationType_EncodeNormal)
 
-FUNC2(setAdd, ShaderGeneratorVariableOperationType_Add)
-FUNC2(setCross, ShaderGeneratorVariableOperationType_Cross)
-FUNC2(setDistance, ShaderGeneratorVariableOperationType_Distance)
-FUNC2(setDivide, ShaderGeneratorVariableOperationType_Div)
-FUNC2(setDot, ShaderGeneratorVariableOperationType_Dot)
-FUNC2(setMultiply, ShaderGeneratorVariableOperationType_Mul)
-FUNC2(setMin, ShaderGeneratorVariableOperationType_Min)
-FUNC2(setMax, ShaderGeneratorVariableOperationType_Max)
-FUNC2(setPower, ShaderGeneratorVariableOperationType_Pow)
-FUNC2(setReflect, ShaderGeneratorVariableOperationType_Reflect)
-FUNC2(setSubtract, ShaderGeneratorVariableOperationType_Sub)
-FUNC2(setStep, ShaderGeneratorVariableOperationType_Step)
+FUNC2(setAdd, eShaderGeneratorVariableOperationType_Add)
+FUNC2(setCross, eShaderGeneratorVariableOperationType_Cross)
+FUNC2(setDistance, eShaderGeneratorVariableOperationType_Distance)
+FUNC2(setDivide, eShaderGeneratorVariableOperationType_Div)
+FUNC2(setDot, eShaderGeneratorVariableOperationType_Dot)
+FUNC2(setMultiply, eShaderGeneratorVariableOperationType_Mul)
+FUNC2(setMin, eShaderGeneratorVariableOperationType_Min)
+FUNC2(setMax, eShaderGeneratorVariableOperationType_Max)
+FUNC2(setPower, eShaderGeneratorVariableOperationType_Pow)
+FUNC2(setReflect, eShaderGeneratorVariableOperationType_Reflect)
+FUNC2(setSubtract, eShaderGeneratorVariableOperationType_Sub)
+FUNC2(setStep, eShaderGeneratorVariableOperationType_Step)
 
-FUNC3(setClamp, ShaderGeneratorVariableOperationType_Clamp)
-FUNC3(setLerp, ShaderGeneratorVariableOperationType_Lerp)
-FUNC3(setSmoothStep, ShaderGeneratorVariableOperationType_SmoothStep)
-FUNC3(setCalculateNormal, ShaderGeneratorVariableOperationType_CalcNormal)
+FUNC3(setClamp, eShaderGeneratorVariableOperationType_Clamp)
+FUNC3(setLerp, eShaderGeneratorVariableOperationType_Lerp)
+FUNC3(setSmoothStep, eShaderGeneratorVariableOperationType_SmoothStep)
+FUNC3(setCalculateNormal, eShaderGeneratorVariableOperationType_CalcNormal)
 
 bool ShaderGeneratorVariable::setComposeFloat2( const ObjectHandle& a, const ObjectHandle& b )\
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_ComposeFloat2;
+    m_Operation.type = eShaderGeneratorVariableOperationType_ComposeFloat2;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
     m_Operation.params[0] = a;
     m_Operation.params[1] = b; 
     m_Operation.params[2] = ObjectHandle::unassigned;
     m_Operation.params[3] = ObjectHandle::unassigned;
-    m_Type = ShaderGeneratorVariableType_Float2;
+    m_Type = eShaderGeneratorVariableType_Float2;
     return true;
 }
 bool ShaderGeneratorVariable::setComposeFloat3( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c )\
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_ComposeFloat3;
+    m_Operation.type = eShaderGeneratorVariableOperationType_ComposeFloat3;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
     m_Operation.params[0] = a;
     m_Operation.params[1] = b; 
     m_Operation.params[2] = c;
     m_Operation.params[3] = ObjectHandle::unassigned;
-    m_Type = ShaderGeneratorVariableType_Float3;
+    m_Type = eShaderGeneratorVariableType_Float3;
     return true;
 }
 bool ShaderGeneratorVariable::setComposeFloat4( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c, const ObjectHandle& d )\
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_ComposeFloat4;
+    m_Operation.type = eShaderGeneratorVariableOperationType_ComposeFloat4;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
     m_Operation.params[0] = a;
     m_Operation.params[1] = b; 
     m_Operation.params[2] = c;
     m_Operation.params[3] = d;
-    m_Type = ShaderGeneratorVariableType_Float4;
+    m_Type = eShaderGeneratorVariableType_Float4;
     return true;
 }
 
-bool ShaderGeneratorVariable::setSwizzle( const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskC /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskD /*= ShaderGeneratorSwizzleMask_None*/ )
+bool ShaderGeneratorVariable::setSwizzle( const ObjectHandle& a, const EShaderGeneratorSwizzleMask maskA, const EShaderGeneratorSwizzleMask maskB /*= ShaderGeneratorSwizzleMask_None*/, const EShaderGeneratorSwizzleMask maskC /*= ShaderGeneratorSwizzleMask_None*/, const EShaderGeneratorSwizzleMask maskD /*= ShaderGeneratorSwizzleMask_None*/ )
 {
-    m_Operation.type = ShaderGeneratorVariableOperationType_Swizzle;
+    m_Inline = true;
+    m_Operation.type = eShaderGeneratorVariableOperationType_Swizzle;
+    m_Operation.scope = eShaderGeneratorVariableScope_Local;
     m_Operation.params[0] = a;
     m_Operation.swizzleParams[0] = maskA; 
     m_Operation.swizzleParams[1] = maskB;
     m_Operation.swizzleParams[2] = maskC;
     m_Operation.swizzleParams[3] = maskD;
-    if (maskD == ShaderGeneratorSwizzleMask_None)
+    if (maskD == eShaderGeneratorSwizzleMask_None)
     {
-        if (maskC == ShaderGeneratorSwizzleMask_None)
+        if (maskC == eShaderGeneratorSwizzleMask_None)
         {
-            if (maskB == ShaderGeneratorSwizzleMask_None)
+            if (maskB == eShaderGeneratorSwizzleMask_None)
             {
-                m_Type = ShaderGeneratorVariableType_Float;
+                m_Type = eShaderGeneratorVariableType_Float;
             }
             else
             {
-                m_Type = ShaderGeneratorVariableType_Float2;
+                m_Type = eShaderGeneratorVariableType_Float2;
             }
         }
         else
         {
-            m_Type = ShaderGeneratorVariableType_Float3;
+            m_Type = eShaderGeneratorVariableType_Float3;
         }
     }
     else
     {
-        m_Type = ShaderGeneratorVariableType_Float4;
+        m_Type = eShaderGeneratorVariableType_Float4;
     }
-    setForceInline(true);
     return true;
 }
 
@@ -276,7 +307,7 @@ bool ShaderGeneratorVariable::setTypeFromOther( const ObjectHandle& handle )
 {
     const ShaderGeneratorVariableFactory* factory(ShaderGeneratorVariableFactory::getInstance());
     m_Type = factory->get(handle)->getType();
-    return m_Type != ShaderGeneratorVariableType_Unknown;
+    return m_Type != eShaderGeneratorVariableType_Unknown;
 }
 
 float ShaderGeneratorVariable::getFloatData() const

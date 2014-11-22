@@ -1,12 +1,12 @@
 #include "HappySandBoxPCH.h"
-#include "EntityPropertyDefaultFeel.h"
-#include "ui_EntityPropertyDefaultFeel.h"
+#include "PropertyDefaultFeel.h"
+#include "ui_PropertyDefaultFeel.h"
 
 namespace hs {
 
-EntityPropertyDefaultFeel::EntityPropertyDefaultFeel(QWidget *parent) :
+PropertyDefaultFeel::PropertyDefaultFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::EntityPropertyDefaultFeel)
+    m_UI(NEW Ui::PropertyDefaultFeel)
 {
     m_UI->setupUi(this);
 
@@ -14,36 +14,36 @@ EntityPropertyDefaultFeel::EntityPropertyDefaultFeel(QWidget *parent) :
     connect(m_UI->m_TextBox, SIGNAL(textEdited(QString)), this, SLOT(onTextModified(QString)));
 }
 
-EntityPropertyDefaultFeel::~EntityPropertyDefaultFeel()
+PropertyDefaultFeel::~PropertyDefaultFeel()
 {
     delete m_UI;
 }
 
-void EntityPropertyDefaultFeel::setValue( const he::String& value )
+void PropertyDefaultFeel::setValue( const he::String& value )
 {
     m_UI->m_TextBox->setText(value.c_str());
     setDirty(false);
 }
 
-void EntityPropertyDefaultFeel::setValueMixed()
+void PropertyDefaultFeel::setValueMixed()
 {
     m_UI->m_TextBox->setPlaceholderText("<Mixed Values>");
     m_UI->m_TextBox->setText("");
     setDirty(false);
 }
 
-void EntityPropertyDefaultFeel::onEditingFinished()
+void PropertyDefaultFeel::onEditingFinished()
 {
     he::String value(m_UI->m_TextBox->text().toUtf8());
     ValueChanged(value);
 }
 
-void EntityPropertyDefaultFeel::onTextModified( const QString& /*text*/ )
+void PropertyDefaultFeel::onTextModified( const QString& /*text*/ )
 {
     setDirty(true);
 }
 
-void EntityPropertyDefaultFeel::onDirtyChanged( const bool newDirty )
+void PropertyDefaultFeel::onDirtyChanged( const bool newDirty )
 {
     if (newDirty)
     {

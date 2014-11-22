@@ -74,6 +74,18 @@ public:
     }
 };
 
+class HAPPY_ENTRY PropertyConverterBool : public PropertyConverter
+{
+public:
+    PropertyConverterBool() {}
+    virtual ~PropertyConverterBool() {}
+    virtual void fromString(Property* const prop, const he::String& str);
+    virtual he::String toString(const Property* const prop);
+
+    static bool fromString(const he::String& str);
+    static he::String toString(const bool val);
+};
+
 class HAPPY_ENTRY PropertyConverterFloat : public PropertyConverter
 {
 public:

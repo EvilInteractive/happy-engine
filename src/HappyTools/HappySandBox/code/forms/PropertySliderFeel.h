@@ -1,23 +1,23 @@
 #ifndef ENTITYPROPERTYSLIDERFEEL_H
 #define ENTITYPROPERTYSLIDERFEEL_H
 
-#include "EntityPropertyFeel.h"
+#include "PropertyFeel.h"
 
 #include <QWidget>
 
 namespace Ui {
-class EntityPropertySliderFeel;
+class PropertySliderFeel;
 }
 
 namespace hs {
 
-class EntityPropertySliderFeel : public QWidget, public EntityPropertyFeel
+class PropertySliderFeel : public QWidget, public PropertyFeel
 {
     Q_OBJECT
 
 public:
-    explicit EntityPropertySliderFeel(QWidget *parent = 0);
-    ~EntityPropertySliderFeel();
+    explicit PropertySliderFeel(QWidget *parent = 0);
+    ~PropertySliderFeel();
 
     void setValue(const he::String& value) override;
     void setValueMixed() override;
@@ -34,7 +34,7 @@ private slots:
 private:    
     int m_Decimals;
 
-    Ui::EntityPropertySliderFeel* m_UI;
+    Ui::PropertySliderFeel* m_UI;
 };
 
 }

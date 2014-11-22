@@ -41,11 +41,15 @@ public:
     bool setConstant(const vec2& a);
     bool setConstant(const vec3& a);
     bool setConstant(const vec4& a);
-    bool setExposedVar(const ShaderGeneratorVariableType type);
-    bool setGlobal(const ShaderGeneratorGlobalInputVariableType type);
-    bool setGlobal(const ShaderGeneratorGlobalFragmentVariableType type);
-    bool setGlobal(const ShaderGeneratorGlobalCodeVariableType type);
-    bool setGlobal(const ShaderGeneratorOutVariableType type);
+    bool setConstantTex2D(const he::String& texDefault);
+    bool setConstantTexCube(const he::String& texDefault);
+    bool setExposed(const he::String& name); // must be already constant
+    bool setGlobal(const EShaderGeneratorGlobalInputVariableType type);
+    bool setGlobal(const EShaderGeneratorGlobalCameraVariableType type);
+    bool setGlobal(const EShaderGeneratorGlobalFrameVariableType type);
+    bool setGlobal(const EShaderGeneratorGlobalSamplerVariableType type);
+    bool setGlobal(const EShaderGeneratorGlobalSceneVariableType type);
+    bool setGlobal(const EShaderGeneratorGlobalOutVariableType type);
 
     // One param
     bool setAbs(const ObjectHandle& a);
@@ -80,7 +84,7 @@ public:
     // Mutiple
     bool setComposeFloat3(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned);
     bool setComposeFloat4(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned, const ObjectHandle& d = ObjectHandle::unassigned);
-    bool setSwizzle(const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskC = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskD = ShaderGeneratorSwizzleMask_None);
+    bool setSwizzle(const ObjectHandle& a, const EShaderGeneratorSwizzleMask maskA, const EShaderGeneratorSwizzleMask maskB = eShaderGeneratorSwizzleMask_None, const EShaderGeneratorSwizzleMask maskC = eShaderGeneratorSwizzleMask_None, const EShaderGeneratorSwizzleMask maskD = eShaderGeneratorSwizzleMask_None);
     
     // Custom
     bool setCalculateNormal(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c);
@@ -93,32 +97,24 @@ public:
     const vec4& getFloat4Data() const;
 
     const ShaderGeneratorVariableOperation& getOperation() const { return m_Operation; }
-    const ShaderGeneratorVariableType& getType() const { return m_Type; }
     
     const he::String& getLocalName() const { return m_LocalName; }
     void setLocalName(const he::String& name) { m_LocalName = name; }
 
-    void setType(const ShaderGeneratorVariableType type) { m_Type = type; }
-    ShaderGeneratorVariableType getType() { return m_Type; }
+    void setType(const EShaderGeneratorVariableType type) { m_Type = type; }
+    EShaderGeneratorVariableType getType() const { return m_Type; }
 
     bool hasDeclaration() const { return m_HasDeclaration; }
     void setHasDeclaration(const bool has) { m_HasDeclaration = has; }
 
-    bool getForceInline() const { return m_ForceInline; }
-    void setForceInline(const bool force) { m_ForceInline = force; }
-
-    bool getForceDeclare() const { return m_ForceDeclare; }
-    void setForceDeclare(const bool force) { m_ForceDeclare = force; }
-
-    void resetRefcounter() { m_RefCounter = 0; }
-    void incrementRefcounter() { ++m_RefCounter; }
-    uint32 getRefCount() const { return m_RefCounter; }
-
-    bool declareVar() const { return (m_RefCounter > 1 || m_ForceDeclare) && !m_ForceInline; }
-
+    void increaseUseCount() { ++m_UseCount; }
+    void resetUseCount() { m_UseCount = 0; }
+    uint32 getUseCount() const { return m_UseCount; }
+    bool needsDeclaration() const { return m_UseCount > 1 && !m_Inline; }
+    
 private:
     ShaderGeneratorVariableOperation m_Operation;
-    ShaderGeneratorVariableType m_Type;
+    EShaderGeneratorVariableType m_Type;
     union
     {
         float floatData[4];
@@ -127,10 +123,9 @@ private:
 
     he::String m_LocalName;
 
-    uint32 m_RefCounter;
+    uint32 m_UseCount;
     bool m_HasDeclaration;
-    bool m_ForceInline;
-    bool m_ForceDeclare;
+    bool m_Inline;
 
     bool setTypeFromOther(const ObjectHandle& handle);
 

@@ -24,9 +24,36 @@
 
 #include "MaterialGeneratorNodeClassHelper.h"
 
+namespace he {
+namespace ct {
+    class ShaderGeneratorVariable;
+}
+}
+
 namespace hs {
+
+class MaterialGeneratorNodeRootNormalDraw : public MaterialGeneratorNode
+{
+    public:
+    MaterialGeneratorNodeRootNormalDraw();
+    ~MaterialGeneratorNodeRootNormalDraw() {}
     
-MaterialGeneratorNodeClass(RootNormalDraw)
+    void init() final; 
+    void destroy() final;    
+    bool evaluate() final;
+    
+    MaterialGeneratorNodeType getType() const final { return MaterialGeneratorNodeType_RootNormalDraw; } 
+    
+private:
+    bool areConnectionsValid();
+    void removeAllTempVars();
+    he::ct::ShaderGeneratorVariable* addTempVar(const char* nameHint);
+    he::ObjectList<he::ObjectHandle> m_TempVars;
+    
+    MaterialGeneratorNodeRootNormalDraw(const MaterialGeneratorNodeRootNormalDraw&);
+    MaterialGeneratorNodeRootNormalDraw& operator=(const MaterialGeneratorNodeRootNormalDraw&);
+};
+
 
 } //end namespace
 

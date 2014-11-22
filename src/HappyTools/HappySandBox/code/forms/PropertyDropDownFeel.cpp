@@ -1,24 +1,24 @@
 #include "HappySandBoxPCH.h"
-#include "EntityPropertyDropDownFeel.h"
-#include "ui_EntityPropertyDropDownFeel.h"
+#include "PropertyDropDownFeel.h"
+#include "ui_PropertyDropDownFeel.h"
 
 namespace hs {
 
-EntityPropertyDropDownFeel::EntityPropertyDropDownFeel(QWidget *parent) :
+PropertyDropDownFeel::PropertyDropDownFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::EntityPropertyDropDownFeel),
+    m_UI(NEW Ui::PropertyDropDownFeel),
     m_HoldEvents(false)
 {
     m_UI->setupUi(this);
     connect(m_UI->m_DropDown, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onSelectionChanged(const QString&)));
 }
 
-EntityPropertyDropDownFeel::~EntityPropertyDropDownFeel()
+PropertyDropDownFeel::~PropertyDropDownFeel()
 {
     delete m_UI;
 }
 
-void EntityPropertyDropDownFeel::setValue(const he::String& value)
+void PropertyDropDownFeel::setValue(const he::String& value)
 {
     m_HoldEvents = true;
     const int index(m_UI->m_DropDown->findText(QString(value.c_str())));
@@ -27,24 +27,24 @@ void EntityPropertyDropDownFeel::setValue(const he::String& value)
     m_HoldEvents = false;
 }
 
-void EntityPropertyDropDownFeel::setValueMixed()
+void PropertyDropDownFeel::setValueMixed()
 {
     m_HoldEvents = true;
     m_UI->m_DropDown->setCurrentIndex(-1);
     m_HoldEvents = false;
 }
 
-void EntityPropertyDropDownFeel::onDirtyChanged(const bool /*newDirty*/)
+void PropertyDropDownFeel::onDirtyChanged(const bool /*newDirty*/)
 {
 
 }
 
-void EntityPropertyDropDownFeel::addValue(const he::String& value)
+void PropertyDropDownFeel::addValue(const he::String& value)
 {
     m_UI->m_DropDown->addItem(QString(value.c_str()));
 }
 
-void EntityPropertyDropDownFeel::onSelectionChanged(const QString& text)
+void PropertyDropDownFeel::onSelectionChanged(const QString& text)
 {
     if (!m_HoldEvents)
     {

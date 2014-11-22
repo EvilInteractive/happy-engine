@@ -1,23 +1,23 @@
 #ifndef ENTITYPROPERTYDEFAULTFEEL_H
 #define ENTITYPROPERTYDEFAULTFEEL_H
 
-#include "EntityPropertyFeel.h"
+#include "PropertyFeel.h"
 
 #include <QWidget>
 
 namespace Ui {
-class EntityPropertyDefaultFeel;
+class PropertyDefaultFeel;
 }
 
 namespace hs {
 
-class EntityPropertyDefaultFeel : public QWidget, public EntityPropertyFeel
+class PropertyDefaultFeel : public QWidget, public PropertyFeel
 {
     Q_OBJECT
 
 public:
-    explicit EntityPropertyDefaultFeel(QWidget *parent = 0);
-    ~EntityPropertyDefaultFeel();
+    explicit PropertyDefaultFeel(QWidget *parent = 0);
+    ~PropertyDefaultFeel();
 
     void setValue(const he::String& value) override;
     void setValueMixed() override;
@@ -28,7 +28,7 @@ private slots:
     void onTextModified(const QString& text);
 
 private:
-    Ui::EntityPropertyDefaultFeel* m_UI;
+    Ui::PropertyDefaultFeel* m_UI;
 };
 
 }

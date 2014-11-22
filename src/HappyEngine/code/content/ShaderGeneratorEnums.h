@@ -25,179 +25,221 @@
 namespace he {
 namespace ct {
 
-enum ShaderGeneratorType
+enum EShaderGeneratorType
 {
-    ShaderGeneratorType_Unknown,
+    eShaderGeneratorType_Unknown = -1,
 
-    ShaderGeneratorType_Vertex,
-    ShaderGeneratorType_Fragment
+    eShaderGeneratorType_Vertex,
+    eShaderGeneratorType_Fragment
 };
 
-enum ShaderGeneratorVariableOperationType
+enum EShaderGeneratorDependency
 {
-    ShaderGeneratorVariableOperationType_Constant,
-    ShaderGeneratorVariableOperationType_Global,
-    ShaderGeneratorVariableOperationType_Exposed,
-    ShaderGeneratorVariableOperationType_Output,
+    eShaderGeneratorDependeny_PerSceneBuffer = BIT(0),
+    eShaderGeneratorDependeny_PerCameraBuffer = BIT(1),
+    eShaderGeneratorDependeny_Tonemap = BIT(2),
+    eShaderGeneratorDependeny_NormalEncodeFunctions = BIT(3)
+};
 
+enum EShaderGeneratorFsVsDependency
+{
+    eShaderGeneratorDependeny_Texcoord = BIT(0),
+    eShaderGeneratorDependeny_ViewDepth = BIT(1),
+    eShaderGeneratorDependeny_ViewPosition = BIT(2),
+    eShaderGeneratorDependeny_Color = BIT(3)
+};
+
+enum EShaderGeneratorVariableScope
+{
+    eShaderGeneratorVariableScope_Local,
+    eShaderGeneratorVariableScope_Exposed,
+    eShaderGeneratorVariableScope_GlobalInput,
+    eShaderGeneratorVariableScope_GlobalOutput,
+    eShaderGeneratorVariableScope_GlobalCamera,
+    eShaderGeneratorVariableScope_GlobalScene,
+    eShaderGeneratorVariableScope_GlobalFrame,
+    eShaderGeneratorVariableScope_GlobalSampler
+};
+
+enum EShaderGeneratorVariableOperationType
+{
+    eShaderGeneratorVariableOperationType_Invalid = -1,
+
+    // Const
+    eShaderGeneratorVariableOperationType_Constant,
+    eShaderGeneratorVariableOperationType_Named,
+    
     // Operators
-    ShaderGeneratorVariableOperationType_Add,
-    ShaderGeneratorVariableOperationType_Div,
-    ShaderGeneratorVariableOperationType_Mul,
-    ShaderGeneratorVariableOperationType_Sub,
-
+    eShaderGeneratorVariableOperationType_Add,
+    eShaderGeneratorVariableOperationType_Div,
+    eShaderGeneratorVariableOperationType_Mul,
+    eShaderGeneratorVariableOperationType_Sub,
+    
     // Vector
-    ShaderGeneratorVariableOperationType_ComposeFloat2,
-    ShaderGeneratorVariableOperationType_ComposeFloat3,
-    ShaderGeneratorVariableOperationType_ComposeFloat4,
-    ShaderGeneratorVariableOperationType_Swizzle,
-
+    eShaderGeneratorVariableOperationType_ComposeFloat2,
+    eShaderGeneratorVariableOperationType_ComposeFloat3,
+    eShaderGeneratorVariableOperationType_ComposeFloat4,
+    eShaderGeneratorVariableOperationType_Swizzle,
+    
     // Func
-    ShaderGeneratorVariableOperationType_Sin,
-    ShaderGeneratorVariableOperationType_Cos,
-    ShaderGeneratorVariableOperationType_Tan,
-    ShaderGeneratorVariableOperationType_ASin,
-    ShaderGeneratorVariableOperationType_ACos,
-    ShaderGeneratorVariableOperationType_ATan,
-
-    ShaderGeneratorVariableOperationType_Pow,
-    ShaderGeneratorVariableOperationType_Log,
-    ShaderGeneratorVariableOperationType_Log2,
-    ShaderGeneratorVariableOperationType_Sqrt,
-    ShaderGeneratorVariableOperationType_InvSqrt,
-
-    ShaderGeneratorVariableOperationType_Abs,
-    ShaderGeneratorVariableOperationType_Sign,
-    ShaderGeneratorVariableOperationType_Floor,
-    ShaderGeneratorVariableOperationType_Ceil,
-    ShaderGeneratorVariableOperationType_Round,
-    ShaderGeneratorVariableOperationType_Frac,
-    ShaderGeneratorVariableOperationType_Mod,
-    ShaderGeneratorVariableOperationType_Min,
-    ShaderGeneratorVariableOperationType_Max,
-    ShaderGeneratorVariableOperationType_Clamp,
-    ShaderGeneratorVariableOperationType_Lerp,
-    ShaderGeneratorVariableOperationType_Step,
-    ShaderGeneratorVariableOperationType_SmoothStep,
-
-    ShaderGeneratorVariableOperationType_Length,
-    ShaderGeneratorVariableOperationType_Distance,
-    ShaderGeneratorVariableOperationType_Dot,
-    ShaderGeneratorVariableOperationType_Cross,
-    ShaderGeneratorVariableOperationType_Normalize,
-    ShaderGeneratorVariableOperationType_Reflect,
-    ShaderGeneratorVariableOperationType_Refract,
-
+    eShaderGeneratorVariableOperationType_Sin,
+    eShaderGeneratorVariableOperationType_Cos,
+    eShaderGeneratorVariableOperationType_Tan,
+    eShaderGeneratorVariableOperationType_ASin,
+    eShaderGeneratorVariableOperationType_ACos,
+    eShaderGeneratorVariableOperationType_ATan,
+    
+    eShaderGeneratorVariableOperationType_Pow,
+    eShaderGeneratorVariableOperationType_Log,
+    eShaderGeneratorVariableOperationType_Log2,
+    eShaderGeneratorVariableOperationType_Sqrt,
+    eShaderGeneratorVariableOperationType_InvSqrt,
+    
+    eShaderGeneratorVariableOperationType_Abs,
+    eShaderGeneratorVariableOperationType_Sign,
+    eShaderGeneratorVariableOperationType_Floor,
+    eShaderGeneratorVariableOperationType_Ceil,
+    eShaderGeneratorVariableOperationType_Round,
+    eShaderGeneratorVariableOperationType_Frac,
+    eShaderGeneratorVariableOperationType_Mod,
+    eShaderGeneratorVariableOperationType_Min,
+    eShaderGeneratorVariableOperationType_Max,
+    eShaderGeneratorVariableOperationType_Clamp,
+    eShaderGeneratorVariableOperationType_Lerp,
+    eShaderGeneratorVariableOperationType_Step,
+    eShaderGeneratorVariableOperationType_SmoothStep,
+    
+    eShaderGeneratorVariableOperationType_Length,
+    eShaderGeneratorVariableOperationType_Distance,
+    eShaderGeneratorVariableOperationType_Dot,
+    eShaderGeneratorVariableOperationType_Cross,
+    eShaderGeneratorVariableOperationType_Normalize,
+    eShaderGeneratorVariableOperationType_Reflect,
+    eShaderGeneratorVariableOperationType_Refract,
+    
     // Custom func
-    ShaderGeneratorVariableOperationType_CalcNormal,
-    ShaderGeneratorVariableOperationType_EncodeNormal,
-
+    eShaderGeneratorVariableOperationType_CalcNormal,
+    eShaderGeneratorVariableOperationType_EncodeNormal,
+    
     // Texture
-    ShaderGeneratorVariableOperationType_Texture,
-    ShaderGeneratorVariableOperationType_TextureLod,
-    ShaderGeneratorVariableOperationType_TextureOffset,
-
-    ShaderGeneratorVariableOperationType_Invalid,
-    ShaderGeneratorVariableOperationType_MAX = ShaderGeneratorVariableOperationType_Invalid
+    eShaderGeneratorVariableOperationType_Texture,
+    eShaderGeneratorVariableOperationType_TextureLod,
+    eShaderGeneratorVariableOperationType_TextureOffset,
+    
+    eShaderGeneratorVariableOperationType_MAX
 };
 
-enum ShaderGeneratorVariableType
+enum EShaderGeneratorVariableType
 {
-    ShaderGeneratorVariableType_Unknown,
-    ShaderGeneratorVariableType_Int,
-    ShaderGeneratorVariableType_Int2,
-    ShaderGeneratorVariableType_Int3,
-    ShaderGeneratorVariableType_Int4,
-    ShaderGeneratorVariableType_Uint,
-    ShaderGeneratorVariableType_Float,
-    ShaderGeneratorVariableType_Float2,
-    ShaderGeneratorVariableType_Float3,
-    ShaderGeneratorVariableType_Float4,
-    ShaderGeneratorVariableType_Mat44,
-    ShaderGeneratorVariableType_Texture2D,
-    ShaderGeneratorVariableType_TextureCube
+    eShaderGeneratorVariableType_Unknown = -1,
+
+    eShaderGeneratorVariableType_Int,
+    eShaderGeneratorVariableType_Int2,
+    eShaderGeneratorVariableType_Int3,
+    eShaderGeneratorVariableType_Int4,
+    eShaderGeneratorVariableType_Uint,
+    eShaderGeneratorVariableType_Float,
+    eShaderGeneratorVariableType_Float2,
+    eShaderGeneratorVariableType_Float3,
+    eShaderGeneratorVariableType_Float4,
+    eShaderGeneratorVariableType_Mat44,
+    eShaderGeneratorVariableType_Texture1D,
+    eShaderGeneratorVariableType_Texture2D,
+    eShaderGeneratorVariableType_Texture3D,
+    eShaderGeneratorVariableType_TextureCube
 };
 
-enum ShaderGeneratorSwizzleMask
+enum EShaderGeneratorSwizzleMask
 {
-    ShaderGeneratorSwizzleMask_X,
-    ShaderGeneratorSwizzleMask_Y,
-    ShaderGeneratorSwizzleMask_Z,
-    ShaderGeneratorSwizzleMask_W,
-    ShaderGeneratorSwizzleMask_None
+    eShaderGeneratorSwizzleMask_X,
+    eShaderGeneratorSwizzleMask_Y,
+    eShaderGeneratorSwizzleMask_Z,
+    eShaderGeneratorSwizzleMask_W,
+    eShaderGeneratorSwizzleMask_None
 };
 
-enum ShaderGeneratorGlobalInputVariableType
+enum EShaderGeneratorGlobalInputVariableType
 {
-    ShaderGeneratorGlobalInputVariableType_Position,
-    ShaderGeneratorGlobalInputVariableType_TexCoord,
-    ShaderGeneratorGlobalInputVariableType_Normal,
-    ShaderGeneratorGlobalInputVariableType_Tangent,
-    ShaderGeneratorGlobalInputVariableType_World,
-    ShaderGeneratorGlobalInputVariableType_BoneId,
-    ShaderGeneratorGlobalInputVariableType_BoneWeight,
+    eShaderGeneratorGlobalInputVariableType_Position,
+    eShaderGeneratorGlobalInputVariableType_TexCoord,
+    eShaderGeneratorGlobalInputVariableType_Normal,
+    eShaderGeneratorGlobalInputVariableType_Tangent,
+    eShaderGeneratorGlobalInputVariableType_World,
+    eShaderGeneratorGlobalInputVariableType_BoneId,
+    eShaderGeneratorGlobalInputVariableType_BoneWeight,
+    eShaderGeneratorGlobalInputVariableType_Depth,
 
-    ShaderGeneratorGlobalInputVariableType_MAX
+    eShaderGeneratorGlobalInputVariableType_MAX
 };
 
-enum ShaderGeneratorGlobalFragmentVariableType
+enum EShaderGeneratorGlobalFrameVariableType
 {
-    ShaderGeneratorGlobalFragmentVariableType_ViewPosition,
-    ShaderGeneratorGlobalFragmentVariableType_ViewNormal,
-    ShaderGeneratorGlobalFragmentVariableType_ViewTangent,
-    ShaderGeneratorGlobalFragmentVariableType_TexCoord,
-    ShaderGeneratorGlobalFragmentVariableType_Depth,
+    eShaderGeneratorGlobalFrameVariableType_Time,
 
-    ShaderGeneratorGlobalFragmentVariableType_MAX
+    eShaderGeneratorGlobalFrameVariableType_MAX
 };
 
-enum ShaderGeneratorGlobalCodeVariableType
+enum EShaderGeneratorGlobalSceneVariableType
 {
-    ShaderGeneratorGlobalCodeVariableType_CameraViewDirection,  // always (0, 0, 1)
-    ShaderGeneratorGlobalCodeVariableType_CameraViewPosition,   // always (0, 0, 0)
-    ShaderGeneratorGlobalCodeVariableType_CameraNearFar,
+    eShaderGeneratorGlobalSceneVariableType_AmbientLightColor,
+    eShaderGeneratorGlobalSceneVariableType_DirectionalLightColor,
+    eShaderGeneratorGlobalSceneVariableType_DirectionalLightDirection,
 
-    ShaderGeneratorGlobalCodeVariableType_Time,
-
-    ShaderGeneratorGlobalCodeVariableType_ScreenPosition,
-    ShaderGeneratorGlobalCodeVariableType_ScreenSize,
-
-    ShaderGeneratorGlobalCodeVariableType_World,
-    ShaderGeneratorGlobalCodeVariableType_WorldView,
-    ShaderGeneratorGlobalCodeVariableType_WorldViewProjection,
-    ShaderGeneratorGlobalCodeVariableType_ViewProjection,
-    ShaderGeneratorGlobalCodeVariableType_View,
-    ShaderGeneratorGlobalCodeVariableType_Projection,
-
-    ShaderGeneratorGlobalSamplerVariableType_DepthMap,
-    ShaderGeneratorGlobalSamplerVariableType_ColorMap,
-    ShaderGeneratorGlobalSamplerVariableType_Skybox,
-
-    ShaderGeneratorGlobalCodeVariableType_MAX
+    eShaderGeneratorGlobalSceneVariableType_MAX
 };
 
-enum ShaderGeneratorOutVariableType
+enum EShaderGeneratorGlobalSamplerVariableType
 {
-    ShaderGeneratorOutVariableType_GLPosition,
-    ShaderGeneratorOutVariableType_OutColor,
-    ShaderGeneratorOutVariableType_OutNormalDepth,
-    ShaderGeneratorOutVariableType_OutSG,
-    ShaderGeneratorOutVariableType_MAX
+    eShaderGeneratorGlobalSamplerVariableType_DepthMap,
+    eShaderGeneratorGlobalSamplerVariableType_ColorMap,
+    eShaderGeneratorGlobalSamplerVariableType_Skybox,
+
+    eShaderGeneratorGlobalSamplerVariableType_MAX
 };
 
-const char* shaderGeneratorSwizzleMaskToString(const ShaderGeneratorSwizzleMask mask);
+enum EShaderGeneratorGlobalCameraVariableType
+{
+    eShaderGeneratorGlobalCameraVariableType_CameraNearFar,
+    
+    eShaderGeneratorGlobalCameraVariableType_CameraPostion,
+    eShaderGeneratorGlobalCameraVariableType_ViewportSize,
+    
+    eShaderGeneratorGlobalCameraVariableType_ViewProjection,
+    eShaderGeneratorGlobalCameraVariableType_View,
+    eShaderGeneratorGlobalCameraVariableType_Projection,
+    
+    eShaderGeneratorGlobalCameraVariableType_MAX
+};
 
-const char* getGlobalInputVariableName(const ShaderGeneratorGlobalInputVariableType type);
-const char* getGlobalFragmentVariableName(const ShaderGeneratorGlobalFragmentVariableType type);
-const char* getGlobalCodeVariableName(const ShaderGeneratorGlobalCodeVariableType type);
+enum EShaderGeneratorGlobalOutVariableType
+{
+    eShaderGeneratorGlobalOutVariableType_GLPosition,
+    eShaderGeneratorGlobalOutVariableType_OutColor,
+    eShaderGeneratorGlobalOutVariableType_OutNormalDepth,
+    eShaderGeneratorGlobalOutVariableType_OutSG,
+    eShaderGeneratorGlobalOutVariableType_MAX
+};
 
-const char* getOutVariableName(const ShaderGeneratorOutVariableType type);
+HAPPY_ENTRY const char* shaderGeneratorSwizzleMaskToString(const EShaderGeneratorSwizzleMask mask);
+HAPPY_ENTRY EShaderGeneratorSwizzleMask shaderGeneratorSwizzleMaskFromString(const char* str);
 
-ShaderGeneratorVariableType getGlobalInputVariableType(const ShaderGeneratorGlobalInputVariableType type);
-ShaderGeneratorVariableType getGlobalFragmentVariableType(const ShaderGeneratorGlobalFragmentVariableType type);
-ShaderGeneratorVariableType getGlobalCodeVariableType(const ShaderGeneratorGlobalCodeVariableType type);
+const char* getGlobalInputVariableName(const EShaderGeneratorGlobalInputVariableType type);
+const char* getGlobalFrameVariableName(const EShaderGeneratorGlobalFrameVariableType type);
+const char* getGlobalSceneVariableName(const EShaderGeneratorGlobalSceneVariableType type);
+const char* getGlobalCameraVariableName(const EShaderGeneratorGlobalCameraVariableType type);
+const char* getGlobalSamplerVariableName(const EShaderGeneratorGlobalSamplerVariableType type);
 
-ShaderGeneratorVariableType getOutVariableType(const ShaderGeneratorOutVariableType type);
+const char* getOutVariableName(const EShaderGeneratorGlobalOutVariableType type);
+
+EShaderGeneratorVariableType getGlobalInputVariableType(const EShaderGeneratorGlobalInputVariableType type);
+EShaderGeneratorVariableType getGlobalFrameVariableType(const EShaderGeneratorGlobalFrameVariableType type);
+EShaderGeneratorVariableType getGlobalSceneVariableType(const EShaderGeneratorGlobalSceneVariableType type);
+EShaderGeneratorVariableType getGlobalCameraVariableType(const EShaderGeneratorGlobalCameraVariableType type);
+EShaderGeneratorVariableType getGlobalSamplerVariableType(const EShaderGeneratorGlobalSamplerVariableType type);
+
+EShaderGeneratorVariableType getOutVariableType(const EShaderGeneratorGlobalOutVariableType type);
+
+const char* getGlobalIncludeFile(const EShaderGeneratorVariableScope scope);
 
 } } //end namespace
 

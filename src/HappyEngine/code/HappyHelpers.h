@@ -16,22 +16,16 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2014/11/22
-#include "HappySandBoxPCH.h"
-#include "EntityPropertyList.h"
+//Created: 2014/11/10
 
-namespace hs {
+#ifndef HappyHelpers_h__
+#define HappyHelpers_h__
 
-EntityPropertyList::EntityPropertyList( QWidget *parent /*= 0*/ )
-    : PropertyList(parent)
-{
+namespace he {
 
-}
-
-EntityPropertyList::~EntityPropertyList()
-{
+#define BIT(i) (1 << i)
 
 }
 
-}
+#endif // HappyHelpers_h__
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EntityPropertyDropDownFeel</class>
- <widget class="QWidget" name="EntityPropertyDropDownFeel">
+ <class>PropertyDropDownFeel</class>
+ <widget class="QWidget" name="PropertyDropDownFeel">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,16 +17,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>

@@ -15,23 +15,22 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 2014/11/22
-#include "HappySandBoxPCH.h"
-#include "EntityPropertyList.h"
+//Author: Bastian Damman
 
-namespace hs {
+#ifndef _FRAG_CALCNORMAL
+#define _FRAG_CALCNORMAL
 
-EntityPropertyList::EntityPropertyList( QWidget *parent /*= 0*/ )
-    : PropertyList(parent)
+vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 {
+    //NormalMap
+    tangent = normalize(tangent);
+    normal = normalize(normal);
 
+    vec3 binormal = cross(tangent, normal);
+    mat3 axis = mat3(binormal, tangent, normal);
+    vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
+
+    return normalize(axis * xyz);
 }
 
-EntityPropertyList::~EntityPropertyList()
-{
-
-}
-
-}
-
+#endif // _FRAG_CALCNORMAL

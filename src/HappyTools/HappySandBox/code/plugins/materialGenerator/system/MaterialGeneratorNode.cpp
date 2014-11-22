@@ -22,7 +22,6 @@
 
 #include "MaterialGeneratorNodeConnector.h"
 
-#include "NodeGraphError.h"
 #include "StructuredVisitor.h"
 #include "BinaryFileVisitor.h"
 
@@ -55,10 +54,6 @@ void MaterialGeneratorNode::destroy()
 
 MaterialGeneratorNode::~MaterialGeneratorNode()
 {
-    m_Params.forEach([this](MaterialGeneratorNodeParam& param)
-    {
-        param.Destroy(this);
-    });
 }
 
 void MaterialGeneratorNode::addInput( const MaterialGeneratorNodeConnectorDesc& desc )
@@ -96,8 +91,12 @@ bool MaterialGeneratorNode::evaluate()
 
 void MaterialGeneratorNode::addParam( MaterialGeneratorNodeParam param )
 {
-    param.Init(this);
     m_Params.add(std::move(param));
+}
+
+size_t MaterialGeneratorNode::getParamCount() const
+{
+    return m_Params.size();
 }
 
 MaterialGeneratorNodeParam& MaterialGeneratorNode::getParam( const size_t index )

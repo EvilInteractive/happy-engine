@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2012 Evil Interactive                                
+//HappyEngine Copyright (C) 2012 - 2014 Evil Interactive                         
 //                                                                               
 //This file is part of HappyEngine.                                              
 //                                                                               
@@ -25,25 +25,24 @@
 #pragma optionNV(strict on)                                                      
 #pragma optionNV(unroll all)                                                     
                                                                                  
-in vec3 inPosition;
-in vec3 inNormal;
-in mat4 inWorld;
+#include "packing/encode.frag"
+#include "shared/perCameraUniformBuffer.frag"
 
-
-uniform mat4 matWV;
-uniform mat4 matView;
-uniform mat4 matProj;
-
+in vec3 passNormal;
+in float passDepth;
 
 void main()
 {
-    if (0 < 0.5)
-    {
-        discard;
-    }
+    outColor = vec4(vec3(0.5, 1, 0.25), 0);
     
-    passNormal = (matWV * vec4(inNormal, 0)).xyz;
-    gl_Position = (matProj * ((matView * inWorld) * vec4(inPosition, 1)));
+    
+    outSG = vec4(vec3(0, 0, 0), 1);
+    
+    
+    outNormalDepth = vec3(encodeNormal(passNormal), ((passDepth - perCameraUniformBuffer.cameraNearFar.x) / (perCameraUniformBuffer.cameraNearFar.y - perCameraUniformBuffer.cameraNearFar.x)));
+    
+    
     
 }
+
 
