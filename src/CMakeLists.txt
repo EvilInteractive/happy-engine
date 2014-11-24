@@ -29,23 +29,7 @@ else()
     set(PLATFORM "linux")
 endif()
 
-
-# Compiler flags
-if (MSVC)
-    message(msvc)
-    set(NEW_FLAGS)
-    message(${CMAKE_CXX_FLAGS})
-    foreach(flag ${CMAKE_CXX_FLAGS})
-        if (NOT flag MATCHES "/Zm.*")
-            SET(NEW_FLAGS "${NEW_FLAGS} ${flag}")
-        endif()
-    endforeach()
-    SET(CMAKE_CXX_FLAGS "${NEW_FLAGS} /Zm200")
-    message(${CMAKE_CXX_FLAGS})
-endif()
-
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    #set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Deployment target for OSX" FORCE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Deployment target for OSX" FORCE)
 
     find_program(XCODE NAMES XCode)
