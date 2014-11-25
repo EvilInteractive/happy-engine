@@ -52,7 +52,7 @@ inline T sign(T p_value)
 template<>
 inline int sign(int p_value)
 {
-    return -(int)((unsigned int)(p_value) >> (sizeof(int) * CHAR_BIT - 1));
+    return (p_value != 0) | (p_value >> (sizeof(int) * CHAR_BIT - 1));
 }
 
 inline float rsqrtf(float number)
