@@ -49,6 +49,11 @@ inline T sign(T p_value)
 {
     return (p_value < 0)? T(-1) : (p_value > 0? T(1) : T(0));
 }
+template<>
+inline int sign(int p_value)
+{
+    return -(int)((unsigned int)(p_value) >> (sizeof(int) * CHAR_BIT - 1));
+}
 
 inline float rsqrtf(float number)
 {
