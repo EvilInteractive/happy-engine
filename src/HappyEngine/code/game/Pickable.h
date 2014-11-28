@@ -32,6 +32,8 @@ ENUM(IndexStride, uint8);
 }
 namespace ge {
 
+bool HAPPY_ENTRY triangleHitTest(const Ray& ray, const vec3& v1, const vec3& v2, const vec3& v3, float& inOutDist, vec3& normal);
+
 class PickResult;
 class HAPPY_ENTRY Pickable
 {

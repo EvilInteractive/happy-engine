@@ -27,7 +27,7 @@
 namespace he {
 namespace gfx {
 
-class VertexElement
+class HAPPY_ENTRY VertexElement
 {
 public:
     VertexElement();
@@ -55,7 +55,7 @@ private:
     uint32 m_ByteOffset;
 };
 
-class VertexLayout
+class HAPPY_ENTRY VertexLayout
 {
 public:
     typedef he::ObjectList<VertexElement> layout;

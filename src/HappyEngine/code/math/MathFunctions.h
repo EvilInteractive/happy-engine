@@ -239,6 +239,31 @@ inline T catmullrom(const T& p0, const T& p1, const T& p2, const T& p3, float t)
         (-p0 + p1 * 3 - p2 * 3 + p3) * pow(t, 3.0f)) * 0.5f;
 }
 
+inline bool lineLineIntersection(he::vec2 a1, he::vec2 a2, 
+                          he::vec2 b1, he::vec2 b2,
+                          he::vec2& outResult)
+{
+    he::vec2 v1(a2 - a1);
+    he::vec2 v2(b2 - b1);
+    float dotv1v2(dot(v1, v2));
+
+    // if dotv1v2 == 0, it means the lines are parallel so no or infinit intersection points
+    if (dotv1v2 == 0)
+        return false;
+
+    he::vec2 v3(b1 - a1);
+    float t((v3.x * v2.y - v3.y * v2.x) / dotv1v2);
+    if (t < 0.0f || t > 1.0f)
+        return false;
+
+    float u((v3.x * v1.y - v3.y * v1.x) / dotv1v2);
+    if (u < 0 || u > 1)
+        return false;
+
+    outResult = a1 + v1 * t;
+    return true;
+}
+
 
 } //end namespace
 

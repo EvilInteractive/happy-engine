@@ -110,7 +110,7 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
-struct VertexPTNT
+struct HAPPY_ENTRY VertexPTNT
 {
 public:
     vec3 position;

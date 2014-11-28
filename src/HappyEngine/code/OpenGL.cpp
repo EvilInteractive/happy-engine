@@ -280,7 +280,7 @@ void GL::init()
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetWindingFrontFace(false);
     GL::heSetCullFace(false);
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_SCISSOR_TEST);
 

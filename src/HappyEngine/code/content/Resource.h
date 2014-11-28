@@ -27,7 +27,7 @@
 
 namespace he {
 
-class IResource : public AsyncLoadable
+class HAPPY_ENTRY IResource : public AsyncLoadable
 {
 public:
     virtual ~IResource() {}
@@ -42,7 +42,7 @@ public:
 };
 
 template<typename T>
-class Resource : public IResource
+class HAPPY_ENTRY Resource : public IResource
 {
 DECLARE_OBJECT(Resource<T>)
 public:

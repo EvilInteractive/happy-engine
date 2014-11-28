@@ -61,6 +61,8 @@ public:
     bool getCastsShadow() const { return checkFlag(eDrawableFlags_CastShadow); }
     void setCastsShadow(const bool castShadow) { castShadow? raiseFlag(eDrawableFlags_CastShadow) : clearFlag(eDrawableFlags_CastShadow); }
 
+    void setBoundDirty() { raiseFlag(eDrawableFlags_NeedsBoundUpdate); }
+
     virtual bool calculateBound();
     HE_FORCEINLINE const Bound& getBound() const { return m_Bound; }
     

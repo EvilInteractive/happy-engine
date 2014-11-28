@@ -41,7 +41,7 @@ struct PickingData
     size_t m_TriangleCount;
 };
 
-class ModelMesh : public Resource<ModelMesh>
+class HAPPY_ENTRY ModelMesh : public Resource<ModelMesh>
 {
 public:    
     ModelMesh();
@@ -103,6 +103,7 @@ private:
     ModelMesh& operator=(const ModelMesh&);
 };
 
+HAPPY_TEMPLATE_ENTRY template class HAPPY_ENTRY ResourceFactory<ModelMesh>;
 typedef ResourceFactory<ModelMesh> ModelMeshFactory;
 
 } } //end namespace

@@ -24,7 +24,7 @@
 
 namespace he {
 
-class AsyncLoadable
+class HAPPY_ENTRY AsyncLoadable
 {
     struct LoadContext;
 public:
