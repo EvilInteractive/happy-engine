@@ -27,7 +27,7 @@
 namespace he {
 namespace gfx {
 
-struct VertexPosCol
+struct HAPPY_ENTRY VertexPosCol
 {
 public:
     vec3 position;
@@ -39,7 +39,7 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
-struct VertexPos
+struct HAPPY_ENTRY VertexPos
 {
 public:
     vec3 position;
@@ -50,7 +50,7 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
-struct VertexPos2D
+struct HAPPY_ENTRY VertexPos2D
 {
 public:
     vec2 position;
@@ -61,7 +61,7 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
-struct VertexPosCol2D
+struct HAPPY_ENTRY VertexPosCol2D
 {
 public:
     vec2 position;
@@ -73,7 +73,7 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
-struct VertexPosTex
+struct HAPPY_ENTRY VertexPosTex
 {
 public:
     vec3 position;
@@ -85,7 +85,7 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
-struct VertexPosTex2D
+struct HAPPY_ENTRY VertexPosTex2D
 {
 public:
     vec2 position;
@@ -96,7 +96,7 @@ public:
     ~VertexPosTex2D();
     //default copy constructor and assignment operator are fine
 };
-struct VertexText
+struct HAPPY_ENTRY VertexText
 {
 public:
     vec2 position;
