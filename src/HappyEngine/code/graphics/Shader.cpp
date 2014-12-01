@@ -233,7 +233,7 @@ bool Shader::initFromMem( const he::String& vs, const he::String& geom, const he
         GLuint index(0);
         outputLayout->forEach([this, &index](const he::String& output)
         {
-            glBindFragDataLocation(m_Id, GL_COLOR_ATTACHMENT0 + index++, output.c_str());
+            glBindFragDataLocation(m_Id, index++, output.c_str());
         });
     }
 
