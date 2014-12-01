@@ -104,7 +104,7 @@ void RenderTarget::init()
     if (m_TextureTargets.size() == 0 && m_DepthTarget == nullptr && m_DepthBuffer == UINT32_MAX)
     {
         m_DrawBufferCount = 1;
-        m_DrawBuffers[0] = GL_BACK;
+        m_DrawBuffers[0] = GL_BACK_LEFT;
     }
     else
     {

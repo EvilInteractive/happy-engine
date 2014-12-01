@@ -313,7 +313,7 @@ void Window::finishRendering()
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (checkFlag(eFlags_EnableOculusRift))
     {
-        const GLenum buffers(GL_BACK);
+        const GLenum buffers(GL_BACK_LEFT);
         GL::heBindFbo(0);
         glDrawBuffers(1, &buffers);
         m_OVRDistorter->distort(getWindowWidth(), getWindowHeight());
