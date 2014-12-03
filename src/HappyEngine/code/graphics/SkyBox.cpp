@@ -80,7 +80,7 @@ void SkyBox::load( const he::String& asset )
     vertices.add(vec3(-1, -1,  1));
     vertices.add(vec3( 1, -1,  1));
 
-    he::PrimitiveList<uint8> indices(36);
+    he::PrimitiveList<uint16> indices(36);
     indices.add(0); indices.add(1); indices.add(2); //front
     indices.add(1); indices.add(3); indices.add(2);
 
@@ -103,7 +103,7 @@ void SkyBox::load( const he::String& asset )
     layout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
     cube->init(layout, MeshDrawMode_Triangles);
     cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
-    cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);
+    cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_UShort, MeshUsage_Static);
     cube->setLoaded(eLoadResult_Success);
     m_Drawable->setModelMesh(cube);
     cube->release();

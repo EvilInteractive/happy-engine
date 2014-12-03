@@ -55,9 +55,9 @@ BinObjLoader::~BinObjLoader()
         he_free(pInd);
     });
 }
-bool BinObjLoader::load(const he::String& path, bool allowByteIndices)
+bool BinObjLoader::load(const he::String& path)
 {
-    if (read(path, allowByteIndices) == false)
+    if (read(path) == false)
         return false;
 
     m_Vertices.forEach([&](void* pVert)
@@ -78,7 +78,7 @@ bool BinObjLoader::load(const he::String& path, bool allowByteIndices)
     return true;
 }
 
-bool BinObjLoader::read(const he::String& path, bool allowByteIndices)
+bool BinObjLoader::read(const he::String& path)
 {
     //Clean
     std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
@@ -145,12 +145,9 @@ bool BinObjLoader::read(const he::String& path, bool allowByteIndices)
         uint32 numIndices(0);
         stream.visit(numIndices);
         m_NumIndices.add(numIndices);
-        gfx::IndexStride stride(gfx::IndexStride_Byte);
+        gfx::IndexStride stride(gfx::IndexStride_UShort);
         stream.visitEnum<gfx::IndexStride, uint8>(stride);
-        if (stride == gfx::IndexStride_Byte && allowByteIndices == false)
-            m_IndexStride.add(gfx::IndexStride_UShort);
-        else
-            m_IndexStride.add(stride);
+        m_IndexStride.add(stride);
         
         void* pInd = he_malloc(stride * m_NumIndices.back());
         HE_ASSERT(pInd != nullptr, "not enough memory!");

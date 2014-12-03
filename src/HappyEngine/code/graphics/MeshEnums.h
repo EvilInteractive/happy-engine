@@ -27,7 +27,6 @@ namespace gfx {
 
 ENUM(IndexStride, uint8)
 {
-    IndexStride_Byte = sizeof(uint8),
     IndexStride_UShort = sizeof(uint16),
     IndexStride_UInt = sizeof(uint32)
 };

@@ -85,12 +85,12 @@ void ShapeRenderer::createBillboardQuad()
         VertexPosTex(vec3(0.5f, -0.5f,0.0f),
         vec2(1, 0)));
 
-    he::PrimitiveList<uint8> indices(6);
+    he::PrimitiveList<uint16> indices(6);
     indices.add(0); indices.add(1); indices.add(2);
     indices.add(1); indices.add(3); indices.add(2);
 
     m_BillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, true);
-    m_BillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_BillboardQuad->setIndices(&indices[0], 6, IndexStride_UShort, gfx::MeshUsage_Static);
     m_BillboardQuad->setName("ShapeRenderer-BillboardQuad");
     m_BillboardQuad->setLoaded(eLoadResult_Success);
 }
@@ -114,7 +114,7 @@ void ShapeRenderer::createAABB()
     vertices[6] = vec3(-0.5f, -0.5f, -0.5f);
     vertices[7] = vec3( 0.5f, -0.5f, -0.5f);
 
-    uint8 indices[24];
+    uint16 indices[24];
     indices[0] = 0; indices[1] = 1; 
     indices[2] = 0; indices[3] = 2;
     indices[4] = 1; indices[5] = 3;
@@ -131,7 +131,7 @@ void ShapeRenderer::createAABB()
     indices[22] = 3; indices[23] = 7;
 
     m_AABB->setVertices(vertices, 8, gfx::MeshUsage_Static, true);
-    m_AABB->setIndices(indices, 24, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_AABB->setIndices(indices, 24, IndexStride_UShort, gfx::MeshUsage_Static);
     m_AABB->setName("ShapeRenderer-AABB");
     m_AABB->setLoaded(eLoadResult_Success);
 }

@@ -34,7 +34,7 @@ namespace gfx {
 
 struct PickingData
 {
-    PickingData() : m_Vertices(nullptr), m_Indices(nullptr), m_IndexStride(IndexStride_Byte), m_TriangleCount(0) {}
+    PickingData() : m_Vertices(nullptr), m_Indices(nullptr), m_IndexStride(IndexStride_UShort), m_TriangleCount(0) {}
     vec3* m_Vertices;
     void* m_Indices;
     IndexStride m_IndexStride;

@@ -92,7 +92,6 @@ void ModelMesh::setIndices(const void* const indices, const uint32 num, const In
 
     switch (type)
     {
-        case IndexStride_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
         case IndexStride_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
         case IndexStride_UInt: m_IndexType = GL_UNSIGNED_INT; break;
         default: LOG(LogType_ProgrammerAssert, "unknown type: %d", type); break;

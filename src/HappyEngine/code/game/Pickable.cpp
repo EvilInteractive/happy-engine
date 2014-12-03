@@ -54,7 +54,7 @@ bool Pickable::pick( const Ray& ray, PickResult& result )
     {
         const vec3* vertices(nullptr);
         const void* indicesTemp(nullptr);
-        gfx::IndexStride indexStride(gfx::IndexStride_Byte);
+        gfx::IndexStride indexStride(gfx::IndexStride_UShort);
         size_t triangleCount(0);
         getPickingData(vertices, indicesTemp, indexStride, triangleCount);
         const char* indices(static_cast<const char*>(indicesTemp));

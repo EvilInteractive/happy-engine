@@ -48,7 +48,7 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
 #define HE_NOT_IMPLEMENTED LOG(he::LogType_ProgrammerAssert, "Method not implemented! %s", __HE_FUNCTION__);
 #else
 #define HE_ASSERT(...) {}
-#define HE_IF_ASSERT(...) if (isOk)
+#define HE_IF_ASSERT(isOk, ...) if (isOk)
 #define HE_ART_ASSERT(...) {}
 #define HE_IF_ART_ASSERT(isOk, ...) if (isOk)
 #define HE_NOT_IMPLEMENTED

@@ -39,13 +39,10 @@ void calculateTangents( const void* pVertices, size_t numVertices,
 
     const char* pCharVertices(static_cast<const char*>(pVertices));
 
-    const uint8* indicesByte(nullptr); 
     const uint16* indicesUShort(nullptr); 
     const uint32* indicesUInt(nullptr); 
     
-    if (indexStride == gfx::IndexStride_Byte)
-        indicesByte = static_cast<const uint8*>(pIndices);
-    else if (indexStride == gfx::IndexStride_UShort)
+    if (indexStride == gfx::IndexStride_UShort)
         indicesUShort = static_cast<const uint16*>(pIndices);
     else if (indexStride == gfx::IndexStride_UInt)
         indicesUInt = static_cast<const uint32*>(pIndices);
@@ -55,13 +52,7 @@ void calculateTangents( const void* pVertices, size_t numVertices,
     for (uint32 i = 0; i < numIndices; i += 3) //per triangle
     {
         uint32 i1(0), i2(0), i3(0);
-        if (indexStride == gfx::IndexStride_Byte)
-        {
-            i1 = indicesByte[i];
-            i2 = indicesByte[i + 1];
-            i3 = indicesByte[i + 2];
-        }
-        else if (indexStride == gfx::IndexStride_UShort)
+        if (indexStride == gfx::IndexStride_UShort)
         {
             i1 = indicesUShort[i];
             i2 = indicesUShort[i + 1];

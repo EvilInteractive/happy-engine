@@ -630,13 +630,13 @@ void Canvas2DRendererGL::init()
             VertexPosTex2D(vec2(0.5f, -0.5f),
             vec2(1, 1)));
 
-        he::PrimitiveList<uint8> indices(6);
+        he::PrimitiveList<uint16> indices(6);
         indices.add(0); indices.add(1); indices.add(2);
         indices.add(1); indices.add(3); indices.add(2);
 
         m_TextureQuad->init(vLayout, MeshDrawMode_Triangles);
         m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
-        m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_TextureQuad->setIndices(&indices[0], 6, IndexStride_UShort, gfx::MeshUsage_Static);
         m_TextureQuad->setName("Canvas2DRendererGL-TextureQuad");
 
         m_TextureQuad->setLoaded(eLoadResult_Success);
@@ -666,9 +666,9 @@ void Canvas2DRendererGL::init()
 
         m_Bezier->init(vertexLayoutBezier, gfx::MeshDrawMode_Points);
         he::vec2 bezierVert(0, 0);
-        int8 bezierInd(0);
+        int16 bezierInd(0);
         m_Bezier->setVertices(&bezierVert, 1, gfx::MeshUsage_Static, false);
-        m_Bezier->setIndices(&bezierInd, 1, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_Bezier->setIndices(&bezierInd, 1, IndexStride_UShort, gfx::MeshUsage_Static);
         m_Bezier->setName("Canvas2DRendererGL-Bezier");
         m_Bezier->setLoaded(eLoadResult_Success);
     }

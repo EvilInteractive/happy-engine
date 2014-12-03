@@ -39,7 +39,7 @@ ObjLoader::~ObjLoader()
 {
     he_free(m_Vertices);
 }
-bool ObjLoader::load(const he::String& path, bool allowByteIndices)
+bool ObjLoader::load(const he::String& path)
 {
     std::cout << "reading...\n";
 
@@ -50,7 +50,7 @@ bool ObjLoader::load(const he::String& path, bool allowByteIndices)
     }
 
     std::cout << "creating...\n";
-    create(allowByteIndices);
+    create();
 
     he_free(m_Vertices);
     m_Vertices = he_malloc(m_VertexLayout.getSize() * m_NumVertices);
@@ -163,7 +163,6 @@ void ObjLoader::flushCreateGroup(uint32 group)
     //Index range
     switch (m_IndexStride[group])
     {
-        case gfx::IndexStride_Byte:   r.end = static_cast<uint32>(m_IndicesByte.size()); break;
         case gfx::IndexStride_UShort: r.end = static_cast<uint32>(m_IndicesUShort.size()); break;
         case gfx::IndexStride_UInt:   r.end = static_cast<uint32>(m_IndicesUInt.size()); break;
         default: LOG(LogType_ProgrammerAssert, "unknown type: %d", m_IndexStride[group]); r.end = 0; break;
@@ -180,13 +179,12 @@ void ObjLoader::flushCreateGroup(uint32 group)
     r.end = static_cast<uint32>(m_VertexData.size());
     m_VertexMeshRange.add(r);
 }
-void ObjLoader::create(bool allowByteIndices)
+void ObjLoader::create()
 {
     m_IndexMap.clear();
     m_VertexData.clear();
     m_IndicesUInt.clear();
     m_IndicesUShort.clear();
-    m_IndicesByte.clear();
     m_NumIndices.clear();
     m_NumVertices = 0;
     m_IndexStride.clear();
@@ -195,11 +193,7 @@ void ObjLoader::create(bool allowByteIndices)
     {
         uint32 numIndices((range.end - range.begin) * 3);
         m_NumIndices.add(numIndices);
-        if (numIndices < UCHAR_MAX && allowByteIndices)
-        {
-            m_IndexStride.add(gfx::IndexStride_Byte);
-        }
-        else if (numIndices < USHRT_MAX)
+        if (numIndices < USHRT_MAX)
         {
             m_IndexStride.add(gfx::IndexStride_UShort);
         }
@@ -277,7 +271,6 @@ void ObjLoader::addIndex(uint32 index, uint32 group)
         index -= m_VertexMeshRange.back().end;
     switch (m_IndexStride[group])
     {
-        case gfx::IndexStride_Byte:   m_IndicesByte.add(static_cast<uint8>(index)); break;
         case gfx::IndexStride_UShort: m_IndicesUShort.add(static_cast<uint16>(index)); break;
         case gfx::IndexStride_UInt:   m_IndicesUInt.add(index); break;
         default: LOG(LogType_ProgrammerAssert, "unknown type: %d", m_IndexStride[group]); break;
@@ -376,7 +369,6 @@ const void* ObjLoader::getIndices(uint32 mesh) const
 {
     switch (m_IndexStride[mesh])
     {
-        case gfx::IndexStride_Byte:   return &m_IndicesByte[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UShort: return &m_IndicesUShort[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UInt:   return &m_IndicesUInt[m_IndexMeshRange[mesh].begin];
         default: LOG(LogType_ProgrammerAssert, "unknown type: %d", m_IndexStride[mesh]);  return 0;

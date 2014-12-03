@@ -35,7 +35,7 @@ class IModelLoader
 public:
     virtual ~IModelLoader() {}
   
-    virtual bool load(const he::String& path, bool allowByteIndices = true) = 0;
+    virtual bool load(const he::String& path) = 0;
 
     virtual size_t getNumMeshes() const = 0;
     virtual const he::String& getMeshName(uint32 mesh) const = 0;

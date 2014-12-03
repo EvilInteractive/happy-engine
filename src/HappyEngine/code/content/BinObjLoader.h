@@ -66,7 +66,7 @@ public:
     BinObjLoader();
     ~BinObjLoader();
 
-    bool load(const he::String& path, bool allowByteIndices = true);
+    bool load(const he::String& path);
 
     size_t getNumMeshes() const;
     const he::String& getMeshName(uint32 mesh) const;
@@ -84,7 +84,7 @@ public:
 
 
 private:
-    bool read(const he::String& path, bool allowByteIndices);
+    bool read(const he::String& path);
     void fill();
     
     he::PrimitiveList<he::ObjectList<InternalVertex>*> m_VertexData;

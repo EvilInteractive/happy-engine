@@ -46,7 +46,7 @@ public:
     ObjLoader();
     virtual ~ObjLoader();
 
-    virtual bool load(const he::String& path, bool allowByteIndices = true);
+    virtual bool load(const he::String& path);
 
     virtual size_t getNumMeshes() const;
     virtual const he::String& getMeshName(uint32 mesh) const;
@@ -71,7 +71,7 @@ private:
 
     bool read(const he::String& path);
     void flushCreateGroup(uint32 group);
-    void create(bool allowByteIndices);
+    void create();
     void addIndex(uint32 index, uint32 group);
     void fill(void* pdata) const;
 
@@ -91,7 +91,6 @@ private:
     std::map<he::String, uint32> m_IndexMap;
 
     he::PrimitiveList<Range> m_IndexMeshRange;
-    he::PrimitiveList<uint8> m_IndicesByte;
     he::PrimitiveList<uint16> m_IndicesUShort;
     he::PrimitiveList<uint32> m_IndicesUInt;
 

@@ -389,7 +389,7 @@ void RenderWidget::setMousePosition( const he::vec2& /*pos*/ )
 
 he::gfx::GLContext* RenderWidget::getContext() const
 {
-    return he::checked_cast<he::gfx::GLContext*>(context());
+    return he::checked_cast<he::gfx::GLContext*>(he::checked_cast<hs::GLContextQT*>(context()));
 }
 
 void RenderWidget::showEvent( QShowEvent* /*event*/ )

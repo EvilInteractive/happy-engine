@@ -346,13 +346,13 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         vertices.add(VertexPos(vec3(-1, -1, 1.0f)));
         vertices.add(VertexPos(vec3(1, -1, 1.0f)));
 
-        he::PrimitiveList<uint8> indices(6);
+        he::PrimitiveList<uint16> indices(6);
         indices.add(1); indices.add(0); indices.add(2);
         indices.add(1); indices.add(2); indices.add(3);
 
         m_FullscreenQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
-        m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_FullscreenQuad->setIndices(&indices[0], 6, gfx::IndexStride_UShort, gfx::MeshUsage_Static);
         m_FullscreenQuad->setLoaded(eLoadResult_Success);
     }
 
@@ -381,7 +381,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         vertices.add(VertexPos(vec3(-1, -1, 0.0f)));
         vertices.add(VertexPos(vec3(1, -1, 0.0f)));
 
-        he::PrimitiveList<uint8> indices(6);
+        he::PrimitiveList<uint16> indices(6);
         indices.add(1); indices.add(0); indices.add(2);
         indices.add(1); indices.add(2); indices.add(3);
 
@@ -391,7 +391,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
 
         m_ParticleQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
-        m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_ParticleQuad->setIndices(&indices[0], 6, gfx::IndexStride_UShort, gfx::MeshUsage_Static);
         m_ParticleQuad->setLoaded(eLoadResult_Success);
     }
 

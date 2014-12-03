@@ -147,7 +147,7 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                         
                             for (size_t i(0); i < meshes; ++i)
                             {
-                                if (modelLoader.getIndexStride(i) == gfx::IndexStride_Byte)
+                                if (modelLoader.getIndexStride(i) == gfx::IndexStride_UShort)
                                 {
                                     const he::String& name(modelLoader.getMeshName(i));
                                     char chr(name[0]);
@@ -188,7 +188,7 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                                 }
                                 else
                                 {
-                                    HE_ERROR("VectorFont with index stride != IndexStride_Byte! : %s (%s)", modelPath.c_str(), modelLoader.getMeshName(i).c_str());
+                                    HE_ERROR("VectorFont with index stride != IndexStride_UShort! : %s (%s)", modelPath.c_str(), modelLoader.getMeshName(i).c_str());
                                 }
                             }
                         }
