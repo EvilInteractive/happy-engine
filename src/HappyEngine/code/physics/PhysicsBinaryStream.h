@@ -31,7 +31,7 @@ namespace io {
 
 namespace px {
 
-class PhysicsBinaryStream : public physx::PxOutputStream, public physx::PxInputStream
+class HAPPY_ENTRY PhysicsBinaryStream : public physx::PxOutputStream, public physx::PxInputStream
 {
 public:
     PhysicsBinaryStream(io::BinaryVisitor* const visitor);

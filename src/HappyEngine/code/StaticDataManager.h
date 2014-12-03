@@ -28,7 +28,7 @@ namespace io {
     class BinaryVisitor;
 }
 
-class StaticDataManager
+class HAPPY_ENTRY StaticDataManager
 {
 public:
     static void init();

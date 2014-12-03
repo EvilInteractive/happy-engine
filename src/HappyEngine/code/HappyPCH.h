@@ -83,6 +83,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 --> Make sure the compile options are the same!
 */
 #pragma warning( disable : 4251 )
+#pragma warning( disable : 4275 ) // non dll-interface class 'X' used as base for dll-interface class
 
 #include <map>
 #include <unordered_map>

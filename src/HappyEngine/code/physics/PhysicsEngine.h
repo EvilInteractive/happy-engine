@@ -91,8 +91,7 @@ enum PxFilter
 };
 
 class PhysicsCarManager;
-
-class PhysicsEngine : public physx::PxSimulationEventCallback
+class HAPPY_ENTRY PhysicsEngine : public physx::PxSimulationEventCallback
 {
 public:
     PhysicsEngine();

@@ -106,7 +106,7 @@ private:
 };
     
 template<>
-void BinaryVisitor::visit(he::String& value);
+void HAPPY_ENTRY BinaryVisitor::visit(he::String& value);
 
 } } //end namespace
 

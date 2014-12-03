@@ -27,7 +27,7 @@
 namespace he {
 namespace io {
 
-class BinaryFileVisitor : public BinaryVisitor
+class HAPPY_ENTRY BinaryFileVisitor : public BinaryVisitor
 {
 public:
     BinaryFileVisitor();
