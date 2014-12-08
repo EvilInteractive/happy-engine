@@ -41,6 +41,17 @@ typedef uint8 WindowID;
 typedef uint32 SceneID;
 #define WINDOWID_UNASSIGNED UINT8_MAX
 
+template<typename T>
+struct Pair
+{
+    Pair(const T x_, const T y_): x(x_), y(y_) { }
+
+    T x, y;
+};
+
+typedef Pair<int> int2;
+typedef Pair<int16> int16_2;
+
 enum IntersectResult
 {
     IntersectResult_Inside,

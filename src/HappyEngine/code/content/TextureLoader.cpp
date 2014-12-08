@@ -51,17 +51,6 @@ TextureLoader::~TextureLoader()
     FACTORY_CUBE->garbageCollect();
 }
 
-inline void handleILError(const he::String& file)
-{
-    ILenum err = ilGetError();
-    while (err != IL_NO_ERROR)
-    {
-        const char* errorstr(iluErrorString(err));
-        HE_ERROR("%s: %s", errorstr, file.c_str());
-        err = ilGetError();
-    }
-}
-
 void TextureLoader::tick(float /*dTime*/)
 {
 }
@@ -83,7 +72,7 @@ bool TextureLoader::loadTick()
                 success = makeData(data);
             }
             data.m_DataLoaded = success;
-            m_TextureInvokeQueue.push(data);
+            m_TextureInvokeQueue.push(std::move(data));
         }
         return true;
     }
@@ -134,7 +123,7 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
         data.m_Color = color;
         data.m_Tex = handle;
 
-        m_TextureLoadQueue.push(data);
+        m_TextureLoadQueue.push(std::move(data));
 
         m_AssetContainer.addAsset(stream.str(), handle);
 
@@ -236,20 +225,23 @@ he::ObjectHandle TextureLoader::asyncLoadTexture( const he::String& path, IResou
         data.m_Path = path;
         data.m_Tex = handle;
 
-        m_TextureLoadQueue.push(data);
+        m_TextureLoadQueue.push(std::move(data));
 
         m_AssetContainer.addAsset(path, handle);
     }
     return handle;
 }
 
-bool TextureLoader::createTexture( const TextureLoadData& data )
+bool TextureLoader::createTexture( TextureLoadData& data )
 {
+    bool result(false);
     if (data.m_Tex.getType() == gfx::Texture2D::s_ObjectType)
-        return createTexture2D(data);
+        result = createTexture2D(data);
     else if (data.m_Tex.getType()  == gfx::TextureCube::s_ObjectType)
-        return createTextureCube(data);
-    LOG(LogType_ProgrammerAssert, "Unsupported object type id!");
+        result = createTextureCube(data);
+    else
+        LOG(LogType_ProgrammerAssert, "Unsupported object type id!");
+    data.m_Image.destroy();
     return false;
 }
 bool TextureLoader::createTexture2D( const TextureLoadData& data )
@@ -261,13 +253,15 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
     if (tex2D->getName().empty())
         tex2D->setName(data.m_Path);
 
-    tex2D->init(gfx::TextureWrapType_Repeat, gfx::TextureFilterType_Anisotropic_16x, 
-        data.m_TextureFormat, true);
+    tex2D->init(gfx::TextureWrapType_Repeat, gfx::TextureFilterType_Anisotropic_16x, data.m_Image.getFormat(), true);
 
-    if (data.m_Faces > 0)
+    const he::ObjectList<Image::Face>& faces(data.m_Image.getFaces());
+    const size_t faceCount(faces.size());
+    if (faces.size() > 0)
     {
-        HE_ART_ASSERT(data.m_Faces == 1, "Loading texture as 2D texture but is actually a Cube texture, %s", data.m_Path.c_str());
-        data.m_MipData[0].forEach([&](const TextureLoadMipData& mipData)
+        HE_ART_ASSERT(faceCount == 1, "Loading texture as 2D texture but is actually a Cube texture, %s", data.m_Path.c_str());
+        const he::ObjectList<Image::MipData>& mips(faces[0].m_Mips);
+        mips.forEach([&](const Image::MipData& mipData)
         {
             if (mipData.isCompressed == false)
             {
@@ -277,12 +271,10 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
             else
             {
                 tex2D->setCompressedData(mipData.width, mipData.height, mipData.data, 
-                    mipData.bufferSize, mipData.mipLevel );
+                    mipData.bufferSize, mipData.mipLevel);
             }
-            if (mipData.isDataDirty)
-                he_free(mipData.data);
         });
-        if (data.m_MipData[0].size() == 1)
+        if (mips.size() == 1)
         {
             tex2D->generateMipMaps();
         }
@@ -292,12 +284,6 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
         HE_ERROR("Error loaded image with 0 face, %s", data.m_Path.c_str());
         succes = false;
     }
-
-    if (data.m_IsILimage == true)
-    {
-        ilDeleteImage(data.m_IlImageId);
-    }
-
     HE_INFO("Texture2D create completed: %s", data.m_Path.c_str());
     return succes;
 }
@@ -309,14 +295,17 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
     if (texCube->getName().empty())
         texCube->setName(data.m_Path);
 
-    texCube->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Anisotropic_16x, data.m_TextureFormat, true);
+    texCube->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Anisotropic_16x, data.m_Image.getFormat(), true);
 
-    if (data.m_Faces > 0)
+    const he::ObjectList<Image::Face>& faces(data.m_Image.getFaces());
+    const size_t faceCount(faces.size());
+    if (faceCount > 0)
     {
-        HE_ART_ASSERT(data.m_Faces == 6, "Loading Cube texture with not enough faces, face supplied: %d, %s", data.m_Faces, data.m_Path.c_str());
-        for (uint8 face(0); face < data.m_Faces; ++face)
+        HE_ART_ASSERT(faceCount == 6, "Loading Cube texture with not enough faces, face supplied: %d, %s", faceCount, data.m_Path.c_str());
+        for (uint8 face(0); face < faceCount; ++face)
         {
-            data.m_MipData[face].forEach([&](const TextureLoadMipData& mipData)
+            const he::ObjectList<Image::MipData>& mips(faces[face].m_Mips);
+            mips.forEach([&](const Image::MipData& mipData)
             {
                 if (mipData.isCompressed == false)
                 {
@@ -328,21 +317,14 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
                     texCube->setCompressedData(mipData.width, mipData.height, (gfx::TextureCube::Face)face, mipData.data, 
                         mipData.bufferSize, mipData.mipLevel );
                 }
-                if (mipData.isDataDirty)
-                    he_free(mipData.data);
             });
-            HE_ART_ASSERT(data.m_MipData[face].size() > 1, "TextureCube face does not have any mipmaps! %s", data.m_Path.c_str());
+            HE_ART_ASSERT(mips.size() > 1, "TextureCube face does not have any mipmaps! %s", data.m_Path.c_str());
         }
     }
     else
     {
         HE_ERROR("Error loaded image with 0 face, %s", data.m_Path.c_str());
         succes = false;
-    }
-
-    if (data.m_IsILimage == true)
-    {
-        ilDeleteImage(data.m_IlImageId);
     }
 
     HE_INFO("TextureCube create completed: %s", data.m_Path.c_str());
@@ -352,148 +334,13 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
 
 bool TextureLoader::loadData( TextureLoadData& data )
 {
-    data.m_IlImageId = ilGenImage();
-    data.m_IsILimage = true;
-    data.m_TextureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
-    data.m_Faces = 0;
-    ilBindImage(data.m_IlImageId);
-    if (ilLoadImage(data.m_Path.c_str()))
-    {
-        ILuint dxtcFormat(ilGetInteger(IL_DXTC_DATA_FORMAT));
-        uint32 channels(ilGetInteger(IL_IMAGE_CHANNELS));
-        bool isCompressed(true);
-        if (dxtcFormat == IL_DXT_NO_COMP)
-        {
-            isCompressed = false;
-        }
-        else if (dxtcFormat == IL_DXT1)
-        {
-            if (channels == 4)
-                data.m_TextureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT1;
-            else if (channels == 3)
-                data.m_TextureFormat = gfx::TextureFormat_Compressed_RGB8_DXT1;
-            else
-            {
-                HE_ERROR("Unsupported channel count (%d) for DXT1 compression - %s", channels, data.m_Path.c_str());
-                return false;
-            }
-        }
-        else if (dxtcFormat == IL_DXT3)
-        {
-            data.m_TextureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT3;
-            if (channels != 4)
-            {
-                HE_ERROR("Unsupported channel count (%d) for DXT3 compression - %s", channels, data.m_Path.c_str());
-                return false;
-            }
-        }
-        else if (dxtcFormat == IL_DXT5)
-        {
-            data.m_TextureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
-            if (channels != 4)
-            {
-                HE_ERROR("Unsupported channel count (%d) for DXT5 compression - %s", channels, data.m_Path.c_str());
-                return false;
-            }
-        }
-        else
-        {
-            HE_ERROR("Unsupported compression type: %d", dxtcFormat);
-            return false;
-        }
-
-        ILuint numMipMaps(ilGetInteger(IL_NUM_MIPMAPS));
-        ILuint numFaces(ilGetInteger(IL_NUM_FACES) + 1);
-        data.m_Faces = static_cast<uint8>(numFaces);
-        for (uint8 face(0); face < numFaces; ++face)
-        {
-            HE_IF_ASSERT(face < TextureLoadData::MAX_CUBE_FACES, "More than %d faces in texture!", TextureLoadData::MAX_CUBE_FACES)
-            {
-                for (uint8 mip(0); mip <= numMipMaps; ++mip) // <= : 0 = normal, 1+ are mipmaps
-                {
-                    ilBindImage(data.m_IlImageId); // reset image else mip counter is relative to previous
-                    ilActiveFace(face);
-                    ilActiveMipmap(mip);
-
-                    data.m_MipData[face].add(TextureLoadMipData());
-                    TextureLoadMipData& mipData(data.m_MipData[face].back());
-
-                    mipData.mipLevel = mip;
-                    mipData.isCompressed = isCompressed;
-                    mipData.width = ilGetInteger(IL_IMAGE_WIDTH);
-                    mipData.height = ilGetInteger(IL_IMAGE_HEIGHT);
-
-                    if (isCompressed)
-                    {
-                        mipData.bufferSize = ilGetDXTCData(nullptr, 0, dxtcFormat);
-                        mipData.data = static_cast<uint8*>(he_malloc(mipData.bufferSize));
-                        mipData.isDataDirty = true;
-                        if (ilGetDXTCData(mipData.data, mipData.bufferSize, dxtcFormat) == 0)
-                        {
-                            HE_ERROR("Could not compress texture - %s", data.m_Path.c_str());
-                            he_free(mipData.data);
-                            mipData.isDataDirty = false;
-                            handleILError(data.m_Path);
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
-                        {
-                            mipData.data = ilGetData();
-                            mipData.format = gfx::TextureBufferLayout_BGRA;
-                            mipData.type = gfx::TextureBufferType_Byte;
-                            mipData.isDataDirty = false;
-                        }
-                        else
-                        {
-                            handleILError(data.m_Path);
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        HE_INFO("Texture load completed: %s", data.m_Path.c_str());
-        return true;
-    }
-    else
-    {
-        handleILError(data.m_Path);
-        return false;
-    }
+    bool result(data.m_Image.load(data.m_Path));
+    HE_INFO("Image load completed (%s): %s", result? "SUCCESS" : "FAILED", data.m_Path.c_str());
+    return result;
 }
 bool TextureLoader::makeData( TextureLoadData& data )
 {
-    data.m_IlImageId = 0;
-    data.m_IsILimage = false;
-    data.m_TextureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
-    data.m_Faces = 1;
-
-    for (uint8 mip(0); mip < 4; ++mip)
-    {
-        data.m_MipData[0].add(TextureLoadMipData());
-        TextureLoadMipData& mipData(data.m_MipData[0].back());
-
-        mipData.width = static_cast<uint32>(pow(2.0f, mip));
-        mipData.height = mipData.width;
-        mipData.format = gfx::TextureBufferLayout_BGRA;
-        mipData.type = gfx::TextureBufferType_Byte;
-        mipData.isCompressed = false;
-        mipData.mipLevel = 4 - mip - 1;
-        uint32 pixels(mipData.width * mipData.height);
-        mipData.data = NEW uint8[mipData.width * mipData.height * 4];
-        mipData.isDataDirty = true;
-        for (uint32 i = 0; i < pixels * 4; i += 4)
-        {
-            mipData.data[i]   = data.m_Color.bByte();
-            mipData.data[i+1] = data.m_Color.gByte();
-            mipData.data[i+2] = data.m_Color.rByte();
-            mipData.data[i+3] = data.m_Color.aByte();
-        }
-    }
+    data.m_Image.create(data.m_Color);
     HE_INFO("Texture color load completed: (%d,%d,%d,%d)", (int)data.m_Color.rByte(), (int)data.m_Color.gByte(), (int)data.m_Color.bByte(), (int)data.m_Color.aByte());
     return true;
 }

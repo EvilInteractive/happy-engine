@@ -17,6 +17,7 @@ addFilter(CODE_SRCS src/content/model code/content/
         
 addFilter(CODE_SRCS src/content/texture code/content/
             TextureLoader.cpp                   TextureLoader.h
+            Image.cpp							Image.h
         )
     
 addFilter(CODE_SRCS src/content/material code/content/

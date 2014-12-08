@@ -27,6 +27,8 @@ namespace gfx {
 
 enum TextureFormat
 {
+    TextureFormat_Invalid = -1,
+
     TextureFormat_RGBA8,
     TextureFormat_RGB8,
     TextureFormat_RG8,
@@ -53,6 +55,7 @@ enum TextureFormat
 };
 enum TextureBufferLayout
 {
+    TextureBufferLayout_Invalid = -1,
     TextureBufferLayout_R,
     TextureBufferLayout_RG,
     TextureBufferLayout_RGB,

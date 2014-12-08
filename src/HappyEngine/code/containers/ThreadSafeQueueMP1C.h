@@ -41,14 +41,14 @@ public:
     ThreadSafeQueueMP1C(const size_t initSize, const size_t growBy, const char* debugName);
     ~ThreadSafeQueueMP1C();
 
-    void push(const T& obj);
+    void push(T obj);
     bool pop(T& outObj);
     bool empty() const;
 
 private:
     void enlargePool(const size_t amount);
 
-    TNode* createNode(const T& data);
+    TNode* createNode(T data);
     void removeNode(TNode* const node);
 
     TNode* m_Tail;            // Queue tail

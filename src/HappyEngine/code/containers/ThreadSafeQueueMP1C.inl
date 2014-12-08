@@ -73,7 +73,7 @@ void he::ThreadSafeQueueMP1C<T>::enlargePool(const size_t amount)
 }
 
 template<typename T>
-typename ThreadSafeQueueMP1C<T>::TNode* he::ThreadSafeQueueMP1C<T>::createNode( const T& data )
+typename ThreadSafeQueueMP1C<T>::TNode* he::ThreadSafeQueueMP1C<T>::createNode( T data )
 {
     m_Mutex.lock(FILE_AND_LINE);
     TNode* returnValue(m_NodeStackHead);
@@ -85,7 +85,7 @@ typename ThreadSafeQueueMP1C<T>::TNode* he::ThreadSafeQueueMP1C<T>::createNode( 
     m_NodeStackHead = returnValue->m_Next;
     m_Mutex.unlock();
 
-    returnValue->m_Data = data;
+    returnValue->m_Data = std::move(data);
     returnValue->m_Next = nullptr;
 
     return returnValue;
@@ -101,10 +101,10 @@ void he::ThreadSafeQueueMP1C<T>::removeNode( TNode* const node )
 }
 
 template<typename T>
-void ThreadSafeQueueMP1C<T>::push( const T& obj )
+void ThreadSafeQueueMP1C<T>::push( T obj )
 {
     m_Mutex.lock(FILE_AND_LINE);
-    TNode* const newNode(createNode(obj));
+    TNode* const newNode(createNode(std::move(obj)));
     m_Tail->m_Next = newNode;
     m_Tail = newNode;
     m_Mutex.unlock();
@@ -119,7 +119,7 @@ bool ThreadSafeQueueMP1C<T>::pop(T& outObj)
 
         TNode* head(m_Head);
         TNode* next(head->m_Next);
-        outObj = next->m_Data;
+        outObj = std::move(next->m_Data);
         m_Head = next;
 
         m_Mutex.unlock();

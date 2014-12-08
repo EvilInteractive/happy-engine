@@ -27,6 +27,7 @@
 #include "AssetContainer.h"
 #include "Texture.h"
 #include "ThreadSafeQueueMP1C.h"
+#include "Image.h"
 
 namespace he {
     class IResourceFactory;
@@ -65,73 +66,44 @@ private:
     ObjectHandle asyncLoadTexture(const he::String& path, IResourceFactory* factory);
     ObjectHandle loadTexture(const he::String& path, IResourceFactory* factory);
 
-    struct TextureLoadMipData
-    {
-        ~TextureLoadMipData() {}
-        uint32 width;
-        uint32 height;
-        uint8* data;
-        uint32 bufferSize;
-        uint8 mipLevel;
-        bool isDataDirty;
-        bool isCompressed;
-        gfx::TextureBufferLayout format;
-        gfx::TextureBufferType type;
-    };
     struct TextureLoadData
     {
         const static int MAX_CUBE_FACES = 6;
 
-        TextureLoadData(): m_Path(""), m_Faces(0), m_TextureFormat(gfx::TextureFormat_RGBA8),
-            m_IlImageId(0), m_IsILimage(false), m_Color(0.0f, 0.0f, 0.0f, 0.0f), 
-            m_Tex(ObjectHandle::unassigned), m_DataLoaded(false)
+        TextureLoadData(): m_Path(""), m_Tex(ObjectHandle::unassigned), 
+            m_Color(0.0f, 0.0f, 0.0f, 0.0f), m_DataLoaded(false)
         {
         }
-        TextureLoadData(const TextureLoadData& other): 
-            m_Path(other.m_Path), m_Faces(other.m_Faces), m_TextureFormat(other.m_TextureFormat),
-            m_IlImageId(other.m_IlImageId), m_IsILimage(other.m_IsILimage), 
-            m_Color(other.m_Color), m_Tex(other.m_Tex), m_DataLoaded(other.m_DataLoaded)
+        TextureLoadData(TextureLoadData&& other): 
+            m_Path(std::move(other.m_Path)), m_Tex(other.m_Tex), m_Image(std::move(other.m_Image)),
+            m_Color(other.m_Color), m_DataLoaded(other.m_DataLoaded)
         {
-            for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
-            {
-                m_MipData[i].clear();
-                m_MipData[i].append(other.m_MipData[i]);
-            }
         }
-        TextureLoadData& operator=(const TextureLoadData& other)
+        TextureLoadData& operator=(TextureLoadData&& other)
         {
-            m_Path = other.m_Path;
-            m_Faces = other.m_Faces;
-            for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
-            {
-                m_MipData[i].clear();
-                m_MipData[i].append(other.m_MipData[i]);
-            }
-            m_TextureFormat = other.m_TextureFormat;
-            m_IlImageId = other.m_IlImageId;
-            m_IsILimage = other.m_IsILimage;
-            m_Color = other.m_Color;
+            m_Path = std::move(other.m_Path);
             m_Tex = other.m_Tex;
+            m_Image = std::move(other.m_Image);
+            m_Color = other.m_Color;
             m_DataLoaded = other.m_DataLoaded;
-
             return *this;
         }
         ~TextureLoadData() {}
 
         he::String m_Path;
-        uint8 m_Faces;
-        he::ObjectList<TextureLoadMipData> m_MipData[MAX_CUBE_FACES];
-        gfx::TextureFormat m_TextureFormat;
-        uint32 m_IlImageId;
-        bool m_IsILimage;
-        Color m_Color;
         ObjectHandle m_Tex;
+        Image m_Image;
+        Color m_Color;
         bool m_DataLoaded;
+
+    private:
+        TextureLoadData(const TextureLoadData&);
+        TextureLoadData& operator=(const TextureLoadData&);
     };
     
     bool loadData(TextureLoadData& data);
     bool makeData(TextureLoadData& data);
-    bool createTexture(const TextureLoadData& data);
+    bool createTexture(TextureLoadData& data);
     bool createTexture2D(const TextureLoadData& data);
     bool createTextureCube(const TextureLoadData& data);
 
