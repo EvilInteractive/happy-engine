@@ -331,7 +331,7 @@ bool MaterialDescStack::load( const he::String& asset )
 namespace
 {
 template<typename T> 
-void CopyIfOverride(const MaterialDesc::MaterialDescParam<T>& from, MaterialDesc::MaterialDescParam<T>& inoutTo)
+void copyIfOverride(const MaterialDesc::MaterialDescParam<T>& from, MaterialDesc::MaterialDescParam<T>& inoutTo)
 {
     if (from.m_Override)
         inoutTo.m_Value = from.m_Value;
@@ -351,9 +351,9 @@ void MaterialDescStack::collapse( MaterialDesc& outDesc )
             {
                 MaterialDesc::MaterialDescShader& outShaderDesc(outDesc.m_Shader[pass][rtype]);
                 MaterialDesc::MaterialDescShader& overrideShaderDesc(desc.m_Shader[pass][rtype]);
-                CopyIfOverride(overrideShaderDesc.m_FragmentShader, outShaderDesc.m_FragmentShader);
-                CopyIfOverride(overrideShaderDesc.m_VertexShader, outShaderDesc.m_VertexShader);
-                CopyIfOverride(overrideShaderDesc.m_GeometryShader, outShaderDesc.m_GeometryShader);
+                copyIfOverride(overrideShaderDesc.m_FragmentShader, outShaderDesc.m_FragmentShader);
+                copyIfOverride(overrideShaderDesc.m_VertexShader, outShaderDesc.m_VertexShader);
+                copyIfOverride(overrideShaderDesc.m_GeometryShader, outShaderDesc.m_GeometryShader);
                 if (overrideShaderDesc.m_Defines.m_Override)
                     outShaderDesc.m_Defines = std::move(overrideShaderDesc.m_Defines);
                 if (overrideShaderDesc.m_OutputLayout.m_Override)
@@ -362,15 +362,15 @@ void MaterialDescStack::collapse( MaterialDesc& outDesc )
         }
 
         // Options
-        CopyIfOverride(desc.m_Options.m_IsBlended, outDesc.m_Options.m_IsBlended);
-        CopyIfOverride(desc.m_Options.m_NoPost, outDesc.m_Options.m_NoPost);
-        CopyIfOverride(desc.m_Options.m_CullFrontFace, outDesc.m_Options.m_CullFrontFace);
-        CopyIfOverride(desc.m_Options.m_DepthRead, outDesc.m_Options.m_DepthRead);
-        CopyIfOverride(desc.m_Options.m_DepthWrite, outDesc.m_Options.m_DepthWrite);
-        CopyIfOverride(desc.m_Options.m_CastShadow, outDesc.m_Options.m_CastShadow);
-        CopyIfOverride(desc.m_Options.m_BlendEquation, outDesc.m_Options.m_BlendEquation);
-        CopyIfOverride(desc.m_Options.m_SourceBlend, outDesc.m_Options.m_SourceBlend);
-        CopyIfOverride(desc.m_Options.m_DestBlend, outDesc.m_Options.m_DestBlend);
+        copyIfOverride(desc.m_Options.m_IsBlended, outDesc.m_Options.m_IsBlended);
+        copyIfOverride(desc.m_Options.m_NoPost, outDesc.m_Options.m_NoPost);
+        copyIfOverride(desc.m_Options.m_CullFrontFace, outDesc.m_Options.m_CullFrontFace);
+        copyIfOverride(desc.m_Options.m_DepthRead, outDesc.m_Options.m_DepthRead);
+        copyIfOverride(desc.m_Options.m_DepthWrite, outDesc.m_Options.m_DepthWrite);
+        copyIfOverride(desc.m_Options.m_CastShadow, outDesc.m_Options.m_CastShadow);
+        copyIfOverride(desc.m_Options.m_BlendEquation, outDesc.m_Options.m_BlendEquation);
+        copyIfOverride(desc.m_Options.m_SourceBlend, outDesc.m_Options.m_SourceBlend);
+        copyIfOverride(desc.m_Options.m_DestBlend, outDesc.m_Options.m_DestBlend);
         desc.m_Options.m_Params.forEach([&outDesc](const NameValuePair<he::String>& pair)
         {
             size_t index(0);
