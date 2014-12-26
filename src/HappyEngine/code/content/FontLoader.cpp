@@ -173,12 +173,12 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                                         vertexCountBuffer[index] = checked_numcast<uint16>(vertexCount);
                                     }
                                     {
-                                        const uint8* meshIndices(static_cast<const uint8*>(modelLoader.getIndices(i)));
+                                        const uint16* meshIndices(static_cast<const uint16*>(modelLoader.getIndices(i)));
                                         const size_t indexCount(modelLoader.getNumIndices(i));
                                         uint16* buffer(static_cast<uint16*>(he_malloc(indexCount * sizeof(uint16))));
                                         for (size_t v(0); v < indexCount; ++v)
                                         {
-                                            const uint8* ind(reinterpret_cast<const uint8*>(meshIndices + v));
+                                            const uint16* ind(meshIndices + v);
                                             buffer[v] = *ind;
                                         }
                                         HE_ASSERT(indices[index] == nullptr, "Already mesh @index %d --leak", index);
