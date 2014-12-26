@@ -164,7 +164,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     if (subengines & SubEngine_Audio)
     {
         m_SoundEngine = NEW sfx::SoundEngine();
-        m_SoundEngine->initialize();
     }
 
     m_PluginLoader = NEW pl::PluginLoader();
@@ -211,6 +210,8 @@ void HappyEngine::start(ge::Game* game, const bool managed, he::gfx::Window* sha
     if (m_SubEngines & SubEngine_Graphics)
     {
         m_GraphicsEngine->init((m_SubEngines & SubEngine_Windowing) != 0, sharedContext);
+        m_ContentManager->initialize();
+        m_SoundEngine->initialize();
 
         m_Console->load();
 #ifdef ENABLE_PROFILING

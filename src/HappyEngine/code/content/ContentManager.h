@@ -47,6 +47,8 @@ public:
     ContentManager();
     virtual ~ContentManager();
     
+    void initialize();
+
     void tick(float dTime);
     void glThreadInvoke();  //needed for all of the gl operations
 
@@ -68,6 +70,7 @@ public:
     const gfx::TextureCube* loadTextureCube(const he::String& path);
     const gfx::Texture2D* makeTexture2D(const Color& color);
     const gfx::TextureCube* makeTextureCube(const Color& color);
+    const gfx::Texture2D* getFallbackTexture();
     
     ObjectHandle loadPhysicsConvex(const he::String& path);
     ObjectHandle loadPhysicsConcave(const he::String& path);

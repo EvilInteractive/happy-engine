@@ -59,6 +59,8 @@ public:
     const gfx::TextureCube* loadTextureCube(const he::String& path);
     const gfx::Texture2D* makeTexture2D(const Color& color);
 
+    const gfx::Texture2D* getFallbackTexture() { return m_DefaultTexture; }
+
     /* GETTERS */
     bool isLoading() const;
 
@@ -112,6 +114,8 @@ private:
     he::ThreadSafeQueueMP1C<TextureLoadData> m_TextureInvokeQueue;
 
     AssetContainer<ObjectHandle> m_AssetContainer;
+
+    const gfx::Texture2D* m_DefaultTexture;
 
     float m_GCTimer;
 

@@ -21,6 +21,7 @@
 
 #include "Texture2D.h"
 #include "ExternalError.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace gfx {
@@ -32,13 +33,25 @@ Texture2D::Texture2D():
     m_TextureFormat(TextureFormat_Compressed_RGBA8_DXT5),
     m_WrapType(TextureWrapType_Repeat), 
     m_FilterType(TextureFilterType_None),
-    m_HasMipMaps(false)
+    m_HasMipMaps(false),
+    m_IsDefault(true)
 {
+    const Texture2D* fallback(CONTENT->getFallbackTexture());
+    if (fallback)
+    {
+        m_Id = fallback->m_Id;
+        m_Width = fallback->m_Width;
+        m_Height = fallback->m_Height;
+        m_TextureFormat = fallback->m_TextureFormat;
+        m_WrapType = fallback->m_WrapType;
+        m_FilterType = fallback->m_FilterType;
+        m_HasMipMaps = fallback->m_HasMipMaps;
+    }
 }
 
 Texture2D::~Texture2D()
 {
-    if (m_Id != UINT32_MAX)
+    if (!m_IsDefault && m_Id != UINT32_MAX)
     {
         glDeleteTextures(1, &m_Id);
     }
@@ -46,8 +59,10 @@ Texture2D::~Texture2D()
 
 void Texture2D::init( TextureWrapType wrapType, TextureFilterType filter, TextureFormat textureFormat, bool willHaveMipMaps )
 {
-    HE_IF_ASSERT(m_Id == UINT32_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
+    HE_IF_ASSERT(m_IsDefault || m_Id == UINT32_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
     {
+        m_IsDefault = false;
+
         // Create
         glGenTextures(1, &m_Id);
         HE_ASSERT(m_Id != UINT32_MAX, "Texture create failed");
@@ -72,7 +87,7 @@ void Texture2D::init( TextureWrapType wrapType, TextureFilterType filter, Textur
 void Texture2D::setData( uint32 width, uint32 height, 
     const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel)
 {
-    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(!m_IsDefault && m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     {
         if (mipLevel == 0)
         {
@@ -93,7 +108,7 @@ void Texture2D::setData( uint32 width, uint32 height,
 void Texture2D::setSubData(uint32 xOffset, uint32 yOffset, uint32 width, uint32 height, 
     const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel)
 {
-    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(!m_IsDefault && m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     {
         // Bind
         GL::heBindTexture2D(0, m_Id);
@@ -107,7 +122,7 @@ void Texture2D::setSubData(uint32 xOffset, uint32 yOffset, uint32 width, uint32 
 
 void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel)
 {
-    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(!m_IsDefault && m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     {
         if (mipLevel == 0)
         {
@@ -126,7 +141,7 @@ void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data,
 
 void Texture2D::generateMipMaps() const
 {
-    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(!m_IsDefault && m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     HE_IF_ASSERT(m_HasMipMaps == true, "Texture2D has not been initialized with the has mipmap flag!: %s", getName().c_str())
     {
         GL::heBindTexture2D(m_Id);

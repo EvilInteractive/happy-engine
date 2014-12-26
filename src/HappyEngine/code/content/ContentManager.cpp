@@ -36,13 +36,13 @@ namespace he {
 namespace ct {
 
 ContentManager::ContentManager(): 
-    m_ModelLoader(NEW ModelLoader()), 
-    m_TextureLoader(NEW TextureLoader()),
-    m_PhysicsShapeLoader(NEW PhysicsShapeLoader()), 
-    m_FontLoader(NEW FontLoader()),
-    m_ShaderLoader(NEW ShaderLoader()), 
-    m_MaterialLoader(NEW MaterialLoader()), 
-    m_LoadThread(NEW Thread()),
+    m_ModelLoader(nullptr), 
+    m_TextureLoader(nullptr),
+    m_PhysicsShapeLoader(nullptr), 
+    m_FontLoader(nullptr),
+    m_ShaderLoader(nullptr), 
+    m_MaterialLoader(nullptr), 
+    m_LoadThread(nullptr),
     m_LoadThreadRunning(true),
 
     m_TextureFolder("textures/"), 
@@ -65,6 +65,18 @@ ContentManager::ContentManager():
     m_ParticleQuad(nullptr),
     m_FullscreenQuad(nullptr)
 {
+}
+
+void ContentManager::initialize()
+{
+    m_ModelLoader = NEW ModelLoader();
+    m_TextureLoader = NEW TextureLoader();
+    m_PhysicsShapeLoader = NEW PhysicsShapeLoader();
+    m_FontLoader = NEW FontLoader();
+    m_ShaderLoader = NEW ShaderLoader();
+    m_MaterialLoader = NEW MaterialLoader();
+    m_LoadThread = NEW Thread();
+
     m_ContentRootDir = he::Path::getDataPath();
     setFontFolder(getFontFolder());
     setFxFolder(getFxFolder());
@@ -398,6 +410,12 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
     m_ParticleQuad->instantiate();
     return m_ParticleQuad;
 }
+
+const gfx::Texture2D* ContentManager::getFallbackTexture()
+{
+    return m_TextureLoader? m_TextureLoader->getFallbackTexture() : nullptr;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 

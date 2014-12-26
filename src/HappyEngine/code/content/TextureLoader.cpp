@@ -41,12 +41,14 @@
 namespace he {
 namespace ct {
 
-TextureLoader::TextureLoader(): m_GCTimer(GC_TIME), m_TextureLoadQueue(10, 10, "TextureLoadQueue"), m_TextureInvokeQueue(10, 10, "TextureInvokeQueue")
+TextureLoader::TextureLoader(): m_GCTimer(GC_TIME), m_TextureLoadQueue(10, 10, "TextureLoadQueue"), m_TextureInvokeQueue(10, 10, "TextureInvokeQueue"), m_DefaultTexture(nullptr)
 {
+    m_DefaultTexture = makeTexture2D(he::Color(0.5f, 0.5f, 0.0f, 1.0f));
 }
 
 TextureLoader::~TextureLoader()
 {
+    m_DefaultTexture->release();
     FACTORY_2D->garbageCollect();
     FACTORY_CUBE->garbageCollect();
 }

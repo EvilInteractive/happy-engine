@@ -66,7 +66,8 @@ private:
     TextureFormat m_TextureFormat;    
     TextureWrapType m_WrapType;
     TextureFilterType m_FilterType;
-    bool m_HasMipMaps;
+    bool m_HasMipMaps : 1;
+    bool m_IsDefault : 1;
 
     //Disable default copy constructor and default assignment operator
     Texture2D(const Texture2D&);
