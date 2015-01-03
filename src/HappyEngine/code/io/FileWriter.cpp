@@ -46,7 +46,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
         boost::filesystem::path parentDir(boostPath.parent_path());
         if (parentDir.empty() == false)
         {
-            if (boost::filesystem::create_directory(boostPath.parent_path(), error) == false)
+            if (boost::filesystem::create_directories(boostPath.parent_path(), error) == false)
             {
                 if (error.value() != 0)
                 {

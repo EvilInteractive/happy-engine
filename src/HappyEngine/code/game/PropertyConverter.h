@@ -49,6 +49,21 @@ public:
     }
 };
 
+class PropertyConverterPath : public PropertyConverter
+{
+public:
+    virtual ~PropertyConverterPath() {}
+    virtual void fromString(Property* const prop, const he::String& str)
+    {
+        prop->set<he::Path>(he::Path(str));
+    }
+    virtual he::String toString(const Property* const prop)
+    {
+        return prop->get<he::Path>().str();
+    }
+};
+
+
 class PropertyConverterInt : public PropertyConverter
 {
 public:

@@ -25,6 +25,7 @@
 #include "system/UIManager.h"
 #include "system/PluginManager.h"
 #include "system/EditorPickingManager.h"
+#include "system/Options.h"
 #include "Sandbox.h"
 
 #include "plugins/materialGenerator/system/MaterialGeneratorNodeFactory.h"
@@ -35,6 +36,7 @@ namespace hs {
 void StaticDataManager::init()
 {
     HSFS::sdmInit();
+    Options::sdmInit();
     GameStateMachine::sdmInit();
     UIManager::sdmInit();
     SelectionManger::sdmInit();
@@ -53,6 +55,7 @@ void StaticDataManager::destroy()
     SelectionManger::sdmDestroy();
     PluginManager::sdmDestroy();
     EditorPickingManager::sdmDestroy();
+    Options::sdmDestroy();
     HSFS::sdmDestroy();
 }
 

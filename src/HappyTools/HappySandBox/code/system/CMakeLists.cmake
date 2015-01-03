@@ -19,6 +19,10 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/system/managers code/system/
 addFilter(HAPPYSANDBOX_CODE_SRCS src/system/plugin code/system/
         PluginManager.cpp           PluginManager.h
     )
+    
+addFilter(HAPPYSANDBOX_CODE_SRCS src/system/options code/system/
+        Options.cpp           Options.h
+    )
 	
 addFilter(HAPPYSANDBOX_CODE_SRCS src/system/ui code/system/
         UI.cpp                      UI.h

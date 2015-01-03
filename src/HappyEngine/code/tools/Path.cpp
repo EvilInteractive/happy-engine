@@ -120,7 +120,7 @@ Path Path::append( const he::String& relativePath ) const
     Path returnPath(m_Path.substr(0, newLength + 1));
     returnPath.m_Path += path.substr(off);
     
-    return returnPath;
+    return std::move(returnPath);
 }
 
 void Path::ensureTrailingSlash()

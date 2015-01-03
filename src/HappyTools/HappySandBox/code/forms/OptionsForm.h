@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2015  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,22 +15,46 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Created: 2013/04/20
+//Author:  Bastian Damman
+//Created: 2015/01/03
 
+#ifndef OptionsForm_h__
+#define OptionsForm_h__
 
-DEF_FS(EditorComponent);
-DEF_FS(QTWindow);
-DEF_FS(A);
-DEF_FS(B);
-DEF_FS(C);
-DEF_FS(D);
-DEF_FS(Float);
-DEF_FS(Float2);
-DEF_FS(Float3);
-DEF_FS(Float4);
-DEF_FS(AlphaTestValue);
+#include <QWidget>
 
-// Options
-DEF_FS(Config);
-DEF_FS(EditorConfigFile);
-DEF_FS(EditorDataPath);
+namespace Ui {
+    class OptionsForm;
+}
+
+namespace he {
+namespace ge {
+    class Property;
+} }
+
+namespace hs {
+
+class OptionsForm : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit OptionsForm(QWidget* parent);
+    ~OptionsForm();
+
+public slots:
+    void save();
+    void load();
+
+private:
+    void OnValueChanged(const he::ge::Property* prop);
+
+    Ui::OptionsForm* m_UI;
+    bool m_IsDirty;
+
+    OptionsForm(const OptionsForm&);
+    OptionsForm& operator=(const OptionsForm&);
+};
+
+}
+
+#endif // OptionsForm_h__

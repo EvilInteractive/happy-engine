@@ -9,6 +9,7 @@
 #include "PropertyColorFeel.h"
 #include "PropertySliderFeel.h"
 #include "PropertyCheckBoxFeel.h"
+#include "PropertyPathFeel.h"
 
 #include <Property.h>
 #include <PropertyFeel.h>
@@ -110,6 +111,17 @@ void PropertyList::getRowContents( const he::ge::PropertyDesc& prop, QTableWidge
     case he::ge::ePropertyFeel_Default: //tb
         {
             PropertyDefaultFeel* feel(NEW PropertyDefaultFeel(m_UI->m_Table));
+            outItem = NEW hs::PropertyListItem(prop, feel);
+            outWidget = feel;
+        } break;
+    case he::ge::ePropertyFeel_Path: //tb + button
+        {
+            PropertyPathFeel* feel(NEW PropertyPathFeel(m_UI->m_Table));
+            he::ge::PropertyFeelPath* pathFeel(he::checked_cast<he::ge::PropertyFeelPath*>(prop.m_Feel));
+            if (pathFeel->isDirectory())
+                feel->setOpenDirectory();
+            else
+                feel->setOpenFile(pathFeel->getFilter());
             outItem = NEW hs::PropertyListItem(prop, feel);
             outWidget = feel;
         } break;

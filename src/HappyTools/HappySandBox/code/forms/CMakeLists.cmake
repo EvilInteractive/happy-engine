@@ -20,6 +20,10 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/entity code/forms/
         EntityPropertiesForm.cpp        EntityPropertiesForm.h          EntityPropertiesForm.ui
     )
     
+addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/options code/forms/
+        OptionsForm.cpp        OptionsForm.h          OptionsForm.ui
+    )
+    
 
 addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/property code/forms/
         PropertyList.cpp          PropertyList.h            PropertyList.ui
@@ -34,4 +38,5 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/forms/property/feels code/forms/
         PropertyDropDownFeel.cpp      PropertyDropDownFeel.h        PropertyDropDownFeel.ui
         PropertySliderFeel.cpp        PropertySliderFeel.h          PropertySliderFeel.ui
         PropertyCheckBoxFeel.cpp      PropertyCheckBoxFeel.h        PropertyCheckBoxFeel.ui
+        PropertyPathFeel.cpp          PropertyPathFeel.h            PropertyPathFeel.ui
     )

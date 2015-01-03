@@ -28,6 +28,7 @@ namespace ge {
 enum EPropertyFeel
 {
     ePropertyFeel_Default,
+    ePropertyFeel_Path,
     ePropertyFeel_CheckBox,
     ePropertyFeel_Color,
     ePropertyFeel_Slider,
@@ -57,6 +58,26 @@ private:
     PropertyFeelDefault& operator=(const PropertyFeelDefault&);
 };
 
+class HAPPY_ENTRY PropertyFeelPath : public PropertyFeel
+{
+public:
+    PropertyFeelPath(bool isDirectory, he::String filter) : m_IsDirectory(isDirectory), m_Filter(std::move(filter)) {}
+    virtual ~PropertyFeelPath() {}
+
+    virtual EPropertyFeel getType() const override { return ePropertyFeel_Path; }
+
+    bool isDirectory() const { return m_IsDirectory; }
+    const he::String& getFilter() const { return m_Filter; }
+
+private:
+    bool m_IsDirectory;
+    he::String m_Filter;
+
+    //Disable default copy constructor and default assignment operator
+    PropertyFeelPath(const PropertyFeelPath&);
+    PropertyFeelPath& operator=(const PropertyFeelPath&);
+};
+
 class HAPPY_ENTRY PropertyFeelCheckBox : public PropertyFeel
 {
 public:
@@ -71,6 +92,7 @@ private:
     PropertyFeelCheckBox(const PropertyFeelCheckBox&);
     PropertyFeelCheckBox& operator=(const PropertyFeelCheckBox&);
 };
+
 class HAPPY_ENTRY PropertyFeelColor : public PropertyFeel
 {
 public:

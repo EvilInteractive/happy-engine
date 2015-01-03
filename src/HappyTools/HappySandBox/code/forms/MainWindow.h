@@ -10,6 +10,7 @@ class MainWindow;
 namespace hs {
 class GameWidget;
 class MaterialEditor;
+class OptionsForm;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -24,10 +25,12 @@ public:
 
 private slots:
     void openMaterialEditor();
+    void openOptionsForm();
 
 private:
     Ui::MainWindow* m_UI;
 
+    OptionsForm* m_OptionsForm;
     MaterialEditor* m_MaterialEditor;
 };
 
