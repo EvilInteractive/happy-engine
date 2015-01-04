@@ -115,16 +115,17 @@ void JsonFileWriter::close()
 
 bool JsonFileWriter::enterNode( const he::FixedString& key, const char* comment /*= NULL*/ )
 {
-    bool result(true);
+    bool result(false);
     json::Value& root(m_Writer->getRoot());
     HE_IF_ASSERT(root.isNull() || root.isArray() == false, "Root can not be of type array!")
     {
-        json::Value& val(root[key.c_str()] = json::Value(json::nullValue));
+        json::Value& val(root[key.c_str()] = json::Value(json::objectValue));
         if (comment != NULL)
         {
             val.setComment(comment, json::commentAfterOnSameLine);
         }
         m_Writer->pushRoot(key, val);
+        result = true;
     }
     return result;
 }
