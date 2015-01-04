@@ -90,8 +90,8 @@ namespace hs {
 #pragma region Abs
 void MaterialGeneratorNodeAbs::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
     MaterialGeneratorNode::init();
 }
@@ -103,8 +103,8 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeAbs, setAbs)
 #pragma region Cos
 void MaterialGeneratorNodeCos::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -116,8 +116,8 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCos, setCos)
 #pragma region Sin
 void MaterialGeneratorNodeSin::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -129,8 +129,8 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSin, setSin)
 #pragma region Ceil
 void MaterialGeneratorNodeCeil::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -142,8 +142,8 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCeil, setCeil)
 #pragma region Floor
 void MaterialGeneratorNodeFloor::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -155,8 +155,8 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFloor, setFloor)
 #pragma region Frac
 void MaterialGeneratorNodeFrac::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -167,10 +167,10 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFrac, setFrac)
 #pragma region OneMin
 void MaterialGeneratorNodeOneMin::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
-    m_One = getParent()->getShaderGenerator()->addVariable("OneMin");
+    m_One = he::checked_cast<MaterialGraph*>(getParent())->getShaderGenerator()->addVariable("OneMin");
 
     MaterialGeneratorNode::init();
 }
@@ -178,7 +178,7 @@ void MaterialGeneratorNodeOneMin::destroy()
 {
     if (m_One != he::ObjectHandle::unassigned)
     {
-        getParent()->getShaderGenerator()->removeVariable(m_One);
+        he::checked_cast<MaterialGraph*>(getParent())->getShaderGenerator()->removeVariable(m_One);
         m_One = he::ObjectHandle::unassigned;
     }
     MaterialGeneratorNode::destroy();
@@ -218,8 +218,8 @@ bool MaterialGeneratorNodeOneMin::evaluate()
 #pragma region Normalize
 void MaterialGeneratorNodeNormalize::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -230,8 +230,8 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeNormalize, setNormalize)
 #pragma region Sign
 void MaterialGeneratorNodeSign::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -243,9 +243,9 @@ IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSign, setSign)
 #pragma region Add
 void MaterialGeneratorNodeAdd::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -257,9 +257,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeAdd, setAdd)
 #pragma region Divide
 void MaterialGeneratorNodeDivide::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                                  
     MaterialGeneratorNode::init();
 }
@@ -271,9 +271,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDivide, setDivide)
 #pragma region Min
 void MaterialGeneratorNodeMin::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -285,9 +285,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMin, setMin)
 #pragma region Max
     void MaterialGeneratorNodeMax::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -299,9 +299,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMax, setMax)
 #pragma region Multiply
 void MaterialGeneratorNodeMultiply::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                                  
     MaterialGeneratorNode::init();
 }
@@ -313,9 +313,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMultiply, setMultiply)
 #pragma region Subtract
 void MaterialGeneratorNodeSubtract::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -327,9 +327,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeSubtract, setSubtract)
 #pragma region Cross
 void MaterialGeneratorNodeCross::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
          
     MaterialGeneratorNode::init();
 }
@@ -341,9 +341,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeCross, setCross)
 #pragma region Distance
 void MaterialGeneratorNodeDistance::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
     MaterialGeneratorNode::init();
 }
@@ -355,11 +355,11 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDistance, setDistance)
 #pragma region DistanceSqr
 void MaterialGeneratorNodeDistanceSqr::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    m_TempVar = getParent()->getShaderGenerator()->addVariable("DistanceSqr");
+    m_TempVar = he::checked_cast<MaterialGraph*>(getParent())->getShaderGenerator()->addVariable("DistanceSqr");
 
     MaterialGeneratorNode::init();
 }
@@ -368,7 +368,7 @@ void MaterialGeneratorNodeDistanceSqr::destroy()
 {
     if (m_TempVar != he::ObjectHandle::unassigned)
     {
-        getParent()->getShaderGenerator()->removeVariable(m_TempVar);
+        he::checked_cast<MaterialGraph*>(getParent())->getShaderGenerator()->removeVariable(m_TempVar);
         m_TempVar = he::ObjectHandle::unassigned;
     }
 
@@ -404,9 +404,9 @@ bool MaterialGeneratorNodeDistanceSqr::evaluate()
 #pragma region Dot
 void MaterialGeneratorNodeDot::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                      
     MaterialGeneratorNode::init();
 }
@@ -418,9 +418,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDot, setDot)
 #pragma region Power
 void MaterialGeneratorNodePower::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strB, "B", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                                  
     MaterialGeneratorNode::init();
 }
@@ -432,9 +432,9 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodePower, setPower)
 #pragma region Reflect
 void MaterialGeneratorNodeReflect::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("Direction", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strDirection, "Direction", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strNormal, "Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
     MaterialGeneratorNode::init();
 }
@@ -448,10 +448,10 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeReflect, setReflect)
 #pragma region Clamp
 void MaterialGeneratorNodeClamp::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Min", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Max", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strX, "X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strMin, "Min", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strMax, "Max", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
     MaterialGeneratorNode::init();
 }
@@ -463,10 +463,10 @@ IMPLEMENT_EVALUATE3(MaterialGeneratorNodeClamp, setClamp)
 #pragma region Lerp
 void MaterialGeneratorNodeLerp::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Y", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strX, "X", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strY, "Y", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strA, "A", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
                                  
     MaterialGeneratorNode::init();
 }

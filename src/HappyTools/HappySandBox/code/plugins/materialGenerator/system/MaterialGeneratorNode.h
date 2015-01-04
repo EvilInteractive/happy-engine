@@ -29,7 +29,6 @@
 namespace he {
 namespace io {
     class StructuredVisitor;
-    class BinaryFileVisitor;
 }
 namespace gui {
     class Sprite;
@@ -48,22 +47,16 @@ class MaterialGeneratorNode : public NodeGraphNode
 {
 DECLARE_OBJECT(MaterialGeneratorNode);
 public:
-    MaterialGeneratorNode();
+    explicit MaterialGeneratorNode(MaterialGraph* const parent);
     virtual ~MaterialGeneratorNode();
 
     // Override me
-    virtual MaterialGeneratorNodeType getType() const { return MaterialGeneratorNodeType_Unassigned; }
+    virtual const he::FixedString& getType() const { return HSFS::strUnassigned; }
     virtual bool evaluate();
 
     virtual void init();
     virtual void destroy();
-
-    void setParent(MaterialGraph* const parent) { m_Parent = parent; }
-    MaterialGraph* getParent() { return m_Parent; }
-
-    void setGuid(const he::Guid& id) { m_Guid = id; }
-    const he::Guid& getGuid() const { return m_Guid; }
-
+    
     void notifyNodeConnected(MaterialGeneratorNodeConnector* a, MaterialGeneratorNodeConnector* b);
     void notifyNodeDisconnected(MaterialGeneratorNodeConnector* a, MaterialGeneratorNodeConnector* b);
 
@@ -71,8 +64,7 @@ public:
     MaterialGeneratorNodeParam& getParam(const size_t index);
 
     // Serializing
-    void visit(he::io::StructuredVisitor* const visitor);
-    void visit(he::io::BinaryFileVisitor* const visitor);
+    virtual void visit(he::io::StructuredVisitor* const visitor) override;
     
 protected:
     // Setters
@@ -93,9 +85,6 @@ private:
     he::PrimitiveList<MaterialGeneratorNodeConnectorAttachment*> m_Outputs;
 
     he::ObjectList<MaterialGeneratorNodeParam> m_Params;
-
-    he::Guid m_Guid;
-    MaterialGraph* m_Parent;
 
     bool m_CompileState;
     bool m_Evaluating;

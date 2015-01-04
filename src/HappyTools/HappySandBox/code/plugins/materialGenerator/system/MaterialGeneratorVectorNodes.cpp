@@ -32,12 +32,12 @@ namespace hs {
 
 void MaterialGeneratorNodeComposeVector::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn1, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn2, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn3, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn4, "In", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
     MaterialGeneratorNode::init();
 }
@@ -107,8 +107,8 @@ bool MaterialGeneratorNodeComposeVector::evaluate()
 
 void MaterialGeneratorNodeSwizzle::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("In", he::Color(1.0f, 0.5f, 0.0f)));
-    addOutput(MaterialGeneratorNodeConnectorDesc("Out", he::Color(1.0f, 0.5f, 0.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strIn, "In", he::Color(1.0f, 0.5f, 0.0f)));
+    addOutput(MaterialGeneratorNodeConnectorDesc(HSFS::strOut, "Out", he::Color(1.0f, 0.5f, 0.0f)));
 
     addParam(MaterialGeneratorNodeParam(HSFS::strA, MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam(HSFS::strB, MaterialGeneratorNodeParam::Type_SwizzleMask));

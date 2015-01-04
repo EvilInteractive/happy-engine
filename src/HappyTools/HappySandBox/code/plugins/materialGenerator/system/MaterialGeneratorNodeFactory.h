@@ -29,16 +29,15 @@
 
 
 namespace hs {
-enum MaterialGeneratorNodeType;
 
-class MaterialGeneratorNodeFactory : public he::ObjectFactory<MaterialGeneratorNode>, public he::Singleton<MaterialGeneratorNodeFactory>
+class MaterialGeneratorNodeFactory : public he::ObjectFactory<MaterialGeneratorNode, he::NoCreateObjectAllocator<MaterialGeneratorNode>>, public he::Singleton<MaterialGeneratorNodeFactory>
 {
 public:
     MaterialGeneratorNodeFactory();
     virtual ~MaterialGeneratorNodeFactory();
 
-    MaterialGeneratorNode* create(MaterialGraph* const graph, const MaterialGeneratorNodeType type);
-    MaterialGeneratorNode* create(MaterialGraph* const graph, const MaterialGeneratorNodeType type, const he::Guid& id);
+    MaterialGeneratorNode* create(MaterialGraph* const graph, const he::FixedString& type);
+    MaterialGeneratorNode* create(MaterialGraph* const graph, const he::FixedString& type, const he::Guid& id);
     void destroy(MaterialGeneratorNode* const node);
 
 private:

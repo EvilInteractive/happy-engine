@@ -41,73 +41,69 @@ MaterialGeneratorNodeFactory::~MaterialGeneratorNodeFactory()
 {
 }
 
-MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( MaterialGraph* const graph, const MaterialGeneratorNodeType type )
+MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( MaterialGraph* const graph, const he::FixedString& type )
 {
     return create(graph, type, he::Guid::generateGuid());
 }
 
-MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( MaterialGraph* const graph, const MaterialGeneratorNodeType type, const he::Guid& id )
+MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( MaterialGraph* const graph, const he::FixedString& type, const he::Guid& id )
 {
     MaterialGeneratorNode* node(nullptr);
-    switch (type)
     {
-        // Const
-        case MaterialGeneratorNodeType_RootNormalDraw: node = NEW MaterialGeneratorNodeRootNormalDraw(); break;
+        if (type == HSFS::strRootNormalDraw) node = NEW MaterialGeneratorNodeRootNormalDraw(graph); 
 
         // Const
-        case MaterialGeneratorNodeType_Float1: node = NEW MaterialGeneratorNodeFloat1(); break;
-        case MaterialGeneratorNodeType_Float2: node = NEW MaterialGeneratorNodeFloat2(); break;
-        case MaterialGeneratorNodeType_Float3: node = NEW MaterialGeneratorNodeFloat3(); break;
-        case MaterialGeneratorNodeType_Float4: node = NEW MaterialGeneratorNodeFloat4(); break;
+        else if (type == HSFS::strFloat1) node = NEW MaterialGeneratorNodeFloat1(graph); 
+        else if (type == HSFS::strFloat2) node = NEW MaterialGeneratorNodeFloat2(graph); 
+        else if (type == HSFS::strFloat3) node = NEW MaterialGeneratorNodeFloat3(graph); 
+        else if (type == HSFS::strFloat4) node = NEW MaterialGeneratorNodeFloat4(graph); 
 
         // Globals
-        //case MaterialGeneratorNodeType_Position: node = NEW MaterialGeneratorNodeFloat1(); break;
-        //case MaterialGeneratorNodeType_Normal: node = NEW MaterialGeneratorNodeFloat1(); break;
+        //else if (type == HSFS::strPosition) node = NEW MaterialGeneratorNodeFloat1(graph); 
+        //else if (type == HSFS::strNormal) node = NEW MaterialGeneratorNodeFloat1(graph); 
 
         // Vector
-        case MaterialGeneratorNodeType_Swizzle: node = NEW MaterialGeneratorNodeSwizzle(); break;
-        case MaterialGeneratorNodeType_ComposeVector: node = NEW MaterialGeneratorNodeComposeVector(); break;
+        else if (type == HSFS::strSwizzle) node = NEW MaterialGeneratorNodeSwizzle(graph); 
+        else if (type == HSFS::strComposeVector) node = NEW MaterialGeneratorNodeComposeVector(graph); 
 
         // Math
         // Basic
-        case MaterialGeneratorNodeType_Abs: node = NEW MaterialGeneratorNodeAbs(); break;
-        case MaterialGeneratorNodeType_Add: node = NEW MaterialGeneratorNodeAdd(); break;
-        case MaterialGeneratorNodeType_Cos: node = NEW MaterialGeneratorNodeCos(); break;
-        case MaterialGeneratorNodeType_Divide: node = NEW MaterialGeneratorNodeDivide(); break;
-        case MaterialGeneratorNodeType_Multiply: node = NEW MaterialGeneratorNodeMultiply(); break;
-        case MaterialGeneratorNodeType_Sin: node = NEW MaterialGeneratorNodeSin(); break;
-        case MaterialGeneratorNodeType_Subtract: node = NEW MaterialGeneratorNodeSubtract(); break;
+        else if (type == HSFS::strAbs) node = NEW MaterialGeneratorNodeAbs(graph); 
+        else if (type == HSFS::strAdd) node = NEW MaterialGeneratorNodeAdd(graph); 
+        else if (type == HSFS::strCos) node = NEW MaterialGeneratorNodeCos(graph); 
+        else if (type == HSFS::strDivide) node = NEW MaterialGeneratorNodeDivide(graph); 
+        else if (type == HSFS::strMultiply) node = NEW MaterialGeneratorNodeMultiply(graph); 
+        else if (type == HSFS::strSin) node = NEW MaterialGeneratorNodeSin(graph); 
+        else if (type == HSFS::strSubtract) node = NEW MaterialGeneratorNodeSubtract(graph); 
         // Func
-        case MaterialGeneratorNodeType_Ceil: node = NEW MaterialGeneratorNodeCeil(); break;
-        case MaterialGeneratorNodeType_Clamp: node = NEW MaterialGeneratorNodeClamp(); break;
-        case MaterialGeneratorNodeType_Cross: node = NEW MaterialGeneratorNodeCross(); break;
-        case MaterialGeneratorNodeType_Distance: node = NEW MaterialGeneratorNodeDistance(); break;
-        case MaterialGeneratorNodeType_DistanceSqr: node = NEW MaterialGeneratorNodeDistanceSqr(); break;
-        case MaterialGeneratorNodeType_Dot: node = NEW MaterialGeneratorNodeDot(); break;
-        case MaterialGeneratorNodeType_Floor: node = NEW MaterialGeneratorNodeFloor(); break;
-        case MaterialGeneratorNodeType_Frac: node = NEW MaterialGeneratorNodeFrac(); break;
-        case MaterialGeneratorNodeType_Lerp: node = NEW MaterialGeneratorNodeLerp(); break;
-        case MaterialGeneratorNodeType_Min: node = NEW MaterialGeneratorNodeMin(); break;
-        case MaterialGeneratorNodeType_Max: node = NEW MaterialGeneratorNodeMax(); break;
-        case MaterialGeneratorNodeType_OneMin: node = NEW MaterialGeneratorNodeOneMin(); break;
-        case MaterialGeneratorNodeType_Normalize: node = NEW MaterialGeneratorNodeNormalize(); break;
-        case MaterialGeneratorNodeType_Power: node = NEW MaterialGeneratorNodePower(); break;
-        case MaterialGeneratorNodeType_Reflect: node = NEW MaterialGeneratorNodeReflect(); break;
-        case MaterialGeneratorNodeType_Sign: node = NEW MaterialGeneratorNodeSign(); break;
+        else if (type == HSFS::strCeil) node = NEW MaterialGeneratorNodeCeil(graph); 
+        else if (type == HSFS::strClamp) node = NEW MaterialGeneratorNodeClamp(graph); 
+        else if (type == HSFS::strCross) node = NEW MaterialGeneratorNodeCross(graph); 
+        else if (type == HSFS::strDistance) node = NEW MaterialGeneratorNodeDistance(graph); 
+        else if (type == HSFS::strDistanceSqr) node = NEW MaterialGeneratorNodeDistanceSqr(graph); 
+        else if (type == HSFS::strDot) node = NEW MaterialGeneratorNodeDot(graph); 
+        else if (type == HSFS::strFloor) node = NEW MaterialGeneratorNodeFloor(graph); 
+        else if (type == HSFS::strFrac) node = NEW MaterialGeneratorNodeFrac(graph); 
+        else if (type == HSFS::strLerp) node = NEW MaterialGeneratorNodeLerp(graph); 
+        else if (type == HSFS::strMin) node = NEW MaterialGeneratorNodeMin(graph); 
+        else if (type == HSFS::strMax) node = NEW MaterialGeneratorNodeMax(graph); 
+        else if (type == HSFS::strOneMin) node = NEW MaterialGeneratorNodeOneMin(graph); 
+        else if (type == HSFS::strNormalize) node = NEW MaterialGeneratorNodeNormalize(graph); 
+        else if (type == HSFS::strPower) node = NEW MaterialGeneratorNodePower(graph); 
+        else if (type == HSFS::strReflect) node = NEW MaterialGeneratorNodeReflect(graph); 
+        else if (type == HSFS::strSign) node = NEW MaterialGeneratorNodeSign(graph); 
 
         // Texture
-        //case MaterialGeneratorNodeType_FlipBook: node = NEW MaterialGeneratorNodeFlipBook(); break;
-        //case MaterialGeneratorNodeType_Panner: node = NEW MaterialGeneratorNodePanner(); break;
-        //case MaterialGeneratorNodeType_Rotator: node = NEW MaterialGeneratorNodeRotator(); break;
-        //case MaterialGeneratorNodeType_Texture2D: node = NEW MaterialGeneratorNodeTexture2D(); break;
-        //case MaterialGeneratorNodeType_TextureCube: node = NEW MaterialGeneratorNodeTextureCube(); break;
-        //case MaterialGeneratorNodeType_Texcoord: node = NEW MaterialGeneratorNodeTexcoord(); break;
+        //else if (type == HSFS::strFlipBook) node = NEW MaterialGeneratorNodeFlipBook(graph); 
+        //else if (type == HSFS::strPanner) node = NEW MaterialGeneratorNodePanner(graph); 
+        //else if (type == HSFS::strRotator) node = NEW MaterialGeneratorNodeRotator(graph); 
+        //else if (type == HSFS::strTexture2D) node = NEW MaterialGeneratorNodeTexture2D(graph); 
+        //else if (type == HSFS::strTextureCube) node = NEW MaterialGeneratorNodeTextureCube(graph); 
+        //else if (type == HSFS::strTexcoord) node = NEW MaterialGeneratorNodeTexcoord(graph); 
 
-        default:
-            LOG(he::LogType_ProgrammerAssert, "Unknown node in factory: %s", materialGeneratorNodeTypeToString(type));
+        else { LOG(he::LogType_ProgrammerAssert, "Unknown node in factory: %s", type.c_str()); }
     }
     registerObject(node);
-    node->setParent(graph);
     node->init();
     node->setGuid(id);
     return node;

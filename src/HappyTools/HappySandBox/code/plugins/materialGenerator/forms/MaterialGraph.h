@@ -36,8 +36,7 @@ public:
     void onPropertyValueChanged(he::ge::Property* prop);
 
 protected:
-    // Called when left mouse is pressed (only return a node if you want to create one on click (with a shortcut))
-    virtual NodeGraphNode* createNode() override;
+    virtual NodeGraphNode* createNode(const he::FixedString& type) override;
     virtual void destroyNode(NodeGraphNode* node) override;
 
     // Called when a connection is made between two connectors, returns if successful

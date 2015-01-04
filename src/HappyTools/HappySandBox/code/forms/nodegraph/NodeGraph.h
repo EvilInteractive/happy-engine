@@ -26,6 +26,11 @@
 #include <ITickable.h>
 #include <Text.h>
 
+namespace he {
+namespace io {
+    class StructuredVisitor;
+} }
+
 namespace hs {
 class NodeGraphNode;
 struct NodeGraphDrawContext;
@@ -43,15 +48,19 @@ public:
     virtual void destroy() override;
 
     void addNode(NodeGraphNode* node, const he::vec2& screenPos);
+    NodeGraphNode* getNode(const he::Guid& uuid);
 
     virtual void tick(float dTime);
     virtual void draw2D(he::gui::Canvas2D* canvas) override;
 
     bool isEdited() const { return false; }
 
+    bool save(const he::Path& path);
+    bool load(const he::Path& path);
+    bool visit(he::io::StructuredVisitor* visitor);
+
 protected:
-    // Called when left mouse is pressed (only return a node if you want to create one on click (with a shortcut))
-    virtual NodeGraphNode* createNode() = 0;
+    virtual NodeGraphNode* createNode(const he::FixedString& type) = 0;
     virtual void destroyNode(NodeGraphNode* node) = 0;
 
     // Called when a connection is made between two connectors, returns if successful

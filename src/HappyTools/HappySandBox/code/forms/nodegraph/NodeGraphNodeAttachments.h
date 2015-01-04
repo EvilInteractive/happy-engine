@@ -35,17 +35,20 @@ namespace hs {
     class NodeGraphNodeTextConnector : public NodeGraphNodeAttachment
     {
     public:
-        NodeGraphNodeTextConnector();
-        ~NodeGraphNodeTextConnector();
+        explicit NodeGraphNodeTextConnector(NodeGraphNode* parent);
+        virtual ~NodeGraphNodeTextConnector();
 
-        void init(const ENodeGraphNodeConnectorType connectorType, const char* text);
+        void init(const ENodeGraphNodeConnectorType connectorType, const he::FixedString& id, const char* text);
 
         // Connector
-        NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) override;
-        virtual NodeGraphNodeConnector& getNodeConnector() = 0;
+        virtual NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) override;
+        virtual NodeGraphNodeConnector* getNodeConnector() override = 0;
 
         // Draw
         void draw(const NodeGraphDrawContext& context) override;
+
+        // Serializing
+        virtual void visit(he::io::StructuredVisitor* const visitor) override;
 
         DECLARE_LAYOUT
 
@@ -57,13 +60,14 @@ namespace hs {
     class NodeGraphNodeTextureAttachment : public NodeGraphNodeAttachment
     {
     public:
-        NodeGraphNodeTextureAttachment();
-        ~NodeGraphNodeTextureAttachment();
+        explicit NodeGraphNodeTextureAttachment(NodeGraphNode* parent);
+        virtual ~NodeGraphNodeTextureAttachment();
 
         void init(const he::gfx::Texture2D* const tex, const he::vec2& size);
 
         // Connector
-        NodeGraphNodeConnector* pickNodeConnector(const he::vec2& /*worldPos*/) override { return nullptr; }
+        virtual NodeGraphNodeConnector* pickNodeConnector(const he::vec2& /*worldPos*/) override { return nullptr; }
+        virtual NodeGraphNodeConnector* getNodeConnector() override { return nullptr; }
 
         // Draw
         void draw(const NodeGraphDrawContext& context) override;

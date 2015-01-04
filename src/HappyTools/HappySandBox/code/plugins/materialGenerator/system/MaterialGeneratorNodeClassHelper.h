@@ -31,7 +31,7 @@ class MaterialGeneratorGraph;
 class className : public MaterialGeneratorNode\
 {\
 public:\
-    className() extraCtor {}\
+    explicit className(MaterialGraph* const parent) : MaterialGeneratorNode(parent) extraCtor {}\
     ~className() {}\
     \
     void init() final; \
@@ -39,7 +39,7 @@ public:\
     \
     bool evaluate() final;\
     \
-    MaterialGeneratorNodeType getType() const final { return MaterialGeneratorNodeType_##type; } \
+    const he::FixedString& getType() const final { return HSFS::str##type; } \
     \
 private:\
     extra\
@@ -48,30 +48,9 @@ private:\
     className& operator=(const className&);\
 };
 
+#define MaterialGeneratorNodeCOMMA ,
 #define MaterialGeneratorNodeClass(type) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type, { MaterialGeneratorNode::destroy(); },,)
-#define MaterialGeneratorNodeClassTempVar(type, var) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type,;, he::ObjectHandle var;, : var(he::ObjectHandle::unassigned))
-
-#define MGO_IN(count, ...) count, __VA_ARGS__
-#define MGO_OUT(count, ...) count, __VA_ARGS__
-#define MGO_ADD_OVERLOAD_IO(inputs, outputs)\
-{\
-    MaterialGeneratorNodeOverload overload;\
-    overload.setInputs(inputs);\
-    overload.setOutputs(outputs);\
-    addOverload(std::move(overload));\
-}
-#define MGO_ADD_OVERLOAD_I(inputs)\
-{\
-    MaterialGeneratorNodeOverload overload;\
-    overload.setInputs(inputs);\
-    addOverload(std::move(overload));\
-}
-#define MGO_ADD_OVERLOAD_O(outputs)\
-{\
-    MaterialGeneratorNodeOverload overload;\
-    overload.setOutputs(outputs);\
-    addOverload(std::move(overload));\
-}
+#define MaterialGeneratorNodeClassTempVar(type, var) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type,;, he::ObjectHandle var;, MaterialGeneratorNodeCOMMA var(he::ObjectHandle::unassigned))
 
 }
 

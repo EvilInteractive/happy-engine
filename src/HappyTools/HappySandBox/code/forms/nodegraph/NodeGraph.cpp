@@ -32,6 +32,8 @@
 #include <IKeyboard.h>
 #include <Font.h>
 #include <Game.h>
+#include <JsonFileReader.h>
+#include <JsonFileWriter.h>
 
 #define ZOOM_STEP 0.0001f
 #define ZOOM_MIN 0.1f
@@ -180,7 +182,7 @@ void NodeGraph::updateIdleState( const float /*dTime*/ )
     const bool leftDown(mouse->isButtonPressed(he::io::MouseButton_Left));
     if (leftDown)
     {
-        NodeGraphNode* newNode(createNode());
+        NodeGraphNode* newNode(createNode(he::HEFS::str));
         if (newNode)
         {
             newNode->move(mouseWorld);
@@ -528,6 +530,86 @@ void NodeGraph::destroy()
     {
         destroyNode(node);
     });
+}
+
+bool NodeGraph::save( const he::Path& path )
+{
+    he::io::JsonFileWriter writer;
+    if (writer.open(path))
+    {
+        visit(&writer);
+        writer.close();
+        return true;
+    }
+    return false;
+}
+
+bool NodeGraph::load( const he::Path& path )
+{
+    he::io::JsonFileReader reader;
+    if (reader.open(path))
+    {
+        m_Nodes.forEach([this](NodeGraphNode* node)
+        {
+            destroyNode(node);
+        });
+        m_Nodes.clear();
+        
+        reader.close();
+        return true;
+    }
+    return false;
+}
+
+bool NodeGraph::visit( he::io::StructuredVisitor* visitor )
+{
+    if (visitor->enterNode(he::HEFS::strNodes))
+    {
+        // Visit nodes
+        visitor->visitCustomList<NodeGraphNode*>(he::HEFS::strNodes, m_Nodes, [this](he::io::StructuredVisitor* visitor, size_t /*index*/, NodeGraphNode*& node)
+        {
+            he::Guid uuid;
+            he::FixedString type;
+            if (visitor->isWriting())
+            {
+                uuid = node->getGuid();
+                type = node->getType();
+            }
+            visitor->visit(he::HEFS::strID, uuid);
+            visitor->visit(he::HEFS::strType, type);
+            if (visitor->isReading())
+            {
+                node = createNode(type);
+                node->setGuid(uuid);
+                m_Nodes.add(node);
+            }
+        });
+
+        // Visit nodes data
+        m_Nodes.forEach([visitor](NodeGraphNode* node)
+        {
+            char uuid[he::Guid::s_CharbufferSize];
+            node->getGuid().toString(uuid);
+            const he::FixedString fixedUUID(he::FixedString::fromString(uuid, he::Guid::s_CharbufferSize));
+            if (visitor->enterNode(fixedUUID))
+            {
+                node->visit(visitor);
+                visitor->exitNode(fixedUUID);
+            }
+        });
+        visitor->exitNode(he::HEFS::strNodes);
+    }
+    return true;
+}
+
+NodeGraphNode* NodeGraph::getNode( const he::Guid& uuid )
+{
+    size_t index;
+    if (m_Nodes.find_if([&uuid](NodeGraphNode* node) { return node->getGuid() == uuid; }, index))
+    {
+        return m_Nodes[index];
+    }
+    return nullptr;
 }
 
 }

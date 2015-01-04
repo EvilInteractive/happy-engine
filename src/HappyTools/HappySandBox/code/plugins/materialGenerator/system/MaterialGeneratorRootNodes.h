@@ -34,15 +34,15 @@ namespace hs {
 
 class MaterialGeneratorNodeRootNormalDraw : public MaterialGeneratorNode
 {
-    public:
-    MaterialGeneratorNodeRootNormalDraw();
+public:
+    explicit MaterialGeneratorNodeRootNormalDraw(MaterialGraph* const parent);
     ~MaterialGeneratorNodeRootNormalDraw() {}
     
     void init() final; 
     void destroy() final;    
     bool evaluate() final;
     
-    MaterialGeneratorNodeType getType() const final { return MaterialGeneratorNodeType_RootNormalDraw; } 
+    const he::FixedString& getType() const final { return HSFS::strRootNormalDraw; } 
     
 private:
     bool areConnectionsValid();

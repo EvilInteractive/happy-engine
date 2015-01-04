@@ -39,9 +39,12 @@ void MaterialGraph::init( MaterialEditor* parent )
     m_Parent = parent;
 }
 
-NodeGraphNode* MaterialGraph::createNode()
+NodeGraphNode* MaterialGraph::createNode(const he::FixedString& type)
 {
-    return nullptr;
+    if (type != he::HEFS::str)
+        return MaterialGeneratorNodeFactory::getInstance()->create(this, type);
+    else
+        return nullptr;
 }
 
 void MaterialGraph::destroyNode( NodeGraphNode* node )
@@ -61,8 +64,8 @@ void MaterialGraph::dragEnterEvent( QDragEnterEvent* event )
     QObject* obj(event->source());
     if (obj)
     {
-        MaterialGeneratorNodeType type(m_Parent->getActiveCreateNode());
-        if (type != MaterialGeneratorNodeType_Unassigned)
+        he::FixedString type(m_Parent->getActiveCreateNode());
+        if (type != he::HEFS::str)
         {
             event->acceptProposedAction();
         }
@@ -74,14 +77,14 @@ void MaterialGraph::dropEvent( QDropEvent* event )
     QObject* obj(event->source());
     if (obj)
     {
-        MaterialGeneratorNodeType type(m_Parent->getActiveCreateNode());
-        if (type != MaterialGeneratorNodeType_Unassigned)
+        he::FixedString type(m_Parent->getActiveCreateNode());
+        if (type != he::HEFS::str)
         {
             MaterialGeneratorNode* node(MaterialGeneratorNodeFactory::getInstance()->create(this, type));
             addNode(node, he::vec2(event->posF().x(), event->posF().y()));
             event->acceptProposedAction();
 
-            if (type == MaterialGeneratorNodeType_RootNormalDraw)
+            if (type == HSFS::strRootNormalDraw)
                 m_ActiveRoot = node;
         }
     }

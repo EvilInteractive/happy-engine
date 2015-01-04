@@ -36,77 +36,6 @@ enum MaterialGeneratorVariableType
 };
 const char* materialGeneratorVariableTypeToString(const MaterialGeneratorVariableType type);
 
-enum MaterialGeneratorNodeType
-{
-    // Root
-    MaterialGeneratorNodeType_ROOT,
-    MaterialGeneratorNodeType_RootNormalDraw = MaterialGeneratorNodeType_ROOT,
-    MaterialGeneratorNodeType_ROOT_MAX,
-
-    // Const
-    MaterialGeneratorNodeType_CONST = MaterialGeneratorNodeType_ROOT_MAX,
-    MaterialGeneratorNodeType_Float1 = MaterialGeneratorNodeType_CONST,
-    MaterialGeneratorNodeType_Float2,
-    MaterialGeneratorNodeType_Float3,
-    MaterialGeneratorNodeType_Float4,
-    MaterialGeneratorNodeType_CONST_MAX,
-
-    // Globals
-    MaterialGeneratorNodeType_GLOBALS = MaterialGeneratorNodeType_CONST_MAX,
-    MaterialGeneratorNodeType_WorldViewPosition = MaterialGeneratorNodeType_GLOBALS,
-    MaterialGeneratorNodeType_WorldViewNormal,
-    MaterialGeneratorNodeType_GLOBALS_MAX,
-
-    // Vector
-    MaterialGeneratorNodeType_VECTOR = MaterialGeneratorNodeType_GLOBALS_MAX,
-    MaterialGeneratorNodeType_Swizzle = MaterialGeneratorNodeType_VECTOR,
-    MaterialGeneratorNodeType_ComposeVector,
-    MaterialGeneratorNodeType_VECTOR_MAX,
-
-    // Math
-    MaterialGeneratorNodeType_MATH = MaterialGeneratorNodeType_VECTOR_MAX,
-        // Basic
-        MaterialGeneratorNodeType_Abs = MaterialGeneratorNodeType_MATH,
-        MaterialGeneratorNodeType_Add,
-        MaterialGeneratorNodeType_Cos,
-        MaterialGeneratorNodeType_Divide,
-        MaterialGeneratorNodeType_Multiply,
-        MaterialGeneratorNodeType_Sin,
-        MaterialGeneratorNodeType_Subtract,
-        // Func
-        MaterialGeneratorNodeType_Ceil,
-        MaterialGeneratorNodeType_Clamp,
-        MaterialGeneratorNodeType_Cross,
-        MaterialGeneratorNodeType_Distance,
-        MaterialGeneratorNodeType_DistanceSqr,
-        MaterialGeneratorNodeType_Dot,
-        MaterialGeneratorNodeType_Floor,
-        MaterialGeneratorNodeType_Frac,
-        MaterialGeneratorNodeType_Lerp,
-        MaterialGeneratorNodeType_Max,
-        MaterialGeneratorNodeType_Min,
-        MaterialGeneratorNodeType_OneMin,
-        MaterialGeneratorNodeType_Normalize,
-        MaterialGeneratorNodeType_Power,
-        MaterialGeneratorNodeType_Reflect,
-        MaterialGeneratorNodeType_Sign,
-    MaterialGeneratorNodeType_MATH_MAX,
-
-    // Texture
-    MaterialGeneratorNodeType_TEXTURE = MaterialGeneratorNodeType_MATH_MAX,
-    MaterialGeneratorNodeType_FlipBook = MaterialGeneratorNodeType_TEXTURE,
-    MaterialGeneratorNodeType_Panner,
-    MaterialGeneratorNodeType_Rotator,
-    MaterialGeneratorNodeType_Texture2D,
-    MaterialGeneratorNodeType_TextureCube,
-    MaterialGeneratorNodeType_Texcoord,
-
-
-
-    MaterialGeneratorNodeType_MAX,
-    MaterialGeneratorNodeType_Unassigned = MaterialGeneratorNodeType_MAX
-};
-
 enum MaterialGeneratorNodeTypeSubdivion
 {
     MaterialGeneratorNodeTypeSubdivion_ConstNodes,
@@ -118,8 +47,6 @@ enum MaterialGeneratorNodeTypeSubdivion
     MaterialGeneratorNodeTypeSubdivion_MAX = MaterialGeneratorNodeTypeSubdivion_None
 };
 
-const char* materialGeneratorNodeTypeToString(const MaterialGeneratorNodeType type);
-MaterialGeneratorNodeType materialGeneratorNodeTypeFromString(const char* str);
 
 } //end namespace
 

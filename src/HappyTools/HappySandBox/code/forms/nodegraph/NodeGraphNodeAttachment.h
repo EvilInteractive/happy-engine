@@ -24,6 +24,9 @@
 
 namespace he {
     struct RectF;
+namespace io {
+    class StructuredVisitor;
+}
 }
 
 namespace hs {
@@ -33,16 +36,25 @@ class NodeGraphNodeConnector;
 class NodeGraphNodeAttachment : public he::gui::ILayoutable
 {
 public:
+    explicit NodeGraphNodeAttachment(NodeGraphNode* parent);
     virtual ~NodeGraphNodeAttachment() {}
 
     // Connector
     virtual NodeGraphNodeConnector* pickNodeConnector(const he::vec2& worldPos) = 0;
+    virtual NodeGraphNodeConnector* getNodeConnector() = 0;
 
     // State
     virtual void move(const he::vec2& worldDelta) = 0;
+    virtual NodeGraphNode* getParent() const { return m_Parent; }
     
     // Draw
     virtual void draw(const NodeGraphDrawContext& context) = 0;
+
+    // Serialization
+    virtual void visit(he::io::StructuredVisitor* const /*visitor*/) {}
+
+private:
+    NodeGraphNode* m_Parent;
 };
 
 }

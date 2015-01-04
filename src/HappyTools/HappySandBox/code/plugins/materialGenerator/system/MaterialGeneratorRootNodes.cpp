@@ -46,20 +46,21 @@ enum RootNodeNormalDrawParam
     eRootNodeNormalDrawParam_AlphaTest
 };
 
-MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw()
+MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw(MaterialGraph* const parent)
+    : MaterialGeneratorNode(parent)
 {
 
 }
 
 void MaterialGeneratorNodeRootNormalDraw::init()
 {
-    addInput(MaterialGeneratorNodeConnectorDesc("Diffuse", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Emissive", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Specular", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Gloss", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Opacity", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
-    addInput(MaterialGeneratorNodeConnectorDesc("WorldPositionOffset", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strDiffuse, "Diffuse", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strEmissive, "Emissive", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strSpecular, "Specular", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strGloss, "Gloss", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strOpacity, "Opacity", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strNormal, "Normal", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addInput(MaterialGeneratorNodeConnectorDesc(HSFS::strWorldPositionOffset, "WorldPositionOffset", he::Color(1.0f, 0.5f, 0.0f, 1.0f)));
 
     addParam(MaterialGeneratorNodeParam(HSFS::strAlphaTestValue, MaterialGeneratorNodeParam::Type_Float));
     
@@ -111,7 +112,7 @@ bool MaterialGeneratorNodeRootNormalDraw::evaluate()
     if (areConnectionsValid())
     {
         he::ct::ShaderGeneratorVariableFactory* factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-        he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
+        he::ct::ShaderGenerator* const shaderGenerator(he::checked_cast<MaterialGraph*>(getParent())->getShaderGenerator());
 
         removeAllTempVars();
 
@@ -212,7 +213,7 @@ bool MaterialGeneratorNodeRootNormalDraw::evaluate()
 
 void MaterialGeneratorNodeRootNormalDraw::removeAllTempVars()
 {
-    he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
+    he::ct::ShaderGenerator* const shaderGenerator(he::checked_cast<MaterialGraph*>(getParent())->getShaderGenerator());
     m_TempVars.forEach([&](const he::ObjectHandle handle)
     {
         shaderGenerator->removeVariable(handle);
@@ -223,7 +224,7 @@ void MaterialGeneratorNodeRootNormalDraw::removeAllTempVars()
 he::ct::ShaderGeneratorVariable* MaterialGeneratorNodeRootNormalDraw::addTempVar( const char* nameHint )
 {
     he::ct::ShaderGeneratorVariableFactory* factory(he::ct::ShaderGeneratorVariableFactory::getInstance());
-    he::ct::ShaderGenerator* const shaderGenerator(getParent()->getShaderGenerator());
+    he::ct::ShaderGenerator* const shaderGenerator(he::checked_cast<MaterialGraph*>(getParent())->getShaderGenerator());
     he::ct::ShaderGeneratorVariable* var(factory->get(shaderGenerator->addVariable(nameHint)));
     m_TempVars.add(var->getHandle());
     return var;

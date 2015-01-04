@@ -20,8 +20,11 @@
 
 #include "NodeGraphEnums.h"
 #include "NodeGraphNode.h"
+#include "NodeGraphNodeAttachment.h"
+#include "NodeGraph.h"
 
 #include <Canvas2D.h>
+#include <StructuredVisitor.h>
 
 namespace hs {
 
@@ -37,9 +40,9 @@ NodeGraphNodeConnector::ConnectorStyle::ConnectorStyle()
     m_ConnectorBorderColor[eConnectorState_Selected] = he::Color(255, 180, 135, static_cast<he::uint8>(255));
 }
 
-NodeGraphNodeConnector::NodeGraphNodeConnector()
+NodeGraphNodeConnector::NodeGraphNodeConnector(NodeGraphNodeAttachment* parent)
     : m_State(eConnectorState_Normal)
-    , m_Parent(nullptr)
+    , m_Parent(parent)
     , m_Type(eNodeGraphNodeConnectorType_Input)
 {
     setLayoutMinSize(he::vec2(12, 12));
@@ -129,6 +132,46 @@ void NodeGraphNodeConnector::disconnectAll()
     {
         NodeGraphNodeConnector* const connector(m_Connections[i]);
         disconnect(connector); // will do a find, but will always be index 0, this way we can always react to 'disconnect(NodeGraphNodeConnector* other)'
+    }
+}
+
+void NodeGraphNodeConnector::visit( he::io::StructuredVisitor* const visitor )
+{
+    if (m_Type == eNodeGraphNodeConnectorType_Input)
+    {
+        if (visitor->enterNode(m_Id))
+        {
+            if (visitor->isReading())
+                disconnectAll();
+            visitor->visitCustomList<NodeGraphNodeConnector*>(he::HEFS::strConnections, m_Connections, 
+            [this](he::io::StructuredVisitor* visitor, size_t /*index*/, NodeGraphNodeConnector*& val)
+            {
+                he::Guid nodeId(val->m_Parent->getParent()->getGuid());
+                if (visitor->visit(HSFS::strNodeID, nodeId))
+                {
+                    he::FixedString connectionId(val->getId());
+                    if (visitor->visit(HSFS::strConnectionID, connectionId))
+                    {
+                        if (visitor->isReading())
+                        {
+                            NodeGraphNode* node(m_Parent->getParent()->getParent()->getNode(nodeId));
+                            if (node)
+                            {
+                                node->getAttachments().forEach([this, &connectionId](NodeGraphNodeAttachment* att)
+                                {
+                                    NodeGraphNodeConnector* connector(att->getNodeConnector());
+                                    if (connector && connector->getId() == connectionId)
+                                    {
+                                        connector->connect(this);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+            visitor->exitNode(m_Id);
+        }
     }
 }
 

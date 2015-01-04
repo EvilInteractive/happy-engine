@@ -21,6 +21,7 @@
 #include "MaterialGeneratorNode.h"
 
 #include "MaterialGeneratorNodeConnector.h"
+#include "../forms/MaterialGraph.h"
 
 #include "StructuredVisitor.h"
 #include "BinaryFileVisitor.h"
@@ -32,8 +33,8 @@ namespace hs {
 //////////////////////////////////////////////////////////////////////////
 IMPLEMENT_OBJECT(MaterialGeneratorNode)
 
-MaterialGeneratorNode::MaterialGeneratorNode(): 
-    m_Parent(nullptr),
+MaterialGeneratorNode::MaterialGeneratorNode(MaterialGraph* const parent): 
+    NodeGraphNode(parent),
     m_Evaluating(false), m_CompileState(true)
 {
     startEdit();
@@ -41,7 +42,7 @@ MaterialGeneratorNode::MaterialGeneratorNode():
 
 void MaterialGeneratorNode::init()
 {
-    setTitle(materialGeneratorNodeTypeToString(getType()));
+    setTitle(getType().c_str());
     endEdit();
 
     evaluate();
@@ -59,7 +60,7 @@ MaterialGeneratorNode::~MaterialGeneratorNode()
 void MaterialGeneratorNode::addInput( const MaterialGeneratorNodeConnectorDesc& desc )
 {
     MaterialGeneratorNodeConnectorAttachment* att(NEW MaterialGeneratorNodeConnectorAttachment(this, desc));
-    att->init(eNodeGraphNodeConnectorType_Input, desc.m_Name.c_str());
+    att->init(eNodeGraphNodeConnectorType_Input, desc.m_Id, desc.m_Name.c_str());
     addAttachment(att);
     m_Inputs.add(att);
 }
@@ -67,7 +68,7 @@ void MaterialGeneratorNode::addInput( const MaterialGeneratorNodeConnectorDesc& 
 void MaterialGeneratorNode::addOutput( const MaterialGeneratorNodeConnectorDesc& desc )
 {
     MaterialGeneratorNodeConnectorAttachment* att(NEW MaterialGeneratorNodeConnectorAttachment(this, desc));
-    att->init(eNodeGraphNodeConnectorType_Output, desc.m_Name.c_str());
+    att->init(eNodeGraphNodeConnectorType_Output, desc.m_Id, desc.m_Name.c_str());
     addAttachment(att);
     m_Outputs.add(att);
 }
@@ -81,7 +82,7 @@ bool MaterialGeneratorNode::evaluate()
         {
             output->getMaterialNodeConnector().getConnections().forEach([](NodeGraphNodeConnector* input)
             {
-                he::checked_cast<MaterialGeneratorNodeConnector*>(input)->getParent()->evaluate();
+                he::checked_cast<MaterialGeneratorNode*>(input->getParent()->getParent())->evaluate();
             });
         });
         m_Evaluating = false;
@@ -104,18 +105,6 @@ MaterialGeneratorNodeParam& MaterialGeneratorNode::getParam( const size_t index 
     return m_Params[index];
 }
 
-void MaterialGeneratorNode::visit( he::io::StructuredVisitor* const /*visitor*/ )
-{
-    /*visitor->visit(HEFS::strPosition, m_Position);
-    visitor->visit(HEFS::strID, m_Guid);*/
-}
-
-void MaterialGeneratorNode::visit( he::io::BinaryFileVisitor* const /*visitor*/ )
-{
-   /* visitor->visit(m_Position);
-    visitor->visit(m_Guid);*/
-}
-
 MaterialGeneratorNodeConnector& MaterialGeneratorNode::getInputConnector( const size_t index ) const
 {
     return m_Inputs[index]->getMaterialNodeConnector();
@@ -135,7 +124,7 @@ void MaterialGeneratorNode::notifyNodeConnected( MaterialGeneratorNodeConnector*
         outputNode = b;
         inputNode = a;
     }
-    if (inputNode->getParent() == this) // only operator when input node is this node (else calculations are done twice)
+    if (inputNode->getParent()->getParent() == this) // only operator when input node is this node (else calculations are done twice)
     {
         inputNode->setVar(outputNode->getVar());
         evaluate();
@@ -151,7 +140,7 @@ void MaterialGeneratorNode::notifyNodeDisconnected( MaterialGeneratorNodeConnect
         outputNode = b;
         inputNode = a;
     }
-    if (inputNode->getParent() == this) // only operator when input node is this node (else calculations are done twice)
+    if (inputNode->getParent()->getParent() == this) // only operator when input node is this node (else calculations are done twice)
     {
         inputNode->setVar(he::ObjectHandle::unassigned);
         evaluate();
@@ -168,6 +157,11 @@ void MaterialGeneratorNode::setCompileState( const bool ok )
         else
             setStyle(&Style::s_ErrorStyle);
     }
+}
+
+void MaterialGeneratorNode::visit( he::io::StructuredVisitor* const visitor )
+{
+    NodeGraphNode::visit(visitor);
 }
 
 } //end namespace

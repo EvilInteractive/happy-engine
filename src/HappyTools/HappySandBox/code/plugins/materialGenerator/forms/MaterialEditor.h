@@ -33,12 +33,13 @@ public:
     void clearProperties();
     void addProperty(const he::ge::PropertyDesc& propDesc);
 
-    MaterialGeneratorNodeType getActiveCreateNode() const;
+    he::FixedString getActiveCreateNode() const;
 
 public slots:
     void createNewGraph();
     void tabCloseRequested(const int tab);
     void compile();
+    void save();
 
 signals:
     void propertyChanged(he::ge::Property* val);

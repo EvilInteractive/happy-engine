@@ -22,6 +22,11 @@
 
 #include <DefaultLayoutable.h>
 
+namespace he {
+namespace io {
+    class StructuredVisitor;
+} }
+
 namespace hs {
 class NodeGraphNodeAttachment;
 struct NodeGraphDrawContext;
@@ -51,7 +56,7 @@ public:
         he::Color m_ConnectorBorderColor[eConnectorState_MAX];
     };
 
-    NodeGraphNodeConnector();
+    explicit NodeGraphNodeConnector(NodeGraphNodeAttachment* parent);
     virtual ~NodeGraphNodeConnector();
 
     // Style
@@ -61,8 +66,13 @@ public:
     EConnectorState getState() const { return m_State; }
     void setState(const EConnectorState state) { m_State = state; }
 
+    const he::FixedString& getId() const { return m_Id; }
+    void setId(const he::FixedString& id) { m_Id = id; }
+
     ENodeGraphNodeConnectorType getType() const { return m_Type; }
     virtual void setType(const ENodeGraphNodeConnectorType type) { m_Type = type; }
+
+    NodeGraphNodeAttachment* getParent() const { return m_Parent; }
 
     // Returns true if something actually changed
     virtual bool connect(NodeGraphNodeConnector* other);
@@ -76,9 +86,13 @@ public:
     // Picking
     bool pick(const he::vec2& worldPos) const;
 
+    // Draw
     void draw(const NodeGraphDrawContext& context);
     void drawConnection(const NodeGraphDrawContext& context, const NodeGraphNodeConnector& other);
     void drawConnection(const NodeGraphDrawContext& context, const he::vec2& other);
+
+    // Serialization
+    virtual void visit(he::io::StructuredVisitor* const visitor);
     
 private:
     NodeGraphNodeAttachment* m_Parent;
@@ -86,6 +100,7 @@ private:
     EConnectorState m_State;
     ConnectorStyle m_Style;
     ENodeGraphNodeConnectorType m_Type;
+    he::FixedString m_Id;
 
     //Disable default copy constructor and default assignment operator
     NodeGraphNodeConnector(const NodeGraphNodeConnector&);

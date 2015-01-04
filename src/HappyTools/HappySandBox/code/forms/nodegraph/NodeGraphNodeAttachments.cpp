@@ -24,12 +24,14 @@
 #include <ContentManager.h>
 #include <Font.h>
 #include <Texture2D.h>
+#include <StructuredVisitor.h>
 
 namespace hs {
 
 IMPLEMENT_LAYOUT_FROM(hs::NodeGraphNodeTextConnector, m_Layout)
 
-NodeGraphNodeTextConnector::NodeGraphNodeTextConnector()
+NodeGraphNodeTextConnector::NodeGraphNodeTextConnector(NodeGraphNode* parent)
+: NodeGraphNodeAttachment(parent)
 {
 
 }
@@ -39,7 +41,7 @@ NodeGraphNodeTextConnector::~NodeGraphNodeTextConnector()
 
 }
 
-void NodeGraphNodeTextConnector::init( const ENodeGraphNodeConnectorType connectorType, const char* text )
+void NodeGraphNodeTextConnector::init( const ENodeGraphNodeConnectorType connectorType, const he::FixedString& id, const char* text )
 {
     m_Layout.suspendLayout();
     he::gui::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", 72, he::gui::Font::NO_CACHE));
@@ -47,7 +49,8 @@ void NodeGraphNodeTextConnector::init( const ENodeGraphNodeConnectorType connect
     font->release();
 
     m_Text.setLayoutVAlignment(he::gui::eLayoutVAlignment_Center);
-    NodeGraphNodeConnector& connector(getNodeConnector());
+    NodeGraphNodeConnector& connector(*getNodeConnector());
+    connector.setId(id);
     connector.setLayoutVAlignment(he::gui::eLayoutVAlignment_Center);
     connector.setType(connectorType);
     switch (connectorType)
@@ -75,17 +78,22 @@ void NodeGraphNodeTextConnector::init( const ENodeGraphNodeConnectorType connect
 
 NodeGraphNodeConnector* NodeGraphNodeTextConnector::pickNodeConnector( const he::vec2& worldPos )
 {
-    NodeGraphNodeConnector& connector(getNodeConnector());
-    if (connector.pick(worldPos))
-        return &connector;
+    NodeGraphNodeConnector* connector(getNodeConnector());
+    if (connector->pick(worldPos))
+        return connector;
     else
         return nullptr;
 }
 
 void NodeGraphNodeTextConnector::draw( const NodeGraphDrawContext& context )
 {
-    getNodeConnector().draw(context);
+    getNodeConnector()->draw(context);
     m_Text.draw2D(context.canvas, context.transform);
+}
+
+void NodeGraphNodeTextConnector::visit( he::io::StructuredVisitor* const visitor )
+{
+    getNodeConnector()->visit(visitor);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,8 +102,9 @@ void NodeGraphNodeTextConnector::draw( const NodeGraphDrawContext& context )
 
 IMPLEMENT_LAYOUT_FROM(hs::NodeGraphNodeTextureAttachment, m_Layout)
 
-NodeGraphNodeTextureAttachment::NodeGraphNodeTextureAttachment()
-    : m_Texture(nullptr)
+NodeGraphNodeTextureAttachment::NodeGraphNodeTextureAttachment(NodeGraphNode* parent)
+    : NodeGraphNodeAttachment(parent)
+    , m_Texture(nullptr)
 {
     m_Layout.setLayoutHAlignment(he::gui::eLayoutHAlignment_Center);
 }

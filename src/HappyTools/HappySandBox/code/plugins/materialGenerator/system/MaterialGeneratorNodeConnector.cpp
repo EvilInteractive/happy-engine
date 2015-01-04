@@ -29,8 +29,8 @@
 
 namespace hs {
 
-MaterialGeneratorNodeConnector::MaterialGeneratorNodeConnector( MaterialGeneratorNode* const parent, const MaterialGeneratorNodeConnectorDesc& desc )
-    : m_Parent(parent)
+MaterialGeneratorNodeConnector::MaterialGeneratorNodeConnector( NodeGraphNodeAttachment* const parent, const MaterialGeneratorNodeConnectorDesc& desc )
+    : NodeGraphNodeConnector(parent)
     , m_VariableType(MaterialGeneratorVariableType_Unknown)
     , m_Variable(he::ObjectHandle::unassigned)
 {
@@ -52,7 +52,7 @@ MaterialGeneratorNodeConnector::~MaterialGeneratorNodeConnector()
 {
     if (getType() == eNodeGraphNodeConnectorType_Output && m_Variable != he::ObjectHandle::unassigned)
     {
-        m_Parent->getParent()->getShaderGenerator()->removeVariable(m_Variable);
+        he::checked_cast<MaterialGraph*>(getParent()->getParent()->getParent())->getShaderGenerator()->removeVariable(m_Variable);
     }
 }
 
@@ -63,11 +63,14 @@ void MaterialGeneratorNodeConnector::setType( const ENodeGraphNodeConnectorType 
         NodeGraphNodeConnector::setType(type);
         if (type == eNodeGraphNodeConnectorType_Output)
         {
-            m_Variable = m_Parent->getParent()->getShaderGenerator()->addVariable(materialGeneratorNodeTypeToString(m_Parent->getType()));
+            m_Variable = he::checked_cast<MaterialGraph*>(
+                getParent()->getParent()->getParent())->getShaderGenerator()->addVariable(
+                getParent()->getParent()->getType().c_str());
         }
         else
         {
-            m_Parent->getParent()->getShaderGenerator()->removeVariable(m_Variable);
+            he::checked_cast<MaterialGraph*>(
+                getParent()->getParent()->getParent())->getShaderGenerator()->removeVariable(m_Variable);
             m_Variable = he::ObjectHandle::unassigned;
         }
     }
@@ -77,7 +80,7 @@ bool MaterialGeneratorNodeConnector::connect( NodeGraphNodeConnector* other )
 {
     if (NodeGraphNodeConnector::connect(other))
     {
-        m_Parent->notifyNodeConnected(this, he::checked_cast<MaterialGeneratorNodeConnector*>(other));
+        he::checked_cast<MaterialGeneratorNode*>(getParent()->getParent())->notifyNodeConnected(this, he::checked_cast<MaterialGeneratorNodeConnector*>(other));
         return true;
     }
     return false;
@@ -87,7 +90,7 @@ bool MaterialGeneratorNodeConnector::disconnect( NodeGraphNodeConnector* other )
 {
     if (NodeGraphNodeConnector::disconnect(other))
     {
-        m_Parent->notifyNodeDisconnected(this, he::checked_cast<MaterialGeneratorNodeConnector*>(other));
+        he::checked_cast<MaterialGeneratorNode*>(getParent()->getParent())->notifyNodeDisconnected(this, he::checked_cast<MaterialGeneratorNodeConnector*>(other));
         return true;
     }
     return false;
@@ -103,8 +106,9 @@ void MaterialGeneratorNodeConnector::setVar( const he::ObjectHandle var )
 //////////////////////////////////////////////////////////////////////////
 
 MaterialGeneratorNodeConnectorAttachment::MaterialGeneratorNodeConnectorAttachment( 
-    MaterialGeneratorNode* const parent, const MaterialGeneratorNodeConnectorDesc& desc )
-    : m_Connector(parent, desc)
+    NodeGraphNode* const parent, const MaterialGeneratorNodeConnectorDesc& desc )
+    : NodeGraphNodeTextConnector(parent)
+    , m_Connector(this, desc)
 {
     
 }

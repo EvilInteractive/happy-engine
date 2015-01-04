@@ -33,9 +33,11 @@ class MaterialGeneratorNode;
 struct MaterialGeneratorNodeConnectorDesc
 {
     MaterialGeneratorNodeConnectorDesc() {}
-    MaterialGeneratorNodeConnectorDesc(const he::String& name, const he::Color& color)
-        : m_Name(name)
+    MaterialGeneratorNodeConnectorDesc(const he::FixedString& id, const he::String& name, const he::Color& color)
+        : m_Id(id)
+        , m_Name(name)
         , m_Color(color) {}
+    he::FixedString m_Id;
     he::String m_Name;
     he::Color m_Color;
 };
@@ -43,7 +45,7 @@ struct MaterialGeneratorNodeConnectorDesc
 class MaterialGeneratorNodeConnector : public hs::NodeGraphNodeConnector
 {
 public:
-    MaterialGeneratorNodeConnector(MaterialGeneratorNode* const parent, const MaterialGeneratorNodeConnectorDesc& desc);
+    MaterialGeneratorNodeConnector(NodeGraphNodeAttachment* const parent, const MaterialGeneratorNodeConnectorDesc& desc);
     ~MaterialGeneratorNodeConnector();
 
     bool connect(NodeGraphNodeConnector* other) final;
@@ -56,11 +58,8 @@ public:
     he::ObjectHandle getVar() const { return m_Variable; }
     void setVar(const he::ObjectHandle var);
 
-    MaterialGeneratorNode* getParent() const { return m_Parent; }
-
 private:
     MaterialGeneratorVariableType m_VariableType;
-    MaterialGeneratorNode* m_Parent;
     he::ObjectHandle m_Variable;
 
     //Disable default copy constructor and default assignment operator
@@ -71,9 +70,9 @@ private:
 class MaterialGeneratorNodeConnectorAttachment : public hs::NodeGraphNodeTextConnector
 {
 public:
-    MaterialGeneratorNodeConnectorAttachment(MaterialGeneratorNode* const parent, const MaterialGeneratorNodeConnectorDesc& desc);
+    MaterialGeneratorNodeConnectorAttachment(NodeGraphNode* const parent, const MaterialGeneratorNodeConnectorDesc& desc);
 
-    NodeGraphNodeConnector& getNodeConnector() final { return m_Connector; }
+    NodeGraphNodeConnector* getNodeConnector() final { return &m_Connector; }
     MaterialGeneratorNodeConnector& getMaterialNodeConnector() { return m_Connector; }
 
 private:

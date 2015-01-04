@@ -28,6 +28,9 @@ namespace gfx
 {
     class Texture2D;
 }
+namespace io {
+    class StructuredVisitor;
+}
 }
 
 
@@ -35,6 +38,7 @@ namespace hs {
 class NodeGraphNodeAttachment;
 struct NodeGraphDrawContext;
 class NodeGraphNodeConnector;
+class NodeGraph;
 
 class NodeGraphNode
 {
@@ -60,7 +64,7 @@ public:
         static void sdmInit();
         static void sdmDestroy();
     };
-    NodeGraphNode();
+    explicit NodeGraphNode(NodeGraph* parent);
     virtual ~NodeGraphNode();
 
     // Style
@@ -71,7 +75,17 @@ public:
     void endEdit();
     void addAttachment(NodeGraphNodeAttachment* att);
     void setTitle(const char* title);
+
+    // Data
+    void setGuid(const he::Guid& id) { m_Guid = id; }
+    const he::Guid& getGuid() const { return m_Guid; }
+
+    NodeGraph* getParent() const { return m_Parent; } 
+
+    virtual const he::FixedString& getType() const = 0;
     
+    const he::PrimitiveList<NodeGraphNodeAttachment*>& getAttachments() const { return m_Attachments; }
+
     // State
     bool isInside(const he::vec2& worldPos);
     NodeGraphNodeConnector* pickConnector(const he::vec2& worldPos);
@@ -83,6 +97,9 @@ public:
     
     // Draw
     void draw(const NodeGraphDrawContext& context);
+
+    // Serializing
+    virtual void visit(he::io::StructuredVisitor* const visitor);
 
 private:
     // Draw
@@ -99,6 +116,9 @@ private:
     he::gui::VerticalLayout m_Layout;
     he::gui::LayoutableVectorText m_Title;
     he::vec2 m_Position;
+    he::Guid m_Guid;
+
+    NodeGraph* m_Parent;
 
     NodeGraphNode(const NodeGraphNode&);
     NodeGraphNode& operator=(const NodeGraphNode&);

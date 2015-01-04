@@ -20,5 +20,12 @@
 
 namespace hs {
 
+
+NodeGraphNodeAttachment::NodeGraphNodeAttachment( NodeGraphNode* parent )
+    : m_Parent(parent)
+{
+
+}
+
 } //end namespace
 

@@ -25,6 +25,7 @@
 #include <ContentManager.h>
 #include <Texture2D.h>
 #include <Font.h>
+#include <StructuredVisitor.h>
 
 #define HEADER_HEIGHT 24.0f
 
@@ -67,9 +68,10 @@ void NodeGraphNode::Style::sdmDestroy()
 NodeGraphNode::Style NodeGraphNode::Style::s_DefaultStyle;
 NodeGraphNode::Style NodeGraphNode::Style::s_ErrorStyle;
 
-NodeGraphNode::NodeGraphNode()
+NodeGraphNode::NodeGraphNode(NodeGraph* parent)
     : m_State(eState_Normal)
     , m_Style(&Style::s_DefaultStyle)
+    , m_Parent(parent)
 {
     m_Layout.setLayoutBound(he::RectF(0, 0, 160, 128));
     m_Layout.setLayoutMargin(he::vec4(4, 16, 4, 16));
@@ -186,6 +188,15 @@ void NodeGraphNode::setTitle( const char* title )
     he::gui::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", 72, he::gui::Font::NO_CACHE));
     m_Title.create(font, 16, title);
     font->release();
+}
+
+void NodeGraphNode::visit( he::io::StructuredVisitor* const visitor )
+{
+    visitor->visit(he::HEFS::strPosition, m_Position);
+    m_Attachments.forEach([visitor](NodeGraphNodeAttachment* att)
+    {
+        att->visit(visitor);
+    });
 }
 
 } //end namespace
