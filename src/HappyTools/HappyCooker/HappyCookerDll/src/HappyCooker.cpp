@@ -121,7 +121,7 @@ bool HappyCooker::cook(const he::String& input, const he::String& output)
 
     importer.SetPropertyInteger("AI_CONFIG_PP_RVC_FLAGS", aiComponent_COLORS | aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS);
     importer.SetPropertyInteger("AI_CONFIG_PP_LBW_MAX_WEIGHTS", he::gfx::Bone::MAX_BONEWEIGHTS);
-    const aiScene* pScene( importer.ReadFile(m_ImportPath + input,
+    const aiScene* pScene( importer.ReadFile((m_ImportPath + input).c_str(),
         aiProcess_CalcTangentSpace |
         aiProcess_Triangulate |
         aiProcess_JoinIdenticalVertices |
@@ -202,7 +202,7 @@ bool HappyCooker::cook(const he::String& input, const he::String& output)
     return true;
 }
 
-void HappyCooker::addInfo( std::string info )
+void HappyCooker::addInfo( he::String info )
 {
     std::cout << info << "\n";
     if (m_InfoCallback != nullptr)
@@ -513,17 +513,17 @@ bool HappyCooker::cookTriangleMesh( he::io::BinaryFileVisitor& stream )
     return succes;
 }
 
-void HappyCooker::setModelExportPath( const std::string& path )
+void HappyCooker::setModelExportPath( const he::String& path )
 {
     m_ModelExportPath = path;
 }
 
-void HappyCooker::setPhysicsExportPath( const std::string& path )
+void HappyCooker::setPhysicsExportPath( const he::String& path )
 {
     m_PhysicsExportPath = path;
 }
 
-void HappyCooker::setImportPath( const std::string& path )
+void HappyCooker::setImportPath( const he::String& path )
 {
     m_ImportPath = path;
 }

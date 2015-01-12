@@ -21,7 +21,6 @@
 #ifndef _HE_OBJECT_FACTORY_H_
 #define _HE_OBJECT_FACTORY_H_
 #pragma once
-#pragma message("-- Including object factory --")
 
 #include "Singleton.h"
 

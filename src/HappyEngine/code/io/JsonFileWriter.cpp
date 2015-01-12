@@ -221,7 +221,8 @@ bool visitDefaultType(JsonFileWriter::Writer* const writer, T& value, const char
 
 bool JsonFileWriter::visit( he::String& value, const char* comment /*= NULL*/ )
 {
-    return visitDefaultType(m_Writer, value, comment);
+    const char* str(value.c_str());
+    return visitDefaultType(m_Writer, str, comment);
 }
 
 bool JsonFileWriter::visit( bool& value, const char* comment /*= NULL*/ )

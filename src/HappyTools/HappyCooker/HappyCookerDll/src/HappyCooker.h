@@ -86,7 +86,7 @@ private:
     HappyCooker();
 
     he::px::PhysicsEngine* m_PhysicsEngine;
-    void addInfo(std::string info);
+    void addInfo(he::String info);
     bool (__stdcall *m_InfoCallback)(const char*);
 
     void binobjNodeRunner(aiNode* pNode, const aiScene* pScene, const he::mat44& p_Transformation);

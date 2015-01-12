@@ -93,7 +93,7 @@ bool JsonFileReader::open( const Path& path )
     {
         he::String file(freader.readToEnd());
         json::Value root;
-        if (m_Reader->getReader().parse(file, root, true))
+        if (m_Reader->getReader().parse(file.c_str(), file.c_str() + file.size(), root, true))
         {
             m_Reader->init(std::move(root));
             m_OpenType = StructuredVisitor::eOpenType_Read;

@@ -40,14 +40,14 @@ public:
         typedef StlAllocater<_Tp1> other;
     };
 
-    pointer allocate(size_type n, const void *hint=0)
+    pointer allocate(size_type n, const void * /*hint*/ = 0)
     {
-        return ObjectAllocator::allocate(n);
+        return ObjectAllocator<T>::allocate(n);
     }
 
     void deallocate(pointer p, size_type /*n*/)
     {
-        return ObjectAllocator::deallocate(p);
+        ObjectAllocator<T>::deallocate(p);
     }
 
     StlAllocater() throw(): std::allocator<T>() { }
@@ -112,7 +112,7 @@ public:
     static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount)
     {
         T* const newMem(allocate(newAmount));
-        size_t copyAmount(std::min(newAmount, oldAmount));
+        const size_t copyAmount(newAmount < oldAmount? newAmount : oldAmount);
         for (size_t i(0); i < copyAmount; ++i)
         {
             newMem[i] = std::move(old[i]);

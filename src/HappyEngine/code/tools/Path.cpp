@@ -185,11 +185,12 @@ bool Path::iterateFiles( const bool recursive, const std::function<void(const Pa
         {
             if (boost::filesystem::is_regular_file(it->status()))
             {
-                func(it->path().string());
+                Path path(it->path().string().c_str());
+                func(path);
             }
             else if (boost::filesystem::is_directory(it->status()))
             {
-                Path path(it->path().string());
+                Path path(it->path().string().c_str());
                 path.iterateFiles(recursive, func);
             }
         }

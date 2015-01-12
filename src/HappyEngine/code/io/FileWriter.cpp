@@ -50,7 +50,7 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
             {
                 if (error.value() != 0)
                 {
-                    he::String message("Directory creation failed:\n" + error.message());
+                    he::String message(he::String("Directory creation failed:\n") + error.message().c_str());
                     HappyMessageBox::showExt("Fail!", message.c_str(), HappyMessageBox::Icon_Error);
                 }
             }
