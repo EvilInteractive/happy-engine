@@ -36,8 +36,10 @@
 #endif
 #ifdef HE_DEBUG
 #define FILE_AND_LINE __FILE__, __LINE__
+#define COMMA_FILE_AND_LINE , __FILE__, __LINE__
 #else
 #define FILE_AND_LINE
+#define COMMA_FILE_AND_LINE
 #endif
 
 #ifdef HE_DEBUG
@@ -88,8 +90,10 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#pragma message("-- 10% Done --")
 #include <deque>
 #include <queue>
+#pragma message("-- 20% Done --")
 #include <set>
 #include <atomic>
 #ifdef HE_WINDOWS
@@ -97,8 +101,10 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #endif
 #include <limits.h>
 
+#pragma message("-- 30% Done --")
 #include <boost/chrono.hpp>
 #include <boost/any.hpp>
+#pragma message("-- 40% Done --")
 #include <boost/date_time.hpp>
 #include <boost/timer.hpp>
 
@@ -126,6 +132,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HappyNew.h"
 #include "HeString.h"
 #include "HeFixedStrings.h"
+#pragma message("-- 50% Done --")
 
 #include "HappyGuid.h"
 #include "vec2.h"
@@ -149,27 +156,32 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HappyFunctions.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
+#pragma message("-- 60% Done --")
 
 #include <GL/glew.h>
 #include "OpenGL.h"
 #include "GLContext.h"
+#pragma message("-- 70% Done --")
 
 #include "List.h"
 #include "thread/ThreadTicket.h"
 #include "FixedSizeList.h"
+#pragma message("-- 80% Done --")
 
+#include "Path.h"
+#include "HappyEngine.h"
 #include "ObjectFactory.h"
+#pragma message("-- 90% Done --")
 
 #include "Profiler.h"
 
 #include "event.h"
-#include "Path.h"
 
 #include "Keys.h"
 #include "MouseButtons.h"
 
-#include "HappyEngine.h"
 #include "Console.h"
+#pragma message("-- 100% Done --")
 
 
 #undef near

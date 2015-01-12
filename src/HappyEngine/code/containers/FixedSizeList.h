@@ -22,8 +22,6 @@
 #define _HE_FIXEDSIZE_LIST_H_
 #pragma once
 
-#include "Creator.h"
-
 namespace he {
     
 template<typename T, size_t SIZE>

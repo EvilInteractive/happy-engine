@@ -38,11 +38,14 @@
 #include "Timer.h"
 #include "IKeyboard.h"
 #include "IMouse.h"
+#include "MemoryManager.h"
 
 #include <SDL2/SDL.h>
 
 namespace he {
-    
+
+HappyEngine* gEngine(nullptr);
+
 HappyEngine::HappyEngine(): m_Game(nullptr), m_Quit(false),
                             m_GraphicsEngine(nullptr), m_ControlsManager(nullptr),
                             m_PhysicsEngine(nullptr), m_ContentManager(nullptr),
@@ -67,6 +70,10 @@ void HappyEngine::dispose()
     HAPPYENGINE->cleanup();
 
     StaticDataManager::destroy();
+    delete gEngine;
+    gEngine = nullptr;
+    delete gMemMan;
+    gMemMan = nullptr;
 }
 void HappyEngine::cleanup()
 {  
@@ -111,6 +118,10 @@ void HappyEngine::cleanup()
 void HappyEngine::init(const int argc, const char* const * const argv, const int subengines)
 {
     HE_ASSERT(argc > 0, "There must be at least one argument in the argv argument list!");
+    HE_ASSERT(!gMemMan, "Memory Manager is already initialized!");
+    gMemMan = new MemoryManager();
+    HE_ASSERT(!gEngine, "Happy Engine is already initialized!");
+    gEngine = NEW HappyEngine();
     Path::init(argc, argv);
     StaticDataManager::init();
     ThreadTicketManager* const treadTicketMan(ThreadTicketManager::getInstance());

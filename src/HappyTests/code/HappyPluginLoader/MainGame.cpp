@@ -124,6 +124,7 @@ void MainGame::init()
         
             PROFILER->attachToRenderer(m_DebugRenderer);
             CONSOLE->attachToRenderer(m_DebugRenderer);
+            CONSOLE->registerCmd([&](){ m_PluginLoader->reloadPlugin(m_Plugin); }, "reloadPlugin");
             m_FpsGraph = NEW he::tools::FPSGraph(oculus? 3.0f : 1.0f);
             m_FpsGraph->setPos(he::vec2(5, 5));
             m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);

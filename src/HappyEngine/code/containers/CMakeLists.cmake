@@ -1,6 +1,5 @@
 
 addFilter(CODE_SRCS src/containers code/containers/
-                Creator.h
                 FixedSizeList.h
                 List.h
                 ThreadSafeQueueMP1C.inl     ThreadSafeQueueMP1C.h

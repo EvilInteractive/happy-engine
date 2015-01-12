@@ -27,6 +27,7 @@ namespace gfx {
     class ShapeRenderer;
     class Renderer2D;
     class GLContext;
+    class Window;
 }
 namespace gui {
     struct Gui;
@@ -58,7 +59,7 @@ namespace pl {
 }
 }
 
-#define HAPPYENGINE he::HappyEngine::getInstance()
+#define HAPPYENGINE he::gEngine
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
 #define CONTROLS HAPPYENGINE->getControls()
 #define PHYSICS HAPPYENGINE->getPhysics()
@@ -70,6 +71,10 @@ namespace pl {
 #define GUI HAPPYENGINE->getGui()
 
 namespace he {
+
+class HappyEngine;
+extern HAPPY_ENTRY HappyEngine* gEngine;
+
 enum SubEngine
 {
     SubEngine_None = 0,
@@ -82,11 +87,10 @@ enum SubEngine
     SubEngine_All = 0xff
 };
 
-class HAPPY_ENTRY HappyEngine : public Singleton<HappyEngine>
+class HAPPY_ENTRY HappyEngine
 {
-friend class Singleton<HappyEngine>;
 public:
-    virtual ~HappyEngine();
+    ~HappyEngine();
 
     static void init(const int argc, const char* const* const argv, const int subengines);
     static void dispose();

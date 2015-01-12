@@ -159,7 +159,7 @@ class OculusAllocater : public OVR::Allocator
 {
 public:
     void*   Alloc(OVR::UPInt size) { return he_malloc(size); }
-    void*   AllocDebug(OVR::UPInt size, const char* file, unsigned line) { return he_malloc_dbg(size, file, line); }
+    void*   AllocDebug(OVR::UPInt size, const char* /*file*/, unsigned /*line*/) { return he_malloc(size); }
     void*   Realloc(void* p, OVR::UPInt newSize) { return he_realloc(p, newSize); }
     void    Free(void *p) { he_free(p); }
     void*   AllocAligned(OVR::UPInt size, OVR::UPInt align) { return he_aligned_malloc(size, align); }

@@ -65,7 +65,7 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path, const char* fileName )
             IPlugin* const plugin(func());
             if (plugin != nullptr)
             {
-                PluginWrapper wrapper(plugin, mod);
+                PluginWrapper wrapper(plugin, mod, fullpath);
                 m_Plugins.add(wrapper);
                 result = plugin;
             }
@@ -85,6 +85,30 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path, const char* fileName )
     }
 
     return result;
+}
+
+bool PluginLoader::reloadPlugin( IPlugin* const plugin )
+{
+    size_t index(0);
+    if (m_Plugins.find_if([plugin](const PluginWrapper& wrapper) { return wrapper.m_Plugin == plugin; }, index ))
+    {
+        PluginWrapper& wrapper(m_Plugins[index]);
+        if (wrapper.m_ModuleHandle != NULL)
+        {
+#ifdef HE_WINDOWS
+            FreeLibrary(wrapper.m_ModuleHandle);
+            wrapper.m_ModuleHandle = LoadLibrary(wrapper.m_PluginPath.c_str());
+#else
+            dlclose(wrapper.m_ModuleHandle);
+#endif
+        }
+        m_Plugins.removeAt(index);
+    }
+    else
+    {
+        LOG(LogType_ProgrammerAssert, "Could not unload plugin, because it is not loaded");
+    }
+    return true;
 }
 
 IPlugin* PluginLoader::loadPlugin( IPlugin* const plugin )
@@ -116,5 +140,6 @@ void PluginLoader::unloadPlugin( IPlugin* const plugin )
         LOG(LogType_ProgrammerAssert, "Could not unload plugin, because it is not loaded");
     }
 }
+
 
 } } //end namespace

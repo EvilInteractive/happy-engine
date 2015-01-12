@@ -19,6 +19,8 @@
 #define _HE_HAPPYMEMORY_H_
 #pragma once
 
+#include "MemoryManager.h"
+
 #ifdef _MSC_VER
 #define alignas(x) __declspec(align(x))
 #endif
@@ -39,90 +41,55 @@
 //////////////////////////////////////////////////////////////////////////
 ///    malloc
 //////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
-#define he_malloc_dbg(size, file, line) _malloc_dbg(size, _NORMAL_BLOCK, file, line)
-#else
-#define he_malloc_dbg(size, file, line) malloc(size)
-#endif
-
 #ifdef HE_DEBUG
-    #define he_malloc(size) he_malloc_dbg(size, __FILE__, __LINE__)
+    #define he_malloc(size) gMemMan->alloc(size, __FILE__, __LINE__)
 #else
-    #define he_malloc(size) malloc(size)
-#endif
-
-//////////////////////////////////////////////////////////////////////////
-///    calloc -> inits to 0
-//////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
-    #ifndef _MSC_VER
-        #define he_calloc(num,size) calloc(num,size)
-    #else
-        #define he_calloc(num,size) _calloc_dbg(num, size, _NORMAL_BLOCK, __FILE__, __LINE__)
-    #endif
-#else
-    #define he_calloc(num,size) calloc(num,size)
-#endif
-
-//////////////////////////////////////////////////////////////////////////
-///    free
-//////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
-    #ifndef _MSC_VER
-        #define he_free(mem) free(mem)
-    #else
-        #define he_free(mem) _free_dbg(mem, _NORMAL_BLOCK)
-    #endif
-#else
-    #define he_free(mem) free(mem)
+    #define he_malloc(size) gMemMan->alloc(size)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 ///    aligned malloc
 //////////////////////////////////////////////////////////////////////////
 #ifdef HE_DEBUG
-    #ifndef _MSC_VER
-        #define he_aligned_malloc(size, alignment)  ([](unsigned int s, unsigned int a)  -> void* \
-        { \
-        void* p; \
-        posix_memalign(&p, a, s); \
-        return p; \
-        })(size, alignment)
-    #else
-        #define he_aligned_malloc(size, alignment) _aligned_malloc_dbg(size, alignment, __FILE__, __LINE__)
-    #endif
+    #define he_aligned_malloc(size, align) gMemMan->allocAligned(size, align, __FILE__, __LINE__)
 #else
-    #ifndef _MSC_VER
-        #define he_aligned_malloc(size, alignment)  ([](unsigned int s, unsigned int a) -> void* \
-        { \
-            void* p; \
-            posix_memalign(&p, a, s); \
-            return p; \
-        })(size, alignment)
-    #else
-        #define he_aligned_malloc(size, alignment) _aligned_malloc(size, alignment)
-    #endif
+    #define he_aligned_malloc(size, align) gMemMan->allocAligned(size, align)
 #endif
 
+//////////////////////////////////////////////////////////////////////////
+///    free
+//////////////////////////////////////////////////////////////////////////
+#ifdef HE_DEBUG
+    #define he_free(mem) gMemMan->free(mem, __FILE__, __LINE__)
+#else
+    #define he_free(mem) gMemMan->free(mem)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 ///    aligned free
 //////////////////////////////////////////////////////////////////////////
 #ifdef HE_DEBUG
-    #ifndef _MSC_VER
-        #define he_aligned_free(mem) free(mem)
-    #else
-        #define he_aligned_free(mem) _aligned_free_dbg(mem)
-    #endif
+    #define he_aligned_free(mem) gMemMan->freeAligned(mem, __FILE__, __LINE__)
 #else
-    #ifndef _MSC_VER
-        #define he_aligned_free(mem) free(mem)
-    #else
-        #define he_aligned_free(mem) _aligned_free(mem)
-    #endif
+    #define he_aligned_free(mem) gMemMan->freeAligned(mem)
+#endif
+//////////////////////////////////////////////////////////////////////////
+///    realloc
+//////////////////////////////////////////////////////////////////////////
+#ifdef HE_DEBUG
+    #define he_realloc(mem, newsize) gMemMan->realloc(mem, newsize, __FILE__, __LINE__)
+#else
+    #define he_realloc(mem, newsize) gMemMan->realloc(mem, newsize)
 #endif
 
+//////////////////////////////////////////////////////////////////////////
+///    aligned realloc
+//////////////////////////////////////////////////////////////////////////
+#ifdef HE_DEBUG
+    #define he_aligned_realloc(mem, newsize, alignment) gMemMan->reallocAligned(mem, newsize, alignment, __FILE__, __LINE__)
+#else
+    #define he_aligned_realloc(mem, newsize, alignment) gMemMan->reallocAligned(mem, newsize, alignment)
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 ///    memset
@@ -139,44 +106,4 @@
 //////////////////////////////////////////////////////////////////////////
 #define he_memmove(dest, src, size) memmove(dest, src, size)
 
-//////////////////////////////////////////////////////////////////////////
-///    realloc
-//////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
-    #ifndef _MSC_VER
-        #define he_realloc(mem, newsize) realloc(mem, newsize)
-    #else
-        #define he_realloc(mem, newsize) _realloc_dbg(mem, newsize, _NORMAL_BLOCK, __FILE__, __LINE__)
-    #endif
-#else
-    #define he_realloc(mem, newsize) realloc(mem, newsize)
-#endif
-
-//////////////////////////////////////////////////////////////////////////
-///    aligned realloc
-//////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
-    #ifndef _MSC_VER
-        #define he_aligned_realloc(memory, oldsize, newsize, alignment) ([](void* mem, unsigned int oSize, unsigned int nSize, unsigned int al) -> void* \
-                { \
-                    void* temp = he_aligned_malloc(nSize, al); \
-                    he_memcpy(temp, mem, nSize < oSize? nSize : oSize); \
-                    he_aligned_free(mem); \
-                    return temp; \
-                })(memory, oldsize, newsize, alignment)
-    #else
-        #define he_aligned_realloc(mem, oldsize, newsize, alignment) _aligned_realloc_dbg(mem, newsize, alignment, __FILE__, __LINE__)
-    #endif
-#else
-    #ifndef _MSC_VER
-        #define he_aligned_realloc(memory, oldsize, newsize, alignment) ([](void* mem, unsigned int oSize, unsigned int nSize, unsigned int al) -> void* \
-                    { \
-                        void* temp = he_aligned_malloc(nSize, al); \
-                        he_memcpy(temp, mem, nSize < oSize? nSize : oSize); \
-                        he_aligned_free(mem); \
-                        return temp; \
-                    })(memory, oldsize, newsize, alignment)
-    #else
-        #define he_aligned_realloc(mem, oldsize, newsize, alignment) _aligned_realloc(mem, newsize, alignment)
-    #endif
 #endif

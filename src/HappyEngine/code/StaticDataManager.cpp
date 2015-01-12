@@ -64,7 +64,6 @@ void StaticDataManager::init()
     he::ThreadTicketManager::sdmInit();
     he::Path msbbox(he::Path::getDataPath().append("gui/messageBox.html"));
     he::HappyMessageBox::init(msbbox.str().c_str(), 1024, 512);
-    he::HappyEngine::sdmInit();
     tools::Logger::sdmInit();
     he::GlobalStringTable::sdmInit();
     he::HEFS::sdmInit();
@@ -134,7 +133,6 @@ void StaticDataManager::destroy()
     he::HEFS::sdmDestroy();
     he::GlobalStringTable::sdmDestroy();
     tools::Logger::sdmDestroy();
-    he::HappyEngine::sdmDestroy();
     he::HappyMessageBox::destroy();
     he::ThreadTicketManager::sdmDestroy();
 #ifdef USE_WEB

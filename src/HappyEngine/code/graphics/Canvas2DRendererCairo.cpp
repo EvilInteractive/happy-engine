@@ -118,10 +118,8 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
             cairo_destroy(data->m_CairoPaint);
             cairo_surface_destroy(data->m_CairoSurface);
         
-            unsigned char* rBuff(
-                static_cast<unsigned char*>(he_calloc(
-                4 * w * h,
-                sizeof(unsigned char))));
+            unsigned char* rBuff(static_cast<unsigned char*>(he_malloc(4 * w * h * sizeof(unsigned char))));
+            he_memset(rBuff, 0, 4 * w * h * sizeof(unsigned char));
 
             cairo_surface_t* surf(
                 cairo_image_surface_create_for_data(rBuff, CAIRO_FORMAT_ARGB32, w, h, 4 * w));
@@ -145,10 +143,9 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
     }
     else
     {
-        unsigned char* rBuff(
-            static_cast<unsigned char*>(he_calloc(
-            4 * w * h,
-            sizeof(unsigned char))));
+
+        unsigned char* rBuff(static_cast<unsigned char*>(he_malloc(4 * w * h * sizeof(unsigned char))));
+        he_memset(rBuff, 0, 4 * w * h * sizeof(unsigned char));
 
         cairo_surface_t* surf(
             cairo_image_surface_create_for_data(rBuff, CAIRO_FORMAT_ARGB32, w, h, 4 * w));

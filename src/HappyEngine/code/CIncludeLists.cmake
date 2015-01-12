@@ -12,4 +12,5 @@ include_directories(${HappyEngine_SOURCE_DIR}/HappyEngine/code/networking)
 include_directories(${HappyEngine_SOURCE_DIR}/HappyEngine/code/physics)
 include_directories(${HappyEngine_SOURCE_DIR}/HappyEngine/code/tools)
 include_directories(${HappyEngine_SOURCE_DIR}/HappyEngine/code/plugin)
+include_directories(${HappyEngine_SOURCE_DIR}/HappyEngine/code/memory)
                             

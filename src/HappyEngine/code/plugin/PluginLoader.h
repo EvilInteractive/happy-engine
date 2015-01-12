@@ -41,10 +41,11 @@ class HAPPY_ENTRY PluginLoader
         ~PluginWrapper() {}
 
         explicit PluginWrapper(IPlugin* const plugin) : m_Plugin(plugin), m_ModuleHandle(NULL) {}
-        PluginWrapper(IPlugin* const plugin, PLUGIN_HANDLE const mod) : m_Plugin(plugin), m_ModuleHandle(mod) {}
+        PluginWrapper(IPlugin* const plugin, PLUGIN_HANDLE const mod, he::String path) : m_Plugin(plugin), m_ModuleHandle(mod), m_PluginPath(path) {}
 
         IPlugin* m_Plugin;
         PLUGIN_HANDLE m_ModuleHandle;
+        he::String m_PluginPath;
     };
 public:
     PluginLoader();
@@ -52,6 +53,7 @@ public:
 
     IPlugin* loadPlugin(const he::Path& path, const char* fileName);
     IPlugin* loadPlugin(IPlugin* const plugin);
+    bool reloadPlugin(IPlugin* const plugin);
     void unloadPlugin(IPlugin* const plugin);
     
 private:
