@@ -31,9 +31,9 @@ int main( int /*argc*/, char** /*args[]*/ )
     HAPPYENGINE->init(he::SubEngine_Networking);
     hps::HPSStaticDataManager::init();
 
-    he::ge::Game* ge(NEW hps::MainGame());
+    he::ge::Game* ge(NEW(hps::MainGame)());
     HAPPYENGINE->start(ge);
-    delete ge;
+    HEDelete(ge);
 
     hps::HPSStaticDataManager::destroy();
 

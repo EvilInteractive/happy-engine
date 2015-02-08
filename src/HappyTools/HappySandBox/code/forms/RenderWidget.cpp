@@ -204,7 +204,7 @@ namespace
 
 namespace hs {
 
-RenderWidget::RenderWidget(QWidget *parent): QGLWidget(NEW GLContextQT(QGLFormat::defaultFormat()), parent, Sandbox::getInstance()->getSharedWidget())
+RenderWidget::RenderWidget(QWidget *parent): QGLWidget(HENew(GLContextQT)(QGLFormat::defaultFormat()), parent, Sandbox::getInstance()->getSharedWidget())
 {
     setAutoBufferSwap(false);
 }
@@ -325,7 +325,7 @@ bool RenderWidget::create(const bool show)
         m_WindowRect.height = height();
         result = true;
 
-        CONTROLS->registerInputForWindow(getHandle(), NEW he::io::Keyboard(), NEW he::io::Mouse());
+        CONTROLS->registerInputForWindow(getHandle(), HENew(he::io::Keyboard)(), HENew(he::io::Mouse)());
     }
     return result;
 }

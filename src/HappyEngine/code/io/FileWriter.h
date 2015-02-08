@@ -19,6 +19,8 @@
 #define _HE_FILEWRITER_H_
 #pragma once
 
+#include <fstream>
+
 namespace he {
 namespace io {
 

@@ -30,6 +30,29 @@
 
 namespace he {
 namespace net {
+    namespace details {
+    void* RakMalloc(const size_t size) { return gMemMan->alloc(size MEM_DEBUG_PARAM("RakMalloc") GET_MEM_DEBUG_FL_PARAM); }
+    void* RakRealloc(void *p, const size_t size) { return gMemMan->realloc(p, size MEM_DEBUG_PARAM("RakMalloc") GET_MEM_DEBUG_FL_PARAM); }
+    void RakFree(void *p) { gMemMan->free(p); }
+    void* RakMalloc_Ex(const size_t size, const char *file, unsigned int line) { return gMemMan->alloc(size MEM_DEBUG_PARAM("RakMalloc") PASS_MEM_DEBUG_FL_PARAMS); }
+    void* RakRealloc_Ex(void *p, const size_t size, const char *file, unsigned int line) { return gMemMan->realloc(p, size MEM_DEBUG_PARAM("RakMalloc") PASS_MEM_DEBUG_FL_PARAMS); }
+    void RakFree_Ex(void *p, const char* /*file*/, unsigned int /*line*/) { gMemMan->free(p); }
+}
+
+void NetworkManager::sdmInit()
+{
+    SetMalloc(details::RakMalloc);
+    SetRealloc(details::RakRealloc);
+    SetFree(details::RakFree);
+    SetMalloc_Ex(details::RakMalloc_Ex);
+    SetRealloc_Ex(details::RakRealloc_Ex);
+    SetFree_Ex(details::RakFree_Ex);
+}
+
+void NetworkManager::sdmDestroy()
+{
+
+}
 
 bool packageReceivedEventCombiner(bool& inoutA, const bool& inB)
 {
@@ -41,9 +64,9 @@ NetworkManager::NetworkManager()
     : m_RakPeer(nullptr)
     , m_Sleep(0.0f)
     , m_ConnectionType(ConnectionType_Client)
-    , m_NetworkObjectFactoryManager(NEW NetworkObjectFactoryManager())
+    , m_NetworkObjectFactoryManager(HENew(NetworkObjectFactoryManager)())
     , m_MaxConnections(8)
-    , m_NetworkIdManager(NEW RakNet::NetworkIDManager())
+    , m_NetworkIdManager(HENew(RakNet::NetworkIDManager)())
     , m_SleepTimout(1 / 30.0f)
     , PacketReceived(&packageReceivedEventCombiner, false)
 {
@@ -53,8 +76,8 @@ NetworkManager::NetworkManager()
 
 NetworkManager::~NetworkManager()
 {
-    delete m_NetworkObjectFactoryManager;
-    delete m_NetworkIdManager;
+    HEDelete(m_NetworkObjectFactoryManager);
+    HEDelete(m_NetworkIdManager);
     const bool isConnected(this->isConnected());
     if (isConnected == true)
         disconnect();
@@ -113,7 +136,7 @@ void NetworkManager::disconnect()
 }
 void NetworkManager::clientDisconnected( const NetworkID& id )
 {
-    m_Connections.erase(id);
+    m_Connections.remove(id);
     ClientDisconnected(id);
 }
 void NetworkManager::clientConnected( const NetworkID& id, const he::String& adress )
@@ -225,12 +248,12 @@ bool NetworkManager::isConnected() const
 
 RakNet::Connection_RM3* NetworkManager::AllocConnection( const RakNet::SystemAddress &systemAddress, RakNet::RakNetGUID rakNetGUID ) const
 {
-    return NEW NetworkReplicaConnection(systemAddress, rakNetGUID);
+    return HENew(NetworkReplicaConnection)(systemAddress, rakNetGUID);
 }
 
 void NetworkManager::DeallocConnection( RakNet::Connection_RM3 *connection ) const
 {
-    delete connection;
+    HEDelete(connection);
 }
 
 bool NetworkManager::IsHost() const
@@ -283,7 +306,6 @@ void NetworkManager::broadcast( const NetworkPackage& package, const bool ignore
         checked_numcast<PacketPriority>(priority), checked_numcast<PacketReliability>(reliability), 
         0, ignoreSelf?getNetworkId():UNASSIGNED_NETWORKID, true);
 }
-
 
 
 

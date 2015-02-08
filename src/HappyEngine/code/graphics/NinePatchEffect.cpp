@@ -43,7 +43,7 @@ NinePatchEffect::NinePatchEffect()
 
 NinePatchEffect::~NinePatchEffect()
 {
-    delete m_Material;
+    HEDelete(m_Material);
 }
 
 void NinePatchEffect::init(const VertexLayout& layout)

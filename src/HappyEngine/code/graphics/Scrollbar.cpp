@@ -38,7 +38,7 @@ Scrollbar::Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar) :
                                                                                     m_PreviousMousePos(0,0),
                                                                                     m_ScrollbarHeight(heightScrollbar)
 {
-    m_Hitregion = NEW Hitregion(
+    m_Hitregion = HENew(Hitregion)(
         vec2(pos.x + size.x/2, pos.y + (heightScrollbar/2)),
         vec2(size.x - 2, heightScrollbar));
 
@@ -55,7 +55,7 @@ Scrollbar::Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar) :
 
 Scrollbar::~Scrollbar()
 {
-    delete m_Hitregion;
+    HEDelete(m_Hitregion);
     m_Hitregion = nullptr;
 }
 

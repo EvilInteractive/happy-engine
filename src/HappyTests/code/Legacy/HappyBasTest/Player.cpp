@@ -34,16 +34,16 @@ namespace ht {
 
 #pragma warning(disable:4355) // this in constructor
 Player::Player()
-    : m_Mover(NEW PlayerMover(this))
-    , m_Camera(NEW PlayerThirdPersonCamera(this))
+    : m_Mover(NEW(PlayerMover)(this))
+    , m_Camera(NEW(PlayerThirdPersonCamera)(this))
 {
     addComponent(m_Mover);
 
-    he::ge::ModelComponent* const model(NEW he::ge::ModelComponent);
+    he::ge::ModelComponent* const model(NEW(he::ge::ModelComponent));
     addComponent(model);
     model->setModelMeshAndMaterial("testPlatformer/player.material", "testPlatformer/player2m.binobj");
 
-    he::ge::SpotLightComponent* const spotLight(NEW he::ge::SpotLightComponent);
+    he::ge::SpotLightComponent* const spotLight(NEW(he::ge::SpotLightComponent));
     addComponent(spotLight);
     spotLight->setAttenuation(1.0f, 20.0f);
     spotLight->setDirection(he::vec3::forward);

@@ -34,7 +34,7 @@ DrawListContainer::DrawListContainer()
 {
 #ifdef HE_USE_OCTREE
     for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
-        m_DrawList[blend] = NEW CullOctree();
+        m_DrawList[blend] = HENew(CullOctree)();
 #endif
 }
 
@@ -43,7 +43,7 @@ DrawListContainer::~DrawListContainer()
 {
 #ifdef HE_USE_OCTREE
     for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
-        delete m_DrawList[blend];
+        HEDelete(m_DrawList[blend]);
 #else
     for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         HE_ASSERT(m_DrawList[blend].empty() == true, "Drawlist not empty @shutdown");

@@ -53,7 +53,7 @@ bool ObjLoader::load(const he::String& path)
     create();
 
     he_free(m_Vertices);
-    m_Vertices = he_malloc(m_VertexLayout.getSize() * m_NumVertices);
+    m_Vertices = he_malloc("ObjLoader::m_Vertices", m_VertexLayout.getSize() * m_NumVertices);
     std::cout << "malloc " << m_VertexLayout.getSize() * m_NumVertices << " bytes\n";
     HE_ASSERT(m_Vertices != nullptr, "not enough memory!");
 
@@ -222,8 +222,8 @@ void ObjLoader::create()
         {
             he::StringStream stream;
             stream << face.data[i][0] << " " << face.data[i][1] << " " << face.data[i][2];
-            std::map<he::String, uint32>::const_iterator index(m_IndexMap.find(stream.str()));
-            if (index == m_IndexMap.cend())
+            uint32* index(m_IndexMap.find(stream.str()));
+            if (!index)
             {
                 addIndex(static_cast<uint32>(m_VertexData.size()), group);
                 m_IndexMap[stream.str()] = static_cast<uint32>(m_VertexData.size());
@@ -236,7 +236,7 @@ void ObjLoader::create()
             }
             else
             {
-                addIndex(index->second, group);
+                addIndex(*index, group);
             }
         }
     });

@@ -34,6 +34,8 @@ enum AssertType
 };
 
 #ifdef HE_DEBUG
+void sdmInitAsserts();
+void sdmDestroyAsserts();
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
 #endif

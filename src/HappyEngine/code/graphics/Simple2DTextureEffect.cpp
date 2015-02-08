@@ -42,7 +42,7 @@ Simple2DTextureEffect::Simple2DTextureEffect()
 
 Simple2DTextureEffect::~Simple2DTextureEffect()
 {
-    delete m_Material;
+    HEDelete(m_Material);
 }
 
 void Simple2DTextureEffect::init(const VertexLayout& layout)

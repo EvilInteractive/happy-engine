@@ -20,14 +20,31 @@
 #include "HappyPCH.h"
 
 #include "HeAssert.h"
+#include "HappyAllocater.h"
+
 #include <HappyMessageBox.h>
+#include <unordered_set>
+#include <unordered_map>
 
 #pragma warning(disable:4127)
 namespace he {
 namespace err {
 namespace details {
 
-static std::unordered_map<int, std::unordered_set<const char*>> g_IgnoreAsserts;
+typedef std::unordered_set<const char*, std::hash<const char*>, std::equal_to<const char*>, he::StlAllocater<const char*>> TAssertFileSet;
+typedef std::unordered_map<int, TAssertFileSet, std::hash<int>, std::equal_to<int>, he::StlAllocater<std::pair<int, TAssertFileSet>>> TAssertLineMap;
+static TAssertLineMap* g_IgnoreAsserts(nullptr);
+
+void sdmInitAsserts()
+{
+    g_IgnoreAsserts = HENew(TAssertLineMap)();
+}
+
+void sdmDestroyAsserts()
+{
+    HEDelete(g_IgnoreAsserts);
+    g_IgnoreAsserts = nullptr;
+}
 
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message)
 {        
@@ -39,8 +56,8 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
         "Message:\n%s", func, file, line, message);
     
     bool ignore = false;
-    std::unordered_map<int, std::unordered_set<const char*>>::const_iterator it(g_IgnoreAsserts.find(line));
-    if (it != g_IgnoreAsserts.cend())
+    TAssertLineMap::const_iterator it(g_IgnoreAsserts->find(line));
+    if (it != g_IgnoreAsserts->cend())
     {
         ignore = it->second.find(file) != it->second.cend();
     }
@@ -59,7 +76,7 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
         }
         else if (result == HappyMessageBox::Button_Button3)
         {
-            g_IgnoreAsserts[line].insert(file);
+            (*g_IgnoreAsserts)[line].insert(file);
         }
     }
 }

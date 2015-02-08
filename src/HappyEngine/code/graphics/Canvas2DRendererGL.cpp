@@ -66,13 +66,13 @@ Canvas2DRendererGL::~Canvas2DRendererGL()
     m_TextureQuad->release();
     m_DynamicFontMesh->release();
     m_Bezier->release();
-    delete m_DynamicShapeMesh;
+    HEDelete(m_DynamicShapeMesh);
 
-    delete m_TextureEffectQuad;
-    delete m_ColorEffectShape;
-    delete m_FontEffectDynFont;
-    delete m_NinePatchEffectQuad;
-    delete m_BezierEffect;
+    HEDelete(m_TextureEffectQuad);
+    HEDelete(m_ColorEffectShape);
+    HEDelete(m_FontEffectDynFont);
+    HEDelete(m_NinePatchEffectQuad);
+    HEDelete(m_BezierEffect);
 }
 
 /* GENERAL */
@@ -656,7 +656,7 @@ void Canvas2DRendererGL::init()
         m_DynamicFontMesh->setLoaded(eLoadResult_Success);
     }
 
-    m_DynamicShapeMesh = NEW Mesh2D(false);
+    m_DynamicShapeMesh = HENew(Mesh2D)(false);
 
 
     m_Bezier = modelMeshFactory->get(modelMeshFactory->create());
@@ -676,27 +676,27 @@ void Canvas2DRendererGL::init()
 
     if (m_ColorEffectShape == nullptr)
     {
-        m_ColorEffectShape = NEW Simple2DEffect();
+        m_ColorEffectShape = HENew(Simple2DEffect)();
         m_ColorEffectShape->init(m_DynamicShapeMesh->getVertexLayout());
     }
     if (m_TextureEffectQuad == nullptr)
     {
-        m_TextureEffectQuad = NEW Simple2DTextureEffect();
+        m_TextureEffectQuad = HENew(Simple2DTextureEffect)();
         m_TextureEffectQuad->init(m_TextureQuad->getVertexLayout());
     }
     if (m_FontEffectDynFont == nullptr)
     {
-        m_FontEffectDynFont = NEW Simple2DFontEffect();
+        m_FontEffectDynFont = HENew(Simple2DFontEffect)();
         m_FontEffectDynFont->init(m_DynamicFontMesh->getVertexLayout());
     }
     if (m_NinePatchEffectQuad == nullptr)
     {
-        m_NinePatchEffectQuad = NEW NinePatchEffect();
+        m_NinePatchEffectQuad = HENew(NinePatchEffect)();
         m_NinePatchEffectQuad->init(m_TextureQuad->getVertexLayout());
     }
     if (m_BezierEffect == nullptr)
     {
-        m_BezierEffect = NEW BezierEffect();
+        m_BezierEffect = HENew(BezierEffect)();
         m_BezierEffect->init(m_Bezier->getVertexLayout());
     }
 }

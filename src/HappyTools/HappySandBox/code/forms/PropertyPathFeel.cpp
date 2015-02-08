@@ -8,7 +8,7 @@ namespace hs {
 
 PropertyPathFeel::PropertyPathFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::PropertyPathFeel)
+    m_UI(HENew(Ui::PropertyPathFeel))
 {
     m_UI->setupUi(this);
 
@@ -19,7 +19,7 @@ PropertyPathFeel::PropertyPathFeel(QWidget *parent) :
 
 PropertyPathFeel::~PropertyPathFeel()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void PropertyPathFeel::setValue( const he::String& value )

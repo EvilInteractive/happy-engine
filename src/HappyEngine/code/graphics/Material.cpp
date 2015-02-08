@@ -64,7 +64,7 @@ Material::~Material()
     
 MaterialInstance* Material::createMaterialInstance(const EShaderRenderType type) const
 {
-    MaterialInstance* instance(NEW MaterialInstance(this, type));
+    MaterialInstance* instance(HENew(MaterialInstance)(this, type));
     return instance;
 }
     

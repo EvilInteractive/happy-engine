@@ -129,10 +129,10 @@ void Entity::fillEntityComponentDesc( EntityComponentDesc& desc )
     desc.m_ID = HEFS::strEntity;
     EntityComponent::fillEntityComponentDesc(desc);
 
-    Property* nameProp(NEW Property());
+    Property* nameProp(HENew(Property)());
     nameProp->init<he::String>(HEFS::strName, he::String(""));
     desc.m_Properties.setAt(nameProp->getName(), PropertyDesc(nameProp, "Name", "Sets the name of the component", 
-        NEW PropertyConverterString(), NEW PropertyFeelDefault()));
+        HENew(PropertyConverterString)(), HENew(PropertyFeelDefault)()));
 }
 
 bool Entity::setProperty( const Property* const inProperty )

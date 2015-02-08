@@ -29,7 +29,7 @@ struct LockFreeQueueMP1C::Node
 
 template<typename T>
 LockFreeQueueMP1C::LockFreeQueueMP1C()
-    : m_Head(NEW TNode())
+    : m_Head(NEW(TNode)())
     , m_Tail(nullptr)
 {
     m_Tail.store(m_Head);
@@ -44,14 +44,14 @@ LockFreeQueueMP1C::~LockFreeQueueMP1C()
     {
         Node* oldHead(m_Head);
         m_Head = m_Head->m_Next;
-        delete oldHead;
+        HEDelete(oldHead);
     }
 }
 
 template<typename T>
 void LockFreeQueueMP1C<T>::push( const T& obj )
 {
-    TNode* newNode(NEW TNode(obj));
+    TNode* newNode(NEW(TNode)(obj));
     TNode* oldTail(m_Tail.exchange(newNode));
     oldTail->m_Next = newNode;
 }
@@ -67,7 +67,7 @@ bool LockFreeQueueMP1C<T>::pop(T& outObj)
             Node* oldHead(m_Head);
             m_Head = next;
             outObj = m_Head->m_Data;
-            delete oldHead;
+            HEDelete(oldHead);
             return true;
         }
     }

@@ -55,14 +55,14 @@ Canvas2DRendererCairo::~Canvas2DRendererCairo()
     while (m_SpriteList.empty() == false)
     {
         SpriteData* data(m_SpriteList.back());
-        delete data;
+        HEDelete(data);
         m_SpriteList.pop();
     }
 
     while (m_DynamicSpriteList.empty() == false)
     {
         SpriteData* data(m_DynamicSpriteList.back());
-        delete data;
+        HEDelete(data);
         m_DynamicSpriteList.removeAt(m_DynamicSpriteList.size() - 1);
     }
 }
@@ -118,7 +118,7 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
             cairo_destroy(data->m_CairoPaint);
             cairo_surface_destroy(data->m_CairoSurface);
         
-            unsigned char* rBuff(static_cast<unsigned char*>(he_malloc(4 * w * h * sizeof(unsigned char))));
+            unsigned char* rBuff(static_cast<unsigned char*>(he_malloc("Canvas2DRendererCairo::addNewSprite()::rBuff", 4 * w * h * sizeof(unsigned char))));
             he_memset(rBuff, 0, 4 * w * h * sizeof(unsigned char));
 
             cairo_surface_t* surf(
@@ -144,7 +144,7 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
     else
     {
 
-        unsigned char* rBuff(static_cast<unsigned char*>(he_malloc(4 * w * h * sizeof(unsigned char))));
+        unsigned char* rBuff(static_cast<unsigned char*>(he_malloc("Canvas2DRendererCairo::addNewSprite()::rBuff", 4 * w * h * sizeof(unsigned char))));
         he_memset(rBuff, 0, 4 * w * h * sizeof(unsigned char));
 
         cairo_surface_t* surf(
@@ -152,7 +152,7 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
 
         cairo_t* cp(cairo_create(surf));
 
-        SpriteData* data(NEW SpriteData(
+        SpriteData* data(HENew(SpriteData)(
                 id, size,
                 sprite->getRenderTexture(),
                 rBuff, surf, cp));
@@ -501,7 +501,7 @@ void Canvas2DRendererCairo::blit()
         if ((data->m_ReadyState & SpriteDynamic) == false)
         {
             // cleanup
-            delete data;
+            HEDelete(data);
         }
 
         --spriteToBlit;
@@ -600,7 +600,7 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
     const vec2 bounds(hasBounds ? text.getBounds() : vec2(0,0));
     uint16 lines(0);
 
-    cairo_glyph_t* cairoGlyphs((cairo_glyph_t*)he_malloc(size * sizeof(cairo_glyph_t)));
+    cairo_glyph_t* cairoGlyphs((cairo_glyph_t*)he_malloc("Canvas2DRendererCairo::_text()::cairoGlyphs", size * sizeof(cairo_glyph_t)));
     size_t numGlyphs(0);
 
     size_t lineCharStart(0);

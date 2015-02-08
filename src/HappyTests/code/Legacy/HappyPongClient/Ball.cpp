@@ -50,12 +50,12 @@ void Ball::init( he::gfx::Scene* scene )
 {
     he::ge::Entity::init(scene);
 
-    he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
+    he::ge::ModelComponent* model(NEW(he::ge::ModelComponent)());
     model->setModelMeshAndMaterial("pong/ball.material", "pong/ball.binobj");
     model->setLocalScale(he::vec3(100, 100, 100));
     addComponent(model);
 
-    m_LightFlashComponent = NEW LightFlashComponent();
+    m_LightFlashComponent = NEW(LightFlashComponent)();
     addComponent(m_LightFlashComponent);
     m_LightFlashComponent->setAttenuation(1.0f, 50);
     m_LightFlashComponent->setMultiplier(0.5f);
@@ -65,7 +65,7 @@ void Ball::init( he::gfx::Scene* scene )
     m_LightFlashComponent->setNormalMultiplier(0);
     m_LightFlashComponent->setFlashDuration(0.25f);
 
-    he::ge::PointLightComponent* redLight(NEW he::ge::PointLightComponent());
+    he::ge::PointLightComponent* redLight(NEW(he::ge::PointLightComponent)());
     addComponent(redLight);
     redLight->setAttenuation(1.0f, 50);
     redLight->setMultiplier(1.0f);

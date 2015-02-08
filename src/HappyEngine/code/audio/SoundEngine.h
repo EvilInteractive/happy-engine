@@ -94,7 +94,7 @@ private:
     he::ObjectList<AudioBuffer> m_SoundBuffers;
     he::PrimitiveList<ALuint> m_SoundSources;
     he::ObjectList<SoundFile> m_SoundFiles;
-    std::map<ISound*, float> m_SoundTime;
+    he::Map<ISound*, float> m_SoundTime;
 
     ALCcontext* m_pALContext;
     ALCdevice* m_pALDevice;

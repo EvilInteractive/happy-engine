@@ -22,6 +22,8 @@
 #include "Logger.h"
 #include "BinaryVisitor.h"
 
+#include <fstream>
+
 namespace he {
 namespace tools {
 
@@ -29,13 +31,13 @@ Logger* Logger::s_Instance(nullptr);
 
 Logger::Logger()
 {
-    boost::posix_time::ptime now(boost::posix_time::second_clock::local_time());
+   // boost::posix_time::ptime now(boost::posix_time::second_clock::local_time());
 
     std::ofstream output;
     output.open("log.log", std::ios_base::app);
     output << "\n";
     output << "-------------------------------------------------------------------\n";
-    output << "-- Log started @" << boost::posix_time::to_simple_string(now) << "\n";
+    //output << "-- Log started @" << boost::posix_time::to_simple_string(now) << "\n"; TODO(bas) FIX ME
     output << "-------------------------------------------------------------------\n";
     output.close();
 }
@@ -149,12 +151,12 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 void Logger::sdmInit()
 {
     HE_ASSERT(s_Instance == nullptr, "initing an already inited singleton");
-    s_Instance = NEW Logger();
+    s_Instance = HENew(Logger)();
 }
 
 void Logger::sdmDestroy()
 {
-    delete s_Instance;
+    HEDelete(s_Instance);
 }
 
 void Logger::sdmVisit( he::io::BinaryVisitor& visitor )

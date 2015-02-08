@@ -55,7 +55,7 @@ struct SpriteData
     {
         this->m_Id = sd.m_Id;
         this->m_Size = sd.m_Size;
-        this->m_DrawCalls = sd.m_DrawCalls;
+        this->m_DrawCalls.clone(sd.m_DrawCalls);
         this->m_Texture2D = sd.m_Texture2D;
         this->m_RenderBuffer = sd.m_RenderBuffer;
         this->m_CairoSurface = sd.m_CairoSurface;
@@ -66,7 +66,7 @@ struct SpriteData
     {
         this->m_Id = sd.m_Id;
         this->m_Size = sd.m_Size;
-        this->m_DrawCalls = sd.m_DrawCalls;
+        this->m_DrawCalls.clone(sd.m_DrawCalls);
         this->m_Texture2D = sd.m_Texture2D;
         this->m_RenderBuffer = sd.m_RenderBuffer;
         this->m_CairoSurface = sd.m_CairoSurface;
@@ -83,7 +83,7 @@ struct SpriteData
 
     uint16 m_Id;
     vec2 m_Size;
-    std::queue<std::function<void()>> m_DrawCalls;
+    he::Queue<std::function<void()>> m_DrawCalls;
     Texture2D* m_Texture2D;
     unsigned char* m_RenderBuffer;
     cairo_surface_t* m_CairoSurface;

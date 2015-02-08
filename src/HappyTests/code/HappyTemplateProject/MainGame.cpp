@@ -37,7 +37,7 @@ MainGame::MainGame(): m_pFPSGraph(nullptr)
 MainGame::~MainGame()
 {
     CAMERAMANAGER->deleteAllCameras();
-    delete m_pFPSGraph;
+    HEDelete(m_pFPSGraph);
 }
 
 void MainGame::init()
@@ -49,10 +49,10 @@ void MainGame::init()
 
 void MainGame::load()
 {
-    CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    CAMERAMANAGER->addCamera("default", NEW(he::gfx::Camera)(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
 
-    m_pFPSGraph = NEW he::tools::FPSGraph();
+    m_pFPSGraph = NEW(he::tools::FPSGraph)();
 
 }
 

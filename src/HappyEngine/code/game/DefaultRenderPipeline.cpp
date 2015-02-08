@@ -46,19 +46,19 @@ DefaultRenderPipeline::~DefaultRenderPipeline()
 {
     if (m_IsDeferred == true)
         m_2DRenderer->detachFromRender(static_cast<gfx::Deferred3DRenderer*>(m_OpacRenderer));
-    delete m_OpacRenderer;
-    delete m_TransparentRenderer;
-    delete m_ShapeRenderer;
-    delete m_2DRenderer;
+    HEDelete(m_OpacRenderer);
+    HEDelete(m_TransparentRenderer);
+    HEDelete(m_ShapeRenderer);
+    HEDelete(m_2DRenderer);
 }
 
 void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene )
 {
     const gfx::RenderSettings settings(GlobalSettings::getInstance()->getRenderSettings());
-    m_2DRenderer = NEW gfx::Renderer2D();
+    m_2DRenderer = HENew(gfx::Renderer2D)();
     if (settings.enableDeferred)
     {
-        gfx::Deferred3DRenderer* const temp(NEW gfx::Deferred3DRenderer());
+        gfx::Deferred3DRenderer* const temp(HENew(gfx::Deferred3DRenderer)());
         temp->setScene(scene);
         m_OpacRenderer = temp;
         m_2DRenderer->attachToRender(temp);
@@ -66,14 +66,14 @@ void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene
     }
     else
     {
-        gfx::Forward3DRenderer* const temp(NEW gfx::Forward3DRenderer(gfx::RenderPass_Opac, true));
+        gfx::Forward3DRenderer* const temp(HENew(gfx::Forward3DRenderer)(gfx::RenderPass_Opac, true));
         temp->setScene(scene);
         m_OpacRenderer = temp;
         m_IsDeferred = false;
     }
-    m_TransparentRenderer = NEW gfx::Forward3DRenderer(gfx::RenderPass_Translucent, true);
+    m_TransparentRenderer = HENew(gfx::Forward3DRenderer)(gfx::RenderPass_Translucent, true);
     m_TransparentRenderer->setScene(scene);
-    m_ShapeRenderer = NEW gfx::ShapeRenderer();
+    m_ShapeRenderer = HENew(gfx::ShapeRenderer)();
 
     view->addRenderPlugin(m_OpacRenderer);
     view->addRenderPlugin(m_TransparentRenderer);

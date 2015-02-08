@@ -233,7 +233,7 @@ bool MidiReader::TrackChunk::load( BinaryVisitor* const visitor )
 
 const char* MidiReader::TrackChunk::readString( BinaryVisitor* const visitor, size_t eventLength )
 {
-    char* buff(static_cast<char*>(he_malloc(eventLength + 1)));
+    char* buff(static_cast<char*>(he_malloc("MidiReader::TrackChunk::readString()::buff", eventLength + 1)));
     m_TextPool.add(buff);
     visitor->visitBlob(buff, eventLength);
     std::reverse(buff, buff + eventLength);

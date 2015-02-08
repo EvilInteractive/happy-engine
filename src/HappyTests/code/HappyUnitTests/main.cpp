@@ -19,6 +19,7 @@
 //Created: 03/11/2012
 #include "HappyUnitTestsPCH.h"
 
+#include "HappyNewOverride.h"
 #include "MainGame.h"
 #include "UnitTestFixedStrings.h"
 
@@ -31,10 +32,10 @@ int main( int argc, char* args[] )
     he::HappyEngine::init(argc, args, he::SubEngine_All);
     hut::HTFS::sdmInit();
 
-    hut::MainGame* game(NEW hut::MainGame());
+    hut::MainGame* game(HENew(hut::MainGame)());
     game->objectHandleTest();
     HAPPYENGINE->start(game, true);
-    delete game;
+    HEDelete(game);
 
     hut::HTFS::sdmDestroy();
     he::HappyEngine::dispose();

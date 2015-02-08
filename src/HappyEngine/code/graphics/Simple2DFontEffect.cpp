@@ -39,7 +39,7 @@ Simple2DFontEffect::Simple2DFontEffect()
 
 Simple2DFontEffect::~Simple2DFontEffect()
 {
-    delete m_Material;
+    HEDelete(m_Material);
 }
 
 void Simple2DFontEffect::init(const VertexLayout& layout)

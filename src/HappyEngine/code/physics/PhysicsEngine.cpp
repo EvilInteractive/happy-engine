@@ -38,7 +38,7 @@ namespace px {
 
 PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr)
                             , m_CpuDispatcher(nullptr), m_CudaContextManager(nullptr)
-                            , m_Allocator(NEW HappyPhysicsAllocator()), m_ErrorCallback(NEW err::HappyPhysicsErrorCallback())
+                            , m_Allocator(HENew(HappyPhysicsAllocator)()), m_ErrorCallback(HENew(err::HappyPhysicsErrorCallback)())
                             , m_Simulate(false), m_PxProfileZoneManager(nullptr)
                             , m_PhysXFoundation(nullptr)
                             #ifdef HE_WINDOWS
@@ -187,9 +187,9 @@ PhysicsEngine::~PhysicsEngine()
 
     if (m_PhysXFoundation != nullptr)
         m_PhysXFoundation->release();
-    //delete m_pCarManager;
-    delete m_Allocator;
-    delete m_ErrorCallback;
+    //HEDelete(m_pCarManager);
+    HEDelete(m_Allocator);
+    HEDelete(m_ErrorCallback);
 }
 
 void PhysicsEngine::startSimulation()

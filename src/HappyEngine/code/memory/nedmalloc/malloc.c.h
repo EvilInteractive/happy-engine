@@ -1607,7 +1607,7 @@ static struct malloc_params mparams;
 
 /*
    If HAVE_MORECORE or HAVE_MMAP are false, we just define calls and
-   checks to fail so compiler optimizer can delete code rather than
+   checks to fail so compiler optimizer can HEDelete(code) rather than
    using so many "#if"s.
 */
 

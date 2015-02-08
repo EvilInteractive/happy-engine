@@ -244,7 +244,7 @@ bool TextureLoader::createTexture( TextureLoadData& data )
     else
         LOG(LogType_ProgrammerAssert, "Unsupported object type id!");
     data.m_Image.destroy();
-    return false;
+    return result;
 }
 bool TextureLoader::createTexture2D( const TextureLoadData& data )
 {

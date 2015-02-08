@@ -41,8 +41,8 @@ class SINGLETON(ObjectFactoryTypeManager)
 {
     friend class Singleton<ObjectFactoryTypeManager>;
     ObjectFactoryTypeManager(): m_LastType(0) {}
-    ~ObjectFactoryTypeManager() {}
 public:
+    ~ObjectFactoryTypeManager() {}
     template<typename T>
     ObjectHandle::ObjectType getObjectType()
     {
@@ -70,8 +70,8 @@ template<typename T>
 class DefaultObjectAllocator
 {
 public:
-    static T* allocate() { return NEW T(); }
-    static void deallocate(T* const obj) { delete obj; }
+    static T* allocate() { return HENew(T)(); }
+    static void deallocate(T* const obj) { HEDelete(obj); }
 };
 
 template<typename T>
@@ -79,7 +79,7 @@ class NoCreateObjectAllocator
 {
 public:
     static T* allocate() { LOG(LogType_ProgrammerAssert, "Should not be called!"); return nullptr; }
-    static void deallocate(T* const obj) { delete obj; }
+    static void deallocate(T* const obj) { HEDelete(obj); }
 };
 
 template<typename T, typename Allocator=DefaultObjectAllocator<T>>
@@ -256,7 +256,7 @@ private:
 
     he::PrimitiveList<T*> m_Pool;
     he::PrimitiveList<ObjectHandle::SaltType> m_Salt;
-    std::queue<ObjectHandle::IndexType> m_FreeHandles;
+    he::Queue<ObjectHandle::IndexType> m_FreeHandles;
 
     //Disable default copy constructor and default assignment operator
     ObjectFactory(const ObjectFactory&);

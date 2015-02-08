@@ -18,7 +18,6 @@
 
 #include "FileWriter.h"
 
-#include "boost/filesystem.hpp"
 #include <HappyMessageBox.h>
 
 namespace he {
@@ -38,29 +37,18 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
     close();
 
     bool success(true);
-    boost::filesystem::path boostPath(path.str().c_str());
-    boost::system::error_code error;
-    if (boost::filesystem::exists(boostPath, error) == false)
+    if (path.exists())
     {
-        error.clear();
-        boost::filesystem::path parentDir(boostPath.parent_path());
-        if (parentDir.empty() == false)
+        if (overrideWarning)
         {
-            if (boost::filesystem::create_directories(boostPath.parent_path(), error) == false)
-            {
-                if (error.value() != 0)
-                {
-                    he::String message(he::String("Directory creation failed:\n") + error.message().c_str());
-                    HappyMessageBox::showExt("Fail!", message.c_str(), HappyMessageBox::Icon_Error);
-                }
-            }
+            he::String message("Are you sure you want to override\n" + path.str() + "?");
+            success = HappyMessageBox::showExt("Override file?", message.c_str(), 
+                HappyMessageBox::Icon_Info, "Yes", "No") == HappyMessageBox::Button_Button1;
         }
     }
-    else if (overrideWarning)
+    else
     {
-        he::String message("Are you sure you want to override\n" + path.str() + "?");
-        success = HappyMessageBox::showExt("Override file?", message.c_str(), 
-            HappyMessageBox::Icon_Info, "Yes", "No") == HappyMessageBox::Button_Button1;
+        path.createFolderStructure();
     }
     if (success)
     {

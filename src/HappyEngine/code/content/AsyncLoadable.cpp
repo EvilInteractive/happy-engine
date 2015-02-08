@@ -42,14 +42,14 @@ private:
 
 AsyncLoadable::AsyncLoadable()
     : m_IsLoaded(eLoadResult_Unloaded)
-    , m_LoadContext(NEW LoadContext())
+    , m_LoadContext(HENew(LoadContext)())
 {
 
 }
 
 AsyncLoadable::~AsyncLoadable()
 {
-    delete m_LoadContext;
+    HEDelete(m_LoadContext);
 }
 
 void AsyncLoadable::setLoaded( const ELoadResult result )
@@ -65,7 +65,7 @@ void AsyncLoadable::setLoaded( const ELoadResult result )
             p.second(result);
         });
         list.clear();
-        delete m_LoadContext;
+        HEDelete(m_LoadContext);
         m_LoadContext = nullptr;
     }
 }

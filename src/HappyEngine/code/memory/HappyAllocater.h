@@ -22,8 +22,6 @@
 #define _HE_CREATOR_H_
 #pragma once
 
-#pragma message("-- HappyEngine: Compiling precompiled headers. --")
-
 namespace he {
 
 template <typename T>
@@ -42,7 +40,7 @@ public:
 
     pointer allocate(size_type n, const void * /*hint*/ = 0)
     {
-        return ObjectAllocator<T>::allocate(n);
+        return ObjectAllocator<T>::allocate(n GET_MEM_DEBUG_FL_PARAM);
     }
 
     void deallocate(pointer p, size_type /*n*/)
@@ -61,11 +59,11 @@ template<typename T>
 class PrimitiveObjectAllocator
 {
 public:
-    static inline T* allocate(const size_t amount) 
+    static inline T* allocate(const size_t amount DEF_MEM_DEBUG_FL_PARAMS) 
     { 
         if (amount != 0)
         {
-            T* const mem(static_cast<T*>(globalAllocate(amount * sizeof(T) COMMA_FILE_AND_LINE))); 
+            T* const mem(static_cast<T*>(he::gMemMan->alloc(amount * sizeof(T) GET_MEM_DEBUG_NAME_PARAM(T) PASS_MEM_DEBUG_FL_PARAMS))); 
             he_memset(mem, 0, amount * sizeof(T)); 
             return mem;
         }
@@ -76,15 +74,20 @@ public:
     }
     static inline void deallocate(T* mem) 
     { 
-        globalFree(mem COMMA_FILE_AND_LINE); 
+        he::gMemMan->free(mem); 
     }
 
-    static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount)
+    static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount DEF_MEM_DEBUG_FL_PARAMS)
     {
-        T* const newMem(static_cast<T*>(globalRealloc(old, newAmount * sizeof(T) COMMA_FILE_AND_LINE)));
+        T* const newMem(static_cast<T*>(he::gMemMan->realloc(old, newAmount * sizeof(T) GET_MEM_DEBUG_NAME_PARAM(T) PASS_MEM_DEBUG_FL_PARAMS)));
         if (oldAmount < newAmount)
             he_memset(newMem + oldAmount, 0, sizeof(T) * (newAmount - oldAmount));
         return newMem;
+    }
+
+    static inline void memmove(T* const dest, const T* const src, const size_t count)
+    {
+        he_memmove(dest, src, sizeof(T) * count);
     }
 };
 
@@ -92,11 +95,15 @@ template<typename T>
 class ObjectAllocator
 {
 public:
-    static inline T* allocate(const size_t amount) 
+    static inline T* allocate(const size_t amount DEF_MEM_DEBUG_FL_PARAMS) 
     { 
         if (amount != 0)
         {
-            T* const mem(NEW T[amount]);
+#ifdef HE_DEBUG
+            T* const mem(HENewArrayFL(T, amount, file, line));
+#else
+            T* const mem(HENewArrayFL(T, amount));
+#endif
             return mem;
         }
         else
@@ -106,12 +113,12 @@ public:
     }
     static inline void deallocate(T* mem) 
     { 
-        delete[] mem;
+        HEDeleteArray(mem);
     }
 
-    static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount)
+    static inline T* reallocate(T* const old, const size_t oldAmount, const size_t newAmount DEF_MEM_DEBUG_FL_PARAMS)
     {
-        T* const newMem(allocate(newAmount));
+        T* const newMem(allocate(newAmount PASS_MEM_DEBUG_FL_PARAMS));
         const size_t copyAmount(newAmount < oldAmount? newAmount : oldAmount);
         for (size_t i(0); i < copyAmount; ++i)
         {
@@ -119,6 +126,39 @@ public:
         }
         deallocate(old);
         return newMem;
+    }
+
+    static inline void memmove(T* dst, T* src, size_t count)
+    {
+        if (dst <= src || dst >= src + count) 
+        {
+            /*
+            * Non-Overlapping Buffers
+            * copy from lower addresses to higher addresses
+            */
+            while (count--) 
+            {
+                *dst = std::move(*src);
+                ++dst;
+                ++src;
+            }
+        }
+        else 
+        {
+            /*
+            * Overlapping Buffers
+            * copy from higher addresses to lower addresses
+            */
+            dst = dst + count - 1;
+            src = src + count - 1;
+
+            while (count--) 
+            {
+                *dst = std::move(*src);
+                --dst;
+                --src;
+            }
+        }
     }
 };
 

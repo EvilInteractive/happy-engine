@@ -72,14 +72,14 @@ MainGame::~MainGame()
 
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
-        delete entity;     
+        HEDelete(entity);     
     });
     he::net::NetworkObjectFactory<Palet>::getInstance()->destroyAll();
     he::net::NetworkObjectFactory<Ball>::getInstance()->destroyAll();
 
-    delete m_FPSGraph;
+    HEDelete(m_FPSGraph);
 
-    delete m_RenderPipeline;
+    HEDelete(m_RenderPipeline);
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeScene(m_Scene);
     GRAPHICS->removeWindow(m_Window);
@@ -125,7 +125,7 @@ void MainGame::load()
 
     m_Scene = GRAPHICS->createScene();
 
-    m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
+    m_RenderPipeline = NEW(he::ge::DefaultRenderPipeline)();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
     m_View->setWindow(m_Window);
@@ -164,7 +164,7 @@ void MainGame::load()
     NETWORK->join(ip, port);
 
     const he::RectI& viewport(m_View->getViewport());
-    he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective());
+    he::gfx::CameraPerspective* camera(NEW(he::gfx::CameraPerspective)());
     camera->setLens((float)viewport.width / viewport.height, he::piOverFour, 10.0f, 1000);
     camera->lookAt(he::vec3(0.010f, 67.5f, 0.01f), he::vec3::zero, he::vec3(0, 0, 1));
     m_Scene->getCameraManager()->addCamera("default", camera);
@@ -173,7 +173,7 @@ void MainGame::load()
     m_Scene->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1.0f, 1, 1), 0.75f);
     m_Scene->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
 
-    m_FPSGraph = NEW he::tools::FPSGraph();
+    m_FPSGraph = NEW(he::tools::FPSGraph)();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
     m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
@@ -181,9 +181,9 @@ void MainGame::load()
 
     m_BoardDimension = he::vec2(85, 47);
 
-    he::ge::Entity* board(NEW he::ge::Entity());
+    he::ge::Entity* board(NEW(he::ge::Entity)());
     board->init(m_Scene);
-    he::ge::ModelComponent* boardModel(NEW he::ge::ModelComponent());
+    he::ge::ModelComponent* boardModel(NEW(he::ge::ModelComponent)());
     boardModel->setModelMeshAndMaterial("pong/board.material", "pong/board.binobj");
     board->setLocalScale(he::vec3(100, 100, 100));
 

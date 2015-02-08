@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Random.h"
+#include <chrono>
 
 namespace he {
 namespace gfx {
@@ -155,7 +156,7 @@ private:
 
     he::Thread m_AudioThread;
 
-    boost::chrono::high_resolution_clock::time_point m_PrevTime;
+    std::chrono::high_resolution_clock::time_point m_PrevTime;
     
     // Methods
     void initWindow();

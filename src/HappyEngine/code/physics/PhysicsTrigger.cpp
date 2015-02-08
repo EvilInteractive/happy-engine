@@ -40,14 +40,14 @@ namespace he {
 namespace px {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-PhysicsTrigger::PhysicsTrigger(const mat44& pose) : m_Actor(NEW PhysicsDynamicActor(pose))
+PhysicsTrigger::PhysicsTrigger(const mat44& pose) : m_Actor(HENew(PhysicsDynamicActor)(pose))
 {
     m_Actor->setKeyframed(true);
 }
 
 PhysicsTrigger::~PhysicsTrigger()
 {
-    delete m_Actor;
+    HEDelete(m_Actor);
 }
 
 /* GENERAL */

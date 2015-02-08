@@ -28,8 +28,8 @@ namespace io {
 class IniReader
 {
 private:
-typedef std::map<he::String, he::String> InitReadSubData;
-typedef std::map<he::String, InitReadSubData> IniReadData;
+typedef he::Map<he::String, he::String> InitReadSubData;
+typedef he::Map<he::String, InitReadSubData> IniReadData;
 public:
     IniReader();
     virtual ~IniReader();
@@ -49,7 +49,7 @@ public:
 
     he::String readString(const he::String& root, const he::String& node, const he::String& defaultReturn = "") const;
 
-    const std::map<he::String, he::String>& getNodes(const he::String& root) const;
+    const he::Map<he::String, he::String>& getNodes(const he::String& root) const;
 
     bool containsRoot(const he::String& root) const;
 

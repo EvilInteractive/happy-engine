@@ -43,6 +43,7 @@ class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
 {
     friend Singleton;
     SceneFactory() { init(1, 2, he::String("SceneFactory")); }
+public:
     virtual ~SceneFactory() { }
 };
 

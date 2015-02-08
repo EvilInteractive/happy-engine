@@ -54,7 +54,7 @@ void Triangulator::triangulateConvex(const he::PrimitiveList<vec2>& vertices, he
 bool Triangulator::triangulateConcave(const he::PrimitiveList<vec2>& vertices, he::PrimitiveList<uint32>& indices)
 {
     int n = (int)vertices.size();
-    int* V = NEW int[n]; // TODO: seeb cache this buffer as a member, enlarge if needed
+    int* V = HENewArray(int, n); // TODO: seeb cache this buffer as a member, enlarge if needed
 
     if ( 0.0f < calculateArea(vertices) )
         for (int v=0; v<n; v++) V[v] = v;
@@ -69,7 +69,7 @@ bool Triangulator::triangulateConcave(const he::PrimitiveList<vec2>& vertices, h
     {
         if (0 >= (count--))
         {
-            delete[] V;
+            HEDeleteArray(V);
             return false;
         }
 
@@ -95,7 +95,7 @@ bool Triangulator::triangulateConcave(const he::PrimitiveList<vec2>& vertices, h
         }
     }
 
-    delete[] V;
+    HEDeleteArray(V);
 
     return true;
 }

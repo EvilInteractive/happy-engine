@@ -22,8 +22,6 @@ addFilter(CODE_SRCS src code/
             event_internal.h
             HappyEngine.h           HappyEngine.cpp
             HappyFunctions.h        HappyFunctions.cpp
-            HappyMemory.h
-            HappyNew.h
             HappyPCH.h              HappyPCH.cpp
             HappyHelpers.h          HappyHelpers.cpp
             HappyTargetDefines.h

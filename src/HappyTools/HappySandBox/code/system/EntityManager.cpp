@@ -61,8 +61,8 @@ EntityManager::~EntityManager()
 void EntityManager::init()
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
-    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
-    entityMan->installComponentFactory(NEW SandboxEntityComponentFactory());
+    entityMan->installComponentFactory(HENew(he::ge::EngineEntityComponentFactory)());
+    entityMan->installComponentFactory(HENew(SandboxEntityComponentFactory)());
 
     he::PrimitiveList<he::ge::EntityComponentDesc*> descList;
     entityMan->fillComponentDescList(descList);
@@ -74,7 +74,7 @@ void EntityManager::init()
     });
 
     HE_ASSERT(!m_EntityDesc, "EntityDesc is not nullptr when initializing!");
-    m_EntityDesc = NEW he::ge::EntityComponentDesc();
+    m_EntityDesc = HENew(he::ge::EntityComponentDesc)();
     he::ge::Entity::fillEntityComponentDesc(*m_EntityDesc);
 }
 
@@ -88,11 +88,11 @@ void EntityManager::destroy()
     entityMan->destroy();
     m_ComponentDescList.forEach([](const he::FixedString& /*key*/, he::ge::EntityComponentDesc* desc)
     {
-        delete desc;
+        HEDelete(desc);
     });
     m_ComponentDescList.clear();
 
-    delete m_EntityDesc;
+    HEDelete(m_EntityDesc);
     m_EntityDesc = nullptr;
 }
 

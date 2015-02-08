@@ -28,7 +28,7 @@ namespace hs {
 
 OptionsForm::OptionsForm(QWidget* parent)
     : QWidget(parent)
-    , m_UI(NEW Ui::OptionsForm)
+    , m_UI(HENew(Ui::OptionsForm))
 {
     m_UI->setupUi(this);
 
@@ -38,7 +38,7 @@ OptionsForm::OptionsForm(QWidget* parent)
 
 OptionsForm::~OptionsForm()
 {
-
+    delete m_UI;
 }
 
 void OptionsForm::save()

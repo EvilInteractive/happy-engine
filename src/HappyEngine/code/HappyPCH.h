@@ -25,6 +25,7 @@
 
 #ifdef HE_DEBUG
 #define _DEBUG 1
+#define DEBUG 1
 #else
 #define NDEBUG 1
 #endif
@@ -40,12 +41,6 @@
 #else
 #define FILE_AND_LINE
 #define COMMA_FILE_AND_LINE
-#endif
-
-#ifdef HE_DEBUG
-#define _DEBUG 1
-#else
-#define NDEBUG 1
 #endif
 
 #ifdef HE_WINDOWS
@@ -65,6 +60,12 @@
 #define HE_FORCEINLINE __forceinline
 #else
 #define HE_FORCEINLINE __inline__ __attribute__((always_inline))
+#endif
+
+#ifdef _MSC_VER
+#define HE_THREAD_LOCAL __declspec(thread)
+#else
+#define HE_THREAD_LOCAL thread_local
 #endif
 
 #define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, val, ...) val
@@ -87,26 +88,17 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #pragma warning( disable : 4251 )
 #pragma warning( disable : 4275 ) // non dll-interface class 'X' used as base for dll-interface class
 
-#include <map>
-#include <unordered_map>
-#include <unordered_set>
-#pragma message("-- 10% Done --")
-#include <deque>
-#include <queue>
-#pragma message("-- 20% Done --")
-#include <set>
 #include <atomic>
 #ifdef HE_WINDOWS
 #include <intsafe.h>
 #endif
 #include <limits.h>
+#include <functional>
 
 #pragma message("-- 30% Done --")
-#include <boost/chrono.hpp>
-#include <boost/any.hpp>
+//#include <boost/any.hpp>
 #pragma message("-- 40% Done --")
-#include <boost/date_time.hpp>
-#include <boost/timer.hpp>
+//#include <boost/date_time.hpp>
 
 #if !(defined(HE_WINDOWS) || defined(HE_LINUX) || defined(HE_MAC))
 #error Unsupported OS!
@@ -164,6 +156,8 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #pragma message("-- 70% Done --")
 
 #include "List.h"
+#include "Map.h"
+#include "Queue.h"
 #include "thread/ThreadTicket.h"
 #include "FixedSizeList.h"
 #pragma message("-- 80% Done --")

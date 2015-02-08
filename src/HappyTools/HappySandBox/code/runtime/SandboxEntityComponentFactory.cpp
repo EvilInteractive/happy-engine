@@ -28,7 +28,7 @@ he::ge::EntityComponent* SandboxEntityComponentFactory::createEntityComponent( c
     he::ge::EntityComponent* result(nullptr);
     if (type == HSFS::strEditorComponent)
     {
-        result = NEW EditorComponent();
+        result = HENew(EditorComponent)();
     }
     return result;
 }

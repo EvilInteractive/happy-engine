@@ -52,32 +52,32 @@ m_pLegR1LegR2Joint(nullptr), m_pLegR2FootJoint(nullptr), m_Aggregate(nullptr)
 
 PhysicsRagdoll::~PhysicsRagdoll()
 {
-    delete m_pArmL1;
-    delete m_pArmL2;
-    delete m_pHandL;
+    HEDelete(m_pArmL1);
+    HEDelete(m_pArmL2);
+    HEDelete(m_pHandL);
 
-    delete m_pArmR1;
-    delete m_pArmR2;
-    delete m_pHandR;
+    HEDelete(m_pArmR1);
+    HEDelete(m_pArmR2);
+    HEDelete(m_pHandR);
 
-    delete m_pHead;
-    delete m_pNeck;
+    HEDelete(m_pHead);
+    HEDelete(m_pNeck);
 
-    delete m_pShoulderL;
-    delete m_pShoulderR;
+    HEDelete(m_pShoulderL);
+    HEDelete(m_pShoulderR);
 
-    delete m_pSpine1;
-    delete m_pSpine2;
-    delete m_pSpine3;
-    delete m_pPelvis;
+    HEDelete(m_pSpine1);
+    HEDelete(m_pSpine2);
+    HEDelete(m_pSpine3);
+    HEDelete(m_pPelvis);
 
-    delete m_pLegL1;
-    delete m_pLegL2;
-    delete m_pFootL;
+    HEDelete(m_pLegL1);
+    HEDelete(m_pLegL2);
+    HEDelete(m_pFootL);
 
-    delete m_pLegR1;
-    delete m_pLegR2;
-    delete m_pFootR;
+    HEDelete(m_pLegR1);
+    HEDelete(m_pLegR2);
+    HEDelete(m_pFootR);
 
     m_pPelvisSpine3Joint->release();
     m_pSpine3Spine2Joint->release();
@@ -109,7 +109,7 @@ PhysicsRagdoll::~PhysicsRagdoll()
 void PhysicsRagdoll::addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material, 
                                 uint32 collisionGroup, uint32 collisionGroupAgainst)
 {
-    (*ppActor) = NEW PhysicsDynamicActor(mat44::createTranslation(m_StartPosition) * part.bonePose);
+    (*ppActor) = HENew(PhysicsDynamicActor)(mat44::createTranslation(m_StartPosition) * part.bonePose);
     PHYSICS->getScene()->removeActor(*(*ppActor)->getInternalActor());
     m_Aggregate->addActor(*(*ppActor)->getInternalActor());
     static_cast<physx::PxRigidDynamic*>((*ppActor)->getInternalActor())->setSolverIterationCounts(8, 2);

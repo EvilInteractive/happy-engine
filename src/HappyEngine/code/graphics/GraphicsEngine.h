@@ -68,7 +68,7 @@ public:
 
 
     // View depends on window and scene!
-    // Always delete view first!
+    // Always HEDelete(view) first!
     Scene* createScene();
     Scene* getScene(SceneID id);
     void removeScene(Scene* scene);
@@ -125,7 +125,7 @@ private:
 
     bool m_OwnSharedContext;
     Window* m_SharedContext;
-    std::queue<uint32> m_FreeContexts;
+    he::Queue<uint32> m_FreeContexts;
     he::PrimitiveList<GLContext*> m_Contexts;
 
     ShaderUniformBufferManager* m_UBOManager;

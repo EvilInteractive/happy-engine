@@ -57,7 +57,7 @@ private:
     he::String m_ObjectName;
     Awesomium::JSObject m_AweObject;
 
-    typedef std::map<Awesomium::WebString, event1<void, const Awesomium::JSArray&>*> Container;
+    typedef he::Map<Awesomium::WebString, event1<void, const Awesomium::JSArray&>*> Container;
     Container m_MethodCallBacks;
 
     /* DEFAULT COPY & ASSIGNMENT */

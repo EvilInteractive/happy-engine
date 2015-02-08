@@ -38,8 +38,8 @@ public:
 
 private:
 
-    boost::chrono::high_resolution_clock::time_point m_StartTime;
-    boost::chrono::high_resolution_clock::time_point m_StopTime;
+    std::chrono::high_resolution_clock::time_point m_StartTime;
+    std::chrono::high_resolution_clock::time_point m_StopTime;
     bool m_IsRunning;
 
     //Disable default copy constructor and default assignment operator

@@ -48,14 +48,14 @@ void GridLayout::initGrid( const uint8 rows, const uint8 columns )
     he_free(m_RowHeight);
     he_free(m_ColumnWidth);
 
-    m_Grid = static_cast<ILayoutable**>(he_malloc(sizeof(ILayoutable*) * rows * columns));
+    m_Grid = static_cast<ILayoutable**>(he_malloc("GridLayout::m_Grid", sizeof(ILayoutable*) * rows * columns));
     he_memset(m_Grid, 0, sizeof(ILayoutable**) * rows * columns);
 
-    m_RowHeight = static_cast<float*>(he_malloc(sizeof(float) * rows));
+    m_RowHeight = static_cast<float*>(he_malloc("GridLayout::m_RowHeight", sizeof(float) * rows));
     for (size_t i(0); i < rows; ++i)
         m_RowHeight[i] = -1.0f;
 
-    m_ColumnWidth = static_cast<float*>(he_malloc(sizeof(float) * columns));
+    m_ColumnWidth = static_cast<float*>(he_malloc("GridLayout::m_ColumnWidth", sizeof(float) * columns));
     for (size_t i(0); i < columns; ++i)
         m_ColumnWidth[i] = -1.0f;
 
@@ -346,8 +346,8 @@ void GridLayout::performLayout()
 {
     DefaultLayoutable::performLayout();
 
-    LayoutData* rowData(NEW LayoutData[m_Rows]);
-    LayoutData* columnData(NEW LayoutData[m_Columns]);
+    LayoutData* rowData(HENewArray(LayoutData, m_Rows));
+    LayoutData* columnData(HENewArray(LayoutData, m_Columns));
 
     calculateRowHeights(rowData);
     calculateColumnWidths(columnData);
@@ -404,8 +404,8 @@ void GridLayout::performLayout()
         y += height;
     }
 
-    delete[] rowData;
-    delete[] columnData;
+    HEDeleteArray(rowData);
+    HEDeleteArray(columnData);
 }
 
 void GridLayout::setLayoutDirty()

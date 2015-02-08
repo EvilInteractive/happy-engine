@@ -88,7 +88,7 @@ bool ModelLoader::loadModel( ModelLoadData& data )
     {
         HE_ERROR("Error loading model: %s", data.path.c_str());
         ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle)->release();
-        delete data.loader;
+        HEDelete(data.loader);
         data.loader = nullptr;
         return false;
     } 
@@ -155,7 +155,7 @@ bool ModelLoader::createModel( ModelLoadData& data )
     m_WaitListMutex.unlock();
 
     model->release();
-    delete data.loader;
+    HEDelete(data.loader);
     data.loader = nullptr;
 
     return true;
@@ -267,11 +267,11 @@ bool ModelLoader::getModelLoader( ModelLoadData& data )
 {
     if (data.path.rfind(".obj") != he::String::npos)
     {
-        data.loader = NEW models::ObjLoader();
+        data.loader = HENew(models::ObjLoader)();
     }
     else if (data.path.rfind(".binobj") != he::String::npos)
     {
-        data.loader = NEW models::BinObjLoader();
+        data.loader = HENew(models::BinObjLoader)();
     }
     else
     {

@@ -11,9 +11,9 @@ namespace hs {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    m_UI(NEW Ui::MainWindow),
-    m_MaterialEditor(NEW MaterialEditor()),
-    m_OptionsForm(NEW OptionsForm(NULL))
+    m_UI(HENew(Ui::MainWindow)),
+    m_MaterialEditor(HENew(MaterialEditor)()),
+    m_OptionsForm(HENew(OptionsForm)(NULL))
 {
     m_OptionsForm->activateWindow();
     m_UI->setupUi(this);
@@ -24,15 +24,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    delete m_MaterialEditor;
+    HEDelete(m_MaterialEditor);
     m_MaterialEditor = nullptr;
 
-    delete m_OptionsForm;
+    HEDelete(m_OptionsForm);
     m_OptionsForm = nullptr;
 
     hs::Sandbox::getInstance()->quit();

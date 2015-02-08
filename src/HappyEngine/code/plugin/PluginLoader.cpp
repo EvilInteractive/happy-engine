@@ -33,6 +33,65 @@
 namespace he {
 namespace pl {
 
+PluginLoader::PluginWrapper::PluginWrapper( const he::Path buildFolder, const he::String buildName ) 
+: m_Plugin(nullptr), m_ModuleHandle(NULL), m_Folder(std::move(buildFolder)), m_Name(std::move(buildName))
+{
+
+}
+
+he::Path PluginLoader::PluginWrapper::getBuildPath() const
+{
+#ifdef HE_WINDOWS
+    return m_Folder.append(m_Name + ".dll");
+#else
+    return m_Folder.append("lib" + m_Name + ".dylib");
+#endif
+}
+
+he::Path PluginLoader::PluginWrapper::getRunPath() const
+{
+#ifdef HE_WINDOWS
+    return m_Folder.append(m_Name + "_running.dll");
+#else
+    return m_Folder.append("lib" + m_Name + "_running.dylib");
+#endif
+}
+
+he::Path PluginLoader::PluginWrapper::getPdbBuildPath() const
+{
+#ifdef HE_WINDOWS
+    return m_Folder.append(m_Name + ".pdb");
+#else
+    #error ?
+#endif
+}
+
+he::Path PluginLoader::PluginWrapper::getPdbRunPath() const
+{
+#ifdef HE_WINDOWS
+    return m_Folder.append(m_Name + "_running.pdb");
+#else
+#error ?
+#endif
+}
+
+bool PluginLoader::PluginWrapper::createRunLib() const
+{
+#ifdef HE_WINDOWS
+    Path buildPath(getBuildPath());
+    Path runPath(getRunPath());
+    bool result(CopyFile(buildPath.str().c_str(), runPath.str().c_str(), FALSE) == TRUE);
+    #ifdef HE_DEBUG
+    Path pdbPath(getPdbBuildPath());
+    Path runPdbPath(getPdbRunPath());
+    result &= CopyFile(pdbPath.str().c_str(), runPdbPath.str().c_str(), FALSE) == TRUE;
+    #endif
+#else
+    #error Implement!
+#endif
+    return result;
+}
+
 PluginLoader::PluginLoader()
 {
 }
@@ -42,49 +101,73 @@ PluginLoader::~PluginLoader()
 }
 
 // http://en.wikipedia.org/wiki/Dynamic_loading
-IPlugin* PluginLoader::loadPlugin( const he::Path& path, const char* fileName )
+IPlugin* PluginLoader::loadPlugin( PluginWrapper& wrapper )
 {
-    IPlugin* result(nullptr);
-#ifdef HE_WINDOWS
-    he::String fullpath(path.str() + fileName + ".dll");
-    PLUGIN_HANDLE mod(LoadLibrary(fullpath.c_str())); // if it fails, convert to backslashes
-#else
-    he::String fullpath(path.str() + "lib" + fileName + ".dylib");
-    PLUGIN_HANDLE mod(dlopen(fullpath.c_str(), RTLD_LAZY));
-#endif
-    if (mod != NULL)
+    IPlugin* result(wrapper.m_Plugin);
+    const bool isReload(wrapper.m_ModuleHandle != NULL);
+    if (isReload)
     {
 #ifdef HE_WINDOWS
-        PLUGIN_FUNCTION proc(GetProcAddress(mod, "createPlugin"));
+        FreeLibrary(wrapper.m_ModuleHandle);
 #else
-        PLUGIN_FUNCTION proc(dlsym(mod, "createPlugin"));
+        dlclose(wrapper.m_ModuleHandle);
 #endif
-        if (proc != NULL)
+        wrapper.m_ModuleHandle = nullptr;
+    }
+    if (wrapper.createRunLib())
+    {
+#ifdef HE_WINDOWS
+        PLUGIN_HANDLE mod(LoadLibrary(wrapper.getRunPath().str().c_str())); // if it fails, convert to backslashes
+#else
+        PLUGIN_HANDLE mod(dlopen(wrapper.getRunPath().str().c_str(), RTLD_LAZY));
+#endif
+        if (mod != NULL)
         {
-            CreatePluginFunc func(reinterpret_cast<CreatePluginFunc>(proc));
-            IPlugin* const plugin(func());
-            if (plugin != nullptr)
+            wrapper.m_ModuleHandle = mod;
+            if (!isReload)
             {
-                PluginWrapper wrapper(plugin, mod, fullpath);
-                m_Plugins.add(wrapper);
-                result = plugin;
-            }
-            else
-            {
-                HE_WARNING("Could not load plugin: '%s'\n because the plugin == nullptr.", fullpath.c_str());
+#ifdef HE_WINDOWS
+                PLUGIN_FUNCTION proc(GetProcAddress(mod, "createPlugin"));
+#else
+                PLUGIN_FUNCTION proc(dlsym(mod, "createPlugin"));
+#endif
+                if (proc != NULL)
+                {
+                    CreatePluginFunc func(reinterpret_cast<CreatePluginFunc>(proc));
+                    IPlugin* const plugin(func());
+                    if (plugin != nullptr)
+                    {
+                        wrapper.m_Plugin = plugin;
+                        m_Plugins.add(std::move(wrapper));
+                        result = plugin;
+                    }
+                    else
+                    {
+                        HE_WARNING("Could not load plugin: '%s'\n because the plugin == nullptr.", wrapper.m_Name.c_str());
+                    }
+                }
+                else
+                {
+                    HE_WARNING("Could not load plugin: '%s'\n because I could not retrieve the plugin pointer.", wrapper.m_Name.c_str());
+                }
             }
         }
         else
         {
-            HE_WARNING("Could not load plugin: '%s'\n because I could not retrieve the plugin pointer.", fullpath.c_str());
+            HE_WARNING("Could not load plugin: '%s', file not found?", wrapper.m_Name.c_str());
         }
     }
     else
     {
-        HE_WARNING("Could not load plugin: '%s', file not found?", fullpath.c_str());
+        HE_WARNING("Could not load plugin: '%s', could not create runlib (file copy failed)", wrapper.m_Name.c_str());
     }
-
     return result;
+}
+
+IPlugin* PluginLoader::loadPlugin( const he::Path& path, const char* fileName )
+{
+    PluginWrapper wrapper(path, fileName);
+    return loadPlugin(wrapper);
 }
 
 bool PluginLoader::reloadPlugin( IPlugin* const plugin )
@@ -93,16 +176,7 @@ bool PluginLoader::reloadPlugin( IPlugin* const plugin )
     if (m_Plugins.find_if([plugin](const PluginWrapper& wrapper) { return wrapper.m_Plugin == plugin; }, index ))
     {
         PluginWrapper& wrapper(m_Plugins[index]);
-        if (wrapper.m_ModuleHandle != NULL)
-        {
-#ifdef HE_WINDOWS
-            FreeLibrary(wrapper.m_ModuleHandle);
-            wrapper.m_ModuleHandle = LoadLibrary(wrapper.m_PluginPath.c_str());
-#else
-            dlclose(wrapper.m_ModuleHandle);
-#endif
-        }
-        m_Plugins.removeAt(index);
+        loadPlugin(wrapper);
     }
     else
     {
@@ -124,7 +198,7 @@ void PluginLoader::unloadPlugin( IPlugin* const plugin )
     if (m_Plugins.find_if([plugin](const PluginWrapper& wrapper) { return wrapper.m_Plugin == plugin; }, index ))
     {
         const PluginWrapper& wrapper(m_Plugins[index]);
-        delete wrapper.m_Plugin;
+        HEDelete(wrapper.m_Plugin);
         if (wrapper.m_ModuleHandle != NULL)
         {
 #ifdef HE_WINDOWS
@@ -140,6 +214,8 @@ void PluginLoader::unloadPlugin( IPlugin* const plugin )
         LOG(LogType_ProgrammerAssert, "Could not unload plugin, because it is not loaded");
     }
 }
+
+
 
 
 } } //end namespace

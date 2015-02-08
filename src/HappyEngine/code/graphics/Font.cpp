@@ -152,7 +152,7 @@ void Font::preCache(bool extendedCharacters)
 
         // use RGBA instead of R (1 channel)
         // gpu's like 4 byte packing better
-        glyphBuffers[chr] = NEW uint8[width * height * 4];
+        glyphBuffers[chr] = HENewArray(uint8, width * height * 4);
 
         for (int h(0); h < height; ++h)
         {
@@ -176,7 +176,7 @@ void Font::preCache(bool extendedCharacters)
     vec2 penPos;
 
     // create final buffer for texture atlas
-    uint8* texBuffer = NEW uint8[(uint32)texSize.x * (uint32)texSize.y * 4];
+    uint8* texBuffer = HENewArray(uint8, (uint32)texSize.x * (uint32)texSize.y * 4);
 
     // fill with 0
     for (uint32 i(0); i < (uint32)texSize.x * (uint32)texSize.y * 4; ++i)
@@ -207,12 +207,12 @@ void Font::preCache(bool extendedCharacters)
     m_TextureAtlas->setData((uint32)texSize.x, (uint32)texSize.y, 
         texBuffer, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);
 
-    // delete CPU buffer, data is on GPU now
-    delete texBuffer;
+    // HEDelete(CPU) buffer, data is on GPU now
+    HEDeleteArray(texBuffer);
 
     glyphBuffers.forEach([](uint8* pBuffer)
     {
-        delete pBuffer;
+        HEDeleteArray(pBuffer);
         pBuffer = nullptr;
     });
 

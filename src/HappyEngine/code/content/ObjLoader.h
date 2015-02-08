@@ -88,7 +88,7 @@ private:
 
     he::ObjectList<InternalVertex> m_VertexData;
     he::PrimitiveList<Range> m_VertexMeshRange;
-    std::map<he::String, uint32> m_IndexMap;
+    he::Map<he::String, uint32> m_IndexMap;
 
     he::PrimitiveList<Range> m_IndexMeshRange;
     he::PrimitiveList<uint16> m_IndicesUShort;

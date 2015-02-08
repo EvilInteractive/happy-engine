@@ -42,7 +42,7 @@ public:
 
 private:
 
-    std::map<he::String, InstancingController*> m_Controllers;
+    he::Map<he::String, InstancingController*> m_Controllers;
 
     //Disable default copy constructor and default assignment operator
     InstancingManager(const InstancingManager&);

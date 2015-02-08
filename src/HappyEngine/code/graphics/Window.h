@@ -34,6 +34,7 @@ class WindowFactory: public ObjectFactory<Window, NoCreateObjectAllocator<Window
 {
     friend Singleton;
     WindowFactory() { init(1, 2, "WindowFactory"); }
+public:
     virtual ~WindowFactory() { }
 };
 

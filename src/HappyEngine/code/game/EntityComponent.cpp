@@ -34,20 +34,20 @@ IMPLEMENT_OBJECT(EntityComponent)
 
 void EntityComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
-    Property* posProp(NEW Property());
+    Property* posProp(HENew(Property)());
     posProp->init<vec3>(HEFS::strTranslate, vec3(0, 0, 0));
     desc.m_Properties.setAt(posProp->getName(), PropertyDesc(posProp, "Local Position", "Sets the local position of the component", 
-        NEW PropertyConverterVec3(), NEW PropertyFeelDefault()));
+        HENew(PropertyConverterVec3)(), HENew(PropertyFeelDefault)()));
 
-    Property* rotProp(NEW Property());
+    Property* rotProp(HENew(Property)());
     rotProp->init<vec3>(HEFS::strRotate, vec3(0, 0, 0));
     desc.m_Properties.setAt(rotProp->getName(), PropertyDesc(rotProp, "Local Rotation", "Sets the local rotation of the component", 
-        NEW PropertyConverterVec3(), NEW PropertyFeelDefault()));
+        HENew(PropertyConverterVec3)(), HENew(PropertyFeelDefault)()));
 
-    Property* scaleProp(NEW Property());
+    Property* scaleProp(HENew(Property)());
     scaleProp->init<vec3>(HEFS::strScale, vec3(1, 1, 1));
     desc.m_Properties.setAt(scaleProp->getName(), PropertyDesc(scaleProp, "Local Scale", "Sets the local scale of the component", 
-        NEW PropertyConverterVec3(), NEW PropertyFeelDefault()));
+        HENew(PropertyConverterVec3)(), HENew(PropertyFeelDefault)()));
 }
 
 bool EntityComponent::setProperty( const Property* const inProperty )

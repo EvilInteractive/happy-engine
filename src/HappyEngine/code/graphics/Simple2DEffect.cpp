@@ -39,7 +39,7 @@ Simple2DEffect::Simple2DEffect()
 
 Simple2DEffect::~Simple2DEffect()
 {
-    delete m_Material;
+    HEDelete(m_Material);
 }
 
 void Simple2DEffect::init(const VertexLayout& layout)

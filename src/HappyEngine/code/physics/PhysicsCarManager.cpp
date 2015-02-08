@@ -36,7 +36,7 @@
 //{
 //    std::for_each(m_CarList.cbegin(), m_CarList.cend(), [](const PhysicsCar* pCar)
 //    {
-//        delete pCar;
+//        HEDelete(pCar);
 //    });
 //}
 //
@@ -52,7 +52,7 @@
 //
 //PhysicsCar* PhysicsCarManager::createCar()
 //{
-//    PhysicsCar* pCar(NEW PhysicsCar());
+//    PhysicsCar* pCar(NEW(PhysicsCar)());
 //
 //    return pCar;
 //}
@@ -69,7 +69,7 @@
 //    m_Mutex.lock();
 //    m_CarList.erase(std::remove(m_CarList.begin(), m_CarList.end(), pCar), m_CarList.end());
 //    m_InternalCarList.erase(std::remove(m_InternalCarList.begin(), m_InternalCarList.end(), &pCar->m_Vehicle), m_InternalCarList.end());
-//    delete pCar;
+//    HEDelete(pCar);
 //    m_Mutex.unlock();
 //}
 //

@@ -60,9 +60,9 @@ PostProcesser::PostProcesser():
 
 PostProcesser::~PostProcesser()
 {
-    delete m_PostMaterial;
-    delete m_Bloom;
-    delete m_AutoExposure;
+    HEDelete(m_PostMaterial);
+    HEDelete(m_Bloom);
+    HEDelete(m_AutoExposure);
 
     if (m_RandomNormals != nullptr)
         m_RandomNormals->release();
@@ -92,12 +92,12 @@ void PostProcesser::initFromSettings()
 
     if (settings.postSettings.shaderSettings.enableBloom)
     {
-        m_Bloom = NEW Bloom();
+        m_Bloom = HENew(Bloom)();
         m_Bloom->init(m_View, settings.postSettings.shaderSettings.enableHDR);
     }
     if (settings.postSettings.shaderSettings.enableHDR)
     {
-        m_AutoExposure = NEW AutoExposure();
+        m_AutoExposure = HENew(AutoExposure)();
         m_AutoExposure->init(m_View, settings.postSettings.hdrSettings);
     }
     m_AOEnabled = settings.postSettings.shaderSettings.enableAO;
@@ -112,7 +112,7 @@ void PostProcesser::loadMaterial()
 
     // Load Material
     {
-        delete m_PostMaterial;
+        HEDelete(m_PostMaterial);
         Material* const postMat(CONTENT->loadMaterial("engine/post/post.hm"));
         m_PostMaterial = postMat->createMaterialInstance(eShaderRenderType_Normal);
         postMat->release();

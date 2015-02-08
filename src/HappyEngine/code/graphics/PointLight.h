@@ -22,7 +22,6 @@
 #define _HE_PointLight_H_
 #pragma once
 
-#include "Object3D.h"
 #include "Light.h"
 
 namespace he {
@@ -31,7 +30,7 @@ namespace gfx {
 class ModelMesh;
 class MaterialInstance;
 
-class PointLight : public Object3D, public Light
+class PointLight : public Light, public Object3D
 {
 private:
     float m_Multiplier;

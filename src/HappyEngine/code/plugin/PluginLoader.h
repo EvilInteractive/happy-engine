@@ -41,11 +41,19 @@ class HAPPY_ENTRY PluginLoader
         ~PluginWrapper() {}
 
         explicit PluginWrapper(IPlugin* const plugin) : m_Plugin(plugin), m_ModuleHandle(NULL) {}
-        PluginWrapper(IPlugin* const plugin, PLUGIN_HANDLE const mod, he::String path) : m_Plugin(plugin), m_ModuleHandle(mod), m_PluginPath(path) {}
+        PluginWrapper(he::Path buildFolder, const he::String buildName);
+
+        Path getBuildPath() const;
+        Path getRunPath() const;
+        Path getPdbBuildPath() const;
+        Path getPdbRunPath() const;
+
+        bool createRunLib() const;
 
         IPlugin* m_Plugin;
         PLUGIN_HANDLE m_ModuleHandle;
-        he::String m_PluginPath;
+        Path m_Folder;
+        he::String m_Name;
     };
 public:
     PluginLoader();
@@ -57,6 +65,7 @@ public:
     void unloadPlugin(IPlugin* const plugin);
     
 private:
+    IPlugin* loadPlugin(PluginWrapper& wrapper);
     ObjectList<PluginWrapper> m_Plugins;
 
     /* DEFAULT COPY & ASSIGNMENT */

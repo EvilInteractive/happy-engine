@@ -69,6 +69,17 @@ enum ELoadResult
 namespace net {
 typedef RakNet::BitStream NetworkStream;
 typedef RakNet::RakNetGUID NetworkID;
+struct NetworkIDHasher
+{
+    static size_t hash(const NetworkID& id)
+    {
+#ifdef ARCH_32
+        return static_cast<size_t>(id.g & 0xffffffff00000000) + static_cast<size_t>((id.g << 32) & 0xffffffff00000000);
+#else
+        return id.g;
+#endif
+    }
+};
 #define UNASSIGNED_NETWORKID RakNet::UNASSIGNED_RAKNET_GUID
 
 struct NetworkObjectTypeID
@@ -139,11 +150,14 @@ struct HAPPY_ENTRY ObjectHandle
     {
         return m_Handle != other.m_Handle;
     }
-
-    // to be hashable
-    size_t operator()(const ObjectHandle& handle) const
+    bool operator<(const ObjectHandle& other) const
     {
-        return handle.m_Handle;
+        return m_Handle < other.m_Handle;
+    }
+
+    size_t hash() const
+    {
+        return m_Handle;
     }
 
     HE_FORCEINLINE ObjectType getType() const { return m_Handle & s_TypeMask; }

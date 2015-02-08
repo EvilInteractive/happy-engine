@@ -35,13 +35,13 @@ StaticPhysicsComponent::StaticPhysicsComponent(): m_StaticActor(nullptr), m_Pare
 
 StaticPhysicsComponent::~StaticPhysicsComponent()
 {
-    delete m_StaticActor;
+    HEDelete(m_StaticActor);
 }
 
 void StaticPhysicsComponent::init( Entity* pParent )
 {
     m_Parent = pParent;
-    m_StaticActor = NEW px::PhysicsStaticActor(getWorldMatrix());
+    m_StaticActor = HENew(px::PhysicsStaticActor)(getWorldMatrix());
 }
 
 void StaticPhysicsComponent::activate()

@@ -62,19 +62,19 @@ bool WindowSDL::create(const bool show)
         m_WindowRect.x == -1? SDL_WINDOWPOS_CENTERED : m_WindowRect.x, 
         m_WindowRect.y == -1? SDL_WINDOWPOS_CENTERED : m_WindowRect.y, 
         m_WindowRect.width, m_WindowRect.height, flags);
-    m_Context = NEW GLContextSDL();
+    m_Context = HENew(GLContextSDL)();
     if (m_Window && Window::create(show))
     {
         m_ID = SDL_GetWindowID(m_Window);
         SDL_GetWindowPosition(m_Window, &m_WindowRect.x, &m_WindowRect.y);
-        CONTROLS->registerInputForWindow(getHandle(), NEW io::Keyboard(), NEW io::Mouse());
+        CONTROLS->registerInputForWindow(getHandle(), HENew(io::Keyboard)(), HENew(io::Mouse)());
     }
     return result;
 }
 void WindowSDL::destroy()
 {
     Window::destroy();
-    delete m_Context;
+    HEDelete(m_Context);
     m_Context = nullptr;
     if (m_Window != nullptr)
     {

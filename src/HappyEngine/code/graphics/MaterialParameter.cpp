@@ -46,7 +46,7 @@ MaterialParameter& MaterialParameter::operator=(const MaterialParameter& other)
         else
         {
             if (m_Type != eType_Float44)
-                m_Data.m_Matrix = static_cast<float*>(he_malloc(sizeof(float) * 4 * 4));
+                m_Data.m_Matrix = static_cast<float*>(he_malloc("MaterialParameter::m_Data.m_Matrix", sizeof(float) * 4 * 4));
             he_memcpy(m_Data.m_Matrix, other.m_Data.m_Matrix, sizeof(sizeof(float) * 4 * 4));
         }
         m_Type = other.m_Type;
@@ -85,7 +85,7 @@ void MaterialParameter::init(const EType type)
     HE_ASSERT(type != eType_Invalid, "Initializing materialparam with invalid type!");
     m_Type = type;
     if (m_Type == eType_Float44)
-        m_Data.m_Matrix = static_cast<float*>(he_malloc(sizeof(float) * 4 * 4));
+        m_Data.m_Matrix = static_cast<float*>(he_malloc("MaterialParameter::m_Data.m_Matrix", sizeof(float) * 4 * 4));
 }
 
 void MaterialParameter::setShaderUniformID( const ShaderUniformID id, const he::gfx::EShaderPassType pass, const he::gfx::EShaderRenderType rtype )

@@ -38,8 +38,8 @@ UIManager::~UIManager()
 
 void UIManager::load()
 {
-    m_MainUI = NEW UIMain();
-    m_DebugUI = NEW UIDebug();
+    m_MainUI = HENew(UIMain)();
+    m_DebugUI = HENew(UIDebug)();
 
     m_MainUI->load();
     m_DebugUI->load();
@@ -52,9 +52,9 @@ void UIManager::unload()
     hideEditorUI();
     m_MainUI->unload();
 
-    delete m_MainUI;
+    HEDelete(m_MainUI);
     m_MainUI = nullptr;
-    delete m_DebugUI;
+    HEDelete(m_DebugUI);
     m_DebugUI = nullptr;
 }
 

@@ -8,7 +8,7 @@ namespace hs {
 
 PropertyCheckBoxFeel::PropertyCheckBoxFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::PropertyCheckBoxFeel)
+    m_UI(HENew(Ui::PropertyCheckBoxFeel))
 {
     m_UI->setupUi(this);
 
@@ -17,7 +17,7 @@ PropertyCheckBoxFeel::PropertyCheckBoxFeel(QWidget *parent) :
 
 PropertyCheckBoxFeel::~PropertyCheckBoxFeel()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void PropertyCheckBoxFeel::setValue( const he::String& value )

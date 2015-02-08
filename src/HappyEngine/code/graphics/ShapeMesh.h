@@ -32,7 +32,7 @@ class ModelMesh;
 
 class HAPPY_ENTRY ShapeMesh
 {
-    static VertexLayout s_VertexLayout;
+    static VertexLayout* s_VertexLayout;
 public:
     /* CONSTRUCTOR - DESTRUCTOR */
     ShapeMesh();
@@ -60,7 +60,7 @@ public:
     /* GETTERS */
     uint32 getVBO() const;
     uint32 getIBO() const;
-    static const VertexLayout& getVertexLayout() { return s_VertexLayout; }
+    static const VertexLayout& getVertexLayout() { return *s_VertexLayout; }
     
     /* SDM */
     static void sdmInit();

@@ -31,7 +31,7 @@ namespace gfx {
 
 class HAPPY_ENTRY Mesh2D
 {
-    static VertexLayout s_VertexLayout;
+    static VertexLayout* s_VertexLayout;
 public:
     /* CONSTRUCTOR - DESTRUCTOR */
     explicit Mesh2D(bool staticDraw = false);
@@ -49,7 +49,7 @@ public:
     /* GETTERS */
     inline uint32 getVBOID() const { return m_VertexVboID; }
     inline uint32 getVBOIndexID() const { return m_IndexVboID; }
-    const VertexLayout& getVertexLayout() const { return s_VertexLayout; }
+    const VertexLayout& getVertexLayout() const { return *s_VertexLayout; }
 
     const he::PrimitiveList<vec2>& getVertices() const;
     const he::PrimitiveList<uint32>& getIndices() const;

@@ -27,6 +27,7 @@ namespace he {
 class HAPPY_ENTRY Path
 {
 public:
+    Path();
     Path(const he::String& other); // implicit conversion allowed
     Path(const Path& other);
     Path(Path&& other);
@@ -47,19 +48,23 @@ public:
     bool isDirectory() const;
     bool exists() const;
 
+    // Filesystem
+    bool createFolderStructure() const;
+
     // Getters
     he::String getFileName() const;
     he::Path getDirectory() const;
 
     // Iterators
-    bool iterateFiles(const bool recursive, const std::function<void(const Path&)>& func);
+    bool iterateFiles(const bool recursive, const std::function<void(const Path&)>& func, const char* filter = "*");
 
     // Static
-    static const Path& getBinPath() { return s_BinPath; }
-    static const Path& getDataPath() { return s_DataPath; }
-    static const Path& getUserDir() { return s_UserDataFolder; }
+    static const Path& getBinPath() { return *s_BinPath; }
+    static const Path& getDataPath() { return *s_DataPath; }
+    static const Path& getUserDir() { return *s_UserDataFolder; }
 
     static void init(const int argc, const char* const * const argv);
+    static void destroy();
 
     bool operator==(const Path& other) const;
     bool operator!=(const Path& other) const;
@@ -69,9 +74,9 @@ private:
     void convertBackslashesToForward();
     void ensureTrailingSlash();
 
-    static Path s_BinPath;
-    static Path s_DataPath;
-    static Path s_UserDataFolder;
+    static Path* s_BinPath;
+    static Path* s_DataPath;
+    static Path* s_UserDataFolder;
 
     he::String m_Path;
 };

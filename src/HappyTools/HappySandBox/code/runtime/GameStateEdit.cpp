@@ -20,7 +20,7 @@
 namespace hs {
 
 GameStateEdit::GameStateEdit()
-    : m_EditorCamera(NEW FlyCamera())
+    : m_EditorCamera(HENew(FlyCamera)())
 {
     m_EditorCamera->setLens();
     m_EditorCamera->setNearFarPlane(1.0f, 500.0f);
@@ -29,7 +29,7 @@ GameStateEdit::GameStateEdit()
 
 GameStateEdit::~GameStateEdit()
 {
-    delete m_EditorCamera;
+    HEDelete(m_EditorCamera);
 }
 
 bool GameStateEdit::enter()

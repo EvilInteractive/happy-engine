@@ -187,7 +187,7 @@
 //    chassisLocalPoses.reserve(chassispGeoms.size());
 //    std::for_each(chassisDesc.m_ChassiShapes.cbegin(), chassisDesc.m_ChassiShapes.cend(), [&](const px::PhysicsConvexShape& pShape)
 //    {
-//        chassispGeoms.push_back(NEW physx::PxConvexMeshGeometry(pShape.getInternalMesh()));
+//        chassispGeoms.push_back(NEW(physx::PxConvexMeshGeometry)(pShape.getInternalMesh()));
 //        //We need to specify the local poses of the chassis composite shapes.
 //        chassisLocalPoses.push_back(physx::PxTransform::createIdentity());
 //    });
@@ -222,7 +222,7 @@
 //
 //    std::for_each(chassispGeoms.cbegin(), chassispGeoms.cend(), [&](const physx::PxGeometry* pShape)
 //    {
-//        delete pShape;
+//        HEDelete(pShape);
 //    });
 //
 //    m_TyreShape[Tyre_FrontLeft] = physx::PxVehicle4WGetFrontLeftWheelShape(m_Vehicle);

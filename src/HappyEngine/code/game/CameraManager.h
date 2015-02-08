@@ -43,7 +43,7 @@ public:
     void deleteAllCameras();
 
 private:
-    std::map<he::String, gfx::CameraPerspective*> m_Cameras;
+    he::Map<he::String, gfx::CameraPerspective*> m_Cameras;
 
     //Disable default copy constructor and default assignment operator
     CameraManager(const CameraManager&);

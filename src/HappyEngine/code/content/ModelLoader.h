@@ -54,7 +54,7 @@ public:
     void tick(float dTime);
     bool loadTick();
     void glThreadInvoke();  //needed for all of the gl operations
-
+    
     gfx::Model* asyncLoadModel(const he::String& path, const bool savePickingData);
     gfx::ModelMesh* asyncLoadModelMesh(const he::String& path, const he::String& meshName, const bool savePickingData);
 

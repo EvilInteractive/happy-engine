@@ -57,14 +57,14 @@ Renderer2D::~Renderer2D()
 gui::Canvas2D* Renderer2D::createCanvasAbsolute(const RectI& viewport)
 {
     HE_ASSERT(viewport.width > 0 && viewport.height > 0, "viewport width and height must be > 0");
-    he::gui::Canvas2D* canvas(NEW gui::Canvas2D(this, viewport));
+    he::gui::Canvas2D* canvas(HENew(gui::Canvas2D)(this, viewport));
     m_Canvas2Ds.add(canvas);
     return canvas;
 }
 gui::Canvas2D* Renderer2D::createCanvasRelative(const RectF& percent)
 {
     HE_ASSERT(percent.width > 0 && percent.height > 0, "viewport width and height must be > 0");
-    he::gui::Canvas2D* canvas(NEW gui::Canvas2D(this, percent));
+    he::gui::Canvas2D* canvas(HENew(gui::Canvas2D)(this, percent));
     m_Canvas2Ds.add(canvas);
     return canvas;
 }
@@ -73,20 +73,20 @@ void Renderer2D::removeCanvas(gui::Canvas2D* canvas)
     HE_IF_ASSERT(m_Canvas2Ds.contains(canvas) == true, "Canvas is not a member of this Renderer2D!")
     {
         m_Canvas2Ds.remove(canvas);
-        delete canvas;
+        HEDelete(canvas);
     }
 }
     
 #ifdef USE_WEB
 gui::WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
-    gui::WebView* web(NEW gui::WebView(m_View, viewport, enableUserInput));
+    gui::WebView* web(HENew(gui::WebView)(m_View, viewport, enableUserInput));
     m_WebViews.add(web);
     return web;
 }
 gui::WebView* Renderer2D::createWebViewRelative(const RectF& viewportPercent, bool enableUserInput)
 {
-    gui::WebView* web(NEW gui::WebView(m_View, viewportPercent, enableUserInput));
+    gui::WebView* web(HENew(gui::WebView)(m_View, viewportPercent, enableUserInput));
     m_WebViews.add(web);
     return web;
 }
@@ -95,7 +95,7 @@ void Renderer2D::removeWebView(gui::WebView* webview)
     HE_IF_ASSERT(m_WebViews.contains(webview), "Canvas is not a member of this Renderer2D!")
     {
         m_WebViews.remove(webview);
-        delete webview;
+        HEDelete(webview);
     }
 }
 #endif
@@ -148,7 +148,7 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     m_View = view;
     m_RenderTarget = target;
 
-    m_DefaultCanvas = NEW he::gui::Canvas2D(this, RectF(0,0,1,1));
+    m_DefaultCanvas = HENew(he::gui::Canvas2D)(this, RectF(0,0,1,1));
     m_DefaultCanvas->init();
 
     m_Canvas2Ds.add(m_DefaultCanvas);

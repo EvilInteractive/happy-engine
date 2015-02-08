@@ -20,11 +20,12 @@
 
 #include "HappyPluginTestPCH.h" 
 
+#include "HappyNewOverride.h"
 #include "HappyPluginTestMain.h"
 
 PLUGIN_EXPORT he::pl::IPlugin* createPlugin()
 {
-    return NEW ht::HappyPluginTestMain();
+    return HENew(ht::HappyPluginTestMain)();
 }
 #ifdef HE_WINDOWS
 BOOL WINAPI DllMain(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpReserved*/ )

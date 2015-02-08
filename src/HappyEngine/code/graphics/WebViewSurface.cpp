@@ -33,7 +33,7 @@ WebViewSurface::WebViewSurface(uint16 width, uint16 height): m_Dirty(true),
                                                              m_BPP(4)
 {
     m_Rowspan = m_Width * m_BPP;
-    m_Buffer = static_cast<unsigned char*>(he_malloc(m_Rowspan * m_Height));
+    m_Buffer = static_cast<unsigned char*>(he_malloc("WebViewSurface::m_Buffer", m_Rowspan * m_Height));
 }
 
 WebViewSurface::~WebViewSurface()
@@ -72,7 +72,7 @@ void WebViewSurface::Scroll(int dx, int dy, const Awesomium::Rect& clipRect)
 
     if (dx < 0 && dy == 0)
     {
-        unsigned char* tmpBuffer(static_cast<unsigned char*>(he_malloc((clipRect.width + dx) * 4)));
+        unsigned char* tmpBuffer(static_cast<unsigned char*>(he_malloc("WebViewSurface::Scroll()::tmpBuffer", (clipRect.width + dx) * 4)));
 
         for (uint32 i(0); i < (uint32)clipRect.height; ++i)
         {
@@ -88,7 +88,7 @@ void WebViewSurface::Scroll(int dx, int dy, const Awesomium::Rect& clipRect)
     }
     else if (dx > 0 && dy == 0)
     {
-        unsigned char* tmpBuffer(static_cast<unsigned char*>(he_malloc((clipRect.width - dx) * 4)));
+        unsigned char* tmpBuffer(static_cast<unsigned char*>(he_malloc("WebViewSurface::Scroll()::tmpBuffer", (clipRect.width - dx) * 4)));
 
         for (uint32 i(0); i < (uint32)clipRect.height; ++i)
         {

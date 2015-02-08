@@ -65,14 +65,14 @@ Console::Console() :	m_Shortcut(io::Key_F1),
 
     m_HelpCommand = "type 'help' to see available commands...";
 
-    addTypeHandler(NEW BoolTypeHandler());
-    addTypeHandler(NEW FloatTypeHandler());
-    addTypeHandler(NEW IntTypeHandler());
-    addTypeHandler(NEW UIntTypeHandler());
-    addTypeHandler(NEW Vec2TypeHandler());
-    addTypeHandler(NEW Vec3TypeHandler());
-    addTypeHandler(NEW Vec4TypeHandler());
-    addTypeHandler(NEW StringTypeHandler());
+    addTypeHandler(HENew(BoolTypeHandler)());
+    addTypeHandler(HENew(FloatTypeHandler)());
+    addTypeHandler(HENew(IntTypeHandler)());
+    addTypeHandler(HENew(UIntTypeHandler)());
+    addTypeHandler(HENew(Vec2TypeHandler)());
+    addTypeHandler(HENew(Vec3TypeHandler)());
+    addTypeHandler(HENew(Vec4TypeHandler)());
+    addTypeHandler(HENew(StringTypeHandler)());
 
     addMessage(m_Help.c_str());
 
@@ -106,10 +106,10 @@ void Console::load()
              "'listcmds' (displays registered commands)\n"
              "******** HELP ********";
 
-    m_ScrollBar = NEW gui::Scrollbar(
+    m_ScrollBar = HENew(gui::Scrollbar)(
         vec2(1280-20, 0), vec2(20,200), 50.0f);
 
-    m_TextBox = NEW gui::TextBox(
+    m_TextBox = HENew(gui::TextBox)(
         RectF(0,200,1280, 20),
         "Enter command...", 8, "DejaVuSansMono.ttf");
 
@@ -130,19 +130,18 @@ void Console::load()
 
 Console::~Console()
 {
-    std::for_each(m_TypeHandlers.begin(), m_TypeHandlers.end(), [&](std::pair<he::String, ITypeHandler*> p)
+    m_TypeHandlers.forEach([](const he::String& /*key*/, ITypeHandler* value)
     {
-        delete p.second;
-        p.second = nullptr;
+        HEDelete(value);
     });
 
-    m_TypeHandlers.clear();
+    //m_TypeHandlers.clear();
 
     if (m_Font != nullptr)
         m_Font->release();
     
-    delete m_TextBox;
-    delete m_ScrollBar;
+    HEDelete(m_TextBox);
+    HEDelete(m_ScrollBar);
 }
 
 void Console::processCommand(const he::String& command)
@@ -155,7 +154,7 @@ void Console::processCommand(const he::String& command)
     if (s.find('=') != -1)
     {
         // get keyword (variable to change)
-        he::String keyWord(s.substr(0, s.find('=')));
+        /*he::String keyWord(s.substr(0, s.find('=')));
 
         if (m_ValueContainer.find(keyWord) != m_ValueContainer.end())
         {
@@ -183,9 +182,9 @@ void Console::processCommand(const he::String& command)
         else
         {
             HE_ERROR("the keyword '%s' was not found!", keyWord.c_str());
-        }
+        }*/
     }
-    else if (m_FunctionContainer.find(s) != m_FunctionContainer.end()) // check if it's a command
+    else if (m_FunctionContainer.contains(s)) // check if it's a command
     {
         addMessage(m_TextBox->getString().c_str(), CMSG_TYPE_COMMAND);
 
@@ -209,20 +208,20 @@ void Console::displayVars()
 
     stream << "******** VARS ********\n";
 
-    if (m_ValueContainer.empty())
-    {
-        stream << "!no registered variables!\n";
-    }
-    else
-    {
-        std::for_each(m_ValueContainer.cbegin(), m_ValueContainer.cend(), [&] (std::pair<he::String, boost::any> p)
-        {
-            he::String type(p.second.type().name());
-            type = type.substr(0, type.size() - 2);
-
-            stream << "'" << p.first << "' (" << type << ")\n";
-        });
-    }
+    //if (m_ValueContainer.empty())
+    //{
+    //    stream << "!no registered variables!\n";
+    //}
+    //else
+    //{
+    //    /*std::for_each(m_ValueContainer.cbegin(), m_ValueContainer.cend(), [&] (std::pair<he::String, boost::any> p)
+    //    {
+    //        he::String type(p.second.type().name());
+    //        type = type.substr(0, type.size() - 2);
+    //
+    //        stream << "'" << p.first << "' (" << type << ")\n";
+    //    });*/
+    //}
 
     stream << "******** VARS ********";
 
@@ -235,17 +234,10 @@ void Console::displayCmds()
 
     stream << "******** CMDS ********\n";
 
-    if (m_FunctionContainer.empty())
+    m_FunctionContainer.forEach([&](const he::String& key, const std::function<void()>& /*value*/)
     {
-        stream << "!no registered commands!\n";
-    }
-    else
-    {
-        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<he::String, std::function<void()> > p)
-        {
-            stream << "'" << p.first << "'\n";
-        });
-    }
+        stream << "'" << key << "'\n";
+    });
 
     stream << "******** CMDS ********";
 
@@ -401,7 +393,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
 
 void Console::registerCmd(const std::function<void()>& command, const he::String& cmdKey)
 {
-    HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
+    HE_IF_ASSERT(!m_FunctionContainer.contains(cmdKey), "Command: '%s' already registered", cmdKey.c_str())
     {
         m_FunctionContainer[cmdKey] = command;
     }
@@ -409,7 +401,7 @@ void Console::registerCmd(const std::function<void()>& command, const he::String
 
 void Console::addTypeHandler(ITypeHandler* typeHandler)
 {
-    HE_IF_ASSERT(m_TypeHandlers.find(typeHandler->getType()) == m_TypeHandlers.cend(), "Type handler for '%s' already added!", typeHandler->getType().c_str())
+    HE_IF_ASSERT(!m_TypeHandlers.contains(typeHandler->getType()), "Type handler for '%s' already added!", typeHandler->getType().c_str())
     {
         m_TypeHandlers[typeHandler->getType()] = typeHandler;
     }

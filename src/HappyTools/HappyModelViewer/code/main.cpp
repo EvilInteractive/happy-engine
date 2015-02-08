@@ -41,9 +41,9 @@ int main( int argc, char** args )
         CONTENT->setContentDir(HAPPYENGINE->getRootDir().getRelativePath(he::Path("../data")));
         std::string file(args[1]);
 
-        he::game::Game* game(NEW hmv::MainGame(file));
+        he::game::Game* game(NEW(hmv::MainGame)(file));
         HAPPYENGINE->start(game);
-        delete game;
+        HEDelete(game);
 
         HAPPYENGINE->dispose();
     

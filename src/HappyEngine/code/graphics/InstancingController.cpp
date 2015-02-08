@@ -307,7 +307,7 @@ void InstancingController::updateBuffer()
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_CpuBuffer.getSize(), m_CpuBuffer.getSize() > 0 ? m_CpuBuffer.getBuffer() : 0);
 
         m_NeedsUpdate = false;
-        m_PrevUpdateTime = boost::chrono::high_resolution_clock::now();
+        m_PrevUpdateTime = std::chrono::high_resolution_clock::now();
         PROFILER_END();
 
         getScene()->forceReevalute(this);

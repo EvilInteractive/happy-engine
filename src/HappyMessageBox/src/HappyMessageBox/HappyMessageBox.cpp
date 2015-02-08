@@ -31,7 +31,6 @@
 
 namespace he {
 
-std::string HappyMessageBox::s_HtmlPage("");
 int HappyMessageBox::s_DefaultHeigth(512);
 int HappyMessageBox::s_DefaultWidth(256);
 
@@ -44,12 +43,8 @@ HappyMessageBox::~HappyMessageBox()
 {
 }
 
-void HappyMessageBox::init( const char* htmlPage, const int width, const int height )
+void HappyMessageBox::init( const int width, const int height )
 {
-#ifdef USE_WEB
-    assert(Awesomium::WebCore::instance() != nullptr); // Please initialize Webcore before calling this method
-#endif
-    s_HtmlPage = htmlPage;
     s_DefaultWidth = width;
     s_DefaultHeigth = height;
 }
@@ -64,7 +59,7 @@ HappyMessageBox::Button HappyMessageBox::showExt(const char* caption, const char
     if (button1 == NULL)
         button1 = "";
     hmb::MessageBoxWindow window;
-    window.init(s_HtmlPage.c_str(), s_DefaultWidth, s_DefaultHeigth, caption);
+    window.init(s_DefaultWidth, s_DefaultHeigth, caption);
     window.addText("Message", message);
     window.addButton(button1);
     window.setIcon(icon);
@@ -143,7 +138,7 @@ HappyMessageBox::Button HappyMessageBox::showAssert( const char* caption, const 
         button1 = "";
 
     hmb::MessageBoxWindow window;
-    window.init(s_HtmlPage.c_str(), s_DefaultWidth, s_DefaultHeigth, caption);
+    window.init(s_DefaultWidth, s_DefaultHeigth, caption);
     window.addText("Message", message);
     window.addText("StackTrace", callstack.c_str());
     window.addButton(button1);

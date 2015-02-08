@@ -40,7 +40,7 @@ TriggerComponent::TriggerComponent() :  m_Trigger(nullptr),
 
 TriggerComponent::~TriggerComponent()
 {
-    delete m_Trigger;
+    HEDelete(m_Trigger);
 }
 
 /* ICOMPONENT */
@@ -48,7 +48,7 @@ void TriggerComponent::init(Entity* parent)
 {
     HE_ASSERT(parent != nullptr, "The parent of this component can not be nullptr!");
     m_Parent = parent;
-    m_Trigger = NEW px::PhysicsTrigger(m_Parent->getWorldMatrix());
+    m_Trigger = HENew(px::PhysicsTrigger)(m_Parent->getWorldMatrix());
     m_Trigger->setUserData(m_Parent);
     
     he::eventCallback1<void, px::PhysicsActor*> onEnterHandler([&](px::PhysicsActor* actor)

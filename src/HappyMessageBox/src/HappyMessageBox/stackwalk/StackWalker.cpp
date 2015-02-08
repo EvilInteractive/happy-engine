@@ -860,7 +860,7 @@ StackWalker::~StackWalker()
     free(m_szSymPath);
   m_szSymPath = NULL;
   if (this->m_sw != NULL)
-    delete this->m_sw;
+    delete(this->m_sw);
   this->m_sw = NULL;
 }
 

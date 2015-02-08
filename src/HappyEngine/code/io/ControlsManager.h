@@ -51,8 +51,8 @@ public:
 
 private:
 
-    typedef he::Map<ObjectHandle, IKeyboard*, ObjectHandle> TKeyboardMap;
-    typedef he::Map<ObjectHandle, IMouse*, ObjectHandle> TMouseMap;
+    typedef he::Map<ObjectHandle, IKeyboard*> TKeyboardMap;
+    typedef he::Map<ObjectHandle, IMouse*> TMouseMap;
 
     TKeyboardMap m_Keyboard;
     TMouseMap m_Mouse;

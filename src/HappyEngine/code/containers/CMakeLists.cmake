@@ -7,4 +7,5 @@ addFilter(CODE_SRCS src/containers code/containers/
                 ObjectFactory.h
                 Pool.h                      Pool.inl
                 SlotPContainer.h
+                Queue.h						Queue.inl
 )

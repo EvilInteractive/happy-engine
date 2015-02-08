@@ -27,13 +27,13 @@
 namespace hs {
 
 PluginManager::PluginManager()
-    : m_Loader(NEW he::pl::PluginLoader())
+    : m_Loader(HENew(he::pl::PluginLoader)())
 {
 }
 
 PluginManager::~PluginManager()
 {
-    delete m_Loader;
+    HEDelete(m_Loader);
 }
 
 he::pl::IPlugin* PluginManager::loadPlugin( const he::Path& path, const char* name )

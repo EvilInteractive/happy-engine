@@ -62,12 +62,12 @@ void Palet::init( he::gfx::Scene* scene )
 
     MainGame* game(static_cast<MainGame*>(GAME));
 
-    he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
+    he::ge::ModelComponent* model(NEW(he::ge::ModelComponent)());
     model->setModelMeshAndMaterial("pong/palet.material", "pong/palet.binobj");
     model->setLocalScale(he::vec3(100, 100, 100));
     addComponent(model);
 
-    m_LightFlashComponent = NEW LightFlashComponent();
+    m_LightFlashComponent = NEW(LightFlashComponent)();
     addComponent(m_LightFlashComponent);
     m_LightFlashComponent->setAttenuation(1.0f, 50);
     if (m_Player == 0)
@@ -80,9 +80,9 @@ void Palet::init( he::gfx::Scene* scene )
     m_LightFlashComponent->setFlashDuration(0.5f);
 
     HE_ASSERT(m_FlashLightScore == nullptr, "Entity is not nullptr!");
-    m_FlashLightScore = NEW Entity();
+    m_FlashLightScore = NEW(Entity)();
     m_FlashLightScore->init(scene);
-    m_LightFlashAddPointComponent = NEW LightFlashComponent();
+    m_LightFlashAddPointComponent = NEW(LightFlashComponent)();
     m_FlashLightScore->addComponent(m_LightFlashAddPointComponent);
     m_LightFlashAddPointComponent->setAttenuation(1.0f, 100);
     if (m_Player == 0)
@@ -105,7 +105,7 @@ void Palet::init( he::gfx::Scene* scene )
 
 Palet::~Palet()
 {
-    delete m_FlashLightScore;
+    HEDelete(m_FlashLightScore);
     GAME->removeFromTickList(this);
 }
 

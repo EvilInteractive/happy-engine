@@ -35,7 +35,7 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
                                                             m_Color(Color(0.8f,0.8f,0.8f,1.0f)),
                                                             m_Color2(Color(1.0f,1.0f,1.0f,1.0f))
 {
-    m_GridShape = NEW gfx::ShapeMesh();
+    m_GridShape = HENew(gfx::ShapeMesh)();
     m_GridShape->init(gfx::MeshDrawMode_Lines);
     uint32 steps(static_cast<uint32>(size / tileSize));
     m_GridShape->beginEditing();
@@ -49,7 +49,7 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
     }
     m_GridShape->endEditing(false, false);
 
-    m_BaseLineShape = NEW gfx::ShapeMesh();
+    m_BaseLineShape = HENew(gfx::ShapeMesh)();
     m_BaseLineShape->init(gfx::MeshDrawMode_Lines);
     m_BaseLineShape->beginEditing();
 
@@ -64,8 +64,8 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
 
 Grid::~Grid()
 {
-    delete m_GridShape;
-    delete m_BaseLineShape;
+    HEDelete(m_GridShape);
+    HEDelete(m_BaseLineShape);
 }
 
 /* GENERAL */

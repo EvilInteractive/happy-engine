@@ -51,9 +51,9 @@ MainGame::~MainGame()
     m_Renderer->detachFromRender(this);
 
     m_Font->release();
-    delete m_FpsGraph;
+    HEDelete(m_FpsGraph);
 
-    delete m_Renderer;
+    HEDelete(m_Renderer);
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeWindow(m_Window);
 }
@@ -77,7 +77,7 @@ void MainGame::load()
     he::gfx::RenderSettings settings;
     CONTENT->setRenderSettings(settings);
 
-    m_Renderer = NEW he::gfx::Renderer2D;
+    m_Renderer = NEW(he::gfx::Renderer2D);
     m_View->addRenderPlugin(m_Renderer);
 
     m_View->setWindow(m_Window);
@@ -91,7 +91,7 @@ void MainGame::load()
 
     m_Renderer->attachToRender(this);
 
-    m_FpsGraph = NEW he::tools::FPSGraph();
+    m_FpsGraph = NEW(he::tools::FPSGraph)();
     m_FpsGraph->setType(he::tools::FPSGraph::Type_TextOnly);
     m_Renderer->attachToRender(m_FpsGraph);
 

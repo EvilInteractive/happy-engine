@@ -20,12 +20,6 @@
 
 #include "MessageBoxWindow.h"
 
-#ifdef USE_WEB
-#include "Awesomium/BitmapSurface.h"
-#include "Awesomium/WebView.h"
-#include "Awesomium/STLHelpers.h"
-#endif
-
 #include <sstream>
 
 #include <SDL2/SDL.h>
@@ -34,169 +28,12 @@
 namespace he {
 namespace hmb {
     
-#ifdef USE_WEB
-MessageBoxWindow::MessageBoxWindow()
-    : m_Result(HappyMessageBox::Button_None)
-    , m_WebView(nullptr)
-{    
-}
-void MessageBoxWindow::init(const char* html, const int width, const int height, const char* caption)
-{
-    // create MessageBoxWindow
-    m_Window = new sf::Window();
-    m_Window->create(sf::VideoMode(width, height), "");
-    m_Window->setVerticalSyncEnabled(true);
-    m_Window->setTitle(caption);
-    m_WebView = Awesomium::WebCore::instance()->CreateWebView(width, height, 0, Awesomium::kWebViewType_Window);
-    m_WebView->set_load_listener(this);
-    m_WebView->set_js_method_handler(this);
-    m_WebView->set_parent_window(static_cast<Awesomium::NativeWindow>(m_Window->getSystemHandle()));
-    m_WebPage = html;
-}
-
-MessageBoxWindow::~MessageBoxWindow()
-{
-    m_WebView->Destroy();
-    m_Window->close();
-    delete m_Window;
-}
-
-void MessageBoxWindow::show()
-{
-    m_Result = HappyMessageBox::Button_None;
-    
-    m_WebView->LoadURL(Awesomium::WebURL(Awesomium::WSLit(m_WebPage.c_str())));
-
-    while (m_Window->isOpen())
-    {
-        Awesomium::WebCore::instance()->Update();
-        tick();
-    }
-}
-    
-void MessageBoxWindow::tick()
-{
-    sf::Event event;
-    while (m_Window->pollEvent(event))
-    {
-        switch(event.type)
-        {
-            case sf::Event::Closed:
-                m_Window->close();
-                m_Result = HappyMessageBox::Button_Escape;
-                break;
-            case sf::Event::Resized:
-                m_WebView->Resize(event.size.width, event.size.height);
-                break;
-        }
-    }
-}
-    
-/* EXTRA */
-void MessageBoxWindow::OnFailLoadingFrame(
-        Awesomium::WebView *  		/*caller*/,
-        ::int64  						/*frame_id*/,
-        bool  						/*is_main_frame*/,
-        const Awesomium::WebURL&  	/*url*/,
-        int  						/*error_code*/,
-        const Awesomium::WebString& /*error_desc*/ 
-    )
-{
-    m_Window->close();
-}
-
-void MessageBoxWindow::OnFinishLoadingFrame(
-        Awesomium::WebView *  		/*caller*/,
-        ::int64  						/*frame_id*/,
-        bool  						/*is_main_frame*/,
-        const Awesomium::WebURL&  	/*url*/ 
-    )
-{
-    Awesomium::JSArray array;
-
-    const size_t buttons(m_Buttons.size());
-    for (size_t i(0); i < buttons; ++i)
-    {
-        array.Clear();
-        array.Push(Awesomium::JSValue(Awesomium::WSLit(m_Buttons[i].c_str())));
-        executeFunction("addButton", array);
-    }
-
-    const size_t messages(m_Messages.size());
-    for (size_t i(0); i < messages; ++i)
-    {
-        array.Clear();
-        array.Push(Awesomium::JSValue(Awesomium::WSLit(m_Messages[i].first.c_str())));
-        array.Push(Awesomium::JSValue(Awesomium::WSLit(m_Messages[i].second.c_str())));
-        executeFunction("addTab", array);
-    }
-}
-
-void MessageBoxWindow::OnDocumentReady(
-        Awesomium::WebView *  		/*caller*/,
-        const Awesomium::WebURL &  	/*url */
-    )
-{
-    Awesomium::JSValue value(m_WebView->CreateGlobalJavascriptObject(Awesomium::WSLit("HE")));    
-    Awesomium::WebString aweMethod = Awesomium::WSLit("onButtonClicked");
-    assert(value.IsObject());
-    Awesomium::JSObject& obj(value.ToObject());
-    obj.SetCustomMethod(aweMethod, false);
-}
-
-void MessageBoxWindow::OnBeginLoadingFrame(
-        Awesomium::WebView*			/*caller*/,
-        ::int64						/*frame_id*/,
-        bool						/*is_main_frame*/,
-        const Awesomium::WebURL&	/*url*/,
-        bool						/*is_error_page*/
-    )
-{
-}
-    
-void MessageBoxWindow::executeFunction( const char* method, const Awesomium::JSArray& args )
-{
-    Awesomium::JSValue window(
-        m_WebView->ExecuteJavascriptWithResult(
-        Awesomium::WSLit("window"), Awesomium::WSLit("")));
-    Awesomium::JSObject& obj = window.ToObject();
-
-    obj.Invoke(Awesomium::WSLit(method), args);
-}
-
-void MessageBoxWindow::OnMethodCall( Awesomium::WebView* /*caller*/, unsigned int /*remote_object_id*/, const Awesomium::WebString& method_name, const Awesomium::JSArray& args )
-{
-    if (strcmp(Awesomium::ToString(method_name).c_str(), "onButtonClicked") == 0)
-    {
-        assert(args.size() == 1);
-        assert(args[0].IsString());
-        std::string button(Awesomium::ToString(args[0].ToString()));
-
-        const size_t buttons(m_Buttons.size());
-        for (size_t i(0); i < buttons; ++i)
-        {
-            if (strcmp(m_Buttons[i].c_str(), button.c_str()) == 0)
-            {
-                m_Result = static_cast<HappyMessageBox::Button>(HappyMessageBox::Button_Button1 + i);
-                break;
-            }
-        }
-        assert(m_Result != HappyMessageBox::Button_None);
-        m_Window->close();
-    }
-}
-
-Awesomium::JSValue MessageBoxWindow::OnMethodCallWithReturnValue( Awesomium::WebView* /*caller*/, unsigned int /*remote_object_id*/, const Awesomium::WebString& /*method_name*/, const Awesomium::JSArray& /*args*/ )
-{
-    return Awesomium::JSValue();
-}
-    
-#else
 MessageBoxWindow::MessageBoxWindow()
 : m_Result(HappyMessageBox::Button_None)
 {
 }
-void MessageBoxWindow::init(const char* /*html*/, const int /*width*/, const int /*height*/, const char* caption)
+
+void MessageBoxWindow::init(const int /*width*/, const int /*height*/, const char* caption)
 {
     // create MessageBoxWindow
     m_Title = caption;
@@ -261,7 +98,6 @@ void MessageBoxWindow::show()
 void MessageBoxWindow::tick()
 {
 }
-#endif
     
 void MessageBoxWindow::addButton( const char* button )
 {

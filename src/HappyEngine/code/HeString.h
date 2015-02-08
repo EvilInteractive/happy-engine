@@ -32,8 +32,8 @@ typedef std::basic_string<char, std::char_traits<char>, THeStringAllocator > Std
 typedef std::basic_stringstream<char, std::char_traits<char>, THeStringAllocator > StringStream;
 typedef StdString String;
 
-void toLower(char* const buff);
-uint32 hash(const uint32 oldHash, const he::String& str);
+HAPPY_ENTRY void toLower(char* const buff);
+HAPPY_ENTRY uint32 hash(const uint32 oldHash, const he::String& str);
 
 } //end namespace
 

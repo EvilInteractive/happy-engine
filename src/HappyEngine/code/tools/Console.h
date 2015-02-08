@@ -71,14 +71,14 @@ public:
     void addMessage(const char* msg, CMSG_TYPE type = CMSG_TYPE_INFO);
 
     template <typename T>
-    void registerVar(T* pVar, const he::String& varKey)
+    void registerVar(T* /*pVar*/, const he::String& /*varKey*/)
     {
-        HE_IF_ASSERT(m_TypeHandlers.find(typeid(T).name()) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", typeid(T).name())
+        HE_IF_ASSERT(m_TypeHandlers.contains(typeid(T).name()), "Type handler for '%s'not specified!", typeid(T).name())
         {
-            HE_IF_ASSERT(m_ValueContainer.find(varKey) == m_ValueContainer.end(), "Variable: '%s' already registered!", varKey.c_str())
+            /*HE_IF_ASSERT(m_ValueContainer.find(varKey) == m_ValueContainer.end(), "Variable: '%s' already registered!", varKey.c_str())
             {
                 m_ValueContainer[varKey] = pVar;
-            }
+            }*/
         }
     }
 
@@ -108,13 +108,13 @@ private:
     void renderBackground();
 
     /* DATAMEMBERS */
-    std::map<he::String, boost::any> m_ValueContainer;
-    std::map<he::String, std::function<void()> > m_FunctionContainer;
-    std::map<CMSG_TYPE, Color> m_MsgColors;
-    std::map<he::String, ITypeHandler*> m_TypeHandlers;
+    //he::Map<he::String, boost::any> m_ValueContainer;
+    he::Map<he::String, std::function<void()> > m_FunctionContainer;
+    he::Map<CMSG_TYPE, Color> m_MsgColors;
+    he::Map<he::String, ITypeHandler*> m_TypeHandlers;
     he::ObjectList<std::pair<CMSG_TYPE, he::String> > m_MsgHistory;
     he::ObjectList<he::String> m_CmdHistory;
-    std::map<CMSG_TYPE, bool> m_ShowMessageTypes;
+    he::Map<CMSG_TYPE, bool> m_ShowMessageTypes;
 
     io::Key m_Shortcut;
 

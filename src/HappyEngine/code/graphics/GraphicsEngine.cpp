@@ -27,6 +27,7 @@
 #include "WindowSDL.h"
 #include "Scene.h"
 #include "View.h"
+#include "ContentManager.h"
 
 #include "Light.h"
 #include "ShaderUniformBufferManager.h"
@@ -66,12 +67,13 @@ GraphicsEngine::GraphicsEngine()
 GraphicsEngine::~GraphicsEngine()
 {
 #ifdef USE_WEB
-    delete m_WebViewSurfaceFactory;
+    HEDelete(m_WebViewSurfaceFactory);
 #endif
 }
 void GraphicsEngine::destroy()
 {
-    delete m_UBOManager;
+    CONTENT->destroy();
+    HEDelete(m_UBOManager);
     m_UBOManager = nullptr;
     if (m_OwnSharedContext)
     {
@@ -127,11 +129,11 @@ void GraphicsEngine::init(const bool supportWindowing, Window* const sharedConte
     HE_ASSERT(supportWindowing || sharedContext, "GraphicsEngine is enabled, but not windowing. This can only work if a sharedContext is provided, which is not\nFATAL");
     setActiveContext(m_SharedContext->getContext());
     
-    m_UBOManager = NEW ShaderUniformBufferManager();
+    m_UBOManager = HENew(ShaderUniformBufferManager)();
     m_UBOManager->init();
 
 #ifdef USE_WEB
-    m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
+    m_WebViewSurfaceFactory = HENew(WebViewSurfaceFactory)();
     m_WebCore = Awesomium::WebCore::instance();
     m_WebCore->set_surface_factory(m_WebViewSurfaceFactory);
 #endif
@@ -181,7 +183,7 @@ void GraphicsEngine::removeView( View* view )
 Window*GraphicsEngine::createWindow()
 {
     HE_ASSERT(m_OwnSharedContext, "You should not try to create a window from the engine when you supplied you own sharedContext!");
-    Window* window(NEW WindowSDL());
+    Window* window(HENew(WindowSDL)());
     registerWindow(window);
     return window;
 }
@@ -191,7 +193,7 @@ void GraphicsEngine::removeWindow( Window* window )
     if (unregisterWindow(window))
     {
         window->destroy();
-        delete window;
+        HEDelete(window);
     }
 }
 
@@ -321,7 +323,14 @@ void GraphicsEngine::unregisterContext( GLContext* context )
         ContextRemoved(context);
         context->setID(UINT32_MAX);
         if (m_SharedContext->getContext() != context)
+        {
             setActiveContext(m_SharedContext->getContext());
+        }
+        else
+        {
+            // Destroying shared context! free resources
+            destroy();
+        }
     }
 }
 

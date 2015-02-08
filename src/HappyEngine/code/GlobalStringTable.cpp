@@ -44,7 +44,7 @@ he::FixedString GlobalStringTable::add( const char* const str, const int length 
     if (it == m_HashMap.cend())
     {
         const int len(length == -1? strlen(str) : length);
-        char* const myStr(static_cast<char*>(he_malloc((len + 1) * sizeof(char))));
+        char* const myStr(static_cast<char*>(he_malloc("GlobalStringTable::add::myStr", (len + 1) * sizeof(char))));
         he_memcpy(myStr, str, len * sizeof(char));
         myStr[len] = '\0';
         m_HashMap.insert(myStr);

@@ -53,6 +53,8 @@ class HAPPY_ENTRY Profiler : public gfx::IDrawable2D
 {
     struct ProfileTreeNode;
 public:
+    virtual ~Profiler();
+
     static Profiler* getInstance();
     static void dispose();
 
@@ -78,7 +80,6 @@ public:
 private:
 
     Profiler();
-    virtual ~Profiler();
 
     static Profiler* s_Profiler;
 

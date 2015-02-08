@@ -31,7 +31,7 @@ namespace gfx {
 
 void ShaderUniformFactory::destroy(IShaderUniform* const uniform)
 {
-    delete uniform;
+    HEDelete(uniform);
 }
     
 he::gfx::IShaderUniform* ShaderUniformFactory::create( const EShaderUniformType type, const he::FixedString& name, const uint32 id )
@@ -39,24 +39,24 @@ he::gfx::IShaderUniform* ShaderUniformFactory::create( const EShaderUniformType 
     IShaderUniform* uniform(nullptr);
     switch (type)
     { 
-    case eShaderUniformType_Int: uniform = NEW ShaderUniformInt(name, id, 0); break;
-    case eShaderUniformType_UInt: uniform = NEW ShaderUniformUint(name, id, 0); break;
-    case eShaderUniformType_Float: uniform = NEW ShaderUniformFloat(name, id, 0.0f); break;
-    case eShaderUniformType_Float2: uniform = NEW ShaderUniformVec2(name, id, vec2::zero); break;
-    case eShaderUniformType_Float3: uniform = NEW ShaderUniformVec3(name, id, vec3::zero); break;
-    case eShaderUniformType_Float4: uniform = NEW ShaderUniformVec4(name, id, vec4::zero); break;
-    case eShaderUniformType_Mat44: uniform = NEW ShaderUniformMat44(name, id, mat44::Identity); break;
-    case eShaderUniformType_Mat44Array: uniform = NEW ShaderUniformMat44Array(name, id); break;
+    case eShaderUniformType_Int: uniform = HENew(ShaderUniformInt)(name, id, 0); break;
+    case eShaderUniformType_UInt: uniform = HENew(ShaderUniformUint)(name, id, 0); break;
+    case eShaderUniformType_Float: uniform = HENew(ShaderUniformFloat)(name, id, 0.0f); break;
+    case eShaderUniformType_Float2: uniform = HENew(ShaderUniformVec2)(name, id, vec2::zero); break;
+    case eShaderUniformType_Float3: uniform = HENew(ShaderUniformVec3)(name, id, vec3::zero); break;
+    case eShaderUniformType_Float4: uniform = HENew(ShaderUniformVec4)(name, id, vec4::zero); break;
+    case eShaderUniformType_Mat44: uniform = HENew(ShaderUniformMat44)(name, id, mat44::Identity); break;
+    case eShaderUniformType_Mat44Array: uniform = HENew(ShaderUniformMat44Array)(name, id); break;
     case eShaderUniformType_Texture2D: 
         {
             const Texture2D* tex(CONTENT->makeTexture2D(Color(1.0f, 0.0f, 1.0f, 1.0f)));
-            uniform = NEW ShaderUniformTexture2D(name, id, tex);
+            uniform = HENew(ShaderUniformTexture2D)(name, id, tex);
             tex->release();
         } break;
     case eShaderUniformType_TextureCube: 
         {
             const TextureCube* tex(CONTENT->makeTextureCube(Color(1.0f, 0.0f, 1.0f, 1.0f)));
-            uniform = NEW ShaderUniformTextureCube(name, id, tex);
+            uniform = HENew(ShaderUniformTextureCube)(name, id, tex);
             tex->release();
         } break;
     default:

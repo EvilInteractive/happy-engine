@@ -38,7 +38,7 @@ namespace gui {
 /* CONSTRUCTOR - DESTRUCTOR */
 Canvas2D::Canvas2D(gfx::Renderer2D* parent,const RectF& relativeViewport) :
     m_Renderer2D(parent),
-    m_BufferData(NEW gfx::Canvas2DBuffer()),
+    m_BufferData(HENew(gfx::Canvas2DBuffer)()),
     m_RendererGL(nullptr),
     m_Color(Color(1.0f,1.0f,1.0f))
 {
@@ -56,7 +56,7 @@ Canvas2D::Canvas2D(gfx::Renderer2D* parent,const RectF& relativeViewport) :
 
 Canvas2D::Canvas2D(gfx::Renderer2D* parent, const RectI& absoluteViewport) :
     m_Renderer2D(parent),
-    m_BufferData(NEW gfx::Canvas2DBuffer()),
+    m_BufferData(HENew(gfx::Canvas2DBuffer)()),
     m_RendererGL(nullptr),
     m_Color(Color(1.0f,1.0f,1.0f))
 {
@@ -82,7 +82,7 @@ void Canvas2D::init()
 {
     m_BufferData->init(m_Renderer2D->getView()->getWindow()->getContext(), m_Size);
 
-    m_RendererGL = NEW gfx::Canvas2DRendererGL(m_BufferData, m_Renderer2D->getView()->getWindow()->getContext());
+    m_RendererGL = HENew(gfx::Canvas2DRendererGL)(m_BufferData, m_Renderer2D->getView()->getWindow()->getContext());
     m_RendererGL->init();
 }
 
@@ -211,8 +211,8 @@ void Canvas2D::fillCurve( const vec2& p1, const vec2& tan1, const vec2& tan2, co
 /* INTERNAL */
 void Canvas2D::cleanup()
 {
-    delete m_BufferData;
-    delete m_RendererGL;
+    HEDelete(m_BufferData);
+    HEDelete(m_RendererGL);
 }
 
 void Canvas2D::viewResized()

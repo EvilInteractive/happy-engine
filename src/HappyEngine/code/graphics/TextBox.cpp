@@ -57,7 +57,7 @@ TextBox::TextBox(RectF posSize,
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Center);
     m_Text.setBounds(vec2(m_Rect.width - 4, m_Rect.height - 4));
 
-    m_Hitrect = NEW Hitregion(
+    m_Hitrect = HENew(Hitregion)(
         vec2(posSize.x + (posSize.width/2.0f), posSize.y + (posSize.height/2.0f)),
         vec2(posSize.width, posSize.height));
 
@@ -66,7 +66,7 @@ TextBox::TextBox(RectF posSize,
     m_Colors[TextBoxColor_Focus] = Color(0.0f,0.75f,1.0f);
     m_Colors[TextBoxColor_Edge] = Color(0.1f,0.1f,0.1f);
 
-    m_BlinkTimer.restart();
+    m_BlinkTimer.start();
 
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
 
@@ -82,7 +82,7 @@ TextBox::TextBox(RectF posSize,
 TextBox::~TextBox()
 {
     m_Font->release();
-    delete m_Hitrect;
+    HEDelete(m_Hitrect);
 
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_NormalSprite);
@@ -161,17 +161,17 @@ void TextBox::tick()
         if (keyboard->isKeyUp(io::Key_Backspace))
         {
             m_BackspaceDown = false;
-            m_BackSpaceTimer = (uint32)(m_BlinkTimer.elapsed() * 10);
+            m_BackSpaceTimer = static_cast<uint32>(m_BlinkTimer.getElapsedSeconds() * 10);
             m_BackSpaceDelayTimer = 0;
         }
-        else if ((uint32)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer > 0 && m_BackSpaceDelayTimer >= 5)
+        else if (static_cast<uint32>(m_BlinkTimer.getElapsedSeconds() * 10) - m_BackSpaceTimer > 0 && m_BackSpaceDelayTimer >= 5)
         {
-            m_BackSpaceTimer = (uint32)(m_BlinkTimer.elapsed() * 10);
+            m_BackSpaceTimer = static_cast<uint32>(m_BlinkTimer.getElapsedSeconds() * 10);
             m_BackspaceDown = false;
         }
         else if (m_BackSpaceDelayTimer < 5)
         {
-            m_BackSpaceDelayTimer = (uint32)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer;
+            m_BackSpaceDelayTimer = static_cast<uint32>(m_BlinkTimer.getElapsedSeconds() * 10) - m_BackSpaceTimer;
         }
 
         if (keyboard->isKeyPressed(io::Key_Return))
@@ -220,7 +220,7 @@ void TextBox::draw(gui::Canvas2D* canvas)
 
         if (m_HasFocus)
         {
-            if (static_cast<int>(m_BlinkTimer.elapsed() * 100) % 100 < 50)
+            if (static_cast<int>(m_BlinkTimer.getElapsedSeconds() * 100) % 100 < 50)
             {
                 he::String cursorText(m_String.substr(0, m_CursorPos));
 
@@ -228,7 +228,7 @@ void TextBox::draw(gui::Canvas2D* canvas)
 
                 if (!cursorText.empty())
                 {
-                    uint32 cursorX((uint32)m_Font->getStringWidth(cursorText));
+                    uint32 cursorX(static_cast<uint32>(m_Font->getStringWidth(cursorText)));
                     cursorX -= 1;
 
                     cursorRect.x += cursorX;

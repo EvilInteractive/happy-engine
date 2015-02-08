@@ -38,9 +38,9 @@ namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
 ShapeRenderer::ShapeRenderer() :	
-    m_ShapeEffect(NEW SimpleColorEffect()),
-    m_AABBEffect(NEW SimpleColorEffect()),
-    m_BillboardEffect(NEW BillboardEffect()),
+    m_ShapeEffect(HENew(SimpleColorEffect)()),
+    m_AABBEffect(HENew(SimpleColorEffect)()),
+    m_BillboardEffect(HENew(BillboardEffect)()),
     m_BillboardQuad(nullptr),
     m_AABB(nullptr),
     m_View(nullptr),
@@ -50,9 +50,9 @@ ShapeRenderer::ShapeRenderer() :
 
 ShapeRenderer::~ShapeRenderer()
 {
-    delete m_ShapeEffect;
-    delete m_AABBEffect;
-    delete m_BillboardEffect;
+    HEDelete(m_ShapeEffect);
+    HEDelete(m_AABBEffect);
+    HEDelete(m_BillboardEffect);
     if (m_BillboardQuad != nullptr)
         m_BillboardQuad->release();
     if (m_AABB)

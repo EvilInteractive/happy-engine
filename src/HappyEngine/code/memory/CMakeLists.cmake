@@ -2,6 +2,9 @@
 addFilter(CODE_SRCS src/memory code/memory/
             MemoryManager.h						MemoryManager.cpp
             HappyAllocater.h 					HappyAllocater.cpp
+            HappyMemory.h
+            HappyNew.h
+            HappyNewOverride.h
         )
 
 

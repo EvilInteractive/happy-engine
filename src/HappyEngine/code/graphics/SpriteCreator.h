@@ -34,6 +34,8 @@ class SpriteFactory : public ObjectFactory<Sprite>, public Singleton<SpriteFacto
     friend class Singleton<SpriteFactory>;
 
     SpriteFactory() { init(4, 16, "SpriteFactory"); }
+
+public:
     virtual ~SpriteFactory() {}
 };
 

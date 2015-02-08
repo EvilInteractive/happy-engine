@@ -59,7 +59,7 @@ MaterialGeneratorNode::~MaterialGeneratorNode()
 
 void MaterialGeneratorNode::addInput( const MaterialGeneratorNodeConnectorDesc& desc )
 {
-    MaterialGeneratorNodeConnectorAttachment* att(NEW MaterialGeneratorNodeConnectorAttachment(this, desc));
+    MaterialGeneratorNodeConnectorAttachment* att(HENew(MaterialGeneratorNodeConnectorAttachment)(this, desc));
     att->init(eNodeGraphNodeConnectorType_Input, desc.m_Id, desc.m_Name.c_str());
     addAttachment(att);
     m_Inputs.add(att);
@@ -67,7 +67,7 @@ void MaterialGeneratorNode::addInput( const MaterialGeneratorNodeConnectorDesc& 
 
 void MaterialGeneratorNode::addOutput( const MaterialGeneratorNodeConnectorDesc& desc )
 {
-    MaterialGeneratorNodeConnectorAttachment* att(NEW MaterialGeneratorNodeConnectorAttachment(this, desc));
+    MaterialGeneratorNodeConnectorAttachment* att(HENew(MaterialGeneratorNodeConnectorAttachment)(this, desc));
     att->init(eNodeGraphNodeConnectorType_Output, desc.m_Id, desc.m_Name.c_str());
     addAttachment(att);
     m_Outputs.add(att);

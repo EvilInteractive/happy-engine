@@ -54,14 +54,14 @@ void SkyBox::unload()
         m_CubeMap->release();
         m_CubeMap = nullptr;
     }
-    delete m_Drawable;
+    HEDelete(m_Drawable);
     m_Drawable = nullptr;
 }
 
 void SkyBox::load( const he::String& asset )
 {
     HE_ASSERT(m_Drawable == nullptr, "Skybox is loaded twice!");
-    m_Drawable = NEW Drawable();
+    m_Drawable = HENew(Drawable)();
     m_Drawable->setLocalScale(vec3(1000000000)); // bounds must be huge
     //////////////////////////////////////////////////////////////////////////
     /// Load Model

@@ -34,19 +34,19 @@ Timer::~Timer()
 
 void Timer::start()
 {
-    m_StartTime = boost::chrono::high_resolution_clock::now();
+    m_StartTime = std::chrono::high_resolution_clock::now();
     m_IsRunning = true;
 }
 
 void Timer::stop()
 {
-    m_StopTime = boost::chrono::high_resolution_clock::now();
+    m_StopTime = std::chrono::high_resolution_clock::now();
     m_IsRunning = false;
 }
 
 void Timer::restart()
 {
-    m_StartTime = boost::chrono::high_resolution_clock::now();
+    m_StartTime = std::chrono::high_resolution_clock::now();
     m_IsRunning = true;
 }
 
@@ -54,44 +54,44 @@ size_t Timer::getElapsedNanoseconds()
 {
     if (m_IsRunning)
     {
-        m_StopTime = boost::chrono::high_resolution_clock::now();        
+        m_StopTime = std::chrono::high_resolution_clock::now();        
     }
 
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_StartTime);
-    return static_cast<size_t>(elapsedTime.count());
+    std::chrono::high_resolution_clock::duration elapsedTime(std::chrono::high_resolution_clock::now() - m_StartTime);
+    return static_cast<size_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(elapsedTime).count());
 }
 
 size_t Timer::getElapsedMilliseconds()
 {
     if (m_IsRunning)
     {
-        m_StopTime = boost::chrono::high_resolution_clock::now();
+        m_StopTime = std::chrono::high_resolution_clock::now();
     }
 
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_StartTime);
-    return static_cast<size_t>((elapsedTime.count() / static_cast<double>(boost::nano::den)) * boost::milli::den);
+    std::chrono::high_resolution_clock::duration elapsedTime(std::chrono::high_resolution_clock::now() - m_StartTime);
+    return static_cast<size_t>(std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime).count());
 }
 
 double Timer::getElapsedSeconds()
 {
     if (m_IsRunning)
     {
-        m_StopTime = boost::chrono::high_resolution_clock::now();        
+        m_StopTime = std::chrono::high_resolution_clock::now();        
     }
 
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_StartTime);
-    return elapsedTime.count() / static_cast<double>(boost::nano::den);
+    std::chrono::duration<double> elapsedTime(std::chrono::high_resolution_clock::now() - m_StartTime);
+    return elapsedTime.count();
 }
 
 float Timer::getElapsedSecondsF()
 {
     if (m_IsRunning)
     {
-        m_StopTime = boost::chrono::high_resolution_clock::now();        
+        m_StopTime = std::chrono::high_resolution_clock::now();        
     }
 
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_StartTime);
-    return elapsedTime.count() / static_cast<float>(boost::nano::den);
+    std::chrono::duration<float> elapsedTime(std::chrono::high_resolution_clock::now() - m_StartTime);
+    return elapsedTime.count();
 }
 
 } //end namespace

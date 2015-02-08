@@ -20,6 +20,7 @@
 
 #include "HappyThijsTestPCH.h" 
 
+#include "HappyNewOverride.h"
 #include "ContentManager.h"
 
 #include "MainGame.h"
@@ -33,9 +34,9 @@ int main( int argc, char* args[] )
 
     he::HappyEngine::init(argc, args, he::SubEngine_All);
 
-    he::ge::Game* ge(NEW ht::MainGame());
+    he::ge::Game* ge(HENew(ht::MainGame)());
     HAPPYENGINE->start(ge, true);
-    delete ge;
+    HEDelete(ge);
 
     he::HappyEngine::dispose();
 

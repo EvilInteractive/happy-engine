@@ -75,14 +75,14 @@ private:
 };
 
 JsonFileReader::JsonFileReader()
-    : m_Reader(NEW Reader())
+    : m_Reader(HENew(Reader)())
 {
 }
 
 JsonFileReader::~JsonFileReader()
 {
     HE_ASSERT(m_OpenType == StructuredVisitor::eOpenType_Closed, "Stream is still open when disposing JsonFileReader!");
-    delete m_Reader;
+    HEDelete(m_Reader);
 }
 
 bool JsonFileReader::open( const Path& path )

@@ -25,6 +25,16 @@ namespace gfx {
 
 IMPLEMENT_OBJECT(Light);
 
+Light::Light() : m_VisibleLastFrame(false)
+{
+
+}
+
+Light::~Light()
+{
+
+}
+
 HAPPY_ENTRY const char* shadowResolutionToGuiString( const ShadowResolution res )
 {
     const char* result("**Invalid!**");

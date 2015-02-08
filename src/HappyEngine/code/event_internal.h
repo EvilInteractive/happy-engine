@@ -135,7 +135,7 @@ namespace details
     protected:
         he::ObjectList<Function> m_CallbackPool;
         he::PrimitiveList<uint16> m_Connections;
-        std::queue<uint16> m_FreeConnections;
+        he::Queue<uint16> m_FreeConnections;
 
         EVENTBASE(const EVENTBASE&);
         EVENTBASE& operator=(const EVENTBASE&);

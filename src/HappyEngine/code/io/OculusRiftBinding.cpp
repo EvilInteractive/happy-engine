@@ -50,7 +50,7 @@ struct OculusRiftDevice::DeviceContext
 };
 
 OculusRiftDevice::OculusRiftDevice()
-    : m_Context(NEW DeviceContext())
+    : m_Context(HENew(DeviceContext)())
     , m_EyeShift(0.0f)
     , m_ProjectedEyeShift(0.0f)
     , m_Fov(he::pi / 3.0f)
@@ -62,7 +62,7 @@ OculusRiftDevice::OculusRiftDevice()
 }
 OculusRiftDevice::~OculusRiftDevice()
 {
-    delete m_Context;
+    HEDelete(m_Context);
 }
 
 float OculusRiftDevice::getScreenWidth() const
@@ -158,11 +158,11 @@ vec3 OculusRiftDevice::getPitchYawRoll() const
 class OculusAllocater : public OVR::Allocator
 {
 public:
-    void*   Alloc(OVR::UPInt size) { return he_malloc(size); }
-    void*   AllocDebug(OVR::UPInt size, const char* /*file*/, unsigned /*line*/) { return he_malloc(size); }
-    void*   Realloc(void* p, OVR::UPInt newSize) { return he_realloc(p, newSize); }
+    void*   Alloc(OVR::UPInt size) { return he_malloc("OculusAllocater", size); }
+    void*   AllocDebug(OVR::UPInt size, const char* file, unsigned line) { return he::gMemMan->alloc(size MEM_DEBUG_PARAM("OculusAllocater") PASS_MEM_DEBUG_FL_PARAMS); }
+    void*   Realloc(void* p, OVR::UPInt newSize) { return he_realloc("OculusAllocater", p, newSize); }
     void    Free(void *p) { he_free(p); }
-    void*   AllocAligned(OVR::UPInt size, OVR::UPInt align) { return he_aligned_malloc(size, align); }
+    void*   AllocAligned(OVR::UPInt size, OVR::UPInt align) { return he_aligned_malloc("OculusAlignedAllocater", size, align); }
     void    FreeAligned(void* p) { he_aligned_free(p); }
 };
 
@@ -232,12 +232,12 @@ void OculusRiftBinding::init()
 {
     HE_ASSERT(m_Logger == nullptr, "OVR already initialized");
     HE_ASSERT(m_Allocater == nullptr, "OVR already initialized");
-    //m_Logger = NEW OculusLogger();
-    //m_Allocater = NEW OculusAllocater();
+    //m_Logger = HENew(OculusLogger)();
+    //m_Allocater = HENew(OculusAllocater)();
 
     OVR::System::Init(m_Logger, m_Allocater);
 
-    m_Context = NEW OculusContext(this);
+    m_Context = HENew(OculusContext)(this);
     m_Context->m_DeviceManager = *OVR::DeviceManager::Create();
     //m_Context->m_DeviceManager->SetMessageHandler(m_Context);
 
@@ -250,20 +250,20 @@ void OculusRiftBinding::shutdown()
     {
         releaseDevice(m_ConnectedDevices[0]);
     }
-    delete m_Context;
+    HEDelete(m_Context);
     m_Context = nullptr;
 
     OVR::System::Destroy();
-    delete m_Logger;
+    HEDelete(m_Logger);
     m_Logger = nullptr;
-    delete m_Allocater;
+    HEDelete(m_Allocater);
     m_Allocater = nullptr;
 }
 
 OculusRiftDevice* OculusRiftBinding::createDevice()
 {
     OVR::Ptr<OVR::HMDDevice> device(*m_Context->m_DeviceManager->EnumerateDevices<OVR::HMDDevice>().CreateDevice());
-    OculusRiftDevice* newDevice(NEW OculusRiftDevice());
+    OculusRiftDevice* newDevice(HENew(OculusRiftDevice)());
     if (device != nullptr)
     {
         OculusRiftDevice::DeviceContext* const context(newDevice->m_Context);
@@ -288,7 +288,7 @@ void OculusRiftBinding::releaseDevice( OculusRiftDevice* const device )
         OculusRiftDevice::DeviceContext* const context(m_ConnectedDevices[index]->m_Context);
         context->m_Sensor.Clear();
         context->m_Device.Clear();
-        delete m_ConnectedDevices[index];
+        HEDelete(m_ConnectedDevices[index]);
         m_ConnectedDevices.removeAt(index);
     }
     else

@@ -111,7 +111,7 @@ bool IniReader::open(const he::String& path)
                 else if (line[0] == '[')
                 {
                     if (!sub.empty())
-                        m_Data.insert(make_pair(sub, subData));
+                        m_Data.insert(sub, std::move(subData));
                     sub = getSubDivision(line);
                     subData = InitReadSubData();
                 }
@@ -119,13 +119,13 @@ bool IniReader::open(const he::String& path)
                 {
                     he::String key, value;
                     if (parseKeyValue(line, key, value))
-                        subData.insert(make_pair(key, value));
+                        subData.insert(key, std::move(value));
                 }
             }
         }
 
         if (sub.empty() == false)
-            m_Data.insert(make_pair(sub, subData));
+            m_Data.insert(sub, std::move(subData));
         file.close();
         m_IsOpen = true;
         return true;
@@ -265,13 +265,13 @@ bool IniReader::readRaw(const he::String& root, const he::String& node, he::Stri
 {
     HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 
-    IniReadData::const_iterator itRoot = m_Data.find(root);
-    if (itRoot != m_Data.cend())
+    InitReadSubData* itRoot = m_Data.find(root);
+    if (itRoot)
     {
-        std::map<he::String, he::String>::const_iterator itNode = itRoot->second.find(node);
-        if (itNode != itRoot->second.cend())
+        he::String* itNode = itRoot->find(node);
+        if (itNode)
         {
-            returnValue = itNode->second;
+            returnValue = *itNode;
             return true;
         }
         else
@@ -284,19 +284,17 @@ bool IniReader::readRaw(const he::String& root, const he::String& node, he::Stri
         return false;
     }
 }
-const std::map<he::String, he::String>& IniReader::getNodes(const he::String& root) const
+const he::Map<he::String, he::String>& IniReader::getNodes(const he::String& root) const
 {
     HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 
-    IniReadData::const_iterator itRoot = m_Data.find(root);
-    return itRoot->second;
+    InitReadSubData* itRoot = m_Data.find(root);
+    return *itRoot;
 }
 bool IniReader::containsRoot(const he::String& root) const
 {
     HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
-
-    IniReadData::const_iterator itRoot = m_Data.find(root);
-    return itRoot != m_Data.cend();
+    return m_Data.contains(root);
 }
 
 } } //end namespace

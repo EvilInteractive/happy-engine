@@ -43,8 +43,8 @@ void WebWindow::init(const int width, const int height)
 {
     // create WebWindow
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(width, height, 0, Awesomium::kWebViewType_Window);
-    m_WebListener = NEW WebListener(m_WebView);
-    m_Window = NEW sf::Window();
+    m_WebListener = HENew(WebListener)(m_WebView);
+    m_Window = HENew(sf::Window)();
     m_Window->create(sf::VideoMode(width, height), "");
     m_Window->setVerticalSyncEnabled(true);
     m_WebView->set_parent_window(static_cast<Awesomium::NativeWindow>(m_Window->getSystemHandle()));
@@ -54,8 +54,8 @@ WebWindow::~WebWindow()
 {
     m_WebView->Destroy();
     m_Window->close();
-    delete m_Window;
-    delete m_WebListener;
+    HEDelete(m_Window);
+    HEDelete(m_WebListener);
 }
 
 /* GENERAL */
@@ -89,16 +89,16 @@ void WebWindow::OnFailLoadingFrame(
         const Awesomium::WebString& error_desc 
     )
 {
-    char* buff0 = NEW char[url.path().length()];
+    char* buff0 = HENewArray(char, url.path().length());
     url.path().ToUTF8(buff0, url.path().length());
 
-    char* buff2 = NEW char[error_desc.length()];
+    char* buff2 = HENewArray(char, error_desc.length());
     error_desc.ToUTF8(buff2, error_desc.length());
 
     HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
 
-    delete[] buff0;
-    delete[] buff2;
+    HEDeleteArray(buff0);
+    HEDeleteArray(buff2);
 }
 
 void WebWindow::OnFinishLoadingFrame(

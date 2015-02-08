@@ -60,7 +60,7 @@ public:
 
     ~HappyMessageBox();
 
-    static void init(const char* htmlPage, const int width, const int height);
+    static void init(const int width, const int height);
     static void destroy();
 
     static Button showExt(const char* caption, const char* message, const Icon icon,
@@ -73,7 +73,6 @@ private:
 
     static int s_DefaultWidth;
     static int s_DefaultHeigth;
-    static std::string s_HtmlPage;
     
     //Disable default copy constructor and default assignment operator
     HappyMessageBox(const HappyMessageBox&);

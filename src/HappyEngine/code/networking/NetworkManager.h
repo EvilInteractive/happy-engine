@@ -83,6 +83,9 @@ public:
 
     bool IsHost() const;
     NetworkID getNetworkId() const;
+
+    static void sdmInit();
+    static void sdmDestroy();
     
     // Normal = 1 / 30s
     // Fastplay = 1 / 60s
@@ -120,7 +123,7 @@ private:
     NetworkPackage m_NetworkPackage;
 
     // Host
-    std::map<NetworkID, NetworkConnection> m_Connections;
+    he::Map<NetworkID, NetworkConnection, NetworkIDHasher> m_Connections;
 
     //Disable default copy constructor and default assignment operator
     NetworkManager(const NetworkManager&);

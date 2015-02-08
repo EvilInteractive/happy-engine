@@ -45,15 +45,16 @@ MainGame::~MainGame()
 void MainGame::init()
 {
     //stricmpTest();
-    listUnitTest();
+    //listUnitTest();
+    mapUnitTest();
     //nodeGraphUnitTest();
     //guidUnitTest();
     //mat33UnitTest();
     //jsonUnitTest();
     //threadSafeQueueMP1CTest();
     //midiTest();
-    poolTest();
-    objectHandleTest();
+    //poolTest();
+    //objectHandleTest();
     HAPPYENGINE->quit();
 }
 
@@ -207,6 +208,41 @@ void MainGame::listUnitTest()
             list.add(TestStruct(i));
         }
     }
+}
+
+void MainGame::mapUnitTest()
+{
+    he::Map<he::String, int> map(5);
+    map.insert("Hallo6", 6);
+    map.insert("Hallo7", 7);
+    map.insert("Hallo", 0);
+    map.insert("Hallo2", 2);
+    map.insert("Hallo3", 3);
+    map.insert("Hallo9", 9);
+    map.insert("Hallo4", 4);
+    map.insert("Hallo5", 5);
+    map.insert("Hallo8", 8);
+
+    map.forEach([](const he::String& key, const int val)
+    {
+        HE_INFO("%s : %d", key.c_str(), val);
+    });
+    HE_INFO("---");
+    map.remove("Hallo4");
+    map.remove("Hallo9");
+
+    map["Hallo5"] = 800;
+    map.forEach([](const he::String& key, const int val)
+    {
+        HE_INFO("%s : %d", key.c_str(), val);
+    });
+
+
+    map["Hallo10"] = 10;
+    map.forEach([](const he::String& key, const int val)
+    {
+        HE_INFO("%s : %d", key.c_str(), val);
+    });
 }
 
 void printMat33(const he::mat33& mat)

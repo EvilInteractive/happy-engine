@@ -62,7 +62,7 @@ class HappyPhysicsAllocator : public physx::PxAllocatorCallback
     void* allocate(size_t size, const char*, const char* file, int line)
     {
         file; line;
-        return he_aligned_malloc(size, 16);
+        return gMemMan->allocAligned(size, 16 MEM_DEBUG_PARAM("HappyPhysicsAllocator::allocate") PASS_MEM_DEBUG_FL_PARAMS);
     }
 
     void deallocate(void* ptr)

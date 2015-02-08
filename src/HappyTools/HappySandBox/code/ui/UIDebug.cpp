@@ -42,7 +42,7 @@ UIDebug::~UIDebug()
 void UIDebug::load()
 {
     /* GUI */
-    m_FPSGraph = NEW he::tools::FPSGraph();
+    m_FPSGraph = HENew(he::tools::FPSGraph)();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_Full);
 
     he::gfx::Window* window(hs::Sandbox::getInstance()->getMainWindow());
@@ -59,7 +59,7 @@ void UIDebug::unload()
     }
     he::gfx::Window* window(hs::Sandbox::getInstance()->getMainWindow());
     window->Resized -= m_ResizeCallback;
-    delete m_FPSGraph;
+    HEDelete(m_FPSGraph);
     m_FPSGraph = nullptr;
 }
 

@@ -52,7 +52,7 @@ void ht::HappyPlugin2DTestMain::init(he::gfx::Window* const window, const he::Re
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(relViewport);
 
-    m_Renderer = NEW he::gfx::Renderer2D();
+    m_Renderer = HENew(he::gfx::Renderer2D)();
     m_View->addRenderPlugin(m_Renderer);
     m_View->setWindow(window, he::gfx::View::eViewInsertMode_First);
     m_View->init(cameraSettings);
@@ -60,7 +60,7 @@ void ht::HappyPlugin2DTestMain::init(he::gfx::Window* const window, const he::Re
     m_Renderer->attachToRender(this);
 
     he::gui::Font* const debugFont(contentMan->getDefaultFont(16));
-    m_DebugText = NEW he::gui::Text();
+    m_DebugText = HENew(he::gui::Text)();
     m_DebugText->setFont(debugFont);
     debugFont->release();
 }
@@ -73,10 +73,10 @@ void ht::HappyPlugin2DTestMain::terminate()
     graphicsEngine->removeView(m_View);
     m_View = nullptr;
 
-    delete m_Renderer;
+    HEDelete(m_Renderer);
     m_Renderer = nullptr;
 
-    delete m_DebugText;
+    HEDelete(m_DebugText);
     m_DebugText = nullptr;
 
     HE_INFO("HappyPluginTestMain terminated");

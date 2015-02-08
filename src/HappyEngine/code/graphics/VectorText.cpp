@@ -35,7 +35,7 @@ namespace gui {
 
 VectorText::VectorText()
     : m_Text(nullptr)
-    , m_Effect(NEW gfx::Simple2DEffect())
+    , m_Effect(HENew(gfx::Simple2DEffect)())
     , m_Scale(1.0f)
 {
     gfx::ModelMeshFactory* const modelMeshFactory(gfx::ModelMeshFactory::getInstance());
@@ -53,7 +53,7 @@ VectorText::VectorText()
 
 VectorText::~VectorText()
 {
-    delete m_Effect;
+    HEDelete(m_Effect);
     if (m_Text)
         m_Text->release();
 }
@@ -101,8 +101,8 @@ void VectorText::create( Font* font, HAlignment halign, VAlignment valign, const
                     }
                 } while(*++chr);
 
-                float* vertBuff(static_cast<float*>(he_malloc(sizeof(float) * 2 * vBuffSize)));
-                uint16* indBuff(static_cast<uint16*>(he_malloc(sizeof(uint16) * iBuffSize)));
+                float* vertBuff(static_cast<float*>(he_malloc("VectorText::create()::vertBuff", sizeof(float) * 2 * vBuffSize)));
+                uint16* indBuff(static_cast<uint16*>(he_malloc("VectorText::create()::indBuff", sizeof(uint16) * iBuffSize)));
 
                 size_t vIndex(0);
                 size_t iIndex(0);

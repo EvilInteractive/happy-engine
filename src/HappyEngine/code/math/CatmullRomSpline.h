@@ -53,7 +53,7 @@ public:
     }
     virtual ISpline* clone() const
     {
-        return NEW CatmullRomSpline(*this);
+        return HENew(CatmullRomSpline)(*this);
     }
     virtual ~CatmullRomSpline() {}
     

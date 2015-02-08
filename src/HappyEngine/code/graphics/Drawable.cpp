@@ -70,7 +70,7 @@ void Drawable::setMaterial(const Material* const material )
     cancelLoad();
     if (m_Material != nullptr)
     {
-        delete m_Material;
+        HEDelete(m_Material);
         m_Material = nullptr;
     }
     if (material != nullptr)

@@ -34,19 +34,19 @@ InstancingManager::~InstancingManager()
 {
 //     std::for_each(m_Controllers.cbegin(), m_Controllers.cend(), [](const std::pair<he::String, InstancingController*>& pair)
 //     {
-//         delete pair.second;
+//         HEDelete(pair.second);
 //     });
 }
 
 void InstancingManager::createController( const he::String& /*id*/, bool /*dynamic*/, const ObjectHandle& /*meshHandle*/, const ObjectHandle& /*material*/ )
 {
-    //InstancingController* pController(NEW InstancingController(id, dynamic, meshHandle, material));
+    //InstancingController* pController(HENew(InstancingController)(id, dynamic, meshHandle, material));
     //m_Controllers[id] = pController;
 }
 
 void InstancingManager::createController( const he::String& /*id*/, bool /*dynamic*/, const he::String& /*materialAsset*/, const he::String& /*modelAsset*/, const he::String& /*mesh*/ )
 {
-    //InstancingController* pController(NEW InstancingController(id, dynamic, materialAsset, modelAsset, mesh));
+    //InstancingController* pController(HENew(InstancingController)(id, dynamic, materialAsset, modelAsset, mesh));
     //m_Controllers[id] = pController;
 }
 

@@ -128,14 +128,14 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                         {
                             const gfx::VertexElement& el(layout.getElements()[posIndex]);
                             const char range(rangeEnd - rangeStart);
-                            void** vertices = static_cast<void**>(he_malloc(sizeof(void*) * range));
+                            void** vertices = static_cast<void**>(he_malloc("FontLoader::load()::vertices", sizeof(void*) * range));
                             he_memset(vertices, 0, sizeof(void*) * range);
-                            void** indices = static_cast<void**>(he_malloc(sizeof(void*) * range));
+                            void** indices = static_cast<void**>(he_malloc("FontLoader::load()::indices", sizeof(void*) * range));
                             he_memset(indices, 0, sizeof(void*) * range);
 
-                            uint16* vertexCountBuffer(static_cast<uint16*>(he_malloc(sizeof(uint16) * range)));
+                            uint16* vertexCountBuffer(static_cast<uint16*>(he_malloc("FontLoader::load()::vertexCountBuffer", sizeof(uint16) * range)));
                             he_memset(vertexCountBuffer, 0, sizeof(uint16) * range);
-                            uint16* indexCountBuffer(static_cast<uint16*>(he_malloc(sizeof(uint16) * range)));
+                            uint16* indexCountBuffer(static_cast<uint16*>(he_malloc("FontLoader::load()::indexCountBuffer", sizeof(uint16) * range)));
                             he_memset(indexCountBuffer, 0, sizeof(uint16) * range);
 
                             vectorFont.m_RangeStart = rangeStart;
@@ -161,7 +161,7 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                                     {
                                         const char* meshVertices(static_cast<const char*>(modelLoader.getVertices(i)));
                                         const size_t vertexCount(modelLoader.getNumVertices(i));
-                                        float* buffer(static_cast<float*>(he_malloc(vertexCount * sizeof(float) * 2)));
+                                        float* buffer(static_cast<float*>(he_malloc("FontLoader::load()::buffer", vertexCount * sizeof(float) * 2)));
                                         for (size_t v(0); v < vertexCount; ++v)
                                         {
                                             const float* pos(reinterpret_cast<const float*>(meshVertices + v * layout.getSize() + el.getByteOffset()));
@@ -175,7 +175,7 @@ gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
                                     {
                                         const uint16* meshIndices(static_cast<const uint16*>(modelLoader.getIndices(i)));
                                         const size_t indexCount(modelLoader.getNumIndices(i));
-                                        uint16* buffer(static_cast<uint16*>(he_malloc(indexCount * sizeof(uint16))));
+                                        uint16* buffer(static_cast<uint16*>(he_malloc("FontLoader::load()::buffer", indexCount * sizeof(uint16))));
                                         for (size_t v(0); v < indexCount; ++v)
                                         {
                                             const uint16* ind(meshIndices + v);

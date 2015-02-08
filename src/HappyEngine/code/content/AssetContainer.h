@@ -43,14 +43,14 @@ public:
 
     bool isAssetPresent(const U &key) const
     {
-        return m_Map.find(key) != m_Map.end();
+        return m_Map.contains(key);
     }
     bool isAssetPresent(const U &key, T& value) const
     {
-        typename std::map<U, T>::const_iterator it(m_Map.find(key));
-        if (it != m_Map.cend())
+        T* result(m_Map.find(key));
+        if (result)
         {
-            value = it->second;
+            value = *result;
             return true;
         }
         return false;
@@ -74,11 +74,11 @@ public:
     {
         if (f_DestroyAction != nullptr)
         {
-            std::for_each(m_Map.cbegin(), m_Map.cend(), [&](const std::pair<U, T>& obj)
+            m_Map.forEach([this](const U& /*key*/, const T& val)
             {
                 //CONSOLE->addMessage("releasing asset: " + obj.first, CMSG_TYPE_ENGINE);
             
-                f_DestroyAction(obj.second);
+                f_DestroyAction(val);
             });
         }
 
@@ -91,7 +91,7 @@ public:
     }
 
 private:
-    std::map<U, T> m_Map;
+    he::Map<U, T> m_Map;
     std::function<void (const T&)> f_DestroyAction;	
 
     //Disable default copy constructor and assignment operator

@@ -42,7 +42,7 @@ CullOctreeNodeFactory::~CullOctreeNodeFactory()
 
 void CullOctreeNodeFactory::addBuffer()
 {
-    CullOctreeNode* buffer = static_cast<CullOctreeNode*>(he_malloc(sizeof(CullOctreeNode) * BUFFER_SIZE));
+    CullOctreeNode* buffer = static_cast<CullOctreeNode*>(he_malloc("CullOctreeNodeFactory::addBuffer()::buffer", sizeof(CullOctreeNode) * BUFFER_SIZE));
     he_memset(buffer, 0, sizeof(CullOctreeNode) * BUFFER_SIZE);
     
     uint32 bufferIndex(static_cast<uint32>(m_Buffers.size()));

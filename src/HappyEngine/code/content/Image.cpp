@@ -173,7 +173,7 @@ bool Image::load( const he::Path& path )
                 if (isCompressed)
                 {
                     mipData.bufferSize = ilGetDXTCData(nullptr, 0, dxtcFormat);
-                    mipData.data = static_cast<uint8*>(he_aligned_malloc(mipData.bufferSize, 16));
+                    mipData.data = static_cast<uint8*>(he_aligned_malloc("Image::load()::mipdata.data", mipData.bufferSize, 16));
                     if (ilGetDXTCData(mipData.data, mipData.bufferSize, dxtcFormat) == 0)
                     {
                         HE_ERROR("Could not compress texture - %s", path.str().c_str());
@@ -188,7 +188,7 @@ bool Image::load( const he::Path& path )
                     if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
                     {
                         mipData.bufferSize = 4 * sizeof(uint8) * mipData.width * mipData.height;
-                        mipData.data = static_cast<uint8*>(he_aligned_malloc(mipData.bufferSize, 16));
+                        mipData.data = static_cast<uint8*>(he_aligned_malloc("Image::load()::mipdata.data", mipData.bufferSize, 16));
                         mipData.format = gfx::TextureBufferLayout_BGRA;
                         mipData.type = gfx::TextureBufferType_Byte;
                         he_memcpy(mipData.data, ilGetData(), mipData.bufferSize);
@@ -221,7 +221,7 @@ bool Image::create( const he::Color& color )
 
     MipData mip;
     mip.bufferSize = 4 * sizeof(uint8);
-    mip.data = static_cast<uint8*>(he_aligned_malloc(mip.bufferSize, 16));
+    mip.data = static_cast<uint8*>(he_aligned_malloc("Image::create()::mip.data", mip.bufferSize, 16));
     mip.width = 1;
     mip.height = 1;
     mip.format = gfx::TextureBufferLayout_BGRA;

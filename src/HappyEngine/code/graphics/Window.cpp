@@ -114,7 +114,7 @@ void Window::OculusRiftBarrelDistorter::destroy()
 {
     if (m_Material != nullptr)
     {
-        delete m_Material;
+        HEDelete(m_Material);
         m_Material = nullptr;
     }
     if (m_PreBarrelDistort != nullptr)
@@ -239,7 +239,7 @@ bool Window::create(const bool show)
     }
     else
     {
-        m_RenderTarget = NEW RenderTarget(getContext());
+        m_RenderTarget = HENew(RenderTarget)(getContext());
         m_RenderTarget->init();
         setOculusRiftEnabled(checkFlag(eFlags_EnableOculusRift));
         if (show)
@@ -251,7 +251,7 @@ bool Window::create(const bool show)
 void Window::destroy()
 {
     setOculusRiftEnabled(false);
-    delete m_RenderTarget;
+    HEDelete(m_RenderTarget);
     m_RenderTarget = nullptr;
     GRAPHICS->unregisterContext(getContext());
 }
@@ -337,7 +337,7 @@ void Window::setOculusRiftEnabled( const bool enable )
         {
             if (m_OVRDistorter == nullptr)
             {
-                m_OVRDistorter = NEW OculusRiftBarrelDistorter();
+                m_OVRDistorter = HENew(OculusRiftBarrelDistorter)();
                 m_OVRDistorter->init(m_WindowRect.width, m_WindowRect.height);
 
                 m_RenderTarget->removeAllTargets();
@@ -355,7 +355,7 @@ void Window::setOculusRiftEnabled( const bool enable )
                 m_RenderTarget->init();
 
                 m_OVRDistorter->destroy();
-                delete m_OVRDistorter;
+                HEDelete(m_OVRDistorter);
                 m_OVRDistorter = nullptr;
             }
         }

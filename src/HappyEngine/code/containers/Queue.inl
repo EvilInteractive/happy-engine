@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2015  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,32 +15,25 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
-//Created: 10/07/2012
+//Author:  Bastian Damman
+//Created: 2015/01/24
 
-#include "HappySandBoxPCH.h" 
-
-#include "Sandbox.h"
-#include "StaticDataManager.h"
-#include "HappyNewOverride.h"
-
-int main( int argc, char* args[] )
+template<typename T>
+he::Queue<T>::Queue( Queue&& other ) 
+    : TParent(std::forward<TParent>(other))
 {
 
-#if defined(HE_WINDOWS) && defined(HE_DEBUG) && defined(_MSC_VER)
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
+}
 
-    he::HappyEngine::init(argc, args, he::SubEngine_All & ~he::SubEngine_Windowing);
+template<typename T>
+he::Queue<T>& he::Queue<T>::operator=( Queue&& other )
+{
+    TParent::operator=(std::forward<TParent>(other));
+    return *this;
+}
 
-    hs::Sandbox::sdmInit();
-    int ret(hs::Sandbox::getInstance()->run(argc, args));
-    hs::Sandbox::sdmDestroy();
-    
-    he::HappyEngine::dispose();
-
-    char a;
-    std::cin >> a;
-
-    return ret;
+template<typename T>
+void he::Queue<T>::clone( const Queue& other )
+{
+    TParent::operator=(other);
 }

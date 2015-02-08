@@ -43,7 +43,7 @@ private:
 
     void addBuffer();
 
-    std::queue<uint32> m_FreeNodes;
+    he::Queue<uint32> m_FreeNodes;
     he::PrimitiveList<CullOctreeNode*> m_Buffers;
 };
 

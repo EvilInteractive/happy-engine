@@ -42,11 +42,11 @@ public:
     static void sdmInit()
     {
         HE_ASSERT(s_Instance == nullptr, "initing an already inited singleton");
-        s_Instance = NEW T();
+        s_Instance = HENew(T)();
     }
     static void sdmDestroy()
     {
-        delete s_Instance;
+        HEDelete(s_Instance);
         s_Instance = nullptr;
     }
     static T* getInstance()

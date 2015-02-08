@@ -36,14 +36,14 @@ DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr), m_P
 
 DynamicPhysicsComponent::~DynamicPhysicsComponent()
 {
-    delete m_DynamicActor;
+    HEDelete(m_DynamicActor);
 }
 
 void DynamicPhysicsComponent::init( Entity* parent )
 {
     HE_ASSERT(parent != nullptr, "Component must have a parent!");
     m_Parent = parent;
-    m_DynamicActor = NEW px::PhysicsDynamicActor(m_Parent->getWorldMatrix());
+    m_DynamicActor = HENew(px::PhysicsDynamicActor)(m_Parent->getWorldMatrix());
 }
 
 void DynamicPhysicsComponent::activate()

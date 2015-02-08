@@ -77,7 +77,7 @@ private:
 };
 
 JsonFileWriter::JsonFileWriter()
-    : m_Writer(NEW Writer())
+    : m_Writer(HENew(Writer)())
     , m_SavePath("")
 {
 }
@@ -85,7 +85,7 @@ JsonFileWriter::JsonFileWriter()
 JsonFileWriter::~JsonFileWriter()
 {
     HE_ASSERT(m_OpenType == StructuredVisitor::eOpenType_Closed, "Stream is still open when disposing JsonFileWriter!");
-    delete m_Writer;
+    HEDelete(m_Writer);
 }
 
 bool JsonFileWriter::open( const Path& path )

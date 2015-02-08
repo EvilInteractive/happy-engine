@@ -22,6 +22,8 @@
 #define _HE_Timer_H_
 #pragma once
 
+#include <chrono>
+
 namespace he {
 
 class HAPPY_ENTRY Timer
@@ -44,8 +46,8 @@ public:
 private:
 
     bool m_IsRunning;
-    boost::chrono::high_resolution_clock::time_point m_StartTime;
-    boost::chrono::high_resolution_clock::time_point m_StopTime;
+    std::chrono::high_resolution_clock::time_point m_StartTime;
+    std::chrono::high_resolution_clock::time_point m_StopTime;
 
     //Disable default copy constructor and default assignment operator
     Timer(const Timer&);

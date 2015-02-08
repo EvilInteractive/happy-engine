@@ -44,7 +44,7 @@ WebListener::~WebListener()
 
     std::for_each(m_Objects.cbegin(), m_Objects.cend(), [](JSObject* obj)
     {
-        delete obj;
+        HEDelete(obj);
     });
 }
 
@@ -123,7 +123,7 @@ void WebListener::executeFunction(const he::String& object,
 
             Awesomium::JSObject& obj = val.ToObject();
 
-            JSObject* jsObject(NEW JSObject(obj, objName));
+            JSObject* jsObject(HENew(JSObject)(obj, objName));
 
             m_Objects.add(jsObject);
 

@@ -32,8 +32,8 @@ namespace he {
 namespace gfx {
 
 LightManager::LightManager(Scene* scene)
-    : m_AmbientLight(NEW AmbientLight())
-    , m_DirectionalLight(NEW DirectionalLight())
+    : m_AmbientLight(HENew(AmbientLight)())
+    , m_DirectionalLight(HENew(DirectionalLight)())
     , m_Scene(scene)
 {
 }
@@ -41,8 +41,8 @@ LightManager::LightManager(Scene* scene)
 
 LightManager::~LightManager()
 {
-    delete m_AmbientLight;
-    delete m_DirectionalLight;
+    HEDelete(m_AmbientLight);
+    HEDelete(m_DirectionalLight);
     removeAllLights();
 }
 

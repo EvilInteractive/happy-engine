@@ -62,7 +62,7 @@ void SoundEngine::shutdown()
 
         alDeleteSources(1, &m_SoundSources[pSound->getSource()]);
 
-        delete pSound;
+        HEDelete(pSound);
         pSound = nullptr;
     });
 
@@ -272,7 +272,7 @@ Sound2D* SoundEngine::loadSound2D(const he::String& path, bool stream)
     if (stream == true)
     {
         // create source, buffer for file
-        ALuint source(0);//, *buffers(NEW ALuint(STREAM_BUFFERS));
+        ALuint source(0);//, *buffers(HENew(ALuint)(STREAM_BUFFERS));
         AudioBuffer buffer;
         alGenSources(1, &source);
         alGenBuffers(STREAM_BUFFERS, buffer.buffers);
@@ -281,7 +281,7 @@ Sound2D* SoundEngine::loadSound2D(const he::String& path, bool stream)
         m_SoundBuffers.add(buffer);
 
         // create sound
-        pSound = NEW Sound2D((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
+        pSound = HENew(Sound2D)((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
 
         // put sound in soundbank
         m_SoundBank.add(pSound);
@@ -318,7 +318,7 @@ Sound2D* SoundEngine::loadSound2D(const he::String& path, bool stream)
         alSourceQueueBuffers(source, 1, buffer.buffers);
 
         // create sound
-        pSound = NEW Sound2D((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
+        pSound = HENew(Sound2D)((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
 
         // put sound in soundbank
         m_SoundBank.add(pSound);
@@ -362,7 +362,7 @@ Sound3D* SoundEngine::loadSound3D(const he::String& path, bool stream)
     if (stream == true)
     {
         // create source, buffer for file
-        ALuint source(0);//, *buffers(NEW ALuint(STREAM_BUFFERS));
+        ALuint source(0);//, *buffers(HENew(ALuint)(STREAM_BUFFERS));
         AudioBuffer buffer;
         alGenSources(1, &source);
         alGenBuffers(STREAM_BUFFERS, buffer.buffers);
@@ -371,7 +371,7 @@ Sound3D* SoundEngine::loadSound3D(const he::String& path, bool stream)
         m_SoundBuffers.add(buffer);
 
         // create sound
-        pSound = NEW Sound3D((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
+        pSound = HENew(Sound3D)((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
 
         // put sound in soundbank
         m_SoundBank.add(pSound);
@@ -426,7 +426,7 @@ Sound3D* SoundEngine::loadSound3D(const he::String& path, bool stream)
         alSourceQueueBuffers(source, 1, buffer.buffers);
 
         // create sound
-        pSound = NEW Sound3D((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
+        pSound = HENew(Sound3D)((uint32)m_SoundSources.size() - 1, (uint32)m_SoundBuffers.size() - 1, (uint32)m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
 
         // put sound in soundbank
         m_SoundBank.add(pSound);

@@ -25,13 +25,13 @@
 namespace he {
 namespace gui {
 
-SpriteCreator::SpriteCreator() : m_Renderer(NEW gfx::Canvas2DRendererCairo())
+SpriteCreator::SpriteCreator() : m_Renderer(HENew(gfx::Canvas2DRendererCairo)())
 {
 }
 
 SpriteCreator::~SpriteCreator()
 {
-    delete m_Renderer;
+    HEDelete(m_Renderer);
     SpriteFactory::getInstance()->destroyAll();
 }
 

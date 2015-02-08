@@ -87,7 +87,7 @@ NodeGraphNode::~NodeGraphNode()
 {
     m_Attachments.forEach([](NodeGraphNodeAttachment* att)
     {
-        delete att;
+        HEDelete(att);
     });
 }
 

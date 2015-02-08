@@ -47,6 +47,7 @@
 #include "SystemStats.h"
 #include "GlobalStringTable.h"
 #include "GlobalSettings.h"
+#include "NetworkManager.h"
 #include <HappyMessageBox.h>
 #ifdef USE_WEB
 #pragma warning(disable:4100)
@@ -58,12 +59,15 @@ namespace he {
 
 void StaticDataManager::init()
 {
+#ifdef HE_DEBUG
+    he::err::details::sdmInitAsserts();
+#endif
 #ifdef USE_WEB
     Awesomium::WebCore::Initialize(Awesomium::WebConfig());
 #endif
     he::ThreadTicketManager::sdmInit();
     he::Path msbbox(he::Path::getDataPath().append("gui/messageBox.html"));
-    he::HappyMessageBox::init(msbbox.str().c_str(), 1024, 512);
+    he::HappyMessageBox::init(1024, 512);
     tools::Logger::sdmInit();
     he::GlobalStringTable::sdmInit();
     he::HEFS::sdmInit();
@@ -101,10 +105,12 @@ void StaticDataManager::init()
     GlobalSettings::sdmInit();
     gfx::Mesh2D::sdmInit();
     gfx::ShapeMesh::sdmInit();
+    net::NetworkManager::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    net::NetworkManager::sdmDestroy();
     gfx::ShapeMesh::sdmDestroy();
     gfx::Mesh2D::sdmDestroy();
     GlobalSettings::sdmDestroy();
@@ -137,6 +143,9 @@ void StaticDataManager::destroy()
     he::ThreadTicketManager::sdmDestroy();
 #ifdef USE_WEB
     Awesomium::WebCore::Shutdown();
+#endif
+#ifdef HE_DEBUG
+    he::err::details::sdmDestroyAsserts();
 #endif
 }
 

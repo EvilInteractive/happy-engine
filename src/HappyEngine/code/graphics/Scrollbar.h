@@ -57,7 +57,7 @@ private:
     void renderSprites();
 
 	/* DATAMEMBERS */
-	std::map<he::String, Color> m_Colors;
+	he::Map<he::String, Color> m_Colors;
 
 	Hitregion* m_Hitregion;
 

@@ -76,7 +76,7 @@ template<typename T>
 void he::Pool<T>::grow(const size_t amount)
 {
     HE_ASSERT(m_InitialSize + m_Pool.size() * m_GrowSize < m_WarningSize, "Pool growing larger (%d) than maximum size (%d)!", m_InitialSize + m_Pool.size() * m_GrowSize, m_WarningSize);
-    T* pool(static_cast<T*>(he_malloc(amount * sizeof(T))));
+    T* pool(static_cast<T*>(he_malloc("Pool<T>::grow()::pool", amount * sizeof(T))));
     for (size_t i(0); i < amount; ++i)
     {
         m_FreeObjects.add(PNEW(pool + i) T());

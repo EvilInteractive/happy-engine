@@ -141,7 +141,7 @@ void Text::resize( const size_t newSize )
 {
     if (m_Capacity < newSize)
     {
-        m_Text = static_cast<char*>(he_realloc(m_Text, he::max(newSize, m_Capacity + CAPA_INCR_MIN)));
+        m_Text = static_cast<char*>(he_realloc("Text::m_Text", m_Text, he::max(newSize, m_Capacity + CAPA_INCR_MIN)));
         m_Capacity = newSize;
     }
     m_Size = newSize;
@@ -152,7 +152,7 @@ Text::Text(const Text& text)
 {
     he_memset(this->m_ScratchBuffer, 0, MAX_SCRATCH);
 
-    this->m_Text = (char*)he_malloc(sizeof(char) * text.m_Size);
+    this->m_Text = (char*)he_malloc("Text::m_Text", sizeof(char) * text.m_Size);
 
     this->m_Size = text.m_Size;
     this->m_Capacity = text.m_Size;
@@ -175,7 +175,7 @@ Text& Text::operator=(const Text& text)
 {
     he_memset(this->m_ScratchBuffer, 0, MAX_SCRATCH);
 
-    this->m_Text = (char*)he_malloc(sizeof(char) * text.m_Size);
+    this->m_Text = (char*)he_malloc("Text::m_Text", sizeof(char) * text.m_Size);
 
     this->m_Size = text.m_Size;
     this->m_Capacity = text.m_Size;

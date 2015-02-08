@@ -22,6 +22,8 @@
 #define _HE_ILIGHT_H_
 #pragma once
 
+#include "Object3D.h"
+
 namespace he {
 namespace gfx {
     
@@ -51,8 +53,8 @@ class Light
 {
 DECLARE_OBJECT(Light)
 public:
-    Light(): m_VisibleLastFrame(false) {}
-    virtual ~Light() {}
+    Light();
+    virtual ~Light();
     virtual LightType getType() const { return LightType_Unkown; }
 
     inline bool getVisibleLastFrame() const { return m_VisibleLastFrame; }

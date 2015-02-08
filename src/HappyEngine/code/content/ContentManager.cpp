@@ -69,13 +69,13 @@ ContentManager::ContentManager():
 
 void ContentManager::initialize()
 {
-    m_ModelLoader = NEW ModelLoader();
-    m_TextureLoader = NEW TextureLoader();
-    m_PhysicsShapeLoader = NEW PhysicsShapeLoader();
-    m_FontLoader = NEW FontLoader();
-    m_ShaderLoader = NEW ShaderLoader();
-    m_MaterialLoader = NEW MaterialLoader();
-    m_LoadThread = NEW Thread();
+    m_ModelLoader = HENew(ModelLoader)();
+    m_TextureLoader = HENew(TextureLoader)();
+    m_PhysicsShapeLoader = HENew(PhysicsShapeLoader)();
+    m_FontLoader = HENew(FontLoader)();
+    m_ShaderLoader = HENew(ShaderLoader)();
+    m_MaterialLoader = HENew(MaterialLoader)();
+    m_LoadThread = HENew(Thread)();
 
     m_ContentRootDir = he::Path::getDataPath();
     setFontFolder(getFontFolder());
@@ -96,9 +96,12 @@ ContentManager::~ContentManager()
 void ContentManager::destroy()
 {
     m_LoadThreadRunning = false;
-    m_LoadThread->join();
-    delete m_LoadThread;
-    m_LoadThread = nullptr;
+    if (m_LoadThread)
+    {
+        m_LoadThread->join();
+        HEDelete(m_LoadThread);
+        m_LoadThread = nullptr;
+    }
 
     if (m_ParticleQuad != nullptr)
     {
@@ -113,17 +116,17 @@ void ContentManager::destroy()
 
     // All content should be gone when getting here
     // loaders perform last garbage collect
-    delete m_MaterialLoader;
+    HEDelete(m_MaterialLoader);
     m_MaterialLoader = nullptr;
-    delete m_ShaderLoader;
+    HEDelete(m_ShaderLoader);
     m_ShaderLoader = nullptr;
-    delete m_PhysicsShapeLoader;
+    HEDelete(m_PhysicsShapeLoader);
     m_PhysicsShapeLoader = nullptr;
-    delete m_FontLoader;
+    HEDelete(m_FontLoader);
     m_FontLoader = nullptr;
-    delete m_ModelLoader;
+    HEDelete(m_ModelLoader);
     m_ModelLoader = nullptr;
-    delete m_TextureLoader;
+    HEDelete(m_TextureLoader);
     m_TextureLoader = nullptr;
 }
 
@@ -144,7 +147,7 @@ void ContentManager::loadTick()
         sleep &= !m_TextureLoader->loadTick();
         if (sleep)
         {
-            Thread::sleep(100);
+            Thread::sleep(100); // TOOD(BAS) convert to ThreadEvent
         }
     }
 }

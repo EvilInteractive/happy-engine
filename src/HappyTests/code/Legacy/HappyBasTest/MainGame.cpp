@@ -132,17 +132,17 @@ MainGame::~MainGame()
 {
     PHYSICS->stopSimulation();
 
-    delete m_MaterialGenerator;
+    HEDelete(m_MaterialGenerator);
 
     m_Player->deactivate();
-    delete m_Player;
+    HEDelete(m_Player);
 
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FpsGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
     CONSOLE->detachFromRenderer();
     PROFILER->detachFromRenderer();
 
-    delete m_FpsGraph;
+    HEDelete(m_FpsGraph);
 
     he::gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_TestSprite);
@@ -156,14 +156,14 @@ MainGame::~MainGame()
     });
     entityMan->destroy();
 
-    delete m_RenderPipeline;
+    HEDelete(m_RenderPipeline);
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeWindow(m_Window);
 
 #ifdef ENABLE_WINDOW2
     GRAPHICS->removeView(m_View2);
     GRAPHICS->removeWindow(m_Window2);
-    delete m_RenderPipeline2;
+    HEDelete(m_RenderPipeline2);
 #endif
 
     m_Scene->getCameraManager()->deleteAllCameras();
@@ -189,7 +189,7 @@ void MainGame::init()
     m_Window->create();
 
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
-    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
+    entityMan->installComponentFactory(NEW(he::ge::EngineEntityComponentFactory)());
     entityMan->init();
 }
 
@@ -226,7 +226,7 @@ void MainGame::load()
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
 
-    m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
+    m_RenderPipeline = NEW(he::ge::DefaultRenderPipeline)();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
     m_View->init(settings);
@@ -238,7 +238,7 @@ void MainGame::load()
     m_Window2->setWindowTitle("HappyBasTest - 2");
     m_Window2->create();
 
-    m_View2 = NEW he::ge::DefaultRenderPipeline();
+    m_View2 = NEW(he::ge::DefaultRenderPipeline)();
     m_View2->init(m_View, m_Scene, settings);
     m_View2->setWindow(m_Window2);
     m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
@@ -246,21 +246,21 @@ void MainGame::load()
 #endif
     
   
-    FlyCamera* flyCamera = NEW FlyCamera();
+    FlyCamera* flyCamera = NEW(FlyCamera)();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
     flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 300.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
     m_View->setCamera(flyCamera);
 
 #ifdef ENABLE_WINDOW2
-    FlyCamera* flyCamera2 = NEW FlyCamera();
+    FlyCamera* flyCamera2 = NEW(FlyCamera)();
     m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
     flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
     flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
     m_View2->setCamera(flyCamera2);
 #endif
     
-    m_FpsGraph = NEW tools::FPSGraph();
+    m_FpsGraph = NEW(tools::FPSGraph)();
     m_FpsGraph->setType(tools::FPSGraph::Type_Full);
     m_FpsGraph->setPos(he::vec2(m_View->getViewport().width - 115.f, 5.f));
 
@@ -334,7 +334,7 @@ void MainGame::load()
 
     #pragma endregion
 
-    m_Player = NEW Player();
+    m_Player = NEW(Player)();
     m_Player->activate();
     //m_View->setCamera(m_Player->getCamera());
     
@@ -435,7 +435,7 @@ void MainGame::load()
     creator->renderSpriteAsync();
 #pragma endregion
 
-    m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph;
+    m_MaterialGenerator = NEW(he::tools::MaterialGeneratorGraph);
     m_MaterialGenerator->init();
     
     PHYSICS->startSimulation();
@@ -467,14 +467,14 @@ void MainGame::tick( float dTime )
         if (keyboard->isKeyPressed(he::io::Key_Lctrl))
         {
             he::Ray ray(m_View, m_View->getCamera(), CONTROLS->getMouse()->getPosition());
-            he::ge::Entity* bullet(NEW he::ge::Entity());
+            he::ge::Entity* bullet(NEW(he::ge::Entity)());
             bullet->setScene(m_Scene);
-            he::ge::ModelComponent* modelComp(NEW he::ge::ModelComponent());
+            he::ge::ModelComponent* modelComp(NEW(he::ge::ModelComponent)());
             modelComp->setModelMeshAndMaterial("pong/obstacle.material", "pong/obstacles.binobj");
             modelComp->setLocalScale(he::vec3(100, 100, 100));
             bullet->addComponent(modelComp);
             bullet->setLocalTranslate(ray.getOrigin());
-            he::ge::PickingComponent* pickComp(NEW he::ge::PickingComponent());   
+            he::ge::PickingComponent* pickComp(NEW(he::ge::PickingComponent)());   
             bullet->addComponent(pickComp);
             bullet->activate();
             m_EntityList.add(bullet);
@@ -485,7 +485,7 @@ void MainGame::tick( float dTime )
             m_LastPickResult.reset();
             if (he::ge::PickingManager::getInstance()->pick(ray, m_LastPickResult))
             {
-                he::ge::Entity* pickTest(NEW he::ge::Entity());
+                he::ge::Entity* pickTest(NEW(he::ge::Entity)());
                 pickTest->setScene(m_Scene);
                 pickTest->setLocalTranslate(m_LastPickResult.getHitPosition());
 
@@ -496,7 +496,7 @@ void MainGame::tick( float dTime )
 
                 pickTest->setLocalRotate(he::mat33::createRotation3D(normal, up, right));
 
-                he::ge::ModelComponent* modelComp(NEW he::ge::ModelComponent());
+                he::ge::ModelComponent* modelComp(NEW(he::ge::ModelComponent)());
                 modelComp->setModelMeshAndMaterial("pong/ball.material", "pong/ball.binobj");
                 modelComp->setLocalScale(he::vec3(100, 100, 300));
                 pickTest->addComponent(modelComp);
@@ -579,7 +579,7 @@ void MainGame::draw2D(he::gui::Canvas2D* canvas)
         m_ShuffeledColor[7].r16(), m_ShuffeledColor[7].g16(), m_ShuffeledColor[7].b16());
     canvas->fillText(m_BigText, he::vec2(20, viewport.height - 20.0f));
     
-    // NEW CANVAS TEST
+    // NEW(CANVAS) TEST
     //canvas->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
 
     //canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));

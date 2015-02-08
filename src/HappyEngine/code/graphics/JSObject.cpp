@@ -40,7 +40,7 @@ JSObject::~JSObject()
         [](const std::pair<Awesomium::WebString,
         event1<void, const Awesomium::JSArray&>*>& callback)
     {
-        delete callback.second;
+        HEDelete(callback.second);
     });
 }
 
@@ -104,7 +104,7 @@ JSObject* JSObject::create(Awesomium::WebView* const webView, const he::String& 
     Awesomium::JSObject& obj(val.ToObject());
     #endif
 
-    return NEW JSObject(obj, name);
+    return HENew(JSObject)(obj, name);
 }
 
 /* GENERAL */
@@ -115,7 +115,7 @@ void JSObject::addCallback(const Awesomium::WebString& method, eventCallback1<vo
 
     if (it == m_MethodCallBacks.cend())
     {
-        event = NEW event1<void, const Awesomium::JSArray&>();
+        event = HENew(event1<void), const Awesomium::JSArray&>();
         m_MethodCallBacks[method] = event;
     }
     else

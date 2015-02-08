@@ -58,9 +58,9 @@ void MainGame::destroy()
     CONSOLE->detachFromRenderer();
     PROFILER->detachFromRenderer();
 
-    delete m_FpsGraph;
+    HEDelete(m_FpsGraph);
 
-    delete m_Renderer;
+    HEDelete(m_Renderer);
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeWindow(m_Window);    
 }
@@ -84,7 +84,7 @@ void MainGame::init()
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
 
-    m_Renderer = NEW he::gfx::Renderer2D;
+    m_Renderer = HENew(he::gfx::Renderer2D);
     m_View->addRenderPlugin(m_Renderer);
 
     m_View->setWindow(m_Window);
@@ -92,11 +92,11 @@ void MainGame::init()
 
     m_Renderer->attachToRender(this);
 
-    m_FpsGraph = NEW he::tools::FPSGraph();
+    m_FpsGraph = HENew(he::tools::FPSGraph)();
     m_FpsGraph->setType(he::tools::FPSGraph::Type_TextOnly);
     m_Renderer->attachToRender(m_FpsGraph);
 
-	m_AStar = NEW ht::AStar();
+	m_AStar = HENew(ht::AStar)();
 	m_AStar->init();
     
     CONSOLE->attachToRenderer(m_Renderer);

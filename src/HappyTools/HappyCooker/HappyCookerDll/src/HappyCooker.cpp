@@ -45,16 +45,16 @@ HappyCooker* HappyCooker::s_Singleton = nullptr;
 HappyCooker* HappyCooker::getInstance()
 {
     if (s_Singleton == nullptr)
-        s_Singleton = NEW HappyCooker();
+        s_Singleton = HENew(HappyCooker)();
     return s_Singleton;
 }
 void HappyCooker::dispose()
 {
-    delete s_Singleton;
+    HEDelete(s_Singleton);
     s_Singleton = nullptr;
 }
 
-HappyCooker::HappyCooker(): m_PhysicsEngine(NEW he::px::PhysicsEngine())
+HappyCooker::HappyCooker(): m_PhysicsEngine(HENew(he::px::PhysicsEngine)())
 {
     m_InfoCallback = nullptr;
 }
@@ -62,7 +62,7 @@ HappyCooker::HappyCooker(): m_PhysicsEngine(NEW he::px::PhysicsEngine())
 
 HappyCooker::~HappyCooker()
 {
-    delete m_PhysicsEngine;
+    HEDelete(m_PhysicsEngine);
 }
 
 
@@ -365,7 +365,7 @@ bool HappyCooker::cookBinObj( he::io::BinaryFileVisitor& stream )
 
 struct Vec3Hasher
 {
-    size_t operator()(const he::vec3& pos)
+    static size_t hash(const he::vec3& pos)
     {
         using namespace he;
         return *reinterpret_cast<const size_t*>(&pos.x) + 
@@ -386,8 +386,8 @@ void optimizeMeshForPhysX(aiMesh* pMesh, const he::mat44& mtxTransformation, he:
         {
             size_t index(pMesh->mFaces[iFace].mIndices[i]);
             vec3 vert(pMesh->mVertices[index].x, pMesh->mVertices[index].y, pMesh->mVertices[index].z);
-            he::Map<vec3, uint16, Vec3Hasher>::const_iterator it(vertMap.find(vert));
-            if (it == vertMap.cend())
+            uint16* it(vertMap.find(vert));
+            if (!it)
             {
                 vertMap[vert] = static_cast<uint16>(vertices.size());
                 indices.add(static_cast<uint16>(vertices.size()));
@@ -395,7 +395,7 @@ void optimizeMeshForPhysX(aiMesh* pMesh, const he::mat44& mtxTransformation, he:
             }
             else
             {
-                indices.add(vertMap[vert]);
+                indices.add(*it);
             }
         }
     }

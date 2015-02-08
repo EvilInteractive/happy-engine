@@ -22,19 +22,9 @@
 #define _HE_MessageBoxWindow_H_
 #pragma once
 
-#ifdef USE_WEB
-#pragma warning(disable:4100)
-#include "Awesomium/WebCore.h"
-#pragma warning(default:4100)
-#endif
-
 #include "HappyMessageBox.h"
 #include <string>
 #include <vector>
-
-namespace Awesomium {
-    class MessageBoxWindow;
-}
 
 namespace sf {
     class Window;
@@ -42,14 +32,8 @@ namespace sf {
 
 namespace he {
 namespace hmb {
-#ifdef USE_WEB
-class WebListener;
-#endif
 
 class MessageBoxWindow
-#ifdef USE_WEB
-    : public Awesomium::WebViewListener::Load, public Awesomium::JSMethodHandler
-#endif
 {
 public:
 
@@ -58,66 +42,18 @@ public:
     ~MessageBoxWindow();
     
     /* GENERAL */
-    void init(const char* html, const int width, const int height, const char* caption);
+    void init(const int width, const int height, const char* caption);
     void addButton(const char* button);
     void addText(const char* tabName, const char* text);
     void setIcon(const HappyMessageBox::Icon icon);
     void show();
         
     HappyMessageBox::Button getResult() { return m_Result; }
-
-    // MessageBoxWindow load listeners
-#ifdef USE_WEB
-    virtual void OnFailLoadingFrame(
-        Awesomium::WebView *  		caller,
-        ::int64  						frame_id,
-        bool  						is_main_frame,
-        const Awesomium::WebURL&  	url,
-        int  						error_code,
-        const Awesomium::WebString& error_desc 
-    );
-
-    virtual void OnFinishLoadingFrame(
-        Awesomium::WebView *  		caller,
-        ::int64  						frame_id,
-        bool  						is_main_frame,
-        const Awesomium::WebURL&  	url 
-    );
-
-    virtual void OnDocumentReady(
-        Awesomium::WebView *  		caller,
-        const Awesomium::WebURL &  	url 
-    );
-
-    virtual void OnBeginLoadingFrame(
-        Awesomium::WebView*			caller,
-        ::int64						frame_id,
-        bool						is_main_frame,
-        const Awesomium::WebURL&	url,
-        bool						is_error_page
-        );
-
-    virtual void OnMethodCall(Awesomium::WebView* caller,
-        unsigned int remote_object_id,
-        const Awesomium::WebString& method_name,
-        const Awesomium::JSArray& args);
-
-    virtual Awesomium::JSValue OnMethodCallWithReturnValue(Awesomium::WebView* caller,
-        unsigned int remote_object_id,
-        const Awesomium::WebString& method_name,
-        const Awesomium::JSArray& args);
-#endif
-
+    
 private:
     void tick();
-#ifdef USE_WEB
-    void executeFunction(const char* method, const Awesomium::JSArray& args);
-#endif
 
     /* DATAMEMBERS */
-#ifdef USE_WEB
-    Awesomium::WebView* m_WebView;
-#endif
     sf::Window* m_Window;
 
     std::string m_WebPage;

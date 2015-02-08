@@ -24,17 +24,33 @@
 namespace he {
 
 #ifdef HE_DEBUG
-#define DEF_FILE_AND_LINE , const char* const file, const int line
+#define DEF_MEM_DEBUG_NFL_PARAMS , const char* const name, const char* const file, const int line
+#define DEF_MEM_DEBUG_FL_PARAMS , const char* const file, const int line
+#define PASS_MEM_DEBUG_NFL_PARAMS , name, file, line
+#define PASS_MEM_DEBUG_FL_PARAMS , file, line
+#define PASS_MEM_DEBUG_F_PARAM , file
+#define PASS_MEM_DEBUG_L_PARAM , line
+#define GET_MEM_DEBUG_L_PARAM , __LINE__
+#define GET_MEM_DEBUG_F_PARAM , __FILE__
+#define GET_MEM_DEBUG_FL_PARAM , __FILE__, __LINE__
+#define GET_MEM_DEBUG_NAME_PARAM(x) , typeid(x).name()
+#define MEM_DEBUG_PARAM(x) , x
 #else
-#define DEF_FILE_AND_LINE
+#define DEF_MEM_DEBUG_NFL_PARAMS
+#define DEF_MEM_DEBUG_FL_PARAMS
+#define PASS_MEM_DEBUG_NFL_PARAMS
+#define PASS_MEM_DEBUG_FL_PARAMS
+#define PASS_MEM_DEBUG_F_PARAM 
+#define PASS_MEM_DEBUG_L_PARAM 
+#define GET_MEM_DEBUG_L_PARAM
+#define GET_MEM_DEBUG_F_PARAM
+#define GET_MEM_DEBUG_FL_PARAM
+#define GET_MEM_DEBUG_NAME_PARAM(x)
+#define MEM_DEBUG_PARAM(x)
 #endif
 
 class MemoryManager;
 extern HAPPY_ENTRY MemoryManager* gMemMan;
-
-HAPPY_ENTRY void* globalAllocate(const size_t size DEF_FILE_AND_LINE);
-HAPPY_ENTRY void globalFree(void* const mem DEF_FILE_AND_LINE);
-HAPPY_ENTRY void* globalRealloc(void* const oldmem, const size_t size DEF_FILE_AND_LINE);
 
 class HAPPY_ENTRY MemoryManager
 {
@@ -42,19 +58,30 @@ public:
     MemoryManager();
     ~MemoryManager();
 
-    void* alloc(const size_t size DEF_FILE_AND_LINE);
-    void* allocAligned(const size_t size, const size_t alignment DEF_FILE_AND_LINE);
-    void* realloc(void* oldmem, const size_t newSize DEF_FILE_AND_LINE);
-    void* reallocAligned(void* oldmem, const size_t newSize, const size_t alignment DEF_FILE_AND_LINE);
-    void free(void* mem DEF_FILE_AND_LINE);
-    void freeAligned(void* mem DEF_FILE_AND_LINE);
+    void* alloc(const size_t size DEF_MEM_DEBUG_NFL_PARAMS);
+    void* allocAligned(const size_t size, const size_t alignment DEF_MEM_DEBUG_NFL_PARAMS);
+    void* realloc(void* oldmem, const size_t newSize DEF_MEM_DEBUG_NFL_PARAMS);
+    void* reallocAligned(void* oldmem, const size_t newSize, const size_t alignment DEF_MEM_DEBUG_NFL_PARAMS);
+    void free(void* mem);
+    void freeAligned(void* mem);
+    size_t memsize(void* mem) const;
+
+    void registerAlloc(void* mem DEF_MEM_DEBUG_NFL_PARAMS);
+    void unregisterAlloc(void* mem);
+
+    void checkMem();
+
+    uint64 getTrackedMemory() const;
 
 private:
+    void* m_Pool;
+
+    struct MemTracker;
+    MemTracker* m_MemTracker;
+    
     MemoryManager(const MemoryManager&);
     MemoryManager& operator=(const MemoryManager&);
 };
-
-#undef DEF_FILE_AND_LINE
 
 }
 

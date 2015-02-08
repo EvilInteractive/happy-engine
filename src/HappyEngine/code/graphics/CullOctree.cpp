@@ -223,7 +223,7 @@ void CullOctreeNode::insert( Drawable* drawable )
     if (m_NumObjectChilds == m_ObjectChildsCapacity)
     {
         m_ObjectChildsCapacity += 5;
-        m_ObjectChilds = static_cast<Drawable**>(he_realloc(m_ObjectChilds, m_ObjectChildsCapacity));
+        m_ObjectChilds = static_cast<Drawable**>(he_realloc("CullOctreeNode::m_ObjectChilds", m_ObjectChilds, m_ObjectChildsCapacity));
     }
     m_ObjectChilds[m_NumObjectChilds++] = drawable;
 }

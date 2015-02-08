@@ -94,7 +94,7 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
     
     m_View = view;
-    m_CollectionRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
+    m_CollectionRenderTarget = HENew(RenderTarget)(m_View->getWindow()->getContext());
     m_OutputRenderTarget = target;
 
     m_NormalDepthTexture = target->getTextureTarget(1);
@@ -122,7 +122,7 @@ Deferred3DRenderer::~Deferred3DRenderer()
     m_ColorIllTexture->release();
     m_SGTexture->release();
 
-    delete m_CollectionRenderTarget;
+    HEDelete(m_CollectionRenderTarget);
     
     m_Quad->release();
 
@@ -131,16 +131,16 @@ Deferred3DRenderer::~Deferred3DRenderer()
         m_PointLightVolume->release();
         m_PointLightVolume = nullptr;
     }
-    delete m_PointLightMaterial;    
+    HEDelete(m_PointLightMaterial);    
 
     if (m_SpotLightVolume)
     {
         m_SpotLightVolume->release();
         m_SpotLightVolume = nullptr;
     }
-    delete m_SpotLightMaterial;    
-    delete m_ShadowSpotLightMaterial;
-    delete m_AmbDirIllMaterial;
+    HEDelete(m_SpotLightMaterial);    
+    HEDelete(m_ShadowSpotLightMaterial);
+    HEDelete(m_AmbDirIllMaterial);
 }
 void Deferred3DRenderer::loadMaterials()
 {
@@ -154,18 +154,18 @@ void Deferred3DRenderer::loadMaterials()
         m_PointLightVolume->release();
         m_PointLightVolume = nullptr;
     }
-    delete m_PointLightMaterial;    
+    HEDelete(m_PointLightMaterial);    
     m_PointLightMaterial = nullptr;
     if (m_SpotLightVolume)
     {
         m_SpotLightVolume->release();
         m_SpotLightVolume = nullptr;
     }
-    delete m_SpotLightMaterial;     
+    HEDelete(m_SpotLightMaterial);     
     m_SpotLightMaterial = nullptr;
-    delete m_ShadowSpotLightMaterial; 
+    HEDelete(m_ShadowSpotLightMaterial); 
     m_ShadowSpotLightMaterial = nullptr;
-    delete m_AmbDirIllMaterial; 
+    HEDelete(m_AmbDirIllMaterial); 
     m_AmbDirIllMaterial = nullptr;
     
     //////////////////////////////////////////////////////////////////////////

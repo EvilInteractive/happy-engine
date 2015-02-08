@@ -36,14 +36,14 @@ CharacterPhysicsComponent::CharacterPhysicsComponent(): m_CharacterController(nu
 
 CharacterPhysicsComponent::~CharacterPhysicsComponent()
 {
-    delete m_CharacterController;
+    HEDelete(m_CharacterController);
 }
 
 void CharacterPhysicsComponent::init( Entity* parent )
 {
     HE_ASSERT(parent != nullptr, "Component must have a parent!");
     m_Parent = parent;
-    m_CharacterController = NEW px::PhysicsCharacterController();
+    m_CharacterController = HENew(px::PhysicsCharacterController)();
     m_CharacterController->setFootPosition(parent->getLocalTranslate());
     m_CharacterController->setGravity(vec3(0, -9.81f, 0));
     m_CharacterController->setHeight(2.0f);

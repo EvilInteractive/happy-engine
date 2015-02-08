@@ -40,11 +40,11 @@ BinObjLoader::~BinObjLoader()
 {
     m_BoneData.forEach([&](he::ObjectList<gfx::Bone>* bones)
     {
-        delete bones;
+        HEDelete(bones);
     });
     m_VertexData.forEach([&](he::ObjectList<InternalVertex>* vertexData)
     {
-        delete vertexData;
+        HEDelete(vertexData);
     });
     m_Vertices.forEach([&](void* pVert)
     {
@@ -68,7 +68,7 @@ bool BinObjLoader::load(const he::String& path)
 
     for (uint32 i = 0; i < m_VertexData.size(); ++i)
     {
-        void* vert(he_malloc(m_VertexLayout.getSize() * m_VertexData[i]->size()));
+        void* vert(he_malloc("BinObjLoader::load::vert", m_VertexLayout.getSize() * m_VertexData[i]->size()));
         HE_ASSERT(vert != nullptr, "not enough memory!");
         m_Vertices.add(vert);
     }
@@ -88,12 +88,12 @@ bool BinObjLoader::read(const he::String& path)
     m_Indices.clear();
     m_BoneData.forEach([&](he::ObjectList<gfx::Bone>* bones)
     {
-        delete bones;
+        HEDelete(bones);
     });
     m_BoneData.clear();
     m_VertexData.forEach([&](he::ObjectList<InternalVertex>* vertexData)
     {
-        delete vertexData;
+        HEDelete(vertexData);
     });
     m_VertexData.clear();
 
@@ -117,7 +117,7 @@ bool BinObjLoader::read(const he::String& path)
         //////////////////////////////////////////////////////////////////////////
         uint8 numBones(0);
         stream.visit(numBones);
-        m_BoneData.add(NEW he::ObjectList<gfx::Bone>());
+        m_BoneData.add(HENew(he::ObjectList<gfx::Bone>)());
         m_BoneData.back()->reserve(numBones);
         for (uint8 iBone = 0; iBone < numBones; ++iBone)
         {
@@ -135,7 +135,7 @@ bool BinObjLoader::read(const he::String& path)
         //////////////////////////////////////////////////////////////////////////
         uint32 numVertices(0);
         stream.visit(numVertices);
-        m_VertexData.add(NEW he::ObjectList<InternalVertex>((size_t)numVertices));
+        m_VertexData.add(HENew(he::ObjectList<InternalVertex>)((size_t)numVertices));
         m_VertexData.back()->resize(numVertices);
         stream.visitBlob(&(m_VertexData.back()->front()), numVertices * sizeof(InternalVertex));
 
@@ -149,7 +149,7 @@ bool BinObjLoader::read(const he::String& path)
         stream.visitEnum<gfx::IndexStride, uint8>(stride);
         m_IndexStride.add(stride);
         
-        void* pInd = he_malloc(stride * m_NumIndices.back());
+        void* pInd = he_malloc("BinObjLoader::load::pInd", stride * m_NumIndices.back());
         HE_ASSERT(pInd != nullptr, "not enough memory!");
         stream.visitBlob(pInd, stride * m_NumIndices.back());
         m_Indices.add(pInd);

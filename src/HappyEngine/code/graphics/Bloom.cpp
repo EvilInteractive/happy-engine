@@ -78,7 +78,7 @@ void Bloom::cleanTextures()
     }
     m_RenderTarget.forEach([](RenderTarget* renderTarget)
     {
-        delete renderTarget;
+        HEDelete(renderTarget);
     });
     m_RenderTarget.clear();
 }
@@ -88,19 +88,19 @@ void Bloom::cleanShaders()
     {
         if (m_BlurPassMaterial[pass] != nullptr)
         {
-            delete m_BlurPassMaterial[pass];
+            HEDelete(m_BlurPassMaterial[pass]);
             m_BlurPassMaterial[pass] = nullptr;
         }
     }
     if (m_DownSampleMaterial != nullptr)
     {
-        delete m_DownSampleMaterial;
+        HEDelete(m_DownSampleMaterial);
         m_DownSampleMaterial = nullptr;
     }
 
     if (m_DownSampleBrightPassMaterial != nullptr)
     {
-        delete m_DownSampleBrightPassMaterial;
+        HEDelete(m_DownSampleBrightPassMaterial);
         m_DownSampleBrightPassMaterial = nullptr;
     }
     if (m_Quad != nullptr)
@@ -185,7 +185,7 @@ void Bloom::init(View* view, bool hdr)
     m_RenderTarget.resize(s_DownSamples);
     for (int i(0); i < s_DownSamples; ++i)
     {
-        RenderTarget* rt(NEW RenderTarget(m_View->getWindow()->getContext()));
+        RenderTarget* rt(HENew(RenderTarget)(m_View->getWindow()->getContext()));
         m_RenderTarget[i] = rt;
     }
 

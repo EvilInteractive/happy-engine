@@ -70,10 +70,15 @@ void HappyEngine::dispose()
     HAPPYENGINE->cleanup();
 
     StaticDataManager::destroy();
-    delete gEngine;
+    he::Path::destroy();
+    HEDelete(gEngine);
     gEngine = nullptr;
-    delete gMemMan;
-    gMemMan = nullptr;
+    if (gMemMan)
+    {
+        gMemMan->~MemoryManager();
+        free(gMemMan);
+        gMemMan = nullptr;
+    }
 }
 void HappyEngine::cleanup()
 {  
@@ -84,12 +89,12 @@ void HappyEngine::cleanup()
 
     m_AudioThread.join(); // wait for audiothread to finish
     
-    delete m_Console;
+    HEDelete(m_Console);
     m_Console = nullptr;
 
     m_Game = nullptr;
 
-    delete m_Gui;
+    HEDelete(m_Gui);
     m_Gui = nullptr;
 
     if (m_ContentManager != nullptr)
@@ -98,30 +103,30 @@ void HappyEngine::cleanup()
     if (m_GraphicsEngine != nullptr)
         m_GraphicsEngine->destroy();
 
-    //dispose/delete all sub engines here
+    //dispose/HEDelete(all) sub engines here
     
-    delete m_PluginLoader;
+    HEDelete(m_PluginLoader);
     m_PluginLoader = nullptr;
-    delete m_ContentManager;
+    HEDelete(m_ContentManager);
     m_ContentManager = nullptr;
-    delete m_SoundEngine;
+    HEDelete(m_SoundEngine);
     m_SoundEngine = nullptr;
-    delete m_ControlsManager;
+    HEDelete(m_ControlsManager);
     m_ControlsManager = nullptr;
-    delete m_NetworkManager;
+    HEDelete(m_NetworkManager);
     m_NetworkManager = nullptr;
-    delete m_PhysicsEngine;
+    HEDelete(m_PhysicsEngine);
     m_PhysicsEngine = nullptr;
-    delete m_GraphicsEngine;
+    HEDelete(m_GraphicsEngine);
     m_GraphicsEngine = nullptr;
 }
 void HappyEngine::init(const int argc, const char* const * const argv, const int subengines)
 {
     HE_ASSERT(argc > 0, "There must be at least one argument in the argv argument list!");
     HE_ASSERT(!gMemMan, "Memory Manager is already initialized!");
-    gMemMan = new MemoryManager();
+    gMemMan = new(malloc(sizeof(MemoryManager))) MemoryManager();
     HE_ASSERT(!gEngine, "Happy Engine is already initialized!");
-    gEngine = NEW HappyEngine();
+    gEngine = HENew(HappyEngine)();
     Path::init(argc, argv);
     StaticDataManager::init();
     ThreadTicketManager* const treadTicketMan(ThreadTicketManager::getInstance());
@@ -139,8 +144,8 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 
     if (subengines & SubEngine_Graphics)
     {
-        m_GraphicsEngine = NEW gfx::GraphicsEngine();
-        m_Console = NEW tools::Console();
+        m_GraphicsEngine = HENew(gfx::GraphicsEngine)();
+        m_Console = HENew(tools::Console)();
 
         ilInit();
         iluInit();
@@ -149,35 +154,35 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         ilEnable(IL_ORIGIN_SET);
         ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_LOWER_LEFT);
 
-        m_Gui = NEW gui::Gui();
+        m_Gui = HENew(gui::Gui)();
     }
 
     if (subengines & SubEngine_Controls)
     {
-        m_ControlsManager = NEW io::ControlsManager();
+        m_ControlsManager = HENew(io::ControlsManager)();
     }
 
     if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
     {
-        m_ContentManager = NEW ct::ContentManager();
+        m_ContentManager = HENew(ct::ContentManager)();
     }
     
     if (subengines & SubEngine_Physics)
     {
-        m_PhysicsEngine = NEW px::PhysicsEngine();
+        m_PhysicsEngine = HENew(px::PhysicsEngine)();
     }
 
     if (subengines & SubEngine_Networking)
     {
-        m_NetworkManager = NEW net::NetworkManager();
+        m_NetworkManager = HENew(net::NetworkManager)();
     }
 
     if (subengines & SubEngine_Audio)
     {
-        m_SoundEngine = NEW sfx::SoundEngine();
+        m_SoundEngine = HENew(sfx::SoundEngine)();
     }
 
-    m_PluginLoader = NEW pl::PluginLoader();
+    m_PluginLoader = HENew(pl::PluginLoader)();
 }
 
 void HappyEngine::start(ge::Game* game, const bool managed, he::gfx::Window* sharedContext)
@@ -235,7 +240,7 @@ void HappyEngine::start(ge::Game* game, const bool managed, he::gfx::Window* sha
         m_AudioThread.startThread(std::bind(&HappyEngine::audioLoop, this), "Audio Thread");
     }
 
-    m_PrevTime = boost::chrono::high_resolution_clock::now();
+    m_PrevTime = std::chrono::high_resolution_clock::now();
     if (managed)
     {
         m_Game->init();
@@ -252,10 +257,10 @@ void HappyEngine::loop()
     {
         HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
-        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
-        m_PrevTime = boost::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> elapsedTime(std::chrono::high_resolution_clock::now() - m_PrevTime);
+        m_PrevTime = std::chrono::high_resolution_clock::now();
 
-        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+        float dTime(elapsedTime.count());
 
         updateLoop(dTime);
 

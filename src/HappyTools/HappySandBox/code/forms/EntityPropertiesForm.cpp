@@ -19,7 +19,7 @@
 
 EntityPropertiesForm::EntityPropertiesForm(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::EntityPropertiesForm),
+    m_UI(HENew(Ui::EntityPropertiesForm)),
     m_GameStateChangedCallback(std::bind(&EntityPropertiesForm::onGameStateChanged, this, std::placeholders::_1, std::placeholders::_2)),
     m_SelectionChangedCallback(std::bind(&EntityPropertiesForm::onSelectionChanged, this))
 {
@@ -33,7 +33,7 @@ EntityPropertiesForm::EntityPropertiesForm(QWidget *parent) :
 
 EntityPropertiesForm::~EntityPropertiesForm()
 {
-    delete m_UI;
+    HEDelete(m_UI);
     hs::GameStateMachine* gm(hs::GameStateMachine::getInstance());
     if (gm) // @exit it is already gone
         gm->GameStateChanged -= m_GameStateChangedCallback;
@@ -74,7 +74,7 @@ namespace
         }
         else
         {
-            list = NEW hs::EntityPropertyList(container->m_ComponentPanel);
+            list = HENew(hs::EntityPropertyList)(container->m_ComponentPanel);
             list->setComponentType(id);
             container->m_ComponentPanel->addItem(list, QString(name.c_str()));
         }
@@ -142,7 +142,10 @@ void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, 
                 }
             }
 
-            propDesc.m_Property != tempProp? delete tempProp : delete prop;
+            if (propDesc.m_Property != tempProp)
+                HEDelete(tempProp);
+            else 
+                HEDelete(prop);
 
             // Set the property value
             ::setProperty(list, propDesc, isMixed);
@@ -179,7 +182,7 @@ void EntityPropertiesForm::clearPanel()
     {
         QWidget* comp(m_UI->m_ComponentPanel->widget(0));
         m_UI->m_ComponentPanel->removeItem(0);
-        delete comp;
+        HEDelete(comp);
     }
 }
 

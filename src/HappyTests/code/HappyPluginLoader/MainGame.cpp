@@ -81,10 +81,10 @@ void MainGame::init()
     m_Window->create(true);
 
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
-    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
+    entityMan->installComponentFactory(HENew(he::ge::EngineEntityComponentFactory)());
     entityMan->init();
 
-    m_PluginLoader = NEW he::pl::PluginLoader();
+    m_PluginLoader = HENew(he::pl::PluginLoader)();
 
     char* plugins[2] = 
     {
@@ -117,7 +117,7 @@ void MainGame::init()
         
             m_View = graphicsEngine->createView();
             m_View->setWindow(m_Window);
-            m_DebugRenderer = NEW he::gfx::Renderer2D();
+            m_DebugRenderer = HENew(he::gfx::Renderer2D)();
             m_View->addRenderPlugin(m_DebugRenderer);
             m_View->init(cameraSettings);
             m_View->setCamera(m_Plugin->getActiveCamera());
@@ -125,7 +125,7 @@ void MainGame::init()
             PROFILER->attachToRenderer(m_DebugRenderer);
             CONSOLE->attachToRenderer(m_DebugRenderer);
             CONSOLE->registerCmd([&](){ m_PluginLoader->reloadPlugin(m_Plugin); }, "reloadPlugin");
-            m_FpsGraph = NEW he::tools::FPSGraph(oculus? 3.0f : 1.0f);
+            m_FpsGraph = HENew(he::tools::FPSGraph)(oculus? 3.0f : 1.0f);
             m_FpsGraph->setPos(he::vec2(5, 5));
             m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);
             addToTickList(m_FpsGraph);
@@ -161,7 +161,7 @@ void MainGame::destroy()
         m_Plugin2 = nullptr;
     }
 
-    delete m_PluginLoader;
+    HEDelete(m_PluginLoader);
     m_PluginLoader = nullptr;
 
     he::ge::EntityManager::getInstance()->destroy();
@@ -174,7 +174,7 @@ void MainGame::destroy()
         m_DebugRenderer->detachFromRender(this);
     }
     removeFromTickList(m_FpsGraph);
-    delete m_FpsGraph;
+    HEDelete(m_FpsGraph);
     m_FpsGraph = nullptr;
 
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
@@ -183,7 +183,7 @@ void MainGame::destroy()
         graphicsEngine->removeView(m_View);
         m_View = nullptr;
     }
-    delete m_DebugRenderer;
+    HEDelete(m_DebugRenderer);
     m_DebugRenderer = nullptr;
     if (m_Window)
     {

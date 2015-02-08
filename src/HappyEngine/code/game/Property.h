@@ -41,7 +41,7 @@ public:
     explicit PropertyValue(const T& defaultValue): m_Value(defaultValue)  {}
     virtual ~PropertyValue() {}
 
-    IPropertyValue* clone() const override { return NEW PropertyValue<T>(m_Value); }
+    IPropertyValue* clone() const override { return HENew(PropertyValue<T>)(m_Value); }
     bool equals(const IPropertyValue* const value) const override
     {
         return checked_cast<const PropertyValue<T>*>(value)->get() == get();
@@ -63,7 +63,7 @@ public:
     }
     ~Property() 
     {
-        delete m_Value;
+        HEDelete(m_Value);
     }
     Property(Property&& other)
         : m_Name(other.m_Name)
@@ -81,7 +81,7 @@ public:
 
     Property* clone() const
     {
-        Property* newProp(NEW Property);
+        Property* newProp(HENew(Property));
         newProp->m_Name = m_Name;
         newProp->m_Value = m_Value->clone();
         return newProp;
@@ -92,7 +92,7 @@ public:
     {
         HE_ASSERT(m_Value == nullptr, "Property %s already initialize", m_Name.c_str());
         m_Name = name;
-        m_Value = NEW PropertyValue<T>(defaultValue);
+        m_Value = HENew(PropertyValue<T>)(defaultValue);
     }
 
     template<typename T>

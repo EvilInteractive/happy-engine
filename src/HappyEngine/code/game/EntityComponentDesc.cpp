@@ -41,11 +41,11 @@ EntityComponentDesc::~EntityComponentDesc()
 {
     m_Properties.forEach([](const he::FixedString& /*propID*/, PropertyDesc& desc)
     {
-        delete desc.m_Property;
+        HEDelete(desc.m_Property);
         desc.m_Property = nullptr;
-        delete desc.m_Converter;
+        HEDelete(desc.m_Converter);
         desc.m_Converter = nullptr;
-        delete desc.m_Feel;
+        HEDelete(desc.m_Feel);
         desc.m_Feel = nullptr;
     });
 }

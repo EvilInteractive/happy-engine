@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Keyboard.h"
+#include "Timer.h"
 
 namespace he {
 namespace gui {
@@ -103,7 +104,7 @@ private:
 
     uint32 m_CursorPos;
 
-    boost::timer m_BlinkTimer;
+    he::Timer m_BlinkTimer;
     uint32 m_BackSpaceTimer;
     uint32 m_BackSpaceDelayTimer;
 

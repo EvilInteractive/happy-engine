@@ -32,14 +32,14 @@ GameStateMachine::~GameStateMachine()
 
 void GameStateMachine::init()
 {
-    m_GameStates[eGameState_Init] = NEW GameStateInit();
-    m_GameStates[eGameState_Exit] = NEW GameStateExit();
-    m_GameStates[eGameState_Edit] = NEW GameStateEdit();
-    m_GameStates[eGameState_Play] = NEW GameStatePlay();
-    m_GameStates[eGameState_LoadPlugin] = NEW GameStateLoadPlugin();
-    m_GameStates[eGameState_UnloadPlugin] = NEW GameStateUnloadPlugin();
-    m_GameStates[eGameState_Load] = NEW GameStateLoad();
-    m_GameStates[eGameState_Unload] = NEW GameStateUnload();
+    m_GameStates[eGameState_Init] = HENew(GameStateInit)();
+    m_GameStates[eGameState_Exit] = HENew(GameStateExit)();
+    m_GameStates[eGameState_Edit] = HENew(GameStateEdit)();
+    m_GameStates[eGameState_Play] = HENew(GameStatePlay)();
+    m_GameStates[eGameState_LoadPlugin] = HENew(GameStateLoadPlugin)();
+    m_GameStates[eGameState_UnloadPlugin] = HENew(GameStateUnloadPlugin)();
+    m_GameStates[eGameState_Load] = HENew(GameStateLoad)();
+    m_GameStates[eGameState_Unload] = HENew(GameStateUnload)();
     GAME->addToTickList(this);
 }
 
@@ -47,7 +47,7 @@ void GameStateMachine::destroy()
 {
     for (size_t i(0); i < eGameState_MAX; ++i)
     {
-        delete m_GameStates[i];
+        HEDelete(m_GameStates[i]);
         m_GameStates[i] = nullptr;
     }
     GAME->removeFromTickList(this);

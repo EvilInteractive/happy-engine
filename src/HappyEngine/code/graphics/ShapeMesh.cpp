@@ -27,7 +27,7 @@
 namespace he {
 namespace gfx {
 
-VertexLayout ShapeMesh::s_VertexLayout;
+VertexLayout* ShapeMesh::s_VertexLayout(nullptr);
 
 struct ShapeMesh::InternalData
 {
@@ -38,28 +38,28 @@ struct ShapeMesh::InternalData
 
 ShapeMesh::ShapeMesh() 
     : m_Points(nullptr)
-    , m_InternalMesh(NEW ModelMesh())
+    , m_InternalMesh(HENew(ModelMesh)())
 {
 
 }
 
 ShapeMesh::~ShapeMesh()
 {
-    delete m_Points;
-    delete m_InternalMesh;
+    HEDelete(m_Points);
+    HEDelete(m_InternalMesh);
 }
 
 void ShapeMesh::init( const MeshDrawMode mode )
 {
     HE_ASSERT(mode != MeshDrawMode_Triangles, "Triangles are not supported in a ShapeMesh!");
-    m_InternalMesh->init(s_VertexLayout, mode);
+    m_InternalMesh->init(*s_VertexLayout, mode);
 }
 
 void ShapeMesh::beginEditing()
 {
     if (!m_Points)
     {
-        m_Points = NEW ShapeMesh::InternalData();
+        m_Points = HENew(ShapeMesh::InternalData)();
     }
     m_Points->m_Vertices.clear();
     m_Points->m_Indices.clear();
@@ -95,7 +95,7 @@ void ShapeMesh::endEditing( const bool close, const bool keepBuffer )
     m_InternalMesh->setVertices(&m_Points->m_Vertices[0], m_Points->m_Vertices.size(), keepBuffer? MeshUsage_Stream : MeshUsage_Static, true);
     if (!keepBuffer)
     {
-        delete m_Points;
+        HEDelete(m_Points);
         m_Points = nullptr;
     }
 }
@@ -112,12 +112,14 @@ he::uint32 ShapeMesh::getIBO() const
 
 void ShapeMesh::sdmInit()
 {
-    s_VertexLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
+    s_VertexLayout = HENew(VertexLayout)();
+    s_VertexLayout->addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_3, 0));
 }
 
 void ShapeMesh::sdmDestroy()
 {
-
+    HEDelete(s_VertexLayout);
+    s_VertexLayout = nullptr;
 }
 
 void ShapeMesh::draw() const

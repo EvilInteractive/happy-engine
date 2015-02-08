@@ -43,37 +43,37 @@ he::ge::PropertyConverterBool* MaterialGeneratorNodeParam::s_BoolConverter(nullp
 
 void MaterialGeneratorNodeParam::sdmInit()
 {
-    s_SwizzleFeel = NEW he::ge::PropertyFeelDropDown();
+    s_SwizzleFeel = HENew(he::ge::PropertyFeelDropDown)();
     s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_X));
     s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_Y));
     s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_Z));
     s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_W));
     s_SwizzleFeel->addItem(he::ct::shaderGeneratorSwizzleMaskToString(he::ct::eShaderGeneratorSwizzleMask_None));
 
-    s_ColorFeel = NEW he::ge::PropertyFeelColor();
-    s_CheckBoxFeel = NEW he::ge::PropertyFeelCheckBox();
-    s_DefaultFeel = NEW he::ge::PropertyFeelDefault();
+    s_ColorFeel = HENew(he::ge::PropertyFeelColor)();
+    s_CheckBoxFeel = HENew(he::ge::PropertyFeelCheckBox)();
+    s_DefaultFeel = HENew(he::ge::PropertyFeelDefault)();
     
-    s_SwizzleConverter = NEW he::ge::PropertyConverterEnum<he::ct::EShaderGeneratorSwizzleMask>(he::ct::shaderGeneratorSwizzleMaskFromString, he::ct::shaderGeneratorSwizzleMaskToString);
-    s_Vec4Converter = NEW he::ge::PropertyConverterVec4();
-    s_Vec3Converter = NEW he::ge::PropertyConverterVec3();
-    s_Vec2Converter = NEW he::ge::PropertyConverterVec2();
-    s_FloatConverter = NEW he::ge::PropertyConverterFloat();
-    s_BoolConverter = NEW he::ge::PropertyConverterBool();
+    s_SwizzleConverter = HENew(he::ge::PropertyConverterEnum<he::ct::EShaderGeneratorSwizzleMask>)(he::ct::shaderGeneratorSwizzleMaskFromString, he::ct::shaderGeneratorSwizzleMaskToString);
+    s_Vec4Converter = HENew(he::ge::PropertyConverterVec4)();
+    s_Vec3Converter = HENew(he::ge::PropertyConverterVec3)();
+    s_Vec2Converter = HENew(he::ge::PropertyConverterVec2)();
+    s_FloatConverter = HENew(he::ge::PropertyConverterFloat)();
+    s_BoolConverter = HENew(he::ge::PropertyConverterBool)();
 }
 
 void MaterialGeneratorNodeParam::sdmDestroy()
 {
-    delete s_SwizzleFeel;
-    delete s_ColorFeel;
-    delete s_CheckBoxFeel;
-    delete s_DefaultFeel;
-    delete s_SwizzleConverter;
-    delete s_Vec4Converter;
-    delete s_Vec3Converter; 
-    delete s_Vec2Converter; 
-    delete s_FloatConverter;
-    delete s_BoolConverter; 
+    HEDelete(s_SwizzleFeel);
+    HEDelete(s_ColorFeel);
+    HEDelete(s_CheckBoxFeel);
+    HEDelete(s_DefaultFeel);
+    HEDelete(s_SwizzleConverter);
+    HEDelete(s_Vec4Converter);
+    HEDelete(s_Vec3Converter); 
+    HEDelete(s_Vec2Converter); 
+    HEDelete(s_FloatConverter);
+    HEDelete(s_BoolConverter); 
 }
 
 MaterialGeneratorNodeParam::MaterialGeneratorNodeParam()

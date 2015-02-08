@@ -39,7 +39,7 @@ SimpleColorEffect::SimpleColorEffect()
 
 SimpleColorEffect::~SimpleColorEffect()
 {
-    delete m_Material;
+    HEDelete(m_Material);
 }
 
 /* GENERAL */

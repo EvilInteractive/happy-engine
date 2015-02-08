@@ -52,7 +52,7 @@ MainGame::~MainGame()
 
     std::for_each(getObstacles().cbegin(), getObstacles().cend(), [&](const Obstacle* obstacle)
     {
-        delete obstacle;
+        HEDelete(obstacle);
     });
     he::net::NetworkObjectFactory<Palet>::getInstance()->destroyAll();
     he::net::NetworkObjectFactory<Ball>::getInstance()->destroyAll();
@@ -91,7 +91,7 @@ void MainGame::load()
     NETWORK->ClientConnected += clientConnectedHandler;
 
     m_BoardDimension = he::vec2(85, 47);
-    //m_Obstacles.push_back(NEW Obstacle());
+    //m_Obstacles.push_back(NEW(Obstacle)());
 
     m_InputThread = boost::thread(boost::bind(&MainGame::inputThread, this));
 

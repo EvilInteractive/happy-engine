@@ -38,11 +38,11 @@ struct Gui
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Gui() : m_SpriteCreator(NEW SpriteCreator()) {}
+    Gui() : m_SpriteCreator(HENew(SpriteCreator)()) {}
 
     ~Gui()
     {
-        delete m_SpriteCreator;
+        HEDelete(m_SpriteCreator);
     }
 
     /* GETTERS */

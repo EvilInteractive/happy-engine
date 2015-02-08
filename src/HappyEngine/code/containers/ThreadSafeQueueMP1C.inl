@@ -56,7 +56,7 @@ ThreadSafeQueueMP1C<T>::~ThreadSafeQueueMP1C()
         {
             TNode* const oldHead(head);
             head = oldHead->m_Next;
-            delete oldHead;
+            HEDelete(oldHead);
         }
     }
 }
@@ -68,7 +68,7 @@ void he::ThreadSafeQueueMP1C<T>::enlargePool(const size_t amount)
     m_PoolSize += amount;
     for (size_t i(0); i < amount; ++i)
     {
-        removeNode(NEW TNode()); // "Remove" the node to make the stack bigger
+        removeNode(HENew(TNode)()); // "Remove" the node to make the stack bigger
     }
 }
 

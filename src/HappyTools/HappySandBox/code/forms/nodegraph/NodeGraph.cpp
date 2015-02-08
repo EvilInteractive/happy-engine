@@ -44,7 +44,7 @@ namespace hs {
 NodeGraph::NodeGraph(QWidget *parent)
 : RenderWidget(parent)
 , m_View(GRAPHICS->createView())
-, m_2DRenderer(NEW he::gfx::Renderer2D())
+, m_2DRenderer(HENew(he::gfx::Renderer2D)())
 , m_Active(false)
 , m_Offset(0, 0)
 , m_Scale(0.5f)
@@ -520,7 +520,7 @@ void NodeGraph::destroy()
     if (m_2DRenderer)
     {
         m_2DRenderer->detachFromRender(this);
-        delete m_2DRenderer;
+        HEDelete(m_2DRenderer);
         m_2DRenderer = nullptr;
     }
 

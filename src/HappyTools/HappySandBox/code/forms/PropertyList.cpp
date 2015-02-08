@@ -22,7 +22,7 @@
 namespace hs {
 PropertyList::PropertyList(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::PropertyList),
+    m_UI(HENew(Ui::PropertyList)),
     m_CurrentRow(0)
 {
     m_UI->setupUi(this);
@@ -30,7 +30,7 @@ PropertyList::PropertyList(QWidget *parent) :
 
 PropertyList::~PropertyList()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void PropertyList::clear()
@@ -83,58 +83,58 @@ void PropertyList::setValueMixed( const he::FixedString& prop )
 
 void PropertyList::getRowContents( const he::ge::PropertyDesc& prop, QTableWidgetItem*& outName, hs::PropertyListItem*& outItem, QWidget*& outWidget )
 {
-    outName = NEW QTableWidgetItem(QString(prop.m_DisplayName.c_str()));
+    outName = HENew(QTableWidgetItem)(QString(prop.m_DisplayName.c_str()));
     outName->setToolTip(QString(prop.m_Tooltip.c_str()));
 
     switch (prop.m_Feel->getType())
     {
     case he::ge::ePropertyFeel_DropDown: //dropdown
         {
-            PropertyDropDownFeel* feel(NEW PropertyDropDownFeel(m_UI->m_Table));
+            PropertyDropDownFeel* feel(HENew(PropertyDropDownFeel)(m_UI->m_Table));
             he::ge::PropertyFeelDropDown* dd(he::checked_cast<he::ge::PropertyFeelDropDown*>(prop.m_Feel));
             dd->getList().forEach([feel](const he::String& val)
             {
                 feel->addValue(val);
             });
-            outItem = NEW hs::PropertyListItem(prop, feel);
+            outItem = HENew(hs::PropertyListItem)(prop, feel);
             outWidget = feel;
         } break;
     case he::ge::ePropertyFeel_Slider: // slider
         {
-            PropertySliderFeel* feel(NEW PropertySliderFeel(m_UI->m_Table));
+            PropertySliderFeel* feel(HENew(PropertySliderFeel)(m_UI->m_Table));
             he::ge::PropertyFeelSlider* slider(he::checked_cast<he::ge::PropertyFeelSlider*>(prop.m_Feel));
             feel->setRange(slider->getMin(), slider->getMax());
             feel->setTicksInterval((slider->getMax() - slider->getMin()) / 10.0f);
-            outItem = NEW hs::PropertyListItem(prop, feel);
+            outItem = HENew(hs::PropertyListItem)(prop, feel);
             outWidget = feel;
         } break;
     case he::ge::ePropertyFeel_Default: //tb
         {
-            PropertyDefaultFeel* feel(NEW PropertyDefaultFeel(m_UI->m_Table));
-            outItem = NEW hs::PropertyListItem(prop, feel);
+            PropertyDefaultFeel* feel(HENew(PropertyDefaultFeel)(m_UI->m_Table));
+            outItem = HENew(hs::PropertyListItem)(prop, feel);
             outWidget = feel;
         } break;
     case he::ge::ePropertyFeel_Path: //tb + button
         {
-            PropertyPathFeel* feel(NEW PropertyPathFeel(m_UI->m_Table));
+            PropertyPathFeel* feel(HENew(PropertyPathFeel)(m_UI->m_Table));
             he::ge::PropertyFeelPath* pathFeel(he::checked_cast<he::ge::PropertyFeelPath*>(prop.m_Feel));
             if (pathFeel->isDirectory())
                 feel->setOpenDirectory();
             else
                 feel->setOpenFile(pathFeel->getFilter());
-            outItem = NEW hs::PropertyListItem(prop, feel);
+            outItem = HENew(hs::PropertyListItem)(prop, feel);
             outWidget = feel;
         } break;
     case he::ge::ePropertyFeel_Color: //tb + colorpicker
         {
-            PropertyColorFeel* feel(NEW PropertyColorFeel(m_UI->m_Table));
-            outItem = NEW hs::PropertyListItem(prop, feel);
+            PropertyColorFeel* feel(HENew(PropertyColorFeel)(m_UI->m_Table));
+            outItem = HENew(hs::PropertyListItem)(prop, feel);
             outWidget = feel;
         } break;
     case he::ge::ePropertyFeel_CheckBox: //checkbox
         {
-            PropertyCheckBoxFeel* feel(NEW PropertyCheckBoxFeel(m_UI->m_Table));
-            outItem = NEW hs::PropertyListItem(prop, feel);
+            PropertyCheckBoxFeel* feel(HENew(PropertyCheckBoxFeel)(m_UI->m_Table));
+            outItem = HENew(hs::PropertyListItem)(prop, feel);
             outWidget = feel;
         } break;
     default: LOG(he::LogType_ProgrammerAssert, "Unknown property feel! %d", prop.m_Feel->getType());

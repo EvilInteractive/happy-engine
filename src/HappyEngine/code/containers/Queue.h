@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2015  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,20 +16,34 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 23/08/2011
+//Created: 2015/01/24
 
-#ifndef _HE_HAPPY_NEW_H_
-#define _HE_HAPPY_NEW_H_
-#pragma once
+#ifndef Queue_h__
+#define Queue_h__
 
-#if defined(HE_DEBUG) && defined(_MSC_VER)
-#include <crtdbg.h>
-#define _CRTDBG_MAP_ALLOC
-#define NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#else
-#define NEW new
-#endif
+#include <queue>
 
-#define PNEW(mem) new(mem)
+namespace he {
 
-#endif
+template<typename T>
+class Queue : public std::queue<T, std::deque<T, StlAllocater<T>>>
+{
+    typedef std::queue<T, std::deque<T, StlAllocater<T>>> TParent;
+public:
+    Queue() : TParent() {}
+    void clone(const Queue& other);
+
+    // do nothing special in here!
+    Queue(Queue&& other);
+    Queue& operator=(Queue&& other);
+
+private:
+    Queue(const Queue&);
+    Queue& operator=(const Queue&);
+};
+
+}
+
+#include "Queue.inl"
+
+#endif // Queue_h__

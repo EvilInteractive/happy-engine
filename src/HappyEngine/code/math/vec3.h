@@ -137,7 +137,7 @@ public:
         return x != v.x || y != v.y || z != v.z;
     }
 
-    bool operator<(const vec3& v) const; //for std::map/sorting purposes, it doesn't make any sense else, compares first x than y than z
+    bool operator<(const vec3& v) const; //for he::Map/sorting purposes, it doesn't make any sense else, compares first x than y than z
     //<----------------------------------------<
 };
 

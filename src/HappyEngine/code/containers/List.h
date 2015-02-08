@@ -62,7 +62,8 @@ public:
     inline bool find_if(const Pred& pred, size_t& outIndex) const; // O(n)
     inline bool rfind_if(const Pred& pred, size_t& outIndex) const; // O(n)
     inline bool rfind(const T& element, size_t& outIndex) const; // O(n)
-    inline bool binFind(const T& element, const Sorter& sorter, size_t& outIndex) const; // O(log(n))  binary search - only on sorted lists
+    template<typename TElement>
+    inline bool binFind(const TElement& element, const std::function<int(const TElement&, const T&)>& sorter, size_t& outIndex) const; // O(log(n))  binary search - only on sorted lists, outIndex will also be filled in if find returns false (this will be the index of where the element should be)
     inline void sort(const Sorter& sorter); // quick sort O(n*log(n))
 
     inline size_t size() const { return m_Size; }
@@ -92,7 +93,8 @@ public:
     
 private:
     void internalSort(const int begin, const int end, const Sorter& sorter);
-    bool internalBinFind(const size_t begin, const size_t end, const T& element, const Sorter& sorter, size_t& outIndex) const;
+    template<typename TElement>
+    bool internalBinFind(const size_t begin, const size_t end, const TElement& element, const std::function<int(const TElement&, const T&)>& sorter, size_t& outIndex) const;
     
     size_t m_Size;
     size_t m_Capacity;
@@ -146,7 +148,7 @@ public:
 
 template<typename T, typename Allocator> inline
 he::List<T, Allocator>::List(const size_t capacity): m_Size(0), m_Capacity(capacity), 
-    m_Buffer(Allocator::allocate(capacity))
+    m_Buffer(Allocator::allocate(capacity GET_MEM_DEBUG_FL_PARAM))
 #ifdef HE_DEBUG
     , m_IsTraversing(false)
 #endif
@@ -218,7 +220,7 @@ void he::List<T, Allocator>::insert( const T& element, const size_t index )
     {
         reserve(m_Capacity + CAPACITY_INCREMENT);
     }
-    he_memmove(m_Buffer + index + 1, m_Buffer + index, sizeof(T) * (m_Size - index));
+    Allocator::memmove(m_Buffer + index + 1, m_Buffer + index, m_Size - index);
     m_Buffer[index] = element;
     ++m_Size;
 }
@@ -229,7 +231,7 @@ void he::List<T, Allocator>::insert( T&& element, const size_t index )
     HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to insert an element already in this list without a copy");
     if (m_Size == m_Capacity)
         reserve(m_Capacity + CAPACITY_INCREMENT);
-    he_memmove(m_Buffer + index + 1, m_Buffer + index, sizeof(T) * (m_Size - index));
+    Allocator::memmove(m_Buffer + index + 1, m_Buffer + index, m_Size - index);
     m_Buffer[index] = std::forward<T>(element);
     ++m_Size;
 }
@@ -240,7 +242,7 @@ void he::List<T, Allocator>::reserve( const size_t capacity )
     HE_ASSERT(m_Size <= m_Capacity, "Warning reserving size smaller than used size");
     if (m_Capacity != capacity)
     {
-        m_Buffer = Allocator::reallocate(m_Buffer, m_Capacity, capacity);
+        m_Buffer = Allocator::reallocate(m_Buffer, m_Capacity, capacity GET_MEM_DEBUG_FL_PARAM);
         m_Capacity = capacity;
     }
 }
@@ -309,7 +311,7 @@ void he::List<T, Allocator>::orderedRemoveAt( const size_t index )
     HE_ASSERT(!m_IsTraversing, "Removing element from list, but we are currently traversing the list! Bad things will happen.");
     HE_IF_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size)
     {
-        he_memmove(m_Buffer + index, m_Buffer + index + 1, (m_Size - index - 1) * sizeof(T));
+        Allocator::memmove(m_Buffer + index, m_Buffer + index + 1, m_Size - index - 1);
         --m_Size;
     }
 }
@@ -384,18 +386,26 @@ bool he::List<T, Allocator>::rfind( const T& element, size_t& outIndex ) const
     }
     return false;
 }
-template<typename T, typename Allocator> inline
-bool he::List<T, Allocator>::binFind( const T& element, const Sorter& sorter, size_t& outIndex ) const
+template<typename T, typename Allocator> 
+template<typename TElement> inline
+bool he::List<T, Allocator>::binFind( const TElement& element, const std::function<int(const TElement&, const T&)>& sorter, size_t& outIndex ) const
 {
     if (m_Size == 0)
+    {
+        outIndex = 0;
         return false;
+    }
     return internalBinFind(0, m_Size, element, sorter, outIndex);
 }
 template<typename T, typename Allocator>
-bool he::List<T, Allocator>::internalBinFind( const size_t begin, const size_t end, const T& element, const Sorter& sorter, size_t& outIndex ) const
+template<typename TElement>
+bool he::List<T, Allocator>::internalBinFind( const size_t begin, const size_t end, const TElement& element, const std::function<int(const TElement&, const T&)>& sorter, size_t& outIndex ) const
 {
     if (begin == end)
+    {
+        outIndex = begin;
         return false;
+    }
 
     size_t currentIndex((begin + end) / 2);
     const T& checkElement(m_Buffer[currentIndex]);

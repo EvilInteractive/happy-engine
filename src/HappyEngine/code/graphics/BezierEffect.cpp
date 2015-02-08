@@ -41,7 +41,7 @@ BezierEffect::BezierEffect()
 
 BezierEffect::~BezierEffect()
 {
-    delete m_Material;
+    HEDelete(m_Material);
 }
 
 void BezierEffect::init(const VertexLayout& layout)

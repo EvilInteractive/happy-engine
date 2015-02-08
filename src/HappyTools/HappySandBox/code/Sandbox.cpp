@@ -82,10 +82,9 @@ int Sandbox::run(int argc, char* args[])
 
     HE_ASSERT(QGLFormat::defaultFormat().majorVersion() == 3, "Default Major is not 3! but %d", QGLFormat::defaultFormat().majorVersion());
 
-    he::HappyEngine::init(argc, args, he::SubEngine_All & ~he::SubEngine_Windowing);
     hs::StaticDataManager::init();
 
-    m_Window = NEW MainWindow();
+    m_Window = HENew(MainWindow)();
     connect(m_Window, SIGNAL(close()), this, SLOT(quit()));
     m_Window->show();
     m_Window->getGameWidget()->create(true);
@@ -104,9 +103,8 @@ int Sandbox::run(int argc, char* args[])
     m_Window->getGameWidget()->destroy(); // Unregister context and stuff
     
     hs::StaticDataManager::destroy();
-    he::HappyEngine::dispose();
 
-    delete m_Window;
+    HEDelete(m_Window);
     m_Window = nullptr;
 
     return ret;
@@ -119,13 +117,13 @@ void Sandbox::loop()
 
 void Sandbox::destroy()
 {
-    delete m_ColorPicker;
+    HEDelete(m_ColorPicker);
     m_ColorPicker = nullptr;
 
-    delete m_EntityManager;
+    HEDelete(m_EntityManager);
     m_EntityManager = nullptr;
     
-    delete m_RenderPipeline;
+    HEDelete(m_RenderPipeline);
     m_RenderPipeline = nullptr;
 
     GRAPHICS->removeView(m_View);
@@ -153,16 +151,16 @@ void Sandbox::init()
     cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->setWindow(m_Window->getGameWidget());
 
-    m_RenderPipeline = NEW SandboxRenderPipeline();
+    m_RenderPipeline = HENew(SandboxRenderPipeline)();
     m_RenderPipeline->init(m_View);
     m_View->init(cameraSettings);
-    m_EntityManager = NEW EntityManager();
+    m_EntityManager = HENew(EntityManager)();
 
     GameStateMachine* const stateMachine(GameStateMachine::getInstance());
     stateMachine->init();
     stateMachine->setState(eGameState_Init);
 
-    m_ColorPicker = NEW QColorDialog(m_Window);
+    m_ColorPicker = HENew(QColorDialog)(m_Window);
 
     NodeGraphNode::Style::sdmInit();
 }

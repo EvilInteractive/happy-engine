@@ -45,13 +45,13 @@ HierarchicalProfile::~HierarchicalProfile()
 
 struct ProfileData
 {
-    boost::chrono::high_resolution_clock::time_point startTime;
-    boost::chrono::high_resolution_clock::time_point endTime;
+    std::chrono::high_resolution_clock::time_point startTime;
+    std::chrono::high_resolution_clock::time_point endTime;
 
     double getDuration() const
     {
-        boost::chrono::high_resolution_clock::duration elapsedTime(endTime - startTime);
-        return elapsedTime.count() / static_cast<double>(boost::nano::den);
+        std::chrono::duration<double> elapsedTime(endTime - startTime);
+        return elapsedTime.count();
     }
 };
 
@@ -92,11 +92,11 @@ struct Profiler::ProfileTreeNode
 
     void start() 
     { 
-        m_CurrentProfile.startTime = boost::chrono::high_resolution_clock::now(); 
+        m_CurrentProfile.startTime = std::chrono::high_resolution_clock::now(); 
     }
     void stop() 
     { 
-        m_CurrentProfile.endTime = boost::chrono::high_resolution_clock::now(); 
+        m_CurrentProfile.endTime = std::chrono::high_resolution_clock::now(); 
         double time = m_CurrentProfile.getDuration();
         m_MaxTime = std::max(m_MaxTime, time);
         if (m_Recurses == 0)
@@ -117,8 +117,8 @@ Profiler::Profiler()
       m_Font(nullptr), 
       m_Renderer(nullptr), 
       m_State(Disabled),
-      m_NodesFront(NEW DataMap()),
-      m_NodesBack(NEW DataMap())
+      m_NodesFront(HENew(DataMap)()),
+      m_NodesBack(HENew(DataMap)())
 {
 }
 void Profiler::load()
@@ -139,20 +139,20 @@ Profiler::~Profiler()
     disable();
     if (m_Font != nullptr)
         m_Font->release();
-    delete m_NodesBack;
-    delete m_NodesFront;
+    HEDelete(m_NodesBack);
+    HEDelete(m_NodesFront);
 }
 
 Profiler* Profiler::getInstance()
 {
     if (s_Profiler == nullptr)
-        s_Profiler = NEW Profiler();
+        s_Profiler = HENew(Profiler)();
     return s_Profiler;
 }
 
 void Profiler::dispose()
 {
-    delete s_Profiler;
+    HEDelete(s_Profiler);
     s_Profiler = nullptr;
 }
 

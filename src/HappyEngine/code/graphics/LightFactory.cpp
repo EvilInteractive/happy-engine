@@ -49,12 +49,12 @@ Light* LightFactory::get(const ObjectHandle handle ) const
 
 he::ObjectHandle gfx::LightFactory::createPointLight()
 {
-    return registerObject(NEW PointLight());
+    return registerObject(HENew(PointLight)());
 }
 
 he::ObjectHandle gfx::LightFactory::createSpotLight()
 {
-    return registerObject(NEW SpotLight());
+    return registerObject(HENew(SpotLight)());
 }
 
 SpotLight* gfx::LightFactory::getSpotLight( const ObjectHandle& handle ) const

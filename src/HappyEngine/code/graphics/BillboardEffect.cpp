@@ -39,7 +39,7 @@ BillboardEffect::BillboardEffect()
 
 BillboardEffect::~BillboardEffect()
 {
-    delete m_Material;
+    HEDelete(m_Material);
 }
 
 void BillboardEffect::init(const VertexLayout& layout)

@@ -79,11 +79,11 @@ WebView::WebView(gfx::View* view, const RectF& viewportPercent, bool enableUserI
 void WebView::init()
 {
     // create buffer
-    m_Buffer = static_cast<uint8*>(he_malloc(4));
+    m_Buffer = static_cast<uint8*>(he_malloc("WebView::m_Buffer", 4));
 
     // create webview
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
-    m_WebListener = NEW WebListener(m_WebView);
+    m_WebListener = HENew(WebListener)(m_WebView);
 
     ObjectHandle handle = ResourceFactory<gfx::Texture2D>::getInstance()->create();
     m_RenderTexture = ResourceFactory<gfx::Texture2D>::getInstance()->get(handle);
@@ -232,7 +232,7 @@ WebView::~WebView()
     he_free(m_Buffer);
     m_WebView->Destroy();
     m_RenderTexture->release();
-    delete m_WebListener;
+    HEDelete(m_WebListener);
 }
 
 /* GENERAL */
@@ -346,7 +346,7 @@ void WebView::resize( const vec2& newSize )
         else
             m_WebView = GRAPHICS->getWebCore()->CreateWebView((int)newSize.x, (int)newSize.y);
 
-        m_Buffer = static_cast<uint8*>(he_realloc(m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
+        m_Buffer = static_cast<uint8*>(he_realloc("WebView::m_Buffer", m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
 
         // needed for setsubdata
         m_RenderTexture->setData((int)newSize.x, (int)newSize.y,
@@ -365,16 +365,16 @@ void WebView::OnFailLoadingFrame(
         const Awesomium::WebString& error_desc 
     )
 {
-    char* buff0 = NEW char[url.path().length()];
+    char* buff0 = HENewArray(char, url.path().length());
     url.path().ToUTF8(buff0, url.path().length());
 
-    char* buff2 = NEW char[error_desc.length()];
+    char* buff2 = HENewArray(char, error_desc.length());
     error_desc.ToUTF8(buff2, error_desc.length());
 
     HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
 
-    delete[] buff0;
-    delete[] buff2;
+    HEDeleteArray(buff0);
+    HEDeleteArray(buff2);
 }
 
 void WebView::OnFinishLoadingFrame(
@@ -474,16 +474,16 @@ void WebView::OnAddConsoleMessage(
         const Awesomium::WebString& msg,int lineNr,
         const Awesomium::WebString& source)
 {
-    char* buff0 = NEW char[msg.length()];
+    char* buff0 = HENewArray(char, msg.length());
     msg.ToUTF8(buff0, msg.length());
 
-    char* buff1 = NEW char[source.length()];
+    char* buff1 = HENewArray(char, source.length());
     source.ToUTF8(buff1, source.length());
 
     HE_WARNING("JS Console: msg:'%s', lineNr:'%d', source:'%s'", buff0, lineNr, buff1);
 
-    delete[] buff0;
-    delete[] buff1;
+    HEDeleteArray(buff0);
+    HEDeleteArray(buff1);
 }
 
 }} //end namespace

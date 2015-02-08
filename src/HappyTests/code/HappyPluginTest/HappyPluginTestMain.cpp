@@ -76,18 +76,18 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     he::gfx::CameraSettings cameraSettings;
     cameraSettings.setRelativeViewport(relViewport);
 
-    m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
+    m_RenderPipeline = HENew(he::ge::DefaultRenderPipeline)();
     m_RenderPipeline->init(m_View, m_Scene);
 
     m_VREnabled = he::GlobalSettings::getInstance()->getRenderSettings().stereoSetting == he::gfx::StereoSetting_OculusRift;
 
     if (m_VREnabled)
     {
-        m_Camera = NEW VRCamera();
+        m_Camera = HENew(VRCamera)();
     }
     else
     {
-        m_Camera = NEW FlyCamera();
+        m_Camera = HENew(FlyCamera)();
     }
     m_Camera->setNearFarPlane(0.1f, 500.0f);
 
@@ -104,7 +104,7 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.2f);
 
     he::gui::Font* const debugFont(contentMan->getDefaultFont(16));
-    m_DebugText = NEW he::gui::Text();
+    m_DebugText = HENew(he::gui::Text)();
     m_DebugText->setFont(debugFont);
     debugFont->release();
     m_RenderPipeline->get2DRenderer()->attachToRender(this);
@@ -119,12 +119,12 @@ void ht::HappyPluginTestMain::terminate()
     m_View = nullptr;
     graphicsEngine->removeScene(m_Scene);
     m_Scene = nullptr;
-    delete m_Camera;
+    HEDelete(m_Camera);
     m_Camera = nullptr;
-    delete m_DebugText;
+    HEDelete(m_DebugText);
     m_DebugText = nullptr;
 
-    delete m_RenderPipeline;
+    HEDelete(m_RenderPipeline);
     m_RenderPipeline = nullptr;
 
     HE_INFO("HappyPluginTestMain terminated");
@@ -186,7 +186,7 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
                 light->setColor(he::Color::fromHSB(rand()%360 / 360.0f, 0.8f, 1.0f));
                 light->setMultiplier(1.0f);
             }
-        }
+        }  
 
 
         he::vec3 position(rand()%100 - 50.0f, 5.0f + rand()%10, rand()%100 - 50.0f);

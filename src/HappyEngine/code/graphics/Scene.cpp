@@ -37,11 +37,11 @@ IMPLEMENT_OBJECT(Scene)
 
 #pragma warning(disable:4355) // use of this in initializerlist
 Scene::Scene():
-          m_CameraManager(NEW ge::CameraManager)
-        , m_LightManager(NEW LightManager(this))
-        , m_InstancingManager(NEW InstancingManager)
+          m_CameraManager(HENew(ge::CameraManager))
+        , m_LightManager(HENew(LightManager)(this))
+        , m_InstancingManager(HENew(InstancingManager))
         , m_Active(true)
-        , m_ShadowCaster(NEW ShadowCaster)
+        , m_ShadowCaster(HENew(ShadowCaster))
         , m_SkyBox(nullptr)
         , m_Picker(nullptr)
 {
@@ -54,18 +54,18 @@ Scene::~Scene()
 {
     if (m_SkyBox != nullptr && m_SkyBox->getDrawable() != nullptr)
         m_SkyBox->getDrawable()->detachFromScene();
-    delete m_SkyBox;
-    delete m_ShadowCaster;
-    delete m_LightManager;
-    delete m_InstancingManager;
-    delete m_CameraManager;
+    HEDelete(m_SkyBox);
+    HEDelete(m_ShadowCaster);
+    HEDelete(m_LightManager);
+    HEDelete(m_InstancingManager);
+    HEDelete(m_CameraManager);
 }
 
 void Scene::loadSkybox( const he::String& asset )
 {
     if (m_SkyBox == nullptr)
     {
-        m_SkyBox = NEW SkyBox();
+        m_SkyBox = HENew(SkyBox)();
         m_SkyBox->load(asset);
         if (m_SkyBox != nullptr && m_SkyBox->getDrawable() != nullptr)
             m_SkyBox->getDrawable()->attachToScene(this);

@@ -23,7 +23,7 @@ namespace hs {
 
 MaterialGraph::MaterialGraph(QWidget* parent) :
     NodeGraph(parent),
-    m_Generator(NEW he::ct::ShaderGenerator())
+    m_Generator(HENew(he::ct::ShaderGenerator)())
 {
     setAcceptDrops(true);
 }
@@ -31,7 +31,7 @@ MaterialGraph::MaterialGraph(QWidget* parent) :
 MaterialGraph::~MaterialGraph()
 {
     destroy();
-    delete m_Generator;
+    HEDelete(m_Generator);
 }
 
 void MaterialGraph::init( MaterialEditor* parent )

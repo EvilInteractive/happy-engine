@@ -39,10 +39,10 @@ Options::~Options()
 {
     m_Options.forEach([](const he::FixedString& /*key*/, he::ge::PropertyDesc* value)
     {
-        delete value->m_Property;
-        delete value->m_Converter;
-        delete value->m_Feel;
-        delete value;
+        HEDelete(value->m_Property);
+        HEDelete(value->m_Converter);
+        HEDelete(value->m_Feel);
+        HEDelete(value);
     });
 }
 
@@ -93,10 +93,10 @@ void Options::visit( he::io::StructuredVisitor* visitor )
 
 void Options::addPathProperty( const he::FixedString& name, const char* displayName, const char* tooltip, he::Path defaultValue, const bool isDirectory, const he::String& filter /*= he::String()*/ )
 {
-    he::ge::Property* prop(NEW he::ge::Property());
+    he::ge::Property* prop(HENew(he::ge::Property)());
     prop->init<he::Path>(name, std::move(defaultValue));
-    he::ge::PropertyDesc* propDesc(NEW he::ge::PropertyDesc(
-        prop, displayName, tooltip, NEW he::ge::PropertyConverterPath, NEW he::ge::PropertyFeelPath(isDirectory, filter)));
+    he::ge::PropertyDesc* propDesc(HENew(he::ge::PropertyDesc)(
+        prop, displayName, tooltip, HENew(he::ge::PropertyConverterPath), HENew(he::ge::PropertyFeelPath)(isDirectory, filter)));
     m_Options.setAt(name, propDesc);
 }
 

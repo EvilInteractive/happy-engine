@@ -197,10 +197,11 @@ void FPSGraph::drawTextOnly(gui::Canvas2D* canvas)
     
     he::tools::SystemStats* const stats(he::tools::SystemStats::getInstance());
     m_Text.clear();
-    m_Text.addTextExt("%u - %u (%u)",
+    m_Text.addTextExt("%u - %u (%llu) ~%llu",
         (uint32)(stats->getVirtualMemoryUsed() / (1024 * 1024)),
         (uint32)(stats->getMemoryUsed() / (1024 * 1024)),
-        (uint64)(stats->getTotalMemory() / (1024 * 1024)));
+        (uint64)(stats->getTotalMemory() / (1024 * 1024)),
+        he::gMemMan->getTrackedMemory() / (1024 * 1024));
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     canvas->fillText(m_Text, m_Pos + vec2(0,11));
@@ -520,10 +521,11 @@ void FPSGraph::renderGraph()
 
     he::tools::SystemStats* const stats(he::tools::SystemStats::getInstance());
     m_Text.clear();
-    m_Text.addTextExt("%u - %u (%u)",
+    m_Text.addTextExt("%u - %u (%llu) (%llu)",
         (uint32)(stats->getVirtualMemoryUsed() / (1024 * 1024)),
         (uint32)(stats->getMemoryUsed() / (1024 * 1024)),
-        (uint64)(stats->getTotalMemory() / (1024 * 1024)));
+        (uint64)(stats->getTotalMemory() / (1024 * 1024)),
+        (uint64)(he::gMemMan->getTrackedMemory() / (1024 * 1024)));
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     cr->newPath();

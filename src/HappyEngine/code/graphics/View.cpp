@@ -88,8 +88,8 @@ View::~View()
 {
     GAME->removeFromTickList(this);
 
-    delete m_IntermediateRenderTarget;
-    delete m_PostProcesser;
+    HEDelete(m_IntermediateRenderTarget);
+    HEDelete(m_PostProcesser);
 
     m_ColorRenderMap->release();
     m_NormalDepthRenderMap->release();
@@ -130,7 +130,7 @@ void View::init( const CameraSettings& cameraSettings, const bool forceDisablePo
         });
         ViewportSizeChanged += resizeCallback;
 
-        m_IntermediateRenderTarget = NEW RenderTarget(m_Window->getContext());
+        m_IntermediateRenderTarget = HENew(RenderTarget)(m_Window->getContext());
     }
     uint32 width(m_Viewport.width), 
         height(m_Viewport.height);
@@ -165,7 +165,7 @@ void View::init( const CameraSettings& cameraSettings, const bool forceDisablePo
     });
     if (postEnabled)
     {
-        m_PostProcesser = NEW PostProcesser();
+        m_PostProcesser = HENew(PostProcesser)();
         m_PostProcesser->init(this, outputRT, m_IntermediateRenderTarget);
     }
     m_PostPostRenderPlugins.forEach([this, outputRT](IRenderer* renderer)

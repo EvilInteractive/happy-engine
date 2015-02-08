@@ -90,7 +90,7 @@ namespace gfx {
 //
 //    SlotPContainer<const IInstancible*> m_Instances;
 //
-//    boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
+//    std::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
 //
 //    he::PrimitiveList<const IInstanceFiller*> m_ManualCpuBufferFillers;
 //

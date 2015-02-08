@@ -37,42 +37,42 @@ EntityComponent* EngineEntityComponentFactory::createEntityComponent( const he::
     EntityComponent* result(nullptr);
     if (type == HEFS::strCharacterPhysicsComponent)
     {
-        result = NEW CharacterPhysicsComponent();
+        result = HENew(CharacterPhysicsComponent)();
     }
     else if (type == HEFS::strDynamicPhysicsComponent)
     {
-        result = NEW DynamicPhysicsComponent();
+        result = HENew(DynamicPhysicsComponent)();
     }
     else if (type == HEFS::strPointLightComponent)
     {
-        result = NEW PointLightComponent();
+        result = HENew(PointLightComponent)();
     }
     else if (type == HEFS::strSpotLightComponent)
     {
-        result = NEW SpotLightComponent();
+        result = HENew(SpotLightComponent)();
     }
     else if (type == HEFS::strModelComponent)
     {
-        result = NEW ModelComponent();
+        result = HENew(ModelComponent)();
     }
     else if (type == HEFS::strPickingComponent)
     {
-        result = NEW PickingComponent();
+        result = HENew(PickingComponent)();
     }
     else if (type == HEFS::strStaticPhysicsComponent)
     {
-        result = NEW StaticPhysicsComponent();
+        result = HENew(StaticPhysicsComponent)();
     }
     else if (type == HEFS::strTriggerComponent)
     {
-        result = NEW TriggerComponent();
+        result = HENew(TriggerComponent)();
     }
     return result;
 }
 
 #define FILL_COMPONENT_DESC(list, T) \
 {\
-    EntityComponentDesc* desc(NEW EntityComponentDesc()); \
+    EntityComponentDesc* desc(HENew(EntityComponentDesc)()); \
     T::fillEntityComponentDesc(*desc); \
     list.add(desc);\
 }

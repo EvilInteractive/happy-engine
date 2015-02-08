@@ -50,10 +50,10 @@ MainGame::~MainGame()
 {
     std::for_each(m_Entities.cbegin(), m_Entities.cend(), [](he::game::Entity* entity)
     {
-        delete entity;
+        HEDelete(entity);
     });
     CAMERAMANAGER->deleteAllCameras();
-    delete m_pFPSGraph;
+    HEDelete(m_pFPSGraph);
 }
 
 void MainGame::init()
@@ -65,11 +65,11 @@ void MainGame::init()
 
 void MainGame::load()
 {
-    CAMERAMANAGER->addCamera("default", NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    CAMERAMANAGER->addCamera("default", NEW(FlyCamera)(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
     CAMERAMANAGER->getActiveCamera()->setLens(GRAPHICS->getScreenHeight() / (float)GRAPHICS->getScreenWidth(), he::piOverFour, 1.0f, 1000.0f);
 
-    m_pFPSGraph = NEW he::tools::FPSGraph();
+    m_pFPSGraph = NEW(he::tools::FPSGraph)();
     m_pFPSGraph->setType(1);
 
     GRAPHICS->getLightManager()->setDirectionalLight(
@@ -87,8 +87,8 @@ void MainGame::load()
         he::vec3 center;
         std::for_each(model->cbegin(), model->cend(), [&matRef, &entities, &maxRadius, &center](he::gfx::ModelMesh* mesh)
         {
-            he::game::Entity* ent = NEW he::game::Entity();
-            he::game::ModelComponent* modelComp(NEW he::game::ModelComponent());
+            he::game::Entity* ent = NEW(he::game::Entity)();
+            he::game::ModelComponent* modelComp(NEW(he::game::ModelComponent)());
             modelComp->setMaterial(matRef);
             modelComp->setModelMesh(mesh->getHandle());
             ent->addComponent(modelComp);
@@ -104,8 +104,8 @@ void MainGame::load()
 
         CAMERAMANAGER->getActiveCamera()->lookAt(center + he::vec3(-1, 1, 1) * maxRadius*1.5f, center, he::vec3::up);
 
-        he::game::Entity* box = NEW he::game::Entity();
-        he::game::ModelComponent* boxModelComp(NEW he::game::ModelComponent());
+        he::game::Entity* box = NEW(he::game::Entity)();
+        he::game::ModelComponent* boxModelComp(NEW(he::game::ModelComponent)());
         boxModelComp->setMaterial(matRef);
         he::gfx::ModelMesh* boxMesh(CONTENT->asyncLoadModelMesh("openbox.binobj", "M_Box", matRef.getCompatibleVertexLayout()));
         boxModelComp->setModelMesh(boxMesh->getHandle());

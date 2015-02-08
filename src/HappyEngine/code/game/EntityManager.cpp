@@ -52,7 +52,7 @@ void EntityManager::destroy()
     m_ComponentFactory.destroyAll();
     m_FactoryList.forEach([](IEntityComponentFactory* const factory)
     {
-        delete factory;
+        HEDelete(factory);
     });
 }
 

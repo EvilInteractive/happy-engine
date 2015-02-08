@@ -67,7 +67,7 @@ namespace tools {
 
 #pragma warning(disable:4355) // use of this in init list
 MaterialGeneratorGraph::MaterialGeneratorGraph()
-    : m_Generator(NEW ct::ShaderGenerator)
+    : m_Generator(NEW(ct::ShaderGenerator))
     , m_Renderer(nullptr)
     , m_Window(nullptr)
     , m_View(nullptr)
@@ -81,7 +81,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_ConnectNodeCommand(this)
     , m_CreateCommand(this)
     , m_DeleteCommand(this)
-    , m_GhostConnection(NEW gui::BezierShape2D)
+    , m_GhostConnection(NEW(gui::BezierShape2D))
     , m_WebViewGui(nullptr)
     , m_WebListener(nullptr)
 {
@@ -129,8 +129,8 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
     m_NodeList.clear();
     m_Renderer->detachFromRender(this);
 
-    delete m_Renderer;
-    delete m_Generator;
+    HEDelete(m_Renderer);
+    HEDelete(m_Generator);
     if (m_View != nullptr)
     {
         GRAPHICS->removeView(m_View);
@@ -144,16 +144,16 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
 
     m_ErrorPool.forEach([](gui::Text* const text)
     {
-        delete text;
+        HEDelete(text);
     });
     m_ErrorPool.clear();
     m_VisibleErrors.forEach([](const ErrorMessage& msg)
     {
-        delete msg.m_Text;
+        HEDelete(msg.m_Text);
     });
     m_VisibleErrors.clear();
 
-    delete m_GhostConnection;
+    HEDelete(m_GhostConnection);
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_Background);
     cr->removeSprite(m_ErrorBackgroundSprite);
@@ -187,7 +187,7 @@ void MaterialGeneratorGraph::init()
     m_Window->LostFocus += windowFocusLostCallback;
 
     m_View->setWindow(m_Window);
-    m_Renderer = NEW gfx::Renderer2D();
+    m_Renderer = NEW(gfx::Renderer2D)();
     m_View->addRenderPlugin(m_Renderer);
 
     gfx::CameraSettings cameraSettings;
@@ -728,7 +728,7 @@ void MaterialGeneratorGraph::increaseErrorPool(const size_t extraSize)
     m_ErrorPool.reserve(m_ErrorPool.size() + extraSize);
     for (uint8 i(0); i < 5; ++i)
     {
-        gui::Text* text(NEW gui::Text);
+        gui::Text* text(NEW(gui::Text));
         text->setHorizontalAlignment(gui::Text::HAlignment_Left);
         text->setVerticalAlignment(gui::Text::VAlignment_Top);
         text->setFont(m_ErrorFont);

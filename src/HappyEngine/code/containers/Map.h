@@ -22,24 +22,90 @@
 #define _HE_Map_H_
 #pragma once
 
-#include <unordered_map>
-
 namespace he {
+    
+template<typename T, bool U = std::is_scalar<T>::value>
+struct HashSimple;
 
-template<typename KEY, typename VALUE, typename HASH = std::hash<KEY>>
-class Map : public std::unordered_map<KEY, VALUE, HASH>
+template<typename T>
+struct HashSimple<T, true>
+{
+    static_assert(sizeof(T) <= sizeof(size_t), "Do not use HashSimple for this simple type, it is too large!");
+    HE_FORCEINLINE static size_t hash(const T& key)
+    {
+        return (size_t)(key); // keep c-style cast, needs to traverse all the cast types
+    }
+};
+
+template<typename T>
+struct HashSimple<T, false>
+{
+    HE_FORCEINLINE static size_t hash(const T& key)
+    {
+        return key.hash();
+    }
+};
+
+template<>
+struct HashSimple<he::String, false>
+{
+    HE_FORCEINLINE static size_t hash(const he::String& key)
+    {
+        return he::hash(0, key);
+    }
+};
+
+template<typename T, bool U = std::is_scalar<T>::value>
+struct CompareSimple;
+
+template<typename T>
+struct CompareSimple<T, true>
+{
+    HE_FORCEINLINE static int compare(const T& a, const T& b)
+    {
+        return b - a;
+    }
+};
+
+template<typename T>
+struct CompareSimple<T, false>
+{
+    HE_FORCEINLINE static int compare(const T& a, const T& b)
+    {
+        return a < b ? -1 : (a == b ? 0 : 1);
+    }
+};
+
+template<typename TKey, typename TValue, typename THash = HashSimple<TKey>, typename TCompare = CompareSimple<TKey>>
+class Map
 {
 public:
-    Map() : std::unordered_map<KEY, VALUE, HASH>() {}
-    // do nothing special in here!
+    explicit Map(const size_t bucketCount = 37);
+    ~Map();
 
+    Map(Map&& other);
+    Map& operator=(Map&& other);
 
-    inline void forEach(const std::function<void(const std::pair<const KEY, VALUE>&)>& func) const;
-    inline void forEach(const std::function<void(std::pair<const KEY, VALUE>&)>& func);
+    inline void insert(const TKey& key, TValue&& value);
+
+    inline bool remove(const TKey& key);
+    inline void clear();
+
+    inline TValue* find(const TKey& key) const;
+    inline bool contains(const TKey& key) const;
+
+    inline TValue& operator[](const TKey& key);
+
+    inline void forEach(const std::function<void(const TKey&, const TValue&)>& func) const;
+    inline void forEach(const std::function<void(const TKey&, TValue&)>& func);
 
 private:
     Map(const Map&);
-    Map& operator=(Map&);
+    Map& operator=(const Map&);
+
+    struct TBucket;
+    TBucket* m_Buckets;
+    size_t m_BucketCount;
 };
 
 } //end namespace

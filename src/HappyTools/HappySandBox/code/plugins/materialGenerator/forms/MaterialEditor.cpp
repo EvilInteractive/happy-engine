@@ -12,7 +12,7 @@
 namespace hs {
 
 MaterialEditor::MaterialEditor() :
-    m_UI(NEW Ui::MaterialEditor())
+    m_UI(HENew(Ui::MaterialEditor)())
 {
     m_UI->setupUi(this);
 
@@ -37,7 +37,7 @@ MaterialEditor::MaterialEditor() :
     he::FixedString* listItems[listCount] = { rootItems, constItems, mathItems, vectorItems };
     for (size_t i(0); i < listCount; ++i)
     {
-        QTreeWidgetItem* rootNodes(NEW QTreeWidgetItem());
+        QTreeWidgetItem* rootNodes(HENew(QTreeWidgetItem)());
         rootNodes->setData(0, Qt::DisplayRole, names[i]);
         rootNodes->setData(0, Qt::UserRole, he::HEFS::str.c_str());
 
@@ -45,7 +45,7 @@ MaterialEditor::MaterialEditor() :
         const size_t itemCount(listItemCount[i]);
         for (size_t j(0); j < itemCount; ++j)
         {
-            QTreeWidgetItem* sub(NEW QTreeWidgetItem());
+            QTreeWidgetItem* sub(HENew(QTreeWidgetItem)());
             sub->setData(0, Qt::DisplayRole, items[j].c_str());
             sub->setData(0, Qt::UserRole, items[j].c_str());
             rootNodes->addChild(sub);
@@ -60,9 +60,9 @@ MaterialEditor::~MaterialEditor()
     MaterialGraph* graph(nullptr);
     while (graph = he::checked_cast<MaterialGraph*>(m_UI->tabWidget->widget(index++)))
     {
-        delete graph;
+        HEDelete(graph);
     }
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 bool MaterialEditor::isOpen()
@@ -83,7 +83,7 @@ void MaterialEditor::bringToFront()
 
 void MaterialEditor::createNewGraph()
 {
-    MaterialGraph* newTab(NEW MaterialGraph(this));
+    MaterialGraph* newTab(HENew(MaterialGraph)(this));
     newTab->init(this);
     m_UI->tabWidget->addTab(newTab, "*New*");
 }
@@ -104,7 +104,7 @@ void MaterialEditor::tabCloseRequested( const int tab )
     if (closeResult != 2)
     {
         m_UI->tabWidget->removeTab(tab);
-        delete graph;
+        HEDelete(graph);
     }
 }
 

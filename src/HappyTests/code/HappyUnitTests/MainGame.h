@@ -38,6 +38,7 @@ public:
 
     void stricmpTest();
     void listUnitTest();
+    void mapUnitTest();
     void guidUnitTest();
     void mat33UnitTest();
     void jsonUnitTest();

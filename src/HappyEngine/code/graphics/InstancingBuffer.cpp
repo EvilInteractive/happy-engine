@@ -28,7 +28,7 @@ namespace details {
 InstancingBuffer::InstancingBuffer(uint32 itemSize, uint32 maxItems): 
             m_Size(itemSize * maxItems), m_Count(0), m_ItemSize(itemSize)
 {
-    m_Buffer = static_cast<char*>(he_malloc(m_Size));
+    m_Buffer = static_cast<char*>(he_malloc("InstancingBuffer::m_Buffer", m_Size));
     m_End = m_Buffer;
 }
 
@@ -46,7 +46,7 @@ InstancingBuffer& InstancingBuffer::operator=( const InstancingBuffer& other )
     m_ItemSize = other.m_ItemSize;
     m_Count = other.m_Count;
 
-    m_Buffer = static_cast<char*>(he_malloc(m_Size));
+    m_Buffer = static_cast<char*>(he_malloc("InstancingBuffer::m_Buffer", m_Size));
     m_End = m_Buffer;
 
     return *this;
@@ -63,7 +63,7 @@ void InstancingBuffer::resize( uint32 newSize )
 {
     if (m_Size != newSize)
     {
-        char* newBuffer(static_cast<char*>(he_realloc(m_Buffer, newSize)));
+        char* newBuffer(static_cast<char*>(he_realloc("InstancingBuffer::m_Buffer", m_Buffer, newSize)));
         HE_ASSERT(newBuffer != nullptr, "realloc failed - out of memory?");
         if (newBuffer != nullptr)
         {

@@ -51,7 +51,7 @@ class GlobalStringTable : public Singleton<GlobalStringTable>
         }
     };
 
-    typedef std::unordered_set<const char*, HeStringHash, HeStringComp> Map;
+    typedef std::unordered_set<const char*, HeStringHash, HeStringComp, StlAllocater<const char*>> Map;
 public:
     GlobalStringTable();
     virtual ~GlobalStringTable();

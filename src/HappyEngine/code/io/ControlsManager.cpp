@@ -28,7 +28,7 @@ namespace he {
 namespace io {
 
 ControlsManager::ControlsManager()
-    : m_OculusRiftBinding(NEW OculusRiftBinding())
+    : m_OculusRiftBinding(HENew(OculusRiftBinding)())
     , m_Locked(false)
     , m_LockedObject(nullptr)
 {
@@ -38,31 +38,31 @@ ControlsManager::ControlsManager()
 ControlsManager::~ControlsManager()
 {
     m_OculusRiftBinding->shutdown();
-    delete m_OculusRiftBinding;
+    HEDelete(m_OculusRiftBinding);
 }
 
 void ControlsManager::tick()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    m_Keyboard.forEach([](const std::pair<ObjectHandle, IKeyboard*>& pair)
+    m_Keyboard.forEach([](const ObjectHandle& /*key*/, IKeyboard* value)
     {
-        pair.second->tick();
+        value->tick();
     });
-    m_Mouse.forEach([](const std::pair<ObjectHandle, IMouse*>& pair)
+    m_Mouse.forEach([](const ObjectHandle& /*key*/, IMouse* value)
     {
-        pair.second->tick();
+        value->tick();
     });
 }
 
 IKeyboard* ControlsManager::getKeyboard(const ObjectHandle window) const
 {
-    TKeyboardMap::const_iterator it(m_Keyboard.find(window));
-    return it != m_Keyboard.cend()? it->second : nullptr;
+    IKeyboard** it = m_Keyboard.find(window);
+    return it? *it : nullptr;
 }
 IMouse* ControlsManager::getMouse(const ObjectHandle window) const
 {
-    TMouseMap::const_iterator it(m_Mouse.find(window));
-    return it != m_Mouse.cend()? it->second : nullptr;
+    IMouse** it = m_Mouse.find(window);
+    return it? *it : nullptr;
 }
 
 bool ControlsManager::getFocus(void* object)
@@ -112,17 +112,17 @@ void ControlsManager::registerInputForWindow( const ObjectHandle window, IKeyboa
 
 void ControlsManager::unregisterInputForWindow( const ObjectHandle window )
 {
-    TKeyboardMap::iterator keyIt(m_Keyboard.find(window));
-    if (keyIt != m_Keyboard.end())
+    IKeyboard** keyIt = m_Keyboard.find(window);
+    if (keyIt)
     {
-        delete (*keyIt).second;
-        m_Keyboard.erase(keyIt);
+        HEDelete(*keyIt);
+        m_Keyboard.remove(window);
     }
-    TMouseMap::iterator mouseIt(m_Mouse.find(window));
-    if (mouseIt != m_Mouse.end())
+    IMouse** mouseIt = m_Mouse.find(window);
+    if (mouseIt)
     {
-        delete (*mouseIt).second;
-        m_Mouse.erase(mouseIt);
+        HEDelete(*mouseIt);
+        m_Mouse.remove(window);
     }
 }
 

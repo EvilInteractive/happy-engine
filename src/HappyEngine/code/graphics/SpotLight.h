@@ -25,13 +25,12 @@
 #include "Drawable.h"
 #include "Light.h"
 #include "CameraPerspective.h"
-#include "Object3D.h"
 
 namespace he {
 namespace gfx {
 class Texture2D;
 
-class SpotLight : public Object3D, public Light
+class SpotLight : public Light, public Object3D
 {
 private:
     float m_Multiplier;

@@ -30,7 +30,11 @@
 //////////////////////////////////////////////////////////////////////////
 #ifdef HE_DEBUG
     #ifdef _MSC_VER
-        #define he_checkmem() _ASSERT_EXPR(_CrtCheckMemory() == TRUE, _CRT_WIDE("Heap check failed! Memcorruption detected"))
+        #define he_checkmem()  \
+            { \
+                _ASSERT_EXPR(_CrtCheckMemory() == TRUE, _CRT_WIDE("Heap check failed! Memcorruption detected")); \
+                if (he::gMemMan) he::gMemMan->checkMem(); \
+            }
     #else
         #define he_checkmem()
     #endif
@@ -39,56 +43,51 @@
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-///    malloc
+///    memsize
 //////////////////////////////////////////////////////////////////////////
+#define he_memsize(mem) he::gMemMan->memsize(mem)
+
 #ifdef HE_DEBUG
-    #define he_malloc(size) gMemMan->alloc(size, __FILE__, __LINE__)
+    #define he_malloc(name, size) he::gMemMan->alloc(size, name, __FILE__, __LINE__)
 #else
-    #define he_malloc(size) gMemMan->alloc(size)
+    #define he_malloc(name, size) he::gMemMan->alloc(size)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 ///    aligned malloc
 //////////////////////////////////////////////////////////////////////////
 #ifdef HE_DEBUG
-    #define he_aligned_malloc(size, align) gMemMan->allocAligned(size, align, __FILE__, __LINE__)
+    #define he_aligned_malloc(name, size, align) he::gMemMan->allocAligned(size, align, name, __FILE__, __LINE__)
 #else
-    #define he_aligned_malloc(size, align) gMemMan->allocAligned(size, align)
+    #define he_aligned_malloc(name, size, align) he::gMemMan->allocAligned(size, align)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 ///    free
 //////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
-    #define he_free(mem) gMemMan->free(mem, __FILE__, __LINE__)
-#else
-    #define he_free(mem) gMemMan->free(mem)
-#endif
+#define he_free(mem) he::gMemMan->free(mem)
 
 //////////////////////////////////////////////////////////////////////////
 ///    aligned free
 //////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
-    #define he_aligned_free(mem) gMemMan->freeAligned(mem, __FILE__, __LINE__)
-#else
-    #define he_aligned_free(mem) gMemMan->freeAligned(mem)
-#endif
+#define he_aligned_free(mem) he::gMemMan->freeAligned(mem)
+
 //////////////////////////////////////////////////////////////////////////
 ///    realloc
 //////////////////////////////////////////////////////////////////////////
 #ifdef HE_DEBUG
-    #define he_realloc(mem, newsize) gMemMan->realloc(mem, newsize, __FILE__, __LINE__)
+    #define he_realloc(name, mem, newsize) he::gMemMan->realloc(mem, newsize, name, __FILE__, __LINE__)
 #else
-    #define he_realloc(mem, newsize) gMemMan->realloc(mem, newsize)
+    #define he_realloc(name, mem, newsize) he::gMemMan->realloc(mem, newsize)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 ///    aligned realloc
 //////////////////////////////////////////////////////////////////////////
 #ifdef HE_DEBUG
-    #define he_aligned_realloc(mem, newsize, alignment) gMemMan->reallocAligned(mem, newsize, alignment, __FILE__, __LINE__)
+    #define he_aligned_realloc(name, mem, newsize, alignment) he::gMemMan->reallocAligned(mem, newsize, alignment, name, __FILE__, __LINE__)
 #else
-    #define he_aligned_realloc(mem, newsize, alignment) gMemMan->reallocAligned(mem, newsize, alignment)
+    #define he_aligned_realloc(name, mem, newsize, alignment) he::gMemMan->reallocAligned(mem, newsize, alignment)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,11 +98,11 @@
 //////////////////////////////////////////////////////////////////////////
 ///    memcpy
 //////////////////////////////////////////////////////////////////////////
-#define he_memcpy(dest, src, size) memcpy(dest, src, size)
+#define he_memcpy(dest, src, size) ::memcpy(dest, src, size)
 
 //////////////////////////////////////////////////////////////////////////
 ///    memmove
 //////////////////////////////////////////////////////////////////////////
-#define he_memmove(dest, src, size) memmove(dest, src, size)
+#define he_memmove(dest, src, size) ::memmove(dest, src, size)
 
 #endif

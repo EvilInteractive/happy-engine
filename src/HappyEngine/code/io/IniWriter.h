@@ -36,7 +36,7 @@ namespace io {
 class IniWriter
 {
 private:
-    typedef std::map<std::wstring,std::vector<std::pair<std::wstring, std::wstring>>> IniWriteData;
+    typedef he::Map<he::String,he::ObjectList<std::pair<he::String, he::String>>> IniWriteData;
 
 public:
     IniWriter();
@@ -45,22 +45,22 @@ public:
     void open(const he::String& path);
     bool close();
 
-    void writeBool(const std::wstring& root, const std::wstring& node, bool value);
-    void writeInt(const std::wstring& root, const std::wstring& node, int value);
-    void writeFloat(const std::wstring& root, const std::wstring& node, float value);
+    void writeBool(const he::String& root, const he::String& node, bool value);
+    void writeInt(const he::String& root, const he::String& node, int value);
+    void writeFloat(const he::String& root, const he::String& node, float value);
 
-    void writeVector2(const std::wstring& root, const std::wstring& node, const vec2& value);
-    void writeVector3(const std::wstring& root, const std::wstring& node, const vec3& value);
-    void writeVector4(const std::wstring& root, const std::wstring& node, const vec4& value);
+    void writeVector2(const he::String& root, const he::String& node, const vec2& value);
+    void writeVector3(const he::String& root, const he::String& node, const vec3& value);
+    void writeVector4(const he::String& root, const he::String& node, const vec4& value);
 
-    void writeString(const std::wstring& root, const std::wstring& node, const he::String& value);
-    void writeWString(const std::wstring& root, const std::wstring& node, const std::wstring& value);
+    void writeString(const he::String& root, const he::String& node, const he::String& value);
 
 private:
     IniWriteData m_Data;
     he::String m_Path;
+    he::StringStream m_TempStream;
 
-    void writeRaw(const std::wstring& root, const std::wstring& node, const std::wstring& value);
+    void writeRaw(const he::String& root, const he::String& node, const he::String& value);
 
     //Disable default copy constructor and default assignment operator
     IniWriter(const IniWriter&);

@@ -27,10 +27,10 @@
 namespace he {
 namespace gfx {
 
-VertexLayout Mesh2D::s_VertexLayout;
+VertexLayout* Mesh2D::s_VertexLayout(nullptr);
 
 Mesh2D::Mesh2D(bool staticDraw) :
-    m_Polygon(NEW Polygon()),
+    m_Polygon(HENew(Polygon)()),
     m_StaticDraw(staticDraw),
     m_HasBuffer(false),
     m_VertexVboID(0),
@@ -46,7 +46,7 @@ Mesh2D::~Mesh2D()
     glDeleteBuffers(1, &m_VertexVboID);
     glDeleteBuffers(1, &m_IndexVboID);
 
-    delete m_Polygon;
+    HEDelete(m_Polygon);
 }
 
 /* GENERAL */
@@ -124,12 +124,13 @@ void Mesh2D::draw()
 
 void Mesh2D::sdmInit()
 {
-    s_VertexLayout.addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
+    s_VertexLayout = HENew(VertexLayout)();
+    s_VertexLayout->addElement(VertexElement(eShaderAttribute_Position, eShaderAttributeType_Float, eShaderAttributeTypeComponents_2, 0));
 }
 
 void Mesh2D::sdmDestroy()
 {
-
+    HEDelete(s_VertexLayout);
 }
 
 

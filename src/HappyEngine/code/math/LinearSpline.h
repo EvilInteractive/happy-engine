@@ -36,7 +36,7 @@ public:
     {}
     virtual ISpline* clone() const
     {
-        return NEW LinearSpline(*this);
+        return HENew(LinearSpline)(*this);
     }
     virtual ~LinearSpline() {}
 

@@ -62,12 +62,12 @@ AutoExposure::~AutoExposure()
 {
     m_LumTexture[0]->release();
     m_LumTexture[1]->release();
-    delete m_RenderTarget;
+    HEDelete(m_RenderTarget);
     if (m_IsInitialized && GAME != nullptr)
         GAME->removeFromTickList(this);
     if (m_Quad != nullptr)
         m_Quad->release();
-    delete m_LumMaterial;
+    HEDelete(m_LumMaterial);
 }
 
 void AutoExposure::init(View* view, const PostSettings::HdrSettings& settings)
@@ -84,7 +84,7 @@ void AutoExposure::init(View* view, const PostSettings::HdrSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
     //////////////////////////////////////////////////////////////////////////
-    m_RenderTarget = NEW RenderTarget(view->getWindow()->getContext());
+    m_RenderTarget = HENew(RenderTarget)(view->getWindow()->getContext());
     m_RenderTarget->setSize(1, 1);
     m_RenderTarget->addTextureTarget(m_LumTexture[0]);
     m_RenderTarget->init();

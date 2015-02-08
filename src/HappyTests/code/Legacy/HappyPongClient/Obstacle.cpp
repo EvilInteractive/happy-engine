@@ -36,7 +36,7 @@ Obstacle::Obstacle():
     m_Position(0, 0, 0), 
     m_Radius(8.0f)
 {
-    he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
+    he::ge::ModelComponent* model(NEW(he::ge::ModelComponent)());
     model->setModelMeshAndMaterial("pong/obstacle.material", "pong/obstacles.binobj");
     model->setLocalScale(he::vec3(100, 100, 100));
     addComponent(model);

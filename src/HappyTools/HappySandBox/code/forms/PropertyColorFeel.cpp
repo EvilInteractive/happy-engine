@@ -12,7 +12,7 @@ namespace hs {
 
 PropertyColorFeel::PropertyColorFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::PropertyColorFeel)
+    m_UI(HENew(Ui::PropertyColorFeel))
 {
     m_UI->setupUi(this);
     m_UI->m_ColorBox->installEventFilter(this);
@@ -20,7 +20,7 @@ PropertyColorFeel::PropertyColorFeel(QWidget *parent) :
 
 PropertyColorFeel::~PropertyColorFeel()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void PropertyColorFeel::setValue( const he::String& value )

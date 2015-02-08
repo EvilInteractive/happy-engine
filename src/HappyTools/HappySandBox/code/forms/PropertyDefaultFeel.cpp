@@ -6,7 +6,7 @@ namespace hs {
 
 PropertyDefaultFeel::PropertyDefaultFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::PropertyDefaultFeel)
+    m_UI(HENew(Ui::PropertyDefaultFeel))
 {
     m_UI->setupUi(this);
 
@@ -16,7 +16,7 @@ PropertyDefaultFeel::PropertyDefaultFeel(QWidget *parent) :
 
 PropertyDefaultFeel::~PropertyDefaultFeel()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void PropertyDefaultFeel::setValue( const he::String& value )

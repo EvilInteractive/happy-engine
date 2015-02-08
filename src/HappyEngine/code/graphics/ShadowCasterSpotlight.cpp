@@ -46,7 +46,7 @@ ShadowCasterSpotLight::ShadowCasterSpotLight()
 
 ShadowCasterSpotLight::~ShadowCasterSpotLight()
 {
-    delete m_RenderTarget;
+    HEDelete(m_RenderTarget);
 }
 
 void ShadowCasterSpotLight::init(ShadowResolution shadowSize)
@@ -55,7 +55,7 @@ void ShadowCasterSpotLight::init(ShadowResolution shadowSize)
 
     he::gfx::GraphicsEngine* const gfxEngine(GRAPHICS);
 
-    m_RenderTarget = NEW RenderTarget(gfxEngine->getSharedContext());
+    m_RenderTarget = HENew(RenderTarget)(gfxEngine->getSharedContext());
     const uint16 size(gfxEngine->getShadowMapSize(shadowSize));
     m_RenderTarget->setSize(size, size);
     m_RenderTarget->setDepthTarget();

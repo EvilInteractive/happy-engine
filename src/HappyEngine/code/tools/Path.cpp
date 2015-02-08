@@ -21,41 +21,62 @@
 
 #include "Path.h"
 
-#include <boost/filesystem.hpp>
 #include <SDL2/SDL_filesystem.h>
+
+#include <sys/stat.h>
+#include <direct.h>
+
+#ifdef WIN32
+#include <FileAPI.h>
+#endif
 
 namespace he {
 
-Path Path::s_BinPath("");
-Path Path::s_DataPath("");
-Path Path::s_UserDataFolder("");
+Path* Path::s_BinPath(nullptr);
+Path* Path::s_DataPath(nullptr);
+Path* Path::s_UserDataFolder(nullptr);
 
 void Path::init( const int argc, const char* const * const argv )
 {
     char* sdlBasePath(SDL_GetBasePath());
-    s_BinPath = Path(sdlBasePath);
+    s_BinPath = HENew(Path)(sdlBasePath);
     SDL_free(sdlBasePath);
 
     const char* const dataPath(getProgramArgumentValue(argc, argv, "dataPath"));
     if (dataPath == nullptr)
     {
-        s_DataPath = s_BinPath;
-        size_t index(s_DataPath.m_Path.rfind("/bin/"));
+        s_DataPath = HENew(Path)(*s_BinPath);
+        size_t index(s_DataPath->m_Path.rfind("/bin/"));
         if (index != he::String::npos)
         {
-            s_DataPath.m_Path = s_DataPath.m_Path.substr(0, index);
-            s_DataPath.ensureTrailingSlash();
+            s_DataPath->m_Path = s_DataPath->m_Path.substr(0, index);
+            s_DataPath->ensureTrailingSlash();
         }
-        s_DataPath = s_DataPath.append("data");
+        *s_DataPath = s_DataPath->append("data");
     }
     else
     {
-        s_DataPath = Path(dataPath);
+        s_DataPath = HENew(Path)(dataPath);
     }
 
     char* sdlUserPath(SDL_GetPrefPath("EvilInteractive", "Game"));
-    s_UserDataFolder = Path(sdlUserPath);
+    s_UserDataFolder = HENew(Path)(sdlUserPath);
     SDL_free(sdlUserPath);
+}
+
+void Path::destroy()
+{
+    HEDelete(s_BinPath);
+    s_BinPath = nullptr;
+    HEDelete(s_DataPath);
+    s_DataPath = nullptr;
+    HEDelete(s_UserDataFolder);
+    s_UserDataFolder = nullptr;
+}
+
+Path::Path()
+{
+
 }
 
 Path::Path( const he::String& path ): m_Path(path)
@@ -173,29 +194,68 @@ Path Path::getDirectory() const
         return *this;
 }
 
-bool Path::iterateFiles( const bool recursive, const std::function<void(const Path&)>& func )
+bool Path::iterateFiles( const bool recursive, const std::function<void(const Path&)>& func, const char* filter /*= "*"*/ )
 {
+    HE_ASSERT(isDirectory(), "Path is not a directory! cannot perform iterateFiles!");
+    if (!isDirectory())
+        return false;
+
     bool result(false);
-    boost::filesystem::path boostPath(m_Path.c_str());
-    boost::system::error_code error;
-    if (boost::filesystem::exists(boostPath, error) && boost::filesystem::is_directory(boostPath, error))
+#ifdef WIN32
+    Path searchPath = append(filter);
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind(FindFirstFileEx(searchPath.str().c_str(), FindExInfoBasic, &findFileData, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE));
+    if (hFind != INVALID_HANDLE_VALUE) 
     {
-        boost::filesystem::directory_iterator endIt;
-        for (boost::filesystem::directory_iterator it(boostPath); it != endIt; ++it)
+        result = true;
+        Path resultPath;
+        do  
         {
-            if (boost::filesystem::is_regular_file(it->status()))
+            resultPath.m_Path = m_Path;
+            resultPath.m_Path += findFileData.cFileName;
+            if ((findFileData.dwFileAttributes &= FILE_ATTRIBUTE_DIRECTORY) == 0)
             {
-                Path path(it->path().string().c_str());
-                func(path);
+                if (recursive)
+                {
+                    resultPath.ensureTrailingSlash();
+                    resultPath.iterateFiles(recursive, func, filter);
+                }
             }
-            else if (boost::filesystem::is_directory(it->status()))
+            else
             {
-                Path path(it->path().string().c_str());
-                path.iterateFiles(recursive, func);
+                func(resultPath);
+            }
+        } while (FindNextFile(hFind, &findFileData));
+        FindClose(hFind);
+    }
+#else
+    DIR* dirp = opendir(m_Path.c_str());
+    if (dirp)
+    {
+        result = true;
+
+        struct dirent* dp;
+        Path resultPath;
+        while ((dp = readdir(dirp)) != NULL)
+        {
+            resultPath.m_Path = m_Path;
+            resultPath.m_Path += dp->d_name;
+            if (dp->d_type == DT_DIR)
+            {
+                if (recursive)
+                {
+                    resultPath.ensureTrailingSlash();
+                    resultPath.iterateFiles(recursive, func, filter);
+                }
+            }
+            else
+            {
+                func(resultPath);
             }
         }
-        result = true;
+        closedir(dirp);
     }
+#endif
     return result;
 }
 
@@ -211,11 +271,34 @@ bool Path::isDirectory() const
 
 bool Path::exists() const
 {
-    boost::filesystem::path boostPath(m_Path.c_str());
-    boost::system::error_code error;
-    return boost::filesystem::exists(boostPath, error);
+    struct stat buffer;
+    return stat(m_Path.c_str(), &buffer) == 0;
 }
-    
+
+bool Path::createFolderStructure() const
+{
+    if (isDirectory() && exists())
+        return true;
+    he::String path(m_Path);
+    const char* dir(path.c_str());
+    char* next(&path[0]);
+    struct stat buffer;
+    while ((next = strstr(next+1, "/")) != nullptr)
+    {
+        *next = '\0';
+        if (stat(dir, &buffer) != 0)
+        {
+            if (mkdir(dir) != 0)
+            {
+                LOG(LogType_ProgrammerAssert, "Could not create directory %s", dir);
+                return false;
+            }
+        }
+        *next = '/';
+    }    
+    return true;
+}
+
 bool Path::operator==(const Path& other) const
 {
     return m_Path == other.m_Path;
@@ -230,5 +313,6 @@ int Path::operator<(const Path& other) const
 {
     return m_Path < other.m_Path;
 }
-    
+
+
 } //end namespace

@@ -6,7 +6,7 @@ namespace hs {
 
 PropertyDropDownFeel::PropertyDropDownFeel(QWidget *parent) :
     QWidget(parent),
-    m_UI(NEW Ui::PropertyDropDownFeel),
+    m_UI(HENew(Ui::PropertyDropDownFeel)),
     m_HoldEvents(false)
 {
     m_UI->setupUi(this);
@@ -15,7 +15,7 @@ PropertyDropDownFeel::PropertyDropDownFeel(QWidget *parent) :
 
 PropertyDropDownFeel::~PropertyDropDownFeel()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void PropertyDropDownFeel::setValue(const he::String& value)

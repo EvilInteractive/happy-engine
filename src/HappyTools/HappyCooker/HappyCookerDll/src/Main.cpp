@@ -20,6 +20,7 @@
 
 #include "HappyCookerPCH.h"
 
+#include "HappyNewOverride.h"
 #include "Main.h"
 #include "HappyCooker.h"
 

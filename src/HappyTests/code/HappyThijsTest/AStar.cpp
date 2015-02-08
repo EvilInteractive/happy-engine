@@ -35,7 +35,7 @@ AStar::~AStar()
 
 void AStar::init()
 {
-	m_Grid = NEW ht::Grid(10, 10);
+	m_Grid = HENew(ht::Grid)(10, 10);
 	m_Grid->init();
 
 	SetStart(1,1);

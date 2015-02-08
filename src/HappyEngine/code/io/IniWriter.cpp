@@ -44,23 +44,20 @@ void IniWriter::open(const he::String& path)
 }
 bool IniWriter::close()
 {
-    using namespace std;
-    wofstream file(m_Path.c_str());
+    std::ofstream file(m_Path.c_str());
     m_Path = "";
 
     if (file.is_open())
     {
-        for_each(m_Data.cbegin(), m_Data.cend(), [&file](const pair<wstring, vector<pair<wstring, wstring>>>& root)
+        m_Data.forEach([&file](const he::String& key, he::ObjectList<std::pair<he::String, he::String>>& root)
         {
-            using namespace std;
-            file << L"[" << root.first << L"]" << L"\n";
+            file << "[" << key << "]" << "\n";
 
-            wofstream& innerFile(file); //nested lambda loses scope -> workaround
-            for_each(root.second.cbegin(), root.second.cend(), [&innerFile](const pair<wstring, wstring>& node)
+            root.forEach([&file](const std::pair<he::String, he::String>& node)
             {
-                innerFile << node.first << L" = " << node.second << L"\n";
+                file << node.first << " = " << node.second << "\n";
             });
-            file << L"\n";
+            file << "\n";
         });
         file.close();
         return true;
@@ -71,58 +68,58 @@ bool IniWriter::close()
     }
 }
 
-void IniWriter::writeBool(const std::wstring& root, const std::wstring& node, bool value)
+void IniWriter::writeBool(const he::String& root, const he::String& node, bool value)
 {
     if (value)
-        writeRaw(root, node, L"true");
+        writeRaw(root, node, "true");
     else
-        writeRaw(root, node, L"false");
+        writeRaw(root, node, "false");
 }
-void IniWriter::writeInt(const std::wstring& root, const std::wstring& node, int value)
+void IniWriter::writeInt(const he::String& root, const he::String& node, int value)
 {
-    std::wstringstream stream;
-    stream << value;
-    writeRaw(root, node, stream.str());
+    m_TempStream.clear();
+    m_TempStream.str("");
+    m_TempStream << value;
+    writeRaw(root, node, m_TempStream.str());
 }
-void IniWriter::writeFloat(const std::wstring& root, const std::wstring& node, float value)
+void IniWriter::writeFloat(const he::String& root, const he::String& node, float value)
 {
-    std::wstringstream stream;
-    stream << value;
-    writeRaw(root, node, stream.str());
-}
-
-void IniWriter::writeVector2(const std::wstring& root, const std::wstring& node, const vec2& value)
-{
-    std::wstringstream stream;
-    stream << value.x << L", " << value.y;
-    writeRaw(root, node, stream.str());
-}
-void IniWriter::writeVector3(const std::wstring& root, const std::wstring& node, const vec3& value)
-{
-    std::wstringstream stream;
-    stream << value.x << L", " << value.y << L", " << value.z;
-    writeRaw(root, node, stream.str());
-}
-void IniWriter::writeVector4(const std::wstring& root, const std::wstring& node, const vec4& value)
-{
-    std::wstringstream stream;
-    stream << value.x << L", " << value.y << L", " << value.z << L", " << value.w;
-    writeRaw(root, node, stream.str());
+    m_TempStream.clear();
+    m_TempStream.str("");
+    m_TempStream << value;
+    writeRaw(root, node, m_TempStream.str());
 }
 
-void IniWriter::writeString(const std::wstring& root, const std::wstring& node, const he::String& value)
+void IniWriter::writeVector2(const he::String& root, const he::String& node, const vec2& value)
 {
-    std::wstring wvalue(value.cbegin(), value.cend());
-    writeRaw(root, node, L"\"" + wvalue + L"\"");
+    m_TempStream.clear();
+    m_TempStream.str("");
+    m_TempStream << value.x << ", " << value.y;
+    writeRaw(root, node, m_TempStream.str());
 }
-void IniWriter::writeWString(const std::wstring& root, const std::wstring& node, const std::wstring& value)
+void IniWriter::writeVector3(const he::String& root, const he::String& node, const vec3& value)
 {
-    writeRaw(root, node, L"\"" + value + L"\"");
+    m_TempStream.clear();
+    m_TempStream.str("");
+    m_TempStream << value.x << ", " << value.y << ", " << value.z;
+    writeRaw(root, node, m_TempStream.str());
+}
+void IniWriter::writeVector4(const he::String& root, const he::String& node, const vec4& value)
+{
+    m_TempStream.clear();
+    m_TempStream.str("");
+    m_TempStream << value.x << ", " << value.y << ", " << value.z << ", " << value.w;
+    writeRaw(root, node, m_TempStream.str());
 }
 
-void IniWriter::writeRaw(const std::wstring& root, const std::wstring& node, const std::wstring& value)
+void IniWriter::writeString(const he::String& root, const he::String& node, const he::String& value)
 {
-    m_Data[root].push_back(std::make_pair(node, value));
+    writeRaw(root, node, "\"" + value + "\"");
+}
+
+void IniWriter::writeRaw(const he::String& root, const he::String& node, const he::String& value)
+{
+    m_Data[root].add(std::make_pair(node, value));
 }
 
 } } //end namespace

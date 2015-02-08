@@ -26,8 +26,8 @@ namespace tools {
 
 StopWatch::StopWatch(): 
     m_IsRunning(false), 
-    m_StartTime(boost::chrono::high_resolution_clock::now()),
-    m_StopTime(boost::chrono::high_resolution_clock::now())
+    m_StartTime(std::chrono::high_resolution_clock::now()),
+    m_StopTime(std::chrono::high_resolution_clock::now())
 
 {
 }
@@ -39,27 +39,27 @@ StopWatch::~StopWatch()
 
 void StopWatch::start()
 {
-    m_StartTime = boost::chrono::high_resolution_clock::now();
-    m_StopTime = boost::chrono::high_resolution_clock::now();
+    m_StartTime = std::chrono::high_resolution_clock::now();
+    m_StopTime = std::chrono::high_resolution_clock::now();
     m_IsRunning = true;
 }
 
 void StopWatch::stop()
 {
-    m_StopTime = boost::chrono::high_resolution_clock::now();
+    m_StopTime = std::chrono::high_resolution_clock::now();
     m_IsRunning = false;
 }
 
 float StopWatch::getRunTime() const
 {
-    boost::chrono::high_resolution_clock::time_point endTime(m_StopTime);
+    std::chrono::high_resolution_clock::time_point endTime(m_StopTime);
     if (m_IsRunning == true)
     {
-        endTime = boost::chrono::high_resolution_clock::now();
+        endTime = std::chrono::high_resolution_clock::now();
     }
 
-    boost::chrono::high_resolution_clock::duration elapsedTime(endTime - m_StartTime);
-    return elapsedTime.count() / static_cast<float>(boost::nano::den);
+    std::chrono::duration<float> elapsedTime(endTime - m_StartTime);
+    return elapsedTime.count();
 }
 
 

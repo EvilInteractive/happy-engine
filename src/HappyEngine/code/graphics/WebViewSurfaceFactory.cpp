@@ -42,12 +42,12 @@ WebViewSurfaceFactory::~WebViewSurfaceFactory()
 Awesomium::Surface* WebViewSurfaceFactory::CreateSurface(Awesomium::WebView* /*view*/,
                                                          int width, int height)
 {
-    return NEW WebViewSurface((uint16)width, (uint16)height);
+    return HENew(WebViewSurface)((uint16)width, (uint16)height);
 }
 
 void WebViewSurfaceFactory::DestroySurface(Awesomium::Surface* surface)
 {
-    delete static_cast<WebViewSurface*>(surface);
+    HEDelete(static_cast)<WebViewSurface*>(surface);
 }
 
 }} //end namespace

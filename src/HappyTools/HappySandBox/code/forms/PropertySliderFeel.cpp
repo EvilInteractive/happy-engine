@@ -9,7 +9,7 @@ namespace hs {
 PropertySliderFeel::PropertySliderFeel(QWidget *parent) :
     QWidget(parent),
     m_Decimals(0),
-    m_UI(NEW Ui::PropertySliderFeel)
+    m_UI(HENew(Ui::PropertySliderFeel))
 {
     m_UI->setupUi(this);
 
@@ -21,7 +21,7 @@ PropertySliderFeel::PropertySliderFeel(QWidget *parent) :
 
 PropertySliderFeel::~PropertySliderFeel()
 {
-    delete m_UI;
+    HEDelete(m_UI);
 }
 
 void PropertySliderFeel::setValue(const he::String& value)

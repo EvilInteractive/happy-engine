@@ -39,7 +39,7 @@ namespace ge {
     
 ModelComponent::ModelComponent()
     : m_Parent(nullptr)
-    , m_Drawable(NEW gfx::Drawable())
+    , m_Drawable(HENew(gfx::Drawable)())
     , m_LoadingDesc(nullptr)
 {
     attach(m_Drawable);
@@ -50,7 +50,7 @@ ModelComponent::~ModelComponent()
 {
     if (m_Drawable->isAttachedToScene())
         m_Drawable->detachFromScene();
-    delete m_Drawable;
+    HEDelete(m_Drawable);
 }
 
 void ModelComponent::init(Entity* parent)
@@ -80,7 +80,7 @@ void ModelComponent::loadModelMeshAndMaterial( const he::String& materialAsset, 
     }
     else
     {
-        m_LoadingDesc = NEW LoadDesc();
+        m_LoadingDesc = HENew(LoadDesc)();
     }
 
     he::gfx::Material* const material(contentManager->loadMaterial(materialAsset));
@@ -118,7 +118,7 @@ void ModelComponent::onLoadingDone( const ELoadResult result )
         }
         m_LoadingDesc->m_Mesh->release();
         m_LoadingDesc->m_Material->release();
-        delete m_LoadingDesc;
+        HEDelete(m_LoadingDesc);
         m_LoadingDesc = nullptr;
     }
 }
@@ -141,7 +141,7 @@ void ModelComponent::unloadModelMeshAndMaterial()
             mesh->release();
         }
 
-        delete m_LoadingDesc;
+        HEDelete(m_LoadingDesc);
         m_LoadingDesc = nullptr;
     }
     m_Drawable->setModelMesh(nullptr);
@@ -174,15 +174,15 @@ void ModelComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 
     EntityComponent::fillEntityComponentDesc(desc);
 
-    Property* modelProp(NEW Property());
+    Property* modelProp(HENew(Property)());
     modelProp->init<he::String>(HEFS::strModel, "");
     desc.m_Properties.setAt(modelProp->getName(), PropertyDesc(modelProp, "Model", "The model to display", 
-        NEW PropertyConverterString(), NEW PropertyFeelDefault()));
+        HENew(PropertyConverterString)(), HENew(PropertyFeelDefault)()));
 
-    Property* materialProp(NEW Property());
+    Property* materialProp(HENew(Property)());
     materialProp->init<he::String>(HEFS::strMaterial, "");
     desc.m_Properties.setAt(materialProp->getName(), PropertyDesc(materialProp, "Material", "The material to use", 
-        NEW PropertyConverterString(), NEW PropertyFeelDefault()));
+        HENew(PropertyConverterString)(), HENew(PropertyFeelDefault)()));
 }
 
 bool ModelComponent::setProperty( const Property* const inProperty )

@@ -148,7 +148,7 @@ public:
 private:
     
     he::ObjectList<T> m_MemPool;
-    std::queue<size_t> m_FreeSlots;
+    he::Queue<size_t> m_FreeSlots;
 
     //disable default assignment operator
     SlotPContainer& operator=(const SlotPContainer&);

@@ -82,7 +82,7 @@ void Grid::init()
 	// INIT DEBUGTEXT
 	he::ct::ContentManager* contentMan(CONTENT);
 	he::gui::Font* const debugFont(contentMan->getDefaultFont(6));
-	m_DebugText = NEW he::gui::Text();
+	m_DebugText = HENew(he::gui::Text)();
 	m_DebugText->setFont(debugFont);
 	debugFont->release();
 }
