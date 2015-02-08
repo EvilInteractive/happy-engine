@@ -99,7 +99,7 @@ public:
     { 
         if (amount != 0)
         {
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
             T* const mem(HENewArrayFL(T, amount, file, line));
 #else
             T* const mem(HENewArrayFL(T, amount));

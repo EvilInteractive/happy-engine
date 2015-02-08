@@ -24,6 +24,11 @@
 namespace he {
 
 #ifdef HE_DEBUG
+#define HE_MEMORY_DEBUG
+#endif
+//#define HE_MEMORY_DEBUG
+
+#ifdef HE_MEMORY_DEBUG
 #define DEF_MEM_DEBUG_NFL_PARAMS , const char* const name, const char* const file, const int line
 #define DEF_MEM_DEBUG_FL_PARAMS , const char* const file, const int line
 #define PASS_MEM_DEBUG_NFL_PARAMS , name, file, line
@@ -76,8 +81,10 @@ public:
 private:
     void* m_Pool;
 
+#ifdef HE_MEMORY_DEBUG
     struct MemTracker;
     MemTracker* m_MemTracker;
+#endif
     
     MemoryManager(const MemoryManager&);
     MemoryManager& operator=(const MemoryManager&);

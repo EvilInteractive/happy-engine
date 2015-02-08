@@ -24,7 +24,8 @@
 #include "HappyMemory.h"
 
 #pragma warning( disable : 4290 ) // visual studio does not implement throw specifications
-#ifdef HE_DEBUG
+
+#ifdef HE_MEMORY_DEBUG
 void* operator new(std::size_t n DEF_MEM_DEBUG_NFL_PARAMS) throw(std::bad_alloc)
 {
     return he::gMemMan->alloc(n PASS_MEM_DEBUG_NFL_PARAMS);
@@ -34,7 +35,6 @@ void operator delete(void * p DEF_MEM_DEBUG_NFL_PARAMS) throw()
     name; file; line;
     he::gMemMan->free(p);
 }
-
 #endif
 
 void* operator new(std::size_t n) throw(std::bad_alloc)
@@ -46,7 +46,7 @@ void operator delete(void * p) throw()
     he_free(p);
 }
 
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
 void *operator new[](std::size_t s DEF_MEM_DEBUG_NFL_PARAMS) throw(std::bad_alloc)
 {
     return he::gMemMan->alloc(s PASS_MEM_DEBUG_NFL_PARAMS);

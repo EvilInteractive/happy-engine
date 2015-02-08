@@ -31,7 +31,7 @@ void* operator new[](std::size_t n DEF_MEM_DEBUG_NFL_PARAMS) throw(std::bad_allo
 void operator delete[](void * p DEF_MEM_DEBUG_NFL_PARAMS) throw();
 #pragma warning( default : 4290 )
 
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
 #define HENewArray(cl, count) new(typeid(cl).name(), __FILE__, __LINE__) cl[count]
 #define HENewArrayFL(cl, count, file, line) new(typeid(cl).name(), file, line) cl[count]
 #define HENew(cl) new(typeid(cl).name(), __FILE__, __LINE__) cl

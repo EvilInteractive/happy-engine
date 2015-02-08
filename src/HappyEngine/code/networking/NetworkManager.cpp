@@ -34,8 +34,8 @@ namespace net {
     void* RakMalloc(const size_t size) { return gMemMan->alloc(size MEM_DEBUG_PARAM("RakMalloc") GET_MEM_DEBUG_FL_PARAM); }
     void* RakRealloc(void *p, const size_t size) { return gMemMan->realloc(p, size MEM_DEBUG_PARAM("RakMalloc") GET_MEM_DEBUG_FL_PARAM); }
     void RakFree(void *p) { gMemMan->free(p); }
-    void* RakMalloc_Ex(const size_t size, const char *file, unsigned int line) { return gMemMan->alloc(size MEM_DEBUG_PARAM("RakMalloc") PASS_MEM_DEBUG_FL_PARAMS); }
-    void* RakRealloc_Ex(void *p, const size_t size, const char *file, unsigned int line) { return gMemMan->realloc(p, size MEM_DEBUG_PARAM("RakMalloc") PASS_MEM_DEBUG_FL_PARAMS); }
+    void* RakMalloc_Ex(const size_t size, const char *file, unsigned int line) { file; line; return gMemMan->alloc(size MEM_DEBUG_PARAM("RakMalloc") PASS_MEM_DEBUG_FL_PARAMS); }
+    void* RakRealloc_Ex(void *p, const size_t size, const char *file, unsigned int line) { file; line; return gMemMan->realloc(p, size MEM_DEBUG_PARAM("RakMalloc") PASS_MEM_DEBUG_FL_PARAMS); }
     void RakFree_Ex(void *p, const char* /*file*/, unsigned int /*line*/) { gMemMan->free(p); }
 }
 

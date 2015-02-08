@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////
 ///    check mem
 //////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
     #ifdef _MSC_VER
         #define he_checkmem()  \
             { \
@@ -36,7 +36,10 @@
                 if (he::gMemMan) he::gMemMan->checkMem(); \
             }
     #else
-        #define he_checkmem()
+        #define he_checkmem()  \
+            { \
+                if (he::gMemMan) he::gMemMan->checkMem(); \
+            }
     #endif
 #else
     #define he_checkmem()
@@ -47,7 +50,10 @@
 //////////////////////////////////////////////////////////////////////////
 #define he_memsize(mem) he::gMemMan->memsize(mem)
 
-#ifdef HE_DEBUG
+//////////////////////////////////////////////////////////////////////////
+///    aligned malloc
+//////////////////////////////////////////////////////////////////////////
+#ifdef HE_MEMORY_DEBUG
     #define he_malloc(name, size) he::gMemMan->alloc(size, name, __FILE__, __LINE__)
 #else
     #define he_malloc(name, size) he::gMemMan->alloc(size)
@@ -56,7 +62,7 @@
 //////////////////////////////////////////////////////////////////////////
 ///    aligned malloc
 //////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
     #define he_aligned_malloc(name, size, align) he::gMemMan->allocAligned(size, align, name, __FILE__, __LINE__)
 #else
     #define he_aligned_malloc(name, size, align) he::gMemMan->allocAligned(size, align)
@@ -75,7 +81,7 @@
 //////////////////////////////////////////////////////////////////////////
 ///    realloc
 //////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
     #define he_realloc(name, mem, newsize) he::gMemMan->realloc(mem, newsize, name, __FILE__, __LINE__)
 #else
     #define he_realloc(name, mem, newsize) he::gMemMan->realloc(mem, newsize)
@@ -84,7 +90,7 @@
 //////////////////////////////////////////////////////////////////////////
 ///    aligned realloc
 //////////////////////////////////////////////////////////////////////////
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
     #define he_aligned_realloc(name, mem, newsize, alignment) he::gMemMan->reallocAligned(mem, newsize, alignment, name, __FILE__, __LINE__)
 #else
     #define he_aligned_realloc(name, mem, newsize, alignment) he::gMemMan->reallocAligned(mem, newsize, alignment)

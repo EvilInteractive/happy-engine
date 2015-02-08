@@ -30,7 +30,7 @@
 
 #include <unordered_map>
 
-#ifdef HE_DEBUG
+#ifdef HE_MEMORY_DEBUG
 #define MEM_HIDE_FILE_LINE file; line;
 #else
 #define MEM_HIDE_FILE_LINE
@@ -44,6 +44,7 @@ static he::uint64 s_BreakAlloc = 0;
 
 MemoryManager* gMemMan(nullptr);
 
+#ifdef HE_MEMORY_DEBUG
 template <typename T>
 class MemTrackerAllocater: public std::allocator<T>
 {
@@ -103,15 +104,19 @@ struct MemoryManager::MemTracker
     TMemMap m_MemMap;
 };
 uint64 MemoryManager::MemTracker::s_AllocID(0);
+#endif
   
 MemoryManager::MemoryManager()
 {
     m_Pool = nedalloc::nedcreatepool(0, 0);
+#ifdef HE_MEMORY_DEBUG
     m_MemTracker = new(::malloc(sizeof(MemTracker)))MemTracker();
+#endif
 }
 
 MemoryManager::~MemoryManager()
 {
+#ifdef HE_MEMORY_DEBUG
     char buff[4 * 1024];
     OutputDebugString("Checking leaks...");
     std::cout << "Checking leaks...";
@@ -125,6 +130,8 @@ MemoryManager::~MemoryManager()
     std::cout << "   Done\n";
     m_MemTracker->~MemTracker();
     ::free(m_MemTracker);
+#endif
+
     nedalloc::neddestroypool(POOL);
 }
 
@@ -184,7 +191,8 @@ void MemoryManager::freeAligned( void* mem )
 
 void MemoryManager::registerAlloc( void* mem DEF_MEM_DEBUG_NFL_PARAMS )
 {
-#ifdef HE_DEBUG
+    mem;
+#ifdef HE_MEMORY_DEBUG
     m_MemTracker->m_MemTrackerMutex.lock(FILE_AND_LINE);
     m_MemTracker->m_TrackedMemory += memsize(mem);
     m_MemTracker->m_MemMap[mem] = MemTracker::AllocInfo(name, file, line);
@@ -194,7 +202,8 @@ void MemoryManager::registerAlloc( void* mem DEF_MEM_DEBUG_NFL_PARAMS )
 
 void MemoryManager::unregisterAlloc( void* mem )
 {
-#ifdef HE_DEBUG
+    mem;
+#ifdef HE_MEMORY_DEBUG
     m_MemTracker->m_MemTrackerMutex.lock(FILE_AND_LINE);
     m_MemTracker->m_TrackedMemory -= memsize(mem);
     m_MemTracker->m_MemMap.erase(mem);
@@ -212,12 +221,18 @@ size_t MemoryManager::memsize( void* mem ) const
 
 he::uint64 MemoryManager::getTrackedMemory() const
 {
+#ifdef HE_MEMORY_DEBUG
     return m_MemTracker->m_TrackedMemory;
+#else
+    return 0;
+#endif
 }
 
 void MemoryManager::checkMem()
 {
+#ifdef HE_MEMORY_DEBUG
     nedalloc::nedpmallinfo(POOL);
+#endif
 }
 
 }
