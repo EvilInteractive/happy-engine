@@ -39,11 +39,12 @@ void operator delete(void * p DEF_MEM_DEBUG_NFL_PARAMS) throw()
 
 void* operator new(std::size_t n) throw(std::bad_alloc)
 {
-    return he_malloc("operator new", n);
+    return he::gMemMan->alloc(n MEM_DEBUG_PARAM("operator new") GET_MEM_DEBUG_FL_PARAM);
 }
 void operator delete(void * p) throw()
 {
-    he_free(p);
+    if (he::gMemMan)
+        he::gMemMan->free(p);
 }
 
 #ifdef HE_MEMORY_DEBUG
@@ -54,18 +55,19 @@ void *operator new[](std::size_t s DEF_MEM_DEBUG_NFL_PARAMS) throw(std::bad_allo
 void operator delete[](void *p DEF_MEM_DEBUG_NFL_PARAMS) throw()
 {
     name; file; line;
-    he_free(p);
+    he::gMemMan->free(p);
 }
 #endif
 
 void *operator new[](std::size_t s) throw(std::bad_alloc)
 {
-    return he_malloc("operator new[]", s);
+    return he::gMemMan->alloc(s MEM_DEBUG_PARAM("operator new[]") GET_MEM_DEBUG_FL_PARAM);
 }
 
 void operator delete[](void *p) throw()
 {
-    he_free(p);
+    if (he::gMemMan)
+        he::gMemMan->free(p);
 }
 #pragma warning( default : 4290 ) 
 

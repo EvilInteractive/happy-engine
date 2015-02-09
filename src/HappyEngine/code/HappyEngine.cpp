@@ -41,6 +41,7 @@
 #include "MemoryManager.h"
 
 #include <SDL2/SDL.h>
+#include <locale.h>
 
 namespace he {
 
@@ -73,6 +74,8 @@ void HappyEngine::dispose()
     he::Path::destroy();
     HEDelete(gEngine);
     gEngine = nullptr;
+
+    ::setlocale(LC_ALL, nullptr);
     if (gMemMan)
     {
         gMemMan->~MemoryManager();
@@ -122,6 +125,7 @@ void HappyEngine::cleanup()
 }
 void HappyEngine::init(const int argc, const char* const * const argv, const int subengines)
 {
+    ::setlocale(LC_ALL, "en_US.UTF-8");
     HE_ASSERT(argc > 0, "There must be at least one argument in the argv argument list!");
     HE_ASSERT(!gMemMan, "Memory Manager is already initialized!");
     gMemMan = new(malloc(sizeof(MemoryManager))) MemoryManager();

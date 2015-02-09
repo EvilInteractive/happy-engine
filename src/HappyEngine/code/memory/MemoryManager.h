@@ -79,7 +79,7 @@ public:
     uint64 getTrackedMemory() const;
 
 private:
-    void* m_Pool;
+    void* m_DefaultPool;
 
 #ifdef HE_MEMORY_DEBUG
     struct MemTracker;

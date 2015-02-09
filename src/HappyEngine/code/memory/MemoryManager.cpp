@@ -108,7 +108,7 @@ uint64 MemoryManager::MemTracker::s_AllocID(0);
   
 MemoryManager::MemoryManager()
 {
-    m_Pool = nedalloc::nedcreatepool(0, 0);
+    m_DefaultPool = nullptr;
 #ifdef HE_MEMORY_DEBUG
     m_MemTracker = new(::malloc(sizeof(MemTracker)))MemTracker();
 #endif
@@ -131,13 +131,11 @@ MemoryManager::~MemoryManager()
     m_MemTracker->~MemTracker();
     ::free(m_MemTracker);
 #endif
-
-    nedalloc::neddestroypool(POOL);
 }
 
 void* MemoryManager::alloc( const size_t size DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_Pool, "No default memory pool!");
+    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     void* mem(nedalloc::nedpmalloc(POOL, size));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
     return mem;
@@ -145,7 +143,7 @@ void* MemoryManager::alloc( const size_t size DEF_MEM_DEBUG_NFL_PARAMS )
 
 void* MemoryManager::allocAligned( const size_t size, const size_t alignment DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_Pool, "No default memory pool!");
+    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     void* mem(nedalloc::nedpmalloc2(POOL, size, alignment));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
     return mem;
@@ -153,7 +151,7 @@ void* MemoryManager::allocAligned( const size_t size, const size_t alignment DEF
 
 void* MemoryManager::realloc( void* oldmem, const size_t newSize DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_Pool, "No default memory pool!");
+    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     unregisterAlloc(oldmem);
     void* mem(nedalloc::nedprealloc(POOL, oldmem, newSize));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
@@ -162,7 +160,7 @@ void* MemoryManager::realloc( void* oldmem, const size_t newSize DEF_MEM_DEBUG_N
 
 void* MemoryManager::reallocAligned( void* oldmem, const size_t newSize, const size_t alignment DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_Pool, "No default memory pool!");
+    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     unregisterAlloc(oldmem);
     void* mem(nedalloc::nedprealloc2(POOL, oldmem, newSize, alignment));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
@@ -171,7 +169,7 @@ void* MemoryManager::reallocAligned( void* oldmem, const size_t newSize, const s
 
 void MemoryManager::free( void* mem )
 {
-    HE_ASSERT(m_Pool, "No default memory pool!");
+    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     if (mem)
     {
         unregisterAlloc(mem);
@@ -181,7 +179,7 @@ void MemoryManager::free( void* mem )
 
 void MemoryManager::freeAligned( void* mem )
 {
-    HE_ASSERT(m_Pool, "No default memory pool!");
+    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     if (mem)
     {
         unregisterAlloc(mem);
