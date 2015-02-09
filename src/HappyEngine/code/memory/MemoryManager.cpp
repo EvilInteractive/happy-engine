@@ -40,7 +40,7 @@ namespace he {
 
 static he::uint64 s_BreakAlloc = 0;
 
-#define POOL static_cast<nedalloc::nedpool*>(m_Pool)
+#define POOL static_cast<nedalloc::nedpool*>(m_DefaultPool)
 
 MemoryManager* gMemMan(nullptr);
 
@@ -135,7 +135,6 @@ MemoryManager::~MemoryManager()
 
 void* MemoryManager::alloc( const size_t size DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     void* mem(nedalloc::nedpmalloc(POOL, size));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
     return mem;
@@ -143,7 +142,6 @@ void* MemoryManager::alloc( const size_t size DEF_MEM_DEBUG_NFL_PARAMS )
 
 void* MemoryManager::allocAligned( const size_t size, const size_t alignment DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     void* mem(nedalloc::nedpmalloc2(POOL, size, alignment));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
     return mem;
@@ -151,7 +149,6 @@ void* MemoryManager::allocAligned( const size_t size, const size_t alignment DEF
 
 void* MemoryManager::realloc( void* oldmem, const size_t newSize DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     unregisterAlloc(oldmem);
     void* mem(nedalloc::nedprealloc(POOL, oldmem, newSize));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
@@ -160,7 +157,6 @@ void* MemoryManager::realloc( void* oldmem, const size_t newSize DEF_MEM_DEBUG_N
 
 void* MemoryManager::reallocAligned( void* oldmem, const size_t newSize, const size_t alignment DEF_MEM_DEBUG_NFL_PARAMS )
 {
-    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     unregisterAlloc(oldmem);
     void* mem(nedalloc::nedprealloc2(POOL, oldmem, newSize, alignment));
     registerAlloc(mem PASS_MEM_DEBUG_NFL_PARAMS);
@@ -169,7 +165,6 @@ void* MemoryManager::reallocAligned( void* oldmem, const size_t newSize, const s
 
 void MemoryManager::free( void* mem )
 {
-    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     if (mem)
     {
         unregisterAlloc(mem);
@@ -179,7 +174,6 @@ void MemoryManager::free( void* mem )
 
 void MemoryManager::freeAligned( void* mem )
 {
-    HE_ASSERT(m_DefaultPool, "No default memory pool!");
     if (mem)
     {
         unregisterAlloc(mem);
