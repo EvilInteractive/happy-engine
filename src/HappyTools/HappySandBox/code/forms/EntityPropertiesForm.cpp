@@ -3,6 +3,7 @@
 #include "ui_EntityPropertiesForm.h"
 
 #include "EntityPropertyList.h"
+#include "EntityComponentFrame.h"
 
 #include "Sandbox.h"
 #include "system/GameStateMachine.h"
@@ -17,6 +18,8 @@
 #include <PropertyFeel.h>
 #include <PropertyConverter.h>
 
+#include <QLabel>
+
 EntityPropertiesForm::EntityPropertiesForm(QWidget *parent) :
     QWidget(parent),
     m_UI(HENew(Ui::EntityPropertiesForm)),
@@ -24,8 +27,7 @@ EntityPropertiesForm::EntityPropertiesForm(QWidget *parent) :
     m_SelectionChangedCallback(std::bind(&EntityPropertiesForm::onSelectionChanged, this))
 {
     m_UI->setupUi(this);
-    m_UI->m_EntityProperties->setComponentType(he::HEFS::strEntity);
-
+    
     clearPanel();
 
     hs::GameStateMachine::getInstance()->GameStateChanged += m_GameStateChangedCallback;
@@ -65,20 +67,26 @@ namespace
         });
     }
 
-    hs::EntityPropertyList* createPropertyContainer(Ui::EntityPropertiesForm* container, const he::FixedString& id, const he::String& name)
+    hs::EntityComponentFrame* createPropertyContainer(Ui::EntityPropertiesForm* container, const he::FixedString& id, const he::String& name)
     {
-        hs::EntityPropertyList* list(nullptr);
-        if (id == he::HEFS::strEntity)
-        {
-            list = container->m_EntityProperties;
-        }
-        else
-        {
-            list = HENew(hs::EntityPropertyList)(container->m_ComponentPanel);
-            list->setComponentType(id);
-            container->m_ComponentPanel->addItem(list, QString(name.c_str()));
-        }
-        return list;
+        hs::EntityComponentFrame* frame(HENew(hs::EntityComponentFrame)());
+
+        QLabel* label(HENew(QLabel)());
+        label->setText(name.c_str());
+        QFont font;
+        font.setPointSize(7);
+        label->setFont(font);
+        frame->setHeader(label);
+
+        hs::EntityPropertyList* list(HENew(hs::EntityPropertyList)());
+        list->setComponentType(id);
+
+        frame->setContent(list);
+        frame->setExpanded(false);
+
+        container->m_ComponentPanel->layout()->addWidget(frame);
+
+        return frame;
     }
     
     void addProperty(hs::PropertyList* list, const he::ge::PropertyDesc& prop)
@@ -106,7 +114,8 @@ void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, 
     he::ge::EntityComponentDesc* desc(entityMan->getComponentDescriptor(id));
     if (desc)
     {
-        hs::EntityPropertyList* list(createPropertyContainer(m_UI, id, desc->m_DisplayName));
+        hs::EntityComponentFrame* frame(createPropertyContainer(m_UI, id, desc->m_DisplayName));
+        hs::EntityPropertyList* list(he::checked_cast<hs::EntityPropertyList*>(frame->getContent()));
         desc->m_Properties.forEach([list, &selection, &id](const he::FixedString& /*propID*/, const he::ge::PropertyDesc& propDesc)
         {
             // Add Property to list
@@ -150,6 +159,7 @@ void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, 
             // Set the property value
             ::setProperty(list, propDesc, isMixed);
         });
+        frame->resizeToFit();
 
         // Add event handler is the propery is edited
         he::eventCallback1<void, he::ge::Property*> valueChangedCallback(
@@ -177,12 +187,12 @@ void EntityPropertiesForm::createComponentProperties(const he::FixedString& id, 
 
 void EntityPropertiesForm::clearPanel()
 {
-    m_UI->m_EntityProperties->clear();
-    while (m_UI->m_ComponentPanel->count() > 0)
+    QLayout* layout(m_UI->m_ComponentPanel->layout());
+    QLayoutItem* child(nullptr);
+    while ((child = layout->takeAt(0)) != nullptr) 
     {
-        QWidget* comp(m_UI->m_ComponentPanel->widget(0));
-        m_UI->m_ComponentPanel->removeItem(0);
-        HEDelete(comp);
+        QWidgetItem* item(he::checked_cast<QWidgetItem*>(child));
+        HEDelete(item->widget());
     }
 }
 

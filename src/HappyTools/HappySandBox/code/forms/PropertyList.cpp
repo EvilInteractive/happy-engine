@@ -26,6 +26,10 @@ PropertyList::PropertyList(QWidget *parent) :
     m_CurrentRow(0)
 {
     m_UI->setupUi(this);
+    m_UI->m_Table->horizontalHeader()->setMaximumHeight(20);
+    QFont font;
+    font.setPointSize(6);
+    m_UI->m_Table->horizontalHeader()->setFont(font);
 }
 
 PropertyList::~PropertyList()
@@ -59,6 +63,17 @@ void PropertyList::addProperty(const he::ge::PropertyDesc& prop)
     item->ValueChanged += valueChangedCallback;
 
     ++m_CurrentRow;
+
+    int h(0);
+    h += m_UI->m_Table->contentsMargins().top();
+    h += m_UI->m_Table->contentsMargins().bottom();
+    h += m_UI->m_Table->horizontalHeader()->height();
+    for (int i(0); i < m_UI->m_Table->rowCount(); ++i)
+        h += m_UI->m_Table->rowHeight(i);
+    m_UI->m_Table->setMinimumHeight(h);
+    m_UI->m_Table->setMaximumHeight(h);
+    setMinimumHeight(h + 2);
+    setMaximumHeight(h + 2);
 }
 
 void PropertyList::setValue( const he::FixedString& prop, const he::String& value )
