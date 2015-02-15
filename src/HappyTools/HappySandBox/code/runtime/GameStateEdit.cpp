@@ -62,8 +62,8 @@ void GameStateEdit::tick( const float /*dTime*/ )
     if (plugin != nullptr)
     {
         he::io::ControlsManager* const controls(CONTROLS);
-        he::io::IMouse* const mouse(controls->getMouse(sandbox->getMainWindow()->getHandle()));
-        he::io::IKeyboard* const keyboard(controls->getKeyboard(sandbox->getMainWindow()->getHandle()));
+        he::io::IMouse* const mouse(controls->getMouse(sandbox->getGameWindow()->getHandle()));
+        he::io::IKeyboard* const keyboard(controls->getKeyboard(sandbox->getGameWindow()->getHandle()));
 
         if (mouse->isButtonPressed(he::io::MouseButton_Left))
         {        

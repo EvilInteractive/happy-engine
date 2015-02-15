@@ -32,7 +32,7 @@ bool GameStateLoadPlugin::enter()
     entityMan->init();
     if (plugin != nullptr)
     {
-        plugin->init(sandbox->getMainWindow(), he::RectF(0, 0, 1, 1));
+        plugin->init(sandbox->getGameWindow(), he::RectF(0, 0, 1, 1));
     }
 
     return true;

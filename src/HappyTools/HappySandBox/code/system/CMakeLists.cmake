@@ -14,7 +14,20 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/system/managers code/system/
 		EntityManager.cpp			EntityManager.h
         SelectionManager.cpp        SelectionManager.h
         EditorPickingManager.cpp    EditorPickingManager.h    
+        InteractionManager.cpp      InteractionManager.h   
     )
+
+addFilter(HAPPYSANDBOX_CODE_SRCS src/system/interaction code/system/
+		IInteractionSet.h
+		IInteractionMode.h
+	)
+
+addFilter(HAPPYSANDBOX_CODE_SRCS src/system/interaction/entity code/system/
+		EntityInteractionSet.h 			EntityInteractionSet.cpp
+		EntityMoveInteractionMode.h 	EntityMoveInteractionMode.cpp
+		EntityRotateInteractionMode.h 	EntityRotateInteractionMode.cpp
+		EntityScaleInteractionMode.h 	EntityScaleInteractionMode.cpp
+	)
     
 addFilter(HAPPYSANDBOX_CODE_SRCS src/system/plugin code/system/
         PluginManager.cpp           PluginManager.h

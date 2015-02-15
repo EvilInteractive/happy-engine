@@ -26,6 +26,8 @@
 #include "system/GameStateMachine.h"
 #include "system/EditorPickingManager.h"
 #include "system/SelectionManager.h"
+#include "system/InteractionManager.h"
+#include "system/EntityInteractionSet.h"
 #include "StaticDataManager.h"
 
 #include "forms/MainWindow.h"
@@ -120,6 +122,9 @@ void Sandbox::destroy()
     HEDelete(m_ColorPicker);
     m_ColorPicker = nullptr;
 
+    HEDelete(m_InteractionManager);
+    m_InteractionManager = nullptr;
+
     HEDelete(m_EntityManager);
     m_EntityManager = nullptr;
     
@@ -155,6 +160,8 @@ void Sandbox::init()
     m_RenderPipeline->init(m_View);
     m_View->init(cameraSettings);
     m_EntityManager = HENew(EntityManager)();
+    m_InteractionManager = HENew(InteractionManager)();
+    m_InteractionManager->addInteractionSet(HENew(EntityInteractionSet)());
 
     GameStateMachine* const stateMachine(GameStateMachine::getInstance());
     stateMachine->init();
@@ -213,7 +220,7 @@ void Sandbox::quit()
     }
 }
 
-he::gfx::Window* Sandbox::getMainWindow() const
+he::gfx::Window* Sandbox::getGameWindow() const
 {
     return m_Window->getGameWidget();
 }

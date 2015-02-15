@@ -45,7 +45,7 @@ void UIDebug::load()
     m_FPSGraph = HENew(he::tools::FPSGraph)();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_Full);
 
-    he::gfx::Window* window(hs::Sandbox::getInstance()->getMainWindow());
+    he::gfx::Window* window(hs::Sandbox::getInstance()->getGameWindow());
     repositionElements(window->getWindowWidth(), window->getWindowHeight());
     window->Resized += m_ResizeCallback;
 
@@ -57,7 +57,7 @@ void UIDebug::unload()
     {
         hide();
     }
-    he::gfx::Window* window(hs::Sandbox::getInstance()->getMainWindow());
+    he::gfx::Window* window(hs::Sandbox::getInstance()->getGameWindow());
     window->Resized -= m_ResizeCallback;
     HEDelete(m_FPSGraph);
     m_FPSGraph = nullptr;

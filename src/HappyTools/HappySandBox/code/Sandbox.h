@@ -58,6 +58,7 @@ class EntityManager;
 class SandboxRenderPipeline;
 class GLContextQT;
 class MainWindow;
+class InteractionManager;
 
 class Sandbox : public QObject, public he::ge::Game, public he::Singleton<Sandbox>
 {
@@ -74,7 +75,8 @@ public:
 
     hs::EntityManager* getEntityManager() const { return m_EntityManager; }
     he::pl::IPlugin* getGamePlugin() const { return m_GamePlugin; }
-    he::gfx::Window* getMainWindow() const;
+    he::gfx::Window* getGameWindow() const;
+    MainWindow* getEditorWindow() const { return m_Window; }
     he::gfx::View* getMainView() const { return m_View; }
     hs::SandboxRenderPipeline* getRenderPipeline() { return m_RenderPipeline; }
 
@@ -98,6 +100,7 @@ private:
     
     he::pl::IPlugin* m_GamePlugin;
     EntityManager* m_EntityManager;
+    InteractionManager* m_InteractionManager;
     QColorDialog* m_ColorPicker;
 
     QTimer m_QtLoopTimer;
