@@ -24,10 +24,13 @@
 #include "Main.h"
 #include "HappyCooker.h"
 
+#include <MemoryManager.h>
 #include <StaticDataManager.h>
 
 bool __stdcall initHappyCooker()
 {
+    he::gMemMan = new(malloc(sizeof(he::MemoryManager))) he::MemoryManager();
+    he::Path::init(0, nullptr);
     he::StaticDataManager::init();    
     happycooker::HappyCooker::getInstance();
     return true;
@@ -36,6 +39,9 @@ void __stdcall disposeHappyCooker()
 {
     happycooker::HappyCooker::dispose();
     he::StaticDataManager::destroy();
+    he::gMemMan->~MemoryManager();
+    free(he::gMemMan);
+    he::gMemMan = nullptr;
 }
 bool __stdcall cook(const char* input, const char* output)
 {
