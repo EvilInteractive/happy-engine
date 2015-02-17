@@ -51,7 +51,6 @@ ShapeMesh::~ShapeMesh()
 
 void ShapeMesh::init( const MeshDrawMode mode )
 {
-    HE_ASSERT(mode != MeshDrawMode_Triangles, "Triangles are not supported in a ShapeMesh!");
     m_InternalMesh->init(*s_VertexLayout, mode);
 }
 
@@ -84,6 +83,59 @@ void ShapeMesh::addPoint( const vec3& point, const bool startNewLine /*= false*/
     }
     m_Points->m_Indices.add(he::checked_numcast<uint16>(vertexCount));
     m_Points->m_Vertices.add(point);
+}
+
+void ShapeMesh::addBuffer( const void* vertices, const void* indices, const size_t indexCount, const he::gfx::IndexStride indexStride, const he::gfx::VertexLayout& layout )
+{
+    HE_ASSERT(m_Points, "beginEditing was not called when the call clearPoints was made!");
+
+    if (indexStride != IndexStride_UShort)
+    {
+        LOG(LogType_ProgrammerAssert, "Invalid indexStride for ShapeMesh!");
+        return;
+    }
+
+    size_t posOffset(0);
+    size_t elIndex(0);
+    if (layout.getElements().find_if([](const VertexElement& el)
+    {
+        if (el.getAttribute() == eShaderAttribute_Position)
+        {
+            return true;
+        }
+        return false;
+    }, elIndex))
+    {
+        const VertexElement& posEl(layout.getElements()[elIndex]);
+        if (posEl.getComponents() == eShaderAttributeTypeComponents_3 && posEl.getType() == eShaderAttributeType_Float)
+        {
+            posOffset = posEl.getByteOffset();
+        }
+        else
+        {
+            LOG(LogType_ProgrammerAssert, "Invalid vertexlayout for ShapeMesh!");
+            return;
+        }
+    }
+    else
+    {
+        LOG(LogType_ProgrammerAssert, "Could not find position in vertexlayout!");
+        return;
+    }
+
+    const uint16 indexOffset(checked_numcast<uint16>(m_Points->m_Vertices.size()));
+    const size_t vstride(layout.getSize());
+    for (size_t i(0); i < indexCount; ++i)
+    {
+        uint16 index(*(reinterpret_cast<const uint16*>(indices) + i));
+        const vec3& pos(*reinterpret_cast<const vec3*>(reinterpret_cast<const char*>(vertices) + index * vstride + posOffset));
+
+        uint16 realIndex(indexOffset + index);
+        m_Points->m_Indices.add(realIndex);
+        if (m_Points->m_Vertices.size() <= realIndex)
+            m_Points->m_Vertices.resize(realIndex + 1);
+        m_Points->m_Vertices[realIndex] = pos;
+    }
 }
 
 void ShapeMesh::endEditing( const bool close, const bool keepBuffer )

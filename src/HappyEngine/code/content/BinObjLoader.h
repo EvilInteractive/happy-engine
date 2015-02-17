@@ -30,7 +30,7 @@ namespace he {
 namespace ct {
 namespace models {
 
-class BinObjLoader : public IModelLoader
+class HAPPY_ENTRY BinObjLoader : public IModelLoader
 {
 public:
     struct InternalVertex

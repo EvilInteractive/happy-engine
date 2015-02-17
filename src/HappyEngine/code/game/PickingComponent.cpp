@@ -27,6 +27,7 @@
 #include "IPickingManager.h"
 #include "EntityManager.h"
 #include "EntityComponentDesc.h"
+#include "PickingData.h"
 
 namespace he {
 namespace ge {
@@ -89,13 +90,18 @@ void PickingComponent::deactivate()
 }
 
 
-void PickingComponent::getPickingData( const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount ) const
+bool PickingComponent::getPickingData( const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount ) const
 {
-    const gfx::PickingData& data(m_ModelMesh->getPickingData());
-    outVertices = data.m_Vertices;
-    outIndices = data.m_Indices;
-    outIndexStride = data.m_IndexStride;
-    outTriangleCount = data.m_TriangleCount;
+    const gfx::PickingData* data(m_ModelMesh->getPickingData());
+    if (data)
+    {
+        outVertices = data->m_Vertices;
+        outIndices = data->m_Indices;
+        outIndexStride = data->m_IndexStride;
+        outTriangleCount = data->m_TriangleCount;
+        return true;
+    }
+    return false;
 }
 
 const Bound& PickingComponent::getPickingBound() const

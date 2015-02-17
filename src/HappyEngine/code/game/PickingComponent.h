@@ -62,7 +62,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
            
 private:
-    void getPickingData(const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const;   // Local space
+    bool getPickingData(const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const override;   // Local space
     const Bound& getPickingBound() const; // Local space
     const mat44& getPickingWorld() const;
 

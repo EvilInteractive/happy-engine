@@ -57,6 +57,7 @@ ShapeRenderer::~ShapeRenderer()
         m_BillboardQuad->release();
     if (m_AABB)
         m_AABB->release();
+    HEDelete(m_LineShape);
 }
 
 void ShapeRenderer::createBillboardQuad()
@@ -136,6 +137,16 @@ void ShapeRenderer::createAABB()
     m_AABB->setLoaded(eLoadResult_Success);
 }
 
+void ShapeRenderer::createLine()
+{
+    m_LineShape = HENew(ShapeMesh)();
+    m_LineShape->init(MeshDrawMode_Lines);
+    m_LineShape->beginEditing();
+    m_LineShape->addPoint(he::vec3(0, 0, 0));
+    m_LineShape->addPoint(he::vec3(0, 0, 1));
+    m_LineShape->endEditing(false, false);
+}
+
 /* GENERAL */
 void ShapeRenderer::init(View* view, const RenderTarget* target)
 {
@@ -144,6 +155,7 @@ void ShapeRenderer::init(View* view, const RenderTarget* target)
 
     createBillboardQuad();
     createAABB();
+    createLine();
 
     m_ShapeEffect->init(ShapeMesh::getVertexLayout());
     m_AABBEffect->init(m_AABB->getVertexLayout());
@@ -163,6 +175,25 @@ void ShapeRenderer::drawAABB( const vec3& position, const vec3& dimensions, cons
     context.m_IBO = m_AABB->getIBO();
     m_AABBEffect->apply(context);
     m_AABB->draw();
+}
+
+void ShapeRenderer::drawLine( const vec3& p0, const vec3& p1, const Color& color ) const
+{
+    vec3 dir(p1 - p0);
+    float len(length(dir));
+    dir /= len;
+
+    vec3 right(dot(dir, he::vec3::right) > 0.90f? vec3::up : vec3::right);
+    vec3 up = normalize(cross(dir, right));
+    m_ShapeEffect->setWorld(mat44::createWorld(p0, dir, up) * mat44::createScale(len));
+    m_ShapeEffect->setColor(color);
+    m_ShapeEffect->setViewProjection(m_ViewProjection);
+
+    DrawContext context;
+    context.m_VBO = m_LineShape->getVBO();
+    context.m_IBO = m_LineShape->getIBO();
+    m_ShapeEffect->apply(context);
+    m_LineShape->draw();
 }
 
 void ShapeRenderer::drawShape( const ShapeMesh* shape, const mat44& world, const Color& color ) const

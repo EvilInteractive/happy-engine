@@ -25,6 +25,7 @@
 #include "IInteractionMode.h"
 
 #include <IShapeDrawable.h>
+#include <PickingData.h>
 
 namespace he {
 namespace gfx {
@@ -53,6 +54,25 @@ private:
 
     bool m_IsActive;
     he::eventCallback0<void> m_SelectionChangedCallback;
+
+    he::vec3 m_Position;
+    float m_Size;
+    bool m_Visible;
+
+    he::gfx::ShapeMesh* m_Arrow;
+    he::gfx::PickingData* m_ArrowPicking;
+    he::gfx::PickingData* m_AxisPicking;
+    he::gfx::PickingData* m_DoubleAxisPicking;
+
+    enum EAxis
+    {
+        eAxis_X,
+        eAxis_Y,
+        eAxis_Z,
+        eAxis_MAX
+    };
+    he::Color m_AxisColor[eAxis_MAX];
+    he::Color m_SelectedAxisColor;
 
     /* DEFAULT COPY & ASSIGNMENT */
     EntityMoveInteractionMode(const EntityMoveInteractionMode&);

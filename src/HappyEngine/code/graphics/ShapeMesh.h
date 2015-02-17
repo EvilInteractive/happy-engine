@@ -52,6 +52,9 @@ public:
     // \param startNewLine  false if the new points connects to the previous pointS
     void addPoint(const vec3& point, const bool startNewLine = false);
 
+    // \brief  adds points from a buffer
+    void addBuffer(const void* vertices, const void* indices, const size_t indexCount, const he::gfx::IndexStride indexStride, const he::gfx::VertexLayout& layout);
+
     // \brief  call this if you are done editing
     // \param close  should the last point connect to the first point
     // \param keepBuffer  keeps the internal point buffer, else it will be deleted to save memory

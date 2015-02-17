@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2014  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2015  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,38 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/03/02
+//Created: 2015/02/17
 
-#ifndef _HE_Pickable_H_
-#define _HE_Pickable_H_
-#pragma once
+#ifndef PickingData_h__
+#define PickingData_h__
 
+#include "MeshEnums.h"
 
 namespace he {
-class Ray;
-class Bound;
-
 namespace gfx {
-ENUM(IndexStride, uint8);
-}
-namespace ge {
-
-bool HAPPY_ENTRY triangleHitTest(const Ray& ray, const vec3& v1, const vec3& v2, const vec3& v3, float& inOutDist, vec3& normal);
-
-class PickResult;
-class HAPPY_ENTRY Pickable
+class VertexLayout;
+struct HAPPY_ENTRY PickingData
 {
 public:
-    virtual ~Pickable() {}
+    PickingData();
+    ~PickingData();
 
-    bool pick(const Ray& ray, PickResult& result);
+    void destroyPickingData();
+    void createPickingData(const void* const vertices, const size_t vertexCount, const VertexLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
 
-protected:
-    virtual bool getPickingData(const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const = 0;   // Local space
-    virtual const Bound& getPickingBound() const = 0; // Local space
-    virtual const mat44& getPickingWorld() const = 0;
+    vec3* m_Vertices;
+    void* m_Indices;
+    IndexStride m_IndexStride;
+    size_t m_TriangleCount;
+
+private:
+    PickingData(const PickingData&);
+    PickingData& operator=(const PickingData&);
 };
 
-} } //end namespace
 
-#endif
+} }
+
+#endif // PickingData_h__

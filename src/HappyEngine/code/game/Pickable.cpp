@@ -56,18 +56,20 @@ bool Pickable::pick( const Ray& ray, PickResult& result )
         const void* indicesTemp(nullptr);
         gfx::IndexStride indexStride(gfx::IndexStride_UShort);
         size_t triangleCount(0);
-        getPickingData(vertices, indicesTemp, indexStride, triangleCount);
-        const char* indices(static_cast<const char*>(indicesTemp));
-        
-        const uint32 mask(0xffffffff >> ((sizeof(uint32) - indexStride) * 8));
-        for (size_t triangle(0); triangle < triangleCount; ++triangle)
+        if (getPickingData(vertices, indicesTemp, indexStride, triangleCount))
         {
-            uint32 i1((*reinterpret_cast<const uint32*>(indices + ((triangle * 3 + 0) * indexStride))) & mask);
-            uint32 i2((*reinterpret_cast<const uint32*>(indices + ((triangle * 3 + 1) * indexStride))) & mask);
-            uint32 i3((*reinterpret_cast<const uint32*>(indices + ((triangle * 3 + 2) * indexStride))) & mask);
-            if (triangleHitTest(testRay, vertices[i1], vertices[i2], vertices[i3], dist, normal))
+            const char* indices(static_cast<const char*>(indicesTemp));
+        
+            const uint32 mask(0xffffffff >> ((sizeof(uint32) - indexStride) * 8));
+            for (size_t triangle(0); triangle < triangleCount; ++triangle)
             {
-                hit = true;
+                uint32 i1((*reinterpret_cast<const uint32*>(indices + ((triangle * 3 + 0) * indexStride))) & mask);
+                uint32 i2((*reinterpret_cast<const uint32*>(indices + ((triangle * 3 + 1) * indexStride))) & mask);
+                uint32 i3((*reinterpret_cast<const uint32*>(indices + ((triangle * 3 + 2) * indexStride))) & mask);
+                if (triangleHitTest(testRay, vertices[i1], vertices[i2], vertices[i3], dist, normal))
+                {
+                    hit = true;
+                }
             }
         }
     }

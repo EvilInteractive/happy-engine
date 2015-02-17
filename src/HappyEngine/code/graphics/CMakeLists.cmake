@@ -64,6 +64,7 @@ addFilter(CODE_SRCS src/graphics/model code/graphics/
             Mesh2D.cpp                          Mesh2D.h
             Model.cpp                           Model.h
             ModelMesh.cpp                       ModelMesh.h
+            PickingData.cpp 					PickingData.h
             ShapeMesh.cpp                       ShapeMesh.h
         )
                         

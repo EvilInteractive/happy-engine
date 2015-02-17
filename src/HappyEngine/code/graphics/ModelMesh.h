@@ -32,14 +32,7 @@
 namespace he {
 namespace gfx {
 
-struct PickingData
-{
-    PickingData() : m_Vertices(nullptr), m_Indices(nullptr), m_IndexStride(IndexStride_UShort), m_TriangleCount(0) {}
-    vec3* m_Vertices;
-    void* m_Indices;
-    IndexStride m_IndexStride;
-    size_t m_TriangleCount;
-};
+struct PickingData;
 
 class HAPPY_ENTRY ModelMesh : public Resource<ModelMesh>
 {
@@ -61,8 +54,8 @@ public:
 
     void createPickingData(const void* const vertices, const size_t vertexCount, const VertexLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
     void destroyPickingData();
-    const PickingData& getPickingData() const { return m_PickingData; }
-    bool hasPickingData() const { return m_PickingData.m_Vertices != nullptr; }
+    const PickingData* getPickingData() const { return m_PickingData; }
+    bool hasPickingData() const { return m_PickingData != nullptr; }
 
     inline uint32 getNumVertices() const { return m_NumVertices; }
     inline uint32 getNumIndices() const { return m_NumIndices; }
@@ -92,7 +85,7 @@ private:
     uint32 m_IndexType;
 
     Bound m_Bound;
-    PickingData m_PickingData;
+    PickingData* m_PickingData;
 
     he::ObjectList<Bone> m_BoneList;
 

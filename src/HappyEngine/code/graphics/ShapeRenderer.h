@@ -32,6 +32,7 @@ namespace gfx {
 class Texture2D;
 class ModelMesh;
 class ShapeMesh;
+class Mesh2D;
 class BillboardEffect;
 class SimpleColorEffect;
 class View;
@@ -53,22 +54,27 @@ public:
     virtual void preRender() {}
     virtual void render();
 
+    const View* getView() const { return m_View; }
+
     void attachToRenderer(IShapeDrawable* drawable);
     void detachFromRenderer(IShapeDrawable* drawable);
 
     /* DRAW METHODS */
     void drawAABB(const vec3& position, const vec3& dimensions, const Color& color) const;
+    void drawLine(const vec3& p0, const vec3& p1, const Color& color) const;
     void drawShape(const ShapeMesh* shape, const mat44& world, const Color& color) const;
     void drawBillboard(const Texture2D* tex2D, const vec3& pos);
 
 private:
     void createBillboardQuad();
     void createAABB();
+    void createLine();
 
     /* DATAMEMBERS */
     
     ModelMesh* m_BillboardQuad;
     ModelMesh* m_AABB;
+    ShapeMesh* m_LineShape;
 
     BillboardEffect* m_BillboardEffect;
     SimpleColorEffect* m_AABBEffect;

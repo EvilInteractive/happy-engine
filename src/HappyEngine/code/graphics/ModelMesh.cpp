@@ -21,6 +21,7 @@
 
 #include "ModelMesh.h"
 #include "GraphicsEngine.h"
+#include "PickingData.h"
 
 namespace he {
 namespace gfx {
@@ -32,7 +33,8 @@ ModelMesh::ModelMesh():
     m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_DrawMode(MeshDrawMode_Triangles),
     m_IndexVboID(UINT32_MAX),
-    m_VertexVboID(UINT32_MAX)
+    m_VertexVboID(UINT32_MAX),
+    m_PickingData(nullptr)
 {
 }
 #pragma warning(default:4355) // use of this in initializer list
@@ -106,39 +108,19 @@ void ModelMesh::setBones( const he::ObjectList<Bone>& boneList )
 
 void ModelMesh::createPickingData(const void* const vertices, const size_t vertexCount, const VertexLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride)
 {
-    HE_IF_ASSERT(m_PickingData.m_Vertices == nullptr && m_PickingData.m_Indices == nullptr, "Picking data already initialized!")
-    {
-        m_PickingData.m_TriangleCount = indexCount / 3;
-        m_PickingData.m_Vertices = static_cast<vec3*>(he_malloc("ModelMesh::m_PickingData.m_Vertices", sizeof(vec3) * vertexCount));
-        m_PickingData.m_Indices = he_malloc("ModelMesh::m_PickingData.m_Indices", indexStride * indexCount);
-        m_PickingData.m_IndexStride = indexStride;
-        he_memcpy(m_PickingData.m_Indices, indices, indexStride * indexCount);
-
-        uint32 posOffset(UINT32_MAX);
-        std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const VertexElement& e)
-        {
-            if (e.getAttribute() == gfx::eShaderAttribute_Position)
-            {
-                posOffset = e.getByteOffset();
-            }
-        });
-
-        const uint32 stride(vertexLayout.getSize());
-        for (size_t i(0); i < vertexCount; ++i)
-        {
-            he_memcpy(m_PickingData.m_Vertices + i, 
-                reinterpret_cast<const vec3*>(static_cast<const char*>(vertices) + stride * i + posOffset), sizeof(vec3));
-        }
-    }
+    HE_ASSERT(!m_PickingData, "Picking data is already initialized! Memleak will occure");
+    m_PickingData = HENew(PickingData)();
+    m_PickingData->createPickingData(vertices, vertexCount, vertexLayout, indices, indexCount, indexStride);
 }
 
 void ModelMesh::destroyPickingData()
 {
-    m_PickingData.m_TriangleCount = 0;
-    he_free(m_PickingData.m_Vertices);
-    m_PickingData.m_Vertices = nullptr;
-    he_free(m_PickingData.m_Indices);
-    m_PickingData.m_Indices = nullptr;
+    if (m_PickingData)
+    {
+        m_PickingData->destroyPickingData();
+        HEDelete(m_PickingData);
+        m_PickingData = nullptr;
+    }
 }
 
 void ModelMesh::draw() const
