@@ -59,4 +59,12 @@ void InteractionManager::requestActivate( IInteractionSet* interactionSet )
     interactionSet->activate();
 }
 
+void InteractionManager::tick( const float dTime )
+{
+    m_InteractionSets.forEach([dTime](IInteractionSet* set)
+    {
+        set->tick(dTime);
+    });
+}
+
 } //end namespace

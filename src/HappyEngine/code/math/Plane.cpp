@@ -95,11 +95,11 @@ he::IntersectResult Plane::intersect( const AABB& box ) const
         return IntersectResult_Intersecting;
 }
 
-bool Plane::intersect( const Ray& ray, float& outDist ) const
+bool Plane::intersect( const Ray& ray, float& outDist, const bool doubleSided /*= false*/ ) const
 {
     bool result(false);
     const float dotDirNorm(dot(ray.getDirection(), m_Normal));
-    if (dotDirNorm < 0) // Plane is facing away from ray or parallel to ray
+    if (doubleSided || dotDirNorm < 0) // Plane is facing away from ray or parallel to ray
     {
         const float t(-(dot(ray.getOrigin(), m_Normal) + m_Distance) / dotDirNorm);
         if (t >= 0.0f) // Plane is not behind the ray

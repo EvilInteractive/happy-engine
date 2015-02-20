@@ -37,6 +37,8 @@ public:
 
     void requestActivate(IInteractionSet* interactionSet);
 
+    void tick(const float dTime);
+
 private:
     he::PrimitiveList<IInteractionSet*> m_InteractionSets;
 

@@ -27,7 +27,7 @@
 
 namespace he {
 
-class Bound
+class HAPPY_ENTRY Bound
 {
 public:
     Bound(): m_AABB(), m_Sphere() {}

@@ -27,7 +27,7 @@ class AABB;
 class Ray;
 
 // a*Nx + b*Ny + c*Nz + d = 0
-class Plane
+class HAPPY_ENTRY Plane
 {
 public:
     Plane(): m_Normal(0, 1, 0), m_Distance(0) {}
@@ -43,7 +43,7 @@ public:
     bool isPointInFrontOfPlane(const vec3& point) const;
     float getDistanceToPoint(const vec3& point) const;
     IntersectResult intersect(const AABB& box) const;
-    bool intersect(const Ray& ray, float& outDist) const;
+    bool intersect(const Ray& ray, float& outDist, const bool doubleSided = false) const;
 
     static vec3 getIntersectionPoint(const Plane& p1, const Plane& p2, const Plane& p3);
 

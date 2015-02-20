@@ -25,6 +25,7 @@
 namespace hs {
 
 EditorPickingManager::EditorPickingManager()
+    : OnPick([](bool& inoutA, const bool inB) { inoutA = inB; return inB; }, false)
 {
 
 }
@@ -50,13 +51,26 @@ void EditorPickingManager::removeFromPickList( he::ge::Pickable* const object )
     }
 }
 
+bool EditorPickingManager::hover( const he::Ray& ray, he::ge::PickResult& result )
+{
+    bool hasPicked(false);
+    if (!OnHover(ray, result))
+    {
+        // Do other hover stuff
+    }
+    return hasPicked;
+}
+
 bool EditorPickingManager::pick( const he::Ray& ray, he::ge::PickResult& result )
 {
     bool hasPicked(false);
-    m_PickList.forEach([&hasPicked, &ray, &result](he::ge::Pickable* const pickable)
+    if (!OnPick(ray, result))
     {
-        hasPicked |= pickable->pick(ray, result);
-    });
+        m_PickList.forEach([&hasPicked, &ray, &result](he::ge::Pickable* const pickable)
+        {
+            hasPicked |= pickable->pick(ray, result);
+        });
+    }
     return hasPicked;
 }
 

@@ -55,6 +55,7 @@ public:
 
     void activate() final;
     void deactivate() final;
+    void tick(const float dTime) final;
 
 private slots:
     void translateTriggered();

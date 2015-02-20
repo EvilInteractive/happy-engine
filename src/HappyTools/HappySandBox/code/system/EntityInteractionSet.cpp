@@ -107,6 +107,14 @@ void EntityInteractionSet::init( InteractionManager* const interactionManager )
     m_InteractionManager = interactionManager;
 }
 
+void EntityInteractionSet::tick(const float dTime)
+{
+    if (m_ActiveInteraction != eInteraction_None)
+    {
+        m_InteractionModes[m_ActiveInteraction]->tick(dTime);
+    }
+}
+
 void EntityInteractionSet::activate()
 {
 }

@@ -26,15 +26,23 @@
 
 #include <IShapeDrawable.h>
 #include <PickingData.h>
+#include <Pickable.h>
+#include <Bound.h>
 
 namespace he {
+    class Ray;
 namespace gfx {
     class ShapeMesh;
-} }
+} 
+namespace ge {
+    class PickResult;
+}
+}
+
 
 namespace hs {
 
-class EntityMoveInteractionMode : public IInteractionMode, public he::gfx::IShapeDrawable
+class EntityMoveInteractionMode : public he::ge::Pickable, public IInteractionMode, public he::gfx::IShapeDrawable
 {
 public:
     EntityMoveInteractionMode();
@@ -46,24 +54,6 @@ public:
     void tick(const float dTime) final;
 
 private:
-    void createGizmo();
-    void destroyGizmo();
-    void onSelectionChanged();
-
-    void drawShapes(he::gfx::ShapeRenderer* const renderer) final;
-
-    bool m_IsActive;
-    he::eventCallback0<void> m_SelectionChangedCallback;
-
-    he::vec3 m_Position;
-    float m_Size;
-    bool m_Visible;
-
-    he::gfx::ShapeMesh* m_Arrow;
-    he::gfx::PickingData* m_ArrowPicking;
-    he::gfx::PickingData* m_AxisPicking;
-    he::gfx::PickingData* m_DoubleAxisPicking;
-
     enum EAxis
     {
         eAxis_X,
@@ -71,8 +61,70 @@ private:
         eAxis_Z,
         eAxis_MAX
     };
+
+    enum ELookat
+    {
+        eLookat_X,
+        eLookat_Y,
+        eLookat_Z,
+        eLookat_XZ,
+        eLookat_MAX
+    };
+
+    enum EPickingPass
+    {
+        ePickPass_XArrow,
+        ePickPass_XAxis,
+        ePickPass_XYAxis,
+        ePickPass_YArrow,
+        ePickPass_YAxis,
+        ePickPass_YZAxis,
+        ePickPass_ZArrow,
+        ePickPass_ZAxis,
+        ePickPass_XZAxis,
+        ePickPass_MAX
+    };
+
+    bool getPickingData(const he::vec3*& outVertices, const void*& outIndices, he::gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const final;   // Local space
+    const he::Bound& getPickingBound() const final; // Local space
+    const he::mat44& getPickingWorld() const final;
+
+    bool onPick(const he::Ray& ray, he::ge::PickResult& result);
+    bool onHover(const he::Ray& ray, he::ge::PickResult& result);
+
+    void createGizmo();
+    void destroyGizmo();
+    void onSelectionChanged();
+
+    he::vec3 getMouseWorldPos(const he::uint8 axi, const he::vec2& mousePos) const;
+
+    void drawShapes(he::gfx::ShapeRenderer* const renderer) final;
+
+    bool m_IsActive;
+    he::eventCallback0<void> m_SelectionChangedCallback;
+    he::eventCallback2<bool, const he::Ray&, he::ge::PickResult&> m_OnHover;
+    he::eventCallback2<bool, const he::Ray&, he::ge::PickResult&> m_OnPick;
+
+    he::vec3 m_Position;
+    he::mat44 m_AxisWorld[eLookat_MAX];
+    float m_Size;
+    bool m_Visible;
+
+    he::vec3 m_StartMovePos;
+    he::vec3 m_LastMovePos;
+    bool m_MoveActive;
+
+    he::gfx::ShapeMesh* m_Arrow;
+    he::gfx::PickingData* m_ArrowPicking;
+    he::gfx::PickingData* m_AxisPicking;
+    he::gfx::PickingData* m_DoubleAxisPicking;
     he::Color m_AxisColor[eAxis_MAX];
     he::Color m_SelectedAxisColor;
+    he::Bound m_Bound;
+    he::uint8 m_SelectedAxi;
+    EPickingPass m_PickPass;
+
+    inline bool isSelected(const EAxis axis) const { return (m_SelectedAxi & BIT(axis)) != 0; }
 
     /* DEFAULT COPY & ASSIGNMENT */
     EntityMoveInteractionMode(const EntityMoveInteractionMode&);

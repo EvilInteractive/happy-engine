@@ -41,10 +41,15 @@ class EditorPickingManager : public he::ge::IPickingManager, public he::Singleto
 public:
     virtual ~EditorPickingManager();
 
+    bool hover(const he::Ray& ray, he::ge::PickResult& result);
     bool pick(const he::Ray& ray, he::ge::PickResult& result);
 
     void addToPickList(he::ge::Pickable* const object);
     void removeFromPickList(he::ge::Pickable* const object);
+
+    // Called before actual picking, return whether to continue picking
+    he::event2<bool, const he::Ray&, he::ge::PickResult&> OnPick;
+    he::event2<bool, const he::Ray&, he::ge::PickResult&> OnHover;
 
 private:
     EditorPickingManager();

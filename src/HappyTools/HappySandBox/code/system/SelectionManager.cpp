@@ -59,7 +59,8 @@ void SelectionManger::deselect( he::ge::Entity* const entity )
     HE_ASSERT(entity->getEntityParent() == nullptr, "Not top level entity?");
     if (m_Selection.find(entity->getHandle(), index))
     {
-        internalDeselect(entity);
+        if (m_HoverEntity != entity->getHandle())
+            internalDeselect(entity);
         m_Selection.removeAt(index);        
         SelectionChanged();
     }
@@ -71,7 +72,8 @@ void SelectionManger::deselectAll()
     m_Selection.forEach([this, entityMan](const he::ObjectHandle& handle)
     {
         he::ge::Entity* const entity(entityMan->getEntity(handle));
-        internalDeselect(entity);
+        if (m_HoverEntity != entity->getHandle())
+            internalDeselect(entity);
     });
     const bool hadItems(m_Selection.size());
     m_Selection.clear();
@@ -83,7 +85,8 @@ void SelectionManger::select( he::ge::Entity* const entity )
 {
     if (m_Selection.contains(entity->getHandle()) == false)
     {
-        internalSelect(entity);
+        if (m_HoverEntity != entity->getHandle())
+            internalSelect(entity);
         m_Selection.add(entity->getHandle());
         SelectionChanged();
     }

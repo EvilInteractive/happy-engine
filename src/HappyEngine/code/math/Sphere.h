@@ -24,7 +24,7 @@
 
 namespace he {
 class Ray;
-class Sphere
+class HAPPY_ENTRY Sphere
 {
 public:
     Sphere();

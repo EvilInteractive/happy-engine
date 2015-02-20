@@ -65,20 +65,27 @@ void GameStateEdit::tick( const float /*dTime*/ )
         he::io::IMouse* const mouse(controls->getMouse(sandbox->getGameWindow()->getHandle()));
         he::io::IKeyboard* const keyboard(controls->getKeyboard(sandbox->getGameWindow()->getHandle()));
 
+        he::Ray ray(sandbox->getMainView(), m_EditorCamera, mouse->getPosition());
+        he::ge::PickResult result;
+
+        he::ge::Entity* pickedEntity(nullptr);
+        EditorPickingManager::getInstance()->hover(ray, result);
         if (mouse->isButtonPressed(he::io::MouseButton_Left))
-        {        
-            if (keyboard->isKeyDown(he::io::Key_Ctrl) == false && keyboard->isKeyDown(he::io::Key_Alt) == false)
-                SelectionManger::getInstance()->deselectAll();
-            he::Ray ray(sandbox->getMainView(), m_EditorCamera, mouse->getPosition());
-            he::ge::PickResult result;
+        {    
             if (EditorPickingManager::getInstance()->pick(ray, result))
             {
                 he::ge::PickingComponent* const comp(he::checked_cast<he::ge::PickingComponent*>(result.getObject()));
-                if (keyboard->isKeyDown(he::io::Key_Alt) == false)
-                    SelectionManger::getInstance()->select(comp->getEntityParent());
-                else
-                    SelectionManger::getInstance()->deselect(comp->getEntityParent());
-            }
+                pickedEntity = comp->getEntityParent();
+                if (pickedEntity)
+                {
+                    if (keyboard->isKeyDown(he::io::Key_Ctrl) == false && keyboard->isKeyDown(he::io::Key_Alt) == false)
+                        SelectionManger::getInstance()->deselectAll();
+                    if (keyboard->isKeyDown(he::io::Key_Alt) == false)
+                        SelectionManger::getInstance()->select(pickedEntity);
+                    else
+                        SelectionManger::getInstance()->deselect(pickedEntity);
+                }
+            } 
         }
     }
 }

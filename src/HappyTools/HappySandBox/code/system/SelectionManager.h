@@ -63,6 +63,7 @@ private:
     void recomputeBoundingBox();
 
     TSelectionSet m_Selection;
+    he::ObjectHandle m_HoverEntity;
 
     he::AABB m_AABB;
 

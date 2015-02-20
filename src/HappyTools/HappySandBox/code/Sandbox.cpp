@@ -174,6 +174,7 @@ void Sandbox::init()
 
 void Sandbox::tick(float dTime)
 {
+    m_InteractionManager->tick(dTime);
     he::ge::Game::tick(dTime);
 
     if (!HAPPYENGINE->isQuiting())
